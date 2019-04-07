@@ -116,7 +116,7 @@
 
                     <resource>
 
-                        <directory>${project.parent.basedir}/mockup-client/src/main/web/dist/np-app/</directory>
+                        <directory>${project.parent.basedir}/mockup-client/src/main/web/client/dist/client/</directory>
 
                     </resource>
 
