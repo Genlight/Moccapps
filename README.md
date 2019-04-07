@@ -21,5 +21,3 @@ To build this project, use:
  login credentials:
  user="user"
  password=generated string in the spring terminal
- 
- At the time of writing, spring boot launches and you can login but it will result in a whitepage 404 
