@@ -10,21 +10,26 @@ To build this project, install following dependencies:
 Wir benötigen all diese Install
 ### Maven 
 https://www-us.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.zip
+> Path has to be set sysstem wide, see further below
 
 ### Java JDK 1.8
 https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-windows-x64.exe
+> Path has to be set sysstem wide, see further below
 
 ## Python v2.7  (needed for node-gyp)
 https://www.python.org/ftp/python/2.7.16/python-2.7.16.amd64.msi
+> Path has to be set sysstem wide, see further below
 
 ### GTK, (needed for Canavs-node-windows-development)
-[ftp.gnome.org/pub/GNOME/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.1-20101229_win64.zip]
+http://ftp.gnome.org/pub/GNOME/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.1-20101229_win64.zip
+> unpack in Dircetory C:\GTK
 
 ## set System Environment Variables
-following System Environment variables >have to be set  in order for the build to work.
+following System Environment variables >have to be set  in order for the build to work. (Paths to Executables like mvn.exe, or node.exe, normally located in a bin-folder)
 - Python
 - Java JDK
 - Node
+- Maven
 
 Add these in Windows with these steps:
 - Windows-Key + Q
