@@ -8,6 +8,7 @@ import { ProjectsComponent } from './projects/projects.component';
 import { EditorComponent } from './editor/editor.component';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { ToolbarComponent } from './editor/toolbar/toolbar.component';
+import { FabricCanvasComponent } from './editor/fabric-canvas/fabric-canvas.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { ToolbarComponent } from './editor/toolbar/toolbar.component';
     ProjectsComponent,
     EditorComponent,
     NavbarComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    FabricCanvasComponent
   ],
   imports: [
     BrowserModule,
