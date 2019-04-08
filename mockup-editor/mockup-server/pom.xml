@@ -12,7 +12,7 @@
   <artifactId>mockup-server</artifactId>
   <name>mockup-server</name>
   <packaging>war</packaging>
-  
+
       <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
