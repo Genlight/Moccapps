@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UseExistingWebDriver } from 'protractor/built/driverProviders';
 
 @Component({
   selector: 'app-navbar',
@@ -16,6 +17,12 @@ export class NavbarComponent implements OnInit {
     { name: 'Matthias Deimel'},
     { name: 'Brigitte Blank-Landeshammer'}
   ];
+
+  /**
+   * users.map(x => `${user.split(' ')[0][0]}${user.split(' ')[1][0]}`);
+   */
+
+  usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
 
   projectname = 'My project 1';
 

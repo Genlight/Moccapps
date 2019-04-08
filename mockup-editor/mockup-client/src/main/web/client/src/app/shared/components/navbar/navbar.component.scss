@@ -3,21 +3,38 @@
 }
 
 .navbar-online-users {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 100;
     color: #373A3C;
 }
 
 .navbar-username {
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 500;
     color: #373A3C;
 }
 
+.navbar-brand {
+    font-size: 14px;
+    color: #373A3C;
+}
+
+/*
+*https://stackoverflow.com/questions/34310271/css-place-in-circle-first-letter-of-the-name
+*/
 .user-circle {
-    font-size: 12px;
-    padding: 6px;
+    font-size: 11px;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
     color: white;
     background: #1888A3;
     border-radius: 50%;
     text-align: center;
+    display: inline-block;
 }
+
+/**
+ *  navbar with left-center-right split
+ *  https://stackoverflow.com/questions/33867603/center-an-element-in-bootstrap-4-navbar
+ **/
