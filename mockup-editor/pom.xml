@@ -17,28 +17,30 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+
+    <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+
+        <junit.version>4.12</junit.version>
+        <junit.jupiter.version>5.1.0</junit.jupiter.version>
+        <junit.vintage.version>5.1.0</junit.vintage.version>
+        <junit.platform.version>1.1.0</junit.platform.version>
   </properties>
 
   <dependencies>
-    <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>5.4.1</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.12</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.junit.vintage</groupId>
-        <artifactId>junit-vintage-engine</artifactId>
-        <version>5.4.1</version>
-        <scope>test</scope>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- For old JUnit4 tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
@@ -58,8 +60,29 @@
           <version>3.8.0</version>
         </plugin>
         <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${maven-surefire-plugin.version}</version>
+            <dependencies>
+                <!-- let surefire run JUnit 4 but also JUnit 5 tests -->
+                <dependency>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-surefire-provider</artifactId>
+                    <version>${junit.platform.version}</version>
+                </dependency>
+                <!-- let JUnit vintage engine run JUnit 3 or JUnit 4 tests -->
+                <dependency>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                    <version>${junit.vintage.version}</version>
+                </dependency>
+                <!-- let JUnit 5 engine run JUnit 5 tests -->
+                <dependency>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-engine</artifactId>
+                    <version>${junit.jupiter.version}</version>
+                </dependency>
+            </dependencies>
         </plugin>
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
