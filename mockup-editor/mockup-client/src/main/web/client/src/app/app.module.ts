@@ -10,6 +10,13 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { ToolbarComponent } from './editor/toolbar/toolbar.component';
 import { FabricCanvasComponent } from './editor/fabric-canvas/fabric-canvas.component';
 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faBars);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +29,9 @@ import { FabricCanvasComponent } from './editor/fabric-canvas/fabric-canvas.comp
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgbModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

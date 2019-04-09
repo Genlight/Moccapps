@@ -5,24 +5,28 @@
     <span>Undo</span>
     <span>Redo</span>
   </div>
- 
+
   <div class="mx-auto order-0">
     <span class="navbar-brand">{{projectname}}</span>
   </div>
 
   <div class="navbar-collapse w-100 order-3 ">
-      <ul class="navbar-nav ml-auto">
-           <li class="navbar-item">
-            <span *ngFor="let user of usersInitials">
-              <span class="user-circle ml-1 my-auto">{{user}}</span>
-            </span>
-          </li>
+    <ul class="navbar-nav ml-auto">
+      <li class="navbar-item my-auto">
+        <span *ngFor="let user of usersInitials">
+          <span class="user-circle ml-1 ">{{user}}</span>
+        </span>
+      </li>
 
-          <li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>
-          <span class="my-auto">|</span>
-          <li class="navbar-item navbar-username ml-3 my-auto">
-            <a class=" dropdown-toggle">Max Mustermann</a>
-          </li>
-        </ul>
+      <li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>
+      <span class="my-auto">|</span>
+      <li class="navbar-item ml-3 my-auto" ngbDropdown>
+        <button class="btn navbar-username dropdown-toggle" ngbDropdownToggle>Max Mustermann</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button ngbDropdownItem>Edit profile</button>
+          <button ngbDropdownItem>Sign out</button>
+        </div>
+      </li>
+    </ul>
   </div>
 </nav>
