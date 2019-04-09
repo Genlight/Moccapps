@@ -61,7 +61,7 @@ This will build the project.
 
 ### Killing used ports
 with powershell: \
-`(Get-NetTCPConnection -LocalPort 8090 -ea SilentlyContinue).OwningProcess | Get-Process | Stop-Process` \
+`Get-Process -Id (Get-NetTCPConnection -LocalPort 8090 -ea SilentlyContinue).OwningProcess | Stop-Process` \
 
 headsUp: needs Powershell v3 or higher to be installed.
 

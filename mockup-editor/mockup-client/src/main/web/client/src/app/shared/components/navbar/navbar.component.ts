@@ -8,7 +8,7 @@ import { UseExistingWebDriver } from 'protractor/built/driverProviders';
 })
 export class NavbarComponent implements OnInit {
 
-  users = 
+  users =
   [
     { name: 'Alexander Genser' },
     { name: 'Bernhard Matyas' },
