@@ -12,17 +12,20 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
 
 @ContextConfiguration(classes = Application.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("test")
+@SqlGroup({
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:insertTestData.sql"),
+        @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:deleteData.sql")})
 public class UserDAOTest {
 
     @Rule
@@ -32,62 +35,62 @@ public class UserDAOTest {
     private UserDAO userDAO;
     private static TestData testData;
 
-    private static final Logger logger= LoggerFactory.getLogger(UserDAOTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserDAOTest.class);
 
     @BeforeClass
-    public static void setupTestData(){
-        testData=new TestData();
+    public static void setupTestData() {
+        testData = new TestData();
         testData.init();
     }
 
     @Test
-    public void createUserWithValidDataTest()throws DAOException {
+    public void createUserWithValidDataTest() throws DAOException {
         User user = testData.user1;
         assertEquals("The returned User has to be equal to the created one", user, userDAO.create(user));
     }
 
     @Test(expected = DAOException.class)
-    public void createUserWithInValidDataTest()throws DAOException {
+    public void createUserWithInValidDataTest() throws DAOException {
         User user = null;
         userDAO.create(user);
     }
 
     @Test
-    public void updateUserWithValidDataTest()throws DAOException {
-        User user=testData.user1;
+    public void updateUserWithValidDataTest() throws DAOException {
+        User user = testData.user1;
         user.setId(1);
         assertEquals("user was successfully updated", user, userDAO.update(user));
     }
 
     @Test(expected = DAOException.class)
-    public void updateUserWithInValidDataTest()throws DAOException {
+    public void updateUserWithInValidDataTest() throws DAOException {
         userDAO.update(null);
     }
 
     @Test
-    public void deleteUserWithValidDataTest()throws DAOException {
+    public void deleteUserWithValidDataTest() throws DAOException {
         assertEquals("user was successfully deleted", true, userDAO.delete(1));
     }
 
     @Test(expected = DAOException.class)
-    public void deleteUserWithInValidDataTest()throws DAOException {
+    public void deleteUserWithInValidDataTest() throws DAOException {
         userDAO.delete(-1);
     }
 
     @Test
-    public void findUserByIDWithValidDataTest()throws DAOException {
-        User user=new User(2,"tuser2","temail2","tpassword2");
+    public void findUserByIDWithValidDataTest() throws DAOException {
+        User user = new User(2, "tuser2", "temail2", "tpassword2");
         assertEquals("user was found by id", user, userDAO.findById(2));
     }
 
     @Test(expected = DAOException.class)
-    public void findUserByIDUserWithInValidDataTest()throws DAOException {
+    public void findUserByIDUserWithInValidDataTest() throws DAOException {
         userDAO.findById(-1);
     }
 
     @Test
-    public void findUserByEmailWithValidDataTest()throws DAOException {
-        User user=new User(2,"tuser2","temail2","tpassword2");
+    public void findUserByEmailWithValidDataTest() throws DAOException {
+        User user = new User(2, "tuser2", "temail2", "tpassword2");
         assertEquals("user was found by email", user, userDAO.findByEmail("temail2"));
     }
 }
