@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UseExistingWebDriver } from 'protractor/built/driverProviders';
+import { faBars, faUndo, faRedo} from '@fortawesome/free-solid-svg-icons';
+import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-navbar',
@@ -7,6 +8,11 @@ import { UseExistingWebDriver } from 'protractor/built/driverProviders';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
+
+  faBars = faBars;
+  faUndo = faUndo;
+  faRedo = faRedo;
+  faCommentAlt = faCommentAlt;
 
   users = [
     { name: 'Alexander Genser' },

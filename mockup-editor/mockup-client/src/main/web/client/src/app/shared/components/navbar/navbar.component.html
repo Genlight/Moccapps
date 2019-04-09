@@ -1,9 +1,18 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
   <div class="w-100 order-0">
-    <a class="navbar-text" href="#">Navbar</a>
-    <span>Undo</span>
-    <span>Redo</span>
+    <button class="btn btn-light" href="#">
+      <fa-icon [icon]="faBars"></fa-icon>
+    </button>
+    <button class="btn btn-light ml-5">
+      <fa-icon [icon]="faUndo"></fa-icon>
+    </button>
+    <button class="btn btn-light ml-1">
+      <fa-icon [icon]="faRedo"></fa-icon>
+    </button>
+    <button class="btn btn-light ml-4">
+        <fa-icon [icon]="faCommentAlt"></fa-icon> Add Comment
+    </button>
   </div>
 
   <div class="mx-auto order-0">
@@ -21,7 +30,7 @@
       <li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>
       <span class="my-auto">|</span>
       <li class="navbar-item ml-3 my-auto" ngbDropdown>
-        <button class="btn navbar-username dropdown-toggle" ngbDropdownToggle>Max Mustermann</button>
+        <button class="btn btn-light navbar-username dropdown-toggle" ngbDropdownToggle>Max Mustermann</button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
           <button ngbDropdownItem>Edit profile</button>
           <button ngbDropdownItem>Sign out</button>

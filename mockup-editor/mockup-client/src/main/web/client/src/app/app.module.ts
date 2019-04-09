@@ -13,9 +13,11 @@ import { FabricCanvasComponent } from './editor/fabric-canvas/fabric-canvas.comp
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faUndo, faRedo, faComment } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faBars);
+library.add(faUndo);
+library.add(faRedo);
 
 @NgModule({
   declarations: [
