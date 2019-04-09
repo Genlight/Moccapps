@@ -73,6 +73,18 @@
           </configuration>
           <phase>test</phase>
         </execution>
+
+        <execution>
+          <id>integration-tests for Angular-Frontend </id>
+          <goals>
+              <goal>npm</goal>
+          </goals>
+          <configuration>
+              <arguments>run-script e2e --headless</arguments>
+          </configuration>
+          <phase>integration-test</phase>
+        </execution>
+
     </executions>
 
 </plugin>
