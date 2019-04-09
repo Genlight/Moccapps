@@ -12,7 +12,12 @@
 .toolbar-item {
     height: 44px;
     width: 44px;
-    background-color: darkgrey;
+    margin-bottom: 8px;
+}
+
+.btn-toolbar {
+    height: 44px;
+    width: 44px;
 }
 
 //https://stackoverflow.com/questions/27350693/fixing-a-button-to-the-bottom-of-a-sidebar
