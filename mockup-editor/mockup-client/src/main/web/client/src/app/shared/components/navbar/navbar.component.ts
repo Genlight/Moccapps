@@ -15,25 +15,23 @@ export class NavbarComponent implements OnInit {
   faCommentAlt = faCommentAlt;
 
   users = [
-    { name: 'Alexander Genser' },
-    { name: 'Bernhard Matyas' },
-    { name: 'Martin Maisriemler'},
-    { name: 'Yikai Yang' },
-    { name: 'Matthias Deimel'},
-    { name: 'Brigitte Blank-Landeshammer'}
+    { name: 'Alexander Genser', initials: 'AG' },
+    { name: 'Bernhard Matyas' , initials: 'BM' },
+    { name: 'Martin Maisriemler', initials: 'MM'},
+    { name: 'Yikai Yang', initials: 'YY'},
+    { name: 'Matthias Deimel', initials: 'MD'},
+    { name: 'Brigitte Blank-Landeshammer', initials: 'BB'}
   ];
 
   /**
    * users.map(x => `${user.split(' ')[0][0]}${user.split(' ')[1][0]}`);
    */
 
-  usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
-
+  // usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
   projectname = 'My project 1';
 
   constructor() { }
 
   ngOnInit() {
   }
-
 }
