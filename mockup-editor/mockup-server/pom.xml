@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
  <parent>
@@ -86,48 +87,64 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
         </dependency>
+          <dependency>
+              <groupId>org.springframework.security</groupId>
+              <artifactId>spring-security-test</artifactId>
+              <scope>test</scope>
+          </dependency>
     </dependencies>
-  <build>
-  <plugins>
-  <plugin>
+    <build>
+        <plugins>
 
-    <artifactId>maven-resources-plugin</artifactId>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
 
-    <executions>
+            <plugin>
 
-        <execution>
+                <artifactId>maven-resources-plugin</artifactId>
 
-            <id>copy-resources</id>
+                <executions>
 
-            <phase>validate</phase>
+                    <execution>
 
-            <goals>
+                        <id>copy-resources</id>
 
-                <goal>copy-resources</goal>
+                        <phase>validate</phase>
 
-            </goals>
+                        <goals>
 
-            <configuration>
+                            <goal>copy-resources</goal>
 
-                <outputDirectory>${project.build.directory}/classes/resources/</outputDirectory>
+                        </goals>
 
-                <resources>
+                        <configuration>
 
-                    <resource>
+                            <outputDirectory>${project.build.directory}/classes/resources/</outputDirectory>
 
-                        <directory>${project.parent.basedir}/mockup-client/src/main/web/client/dist/client/</directory>
+                            <resources>
 
-                    </resource>
+                                <resource>
 
-                </resources>
+                                    <directory>
+                                        ${project.parent.basedir}/mockup-client/src/main/web/client/dist/client/
+                                    </directory>
 
-            </configuration>
+                                </resource>
 
-        </execution>
+                            </resources>
 
-    </executions>
+                        </configuration>
 
-</plugin>
-  </plugins>
-  </build>
+                    </execution>
+
+                </executions>
+
+            </plugin>
+        </plugins>
+    </build>
 </project>

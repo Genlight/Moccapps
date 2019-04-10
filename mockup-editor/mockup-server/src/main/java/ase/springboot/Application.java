@@ -1,5 +1,6 @@
 package ase.springboot;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -7,6 +8,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.*;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -24,9 +26,7 @@ public class Application extends SpringBootServletInitializer {
 
 	
 	public static void main(String[] args) {
-		SpringApplication sa=new SpringApplication(Application.class);
-		sa.run(args);
-
+		SpringApplication.run(Application.class,args);
 	}
 
 	@Profile(value="prod")
@@ -47,9 +47,15 @@ public class Application extends SpringBootServletInitializer {
 		DataSource dataSource = new EmbeddedDatabaseBuilder()
 				.setName("testDB")
 				.setType(EmbeddedDatabaseType.H2)
-				.addScripts("schema.sql", "InsertTestData.sql")
+				.addScripts("schema.sql")
 				.build();
 		return dataSource;
+	}
+
+	@Bean(name="jdbcTemplate")
+	@Qualifier("testDataSource")
+	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+		return new JdbcTemplate(dataSource);
 	}
 
 }

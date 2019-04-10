@@ -50,7 +50,7 @@ This will build the project.
  This command will install node.js locally for this project, as well as make an angular project in mockup-client.
  
  ## Run Spring Server
- `cd /YOUR_DIR/mockup-editor/mockup-server` \
+ `cd /YOUR_DIR/mockup-editor` \
  `mvn spring-boot:run` \
  
  server available at http://localhost:8090
