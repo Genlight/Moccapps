@@ -16,7 +16,7 @@ public class RESTService {
     @Autowired
     UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/api/v1/register")
     public ResponseEntity<Boolean> registerUser(@RequestParam("email") String email,@RequestParam("username") String username,@RequestParam("password") String password){
 
         User user = new User();
@@ -34,8 +34,8 @@ public class RESTService {
 
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Boolean> registerUser(@RequestParam("email") String email,@RequestParam("password") String password){
+    @PostMapping("/api/v1/login")
+    public ResponseEntity<Boolean> login(@RequestParam("email") String email,@RequestParam("password") String password){
 
         if(userService.login(email,password)){
             return new ResponseEntity<>(true, HttpStatus.OK);
@@ -47,8 +47,8 @@ public class RESTService {
 
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Boolean> registerUser(@RequestParam("email") String email){
+    @PostMapping("/api/v1/logout")
+    public ResponseEntity<Boolean> logout(@RequestParam("email") String email){
 
         if(userService.logout(email)){
             return new ResponseEntity<>(true, HttpStatus.OK);
@@ -59,7 +59,5 @@ public class RESTService {
 
 
     }
-
-
 
 }

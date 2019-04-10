@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -54,7 +55,8 @@ public class RESTServiceTest {
 
         given(userService.register(user)).willReturn(true);
 
-        mvc.perform(post("/register")
+        mvc.perform(post("/api/v1/register")
+                .with(csrf())
                 .param("email", user.getEmail())
                 .param("username", user.getUsername())
                 .param("password", user.getPassword())
@@ -71,7 +73,8 @@ public class RESTServiceTest {
 
         given(userService.register(user)).willReturn(true);
 
-        mvc.perform(post("/register")
+        mvc.perform(post("/api/v1/register")
+                .with(csrf())
                 .param("email", user.getEmail())
                 .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isBadRequest());
@@ -85,7 +88,8 @@ public class RESTServiceTest {
 
         given(userService.register(user)).willReturn(false);
 
-        mvc.perform(post("/register")
+        mvc.perform(post("/api/v1/register")
+                .with(csrf())
                 .param("email", user.getEmail())
                 .param("username", user.getUsername())
                 .param("password", user.getPassword())
@@ -101,7 +105,8 @@ public class RESTServiceTest {
 
         given(userService.login(user.getEmail(), user.getPassword())).willReturn(true);
 
-        mvc.perform(post("/login")
+        mvc.perform(post("/api/v1/login")
+                .with(csrf())
                 .param("email", user.getEmail())
                 .param("password", user.getPassword())
                 .contentType(MediaType.TEXT_PLAIN))
@@ -116,7 +121,8 @@ public class RESTServiceTest {
 
         given(userService.login(user.getEmail(), user.getPassword())).willReturn(false);
 
-        mvc.perform(post("/login")
+        mvc.perform(post("/api/v1/login")
+                .with(csrf())
                 .param("email", user.getEmail())
                 .param("password", user.getPassword())
                 .contentType(MediaType.TEXT_PLAIN))
@@ -130,7 +136,8 @@ public class RESTServiceTest {
 
         given(userService.logout(user.getEmail())).willReturn(false);
 
-        mvc.perform(post("/logout")
+        mvc.perform(post("/api/v1/logout")
+                .with(csrf())
                 .param("email", user.getEmail())
                 .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
