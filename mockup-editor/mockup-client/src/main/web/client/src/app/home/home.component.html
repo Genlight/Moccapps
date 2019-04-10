@@ -1,4 +1,33 @@
-<div>
-  home works!
-  <button class="btn btn-primary">Bootstrap button</button>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="mx">
+    <span class="navbar-brand app-title">MOCAPPS</span>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- <h2>Create Mockups with others with ease.</h2> -->
+  <div class="row justify-content-center my-5">
+    <div class="card login-box">
+      <h1>Willkommen</h1>
+      <hr>
+      <div *ngIf="showUserAbortError" class="alert alert-danger" role="alert">Login aborted by user. Please try
+        again  .</div>
+      <div class="form-group">
+        <label for="inputEmail">Email</label>
+        <input type="email" class="form-control form-control-user" id="inputEmail" aria-describedby="emailHelp"
+          placeholder="Enter email address">
+      </div>
+
+      <div class="form-group">
+        <label for="inputPassword">Password</label>
+        <input type="password" class="form-control form-control-user" id="inputPassword" placeholder="Password">
+      </div>
+     
+      <button (click)="login()" [disabled]="!accepted" class="btn btn-primary btn-login">Login</button>
+      <div class="form-check mt-4">
+        <input type="checkbox" name="cb_accept" (change)="accepted = !accepted" class="form-check-input">
+        <label for="cb_accept">Ich akzeptiere die Weitergabe der Daten.</label>
+      </div>
+    </div>
+  </div>
 </div>
