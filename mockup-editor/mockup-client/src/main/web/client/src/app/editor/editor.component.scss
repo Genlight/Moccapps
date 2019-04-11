@@ -8,11 +8,11 @@
 }
 
 .background-color {
-    background: #EBEBEB;
+    background: #D8D8D8;
 }
 
 .container-fluid {
     margin: 0px;
     padding: 0px;
-    height: 100vh;
+    height: calc(100vh - 54px);
 }
