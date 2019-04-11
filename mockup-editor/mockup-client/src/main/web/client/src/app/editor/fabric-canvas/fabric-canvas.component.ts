@@ -23,13 +23,13 @@ export class FabricCanvasComponent implements OnInit {
   }
 
   setCanvasSize(width, height) {
-    //TODO: validate input.
+    // TODO: validate input.
     this.canvas.setWidth(width);
     this.canvas.setHeight(height);
   }
 
   addText(text: string) {
-    let label = new fabric.Textbox(text);
+    const label = new fabric.Textbox(text);
     this.canvas.add(label);
   }
 
@@ -38,7 +38,7 @@ export class FabricCanvasComponent implements OnInit {
   }
 
   onRemove() {
-    var actObj = this.canvas.getActiveObject();
+    const actObj = this.canvas.getActiveObject();
     this.canvas.remove(actObj);
   }
 

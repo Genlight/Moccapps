@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faBars, faUndo, faRedo} from '@fortawesome/free-solid-svg-icons';
 import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -30,8 +31,12 @@ export class NavbarComponent implements OnInit {
   // usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
   projectname = 'My project 1';
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
+  }
+
+  onLogout() {
+    this.router.navigate(['']);
   }
 }
