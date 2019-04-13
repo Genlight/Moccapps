@@ -34,7 +34,7 @@ library.add(faRedo);
     BrowserModule,
     AppRoutingModule,
     NgbModule,
-    FontAwesomeModule
+    FontAwesomeModule,
     AppRoutingModule,
     HttpClientModule
   ],
