@@ -1,3 +1,4 @@
+/*
 import { browser, by, element } from 'protractor';
 
 export class AppPage {
@@ -9,3 +10,4 @@ export class AppPage {
     return element(by.css('app-root h1')).getText() as Promise<string>;
   }
 }
+*/
