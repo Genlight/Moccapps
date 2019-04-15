@@ -1,0 +1,19 @@
+:host {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    @extend .background-color;
+}
+
+.background-color {
+    background: #D8D8D8;
+}
+
+.container-fluid {
+    margin: 0px;
+    padding: 0px;
+    height: calc(100vh - 54px);
+    padding-top: 2px;
+}

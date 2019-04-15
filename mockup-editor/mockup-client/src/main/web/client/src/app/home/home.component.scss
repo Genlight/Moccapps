@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito:900');
+
+:host {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    @extend .background-color;
+}
+
+.background-color {
+    background: #D8D8D8;
+}
+
+.app-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+}
+
+.btn-login {
+    background-color: #10B1BE;
+    border-radius: 24px;
+}
+
+.login-box {
+    padding-left: 28px;
+    padding-right: 28px;
+    padding-bottom: 28px;
+    padding-top: 12px;
+}
+
+.login-box form{
+    margin-top: 22px;
+}
+
+.billboard {
+    margin-top: 180px;
+}
+
+:host /deep/ .nav-link.active {
+    color: #495057;
+    width: 100%;
+    border-bottom: 2px solid #10959F;
+    font-weight: bold;
+}
+
+:host /deep/ .nav-link {
+    padding: 10px;
+    padding-bottom: 11px;
+    font-size: 16px;
+    line-height: 28px;
+    color: #707070;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+}
