@@ -5,6 +5,7 @@ import ase.DAO.UserDAO;
 import ase.DTO.User;
 import ase.springboot.Application;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -12,24 +13,35 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import static org.junit.Assert.assertEquals;
 
+@ActiveProfiles("test")
+@SpringBootTest(classes = TestRdbsConfiguration.class)
 @ContextConfiguration(classes = Application.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles("test")
 @SqlGroup({
         @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:insertTestData.sql"),
-        @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:deleteData.sql")})
+        @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:deleteData.sql")
+})
 public class UserDAOTest {
 
     @Rule
     public Timeout testTimeout = Timeout.seconds(3);
+
+    @ClassRule
+    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer()
+            .withDatabaseName("test")
+            .withPassword("test")
+            .withUsername("test");
 
     @Autowired
     private UserDAO userDAO;
@@ -45,6 +57,7 @@ public class UserDAOTest {
 
     @Test
     public void createUserWithValidDataTest() throws DAOException {
+        logger.debug("URL:" + postgresContainer.getJdbcUrl());
         User user = testData.user1;
         assertEquals("The returned User has to be equal to the created one", user, userDAO.create(user));
     }
@@ -93,4 +106,5 @@ public class UserDAOTest {
         User user = new User(2, "tuser2", "temail2", "tpassword2");
         assertEquals("user was found by email", user, userDAO.findByEmail("temail2"));
     }
+
 }

@@ -1,0 +1,24 @@
+---
+version: '3.7'
+
+services:
+
+  db:
+    build:
+      dockerfile: db.docker
+      context: ./mockup-server
+    restart: always
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: moccapps
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 7080:8080
+

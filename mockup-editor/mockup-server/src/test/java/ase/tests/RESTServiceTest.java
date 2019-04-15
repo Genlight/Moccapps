@@ -34,7 +34,6 @@ public class RESTServiceTest {
     @Autowired
     private MockMvc mvc;
     private static TestData testData;
-    // private RESTService restService;
 
 
     @BeforeClass
