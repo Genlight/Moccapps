@@ -82,7 +82,7 @@ public class UserDAOTest {
 
     @Test
     public void deleteUserWithValidDataTest() throws DAOException {
-        assertEquals("user was successfully deleted", true, userDAO.delete(1));
+        assertEquals("user was successfully deleted", true, userDAO.delete(2));
     }
 
     @Test(expected = DAOException.class)
