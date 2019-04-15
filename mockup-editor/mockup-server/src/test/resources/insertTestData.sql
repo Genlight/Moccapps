@@ -16,11 +16,11 @@ CREATE TABLE IF NOT EXISTS projects(
 );
 
 CREATE TABLE IF NOT EXISTS user_project(
-                                         id INTEGER DEFAULT nextval('seq_project') NOT NULL,
+                                         id INTEGER DEFAULT nextval('seq_project'),
                                          user_id INTEGER NOT NULL,
                                          project_id INTEGER NOT NULL,
-                                         FOREIGN KEY(user_id) REFERENCES users(id),
-                                         FOREIGN KEY(project_id) REFERENCES projects(id),
+                                         FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+                                         FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE,
                                          PRIMARY KEY(user_id,project_id)
 );
 
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS pages(
                                   page_order INTEGER NOT NULL,
                                   page_data json NOT NULL,
                                   project_id INTEGER,
-                                  FOREIGN KEY(project_id) REFERENCES projects(id)
+                                  FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE
 
 );
 
