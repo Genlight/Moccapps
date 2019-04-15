@@ -30,13 +30,16 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
             logger.error("Error during Creation of User: User is empty");
             throw new DAOException("Error during Creation of User: User is empty");
         }
-
+        if(findByEmail(user.getEmail())!=null){
+            logger.error("Error during Creation of User: E-Mail already exists");
+            throw new DAOException("Error during Creation of User: E-Mail already exists");
+        }
         try{
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_CREATE, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,user.getEmail());
             pstmt.setString(2,user.getUsername());
-            pstmt.setString(3,user.getPassword());
+            pstmt.setBytes(3,user.getPassword().getBytes());
             pstmt.executeUpdate();
 
             ResultSet rs=pstmt.getGeneratedKeys();
@@ -62,12 +65,17 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
             throw new DAOException("Error during Update of User: User is empty");
         }
 
+        if(findByEmail(user.getEmail())!=null){
+            logger.error("Error during Update of User: E-Mail already exists");
+            throw new DAOException("Error during Update of User: E-Mail already exists");
+        }
+
         try {
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_UPDATE);
             pstmt.setString(1,user.getEmail());
             pstmt.setString(2,user.getUsername());
-            pstmt.setString(3,user.getPassword());
+            pstmt.setBytes(3,user.getPassword().getBytes());
             pstmt.setInt(4,user.getId());
             pstmt.executeUpdate();
         }catch (SQLException e){
@@ -117,7 +125,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
                     rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("email"),
-                    rs.getString("password"));
+                    new String(rs.getBytes("password")));
             rs.close();
             return user;
         }catch (SQLException e){
@@ -134,13 +142,18 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
             pstmt=connection.prepareStatement(PSTMT_FINDBYEMAIL);
             pstmt.setString(1,email);
             ResultSet rs=pstmt.executeQuery();
-            rs.next();
+
+
+            if(!rs.next()){
+                return null;
+            }
             User user=new User(
                     rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("email"),
-                    rs.getString("password"));
+                    new String(rs.getBytes("password")));
             rs.close();
+
             return user;
         }catch (SQLException e){
             logger.error(e.getMessage());

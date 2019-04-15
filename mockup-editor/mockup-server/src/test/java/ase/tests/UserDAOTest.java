@@ -107,4 +107,23 @@ public class UserDAOTest {
         assertEquals("user was found by email", user, userDAO.findByEmail("temail2"));
     }
 
+    @Test (expected = DAOException.class)
+    public void createUserWithDuplicateEmail() throws DAOException{
+        User user=testData.user1;
+        User duplicateUser=testData.user2;
+        duplicateUser.setEmail(user.getEmail());
+        userDAO.create(user);
+        userDAO.create(duplicateUser);
+    }
+
+    @Test (expected = DAOException.class)
+    public void updateUserWithDuplicateEmail() throws DAOException{
+        User user=testData.user1;
+        User duplicateUser=testData.user2;
+        userDAO.create(user);
+        duplicateUser=userDAO.create(duplicateUser);
+        duplicateUser.setEmail(user.getEmail());
+        userDAO.update(duplicateUser);
+    }
+
 }

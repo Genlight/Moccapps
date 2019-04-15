@@ -31,7 +31,7 @@ public interface UserDAO {
     /* Find a User by the given id
      *
      * @param id id of the user to be searched in the DB
-     * @return userDTO with the given id
+     * @return userDTO with the given id or null if nothing was found
      * @throws DAOException if an error occurs during the execution a exception with a corresponding message is thrown
      */
     User findById(int id) throws DAOException;
@@ -39,7 +39,7 @@ public interface UserDAO {
     /* Find a User by the given email
      *
      * @param email email of the user to be searched in the DB
-     * @return userDTO with the given email
+     * @return userDTO with the given email, or null if nothing was found
      * @throws DAOException if an error occurs during the execution a exception with a corresponding message is thrown
      */
     User findByEmail(String email) throws DAOException;
