@@ -24,15 +24,16 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import static org.junit.Assert.assertEquals;
 
-@ActiveProfiles("test")
+/*@ActiveProfiles("test")
 @SpringBootTest(classes = TestRdbsConfiguration.class)
 @ContextConfiguration(classes = Application.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SqlGroup({
         @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:insertTestData.sql"),
         @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:deleteData.sql")
-})
-public class UserDAOTest {
+})*/
+public class UserDAOTest extends AbstractDAOTest{
+/*
 
     @Rule
     public Timeout testTimeout = Timeout.seconds(3);
@@ -43,17 +44,22 @@ public class UserDAOTest {
             .withPassword("test")
             .withUsername("test");
 
-    @Autowired
-    private UserDAO userDAO;
+
     private static TestData testData;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserDAOTest.class);
+
 
     @BeforeClass
     public static void setupTestData() {
         testData = new TestData();
         testData.init();
     }
+*/
+
+    @Autowired
+    private UserDAO userDAO;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserDAOTest.class);
 
     @Test
     public void createUserWithValidDataTest() throws DAOException {
