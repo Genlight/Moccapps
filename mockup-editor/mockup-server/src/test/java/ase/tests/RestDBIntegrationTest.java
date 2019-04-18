@@ -66,7 +66,7 @@ public class RestDBIntegrationTest {
     @Test
     public void registerUserWithValidData() throws Exception {
 
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         mvc.perform(post("/api/v1/register")
                 .with(csrf())
@@ -85,7 +85,7 @@ public class RestDBIntegrationTest {
     @Test
     public void registerRegisterUserWithValidData() throws Exception {
 
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         mvc.perform(post("/api/v1/register")
                 .with(csrf())
@@ -113,7 +113,7 @@ public class RestDBIntegrationTest {
 
     @Test
     public void registerLoginUserWithValidData() throws Exception {
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         mvc.perform(post("/api/v1/register")
                 .with(csrf())
@@ -144,7 +144,7 @@ public class RestDBIntegrationTest {
 
     @Test
     public void registerLogoutUserWithValidData() throws Exception {
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         mvc.perform(post("/api/v1/register")
                 .with(csrf())
@@ -173,7 +173,7 @@ public class RestDBIntegrationTest {
 
     @Test
     public void loginUserWithInvalidData() throws Exception {
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         mvc.perform(post("/api/v1/login")
                 .with(csrf())
@@ -188,7 +188,7 @@ public class RestDBIntegrationTest {
 
     @Test
     public void registerLoginLogoutUserWithValidData() throws Exception {
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         mvc.perform(post("/api/v1/register")
                 .with(csrf())
@@ -224,7 +224,7 @@ public class RestDBIntegrationTest {
 
     @Test
     public void registerLoginLogoutLogoutUserWithValidData() throws Exception {
-        User user = testData.user1;
+            User user = testData.createdUser1;
 
         mvc.perform(post("/api/v1/register")
                 .with(csrf())

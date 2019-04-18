@@ -19,10 +19,10 @@ public class TestData {
     private static final String USER_3_USERNAME="user3";
     private static final String USER_4_USERNAME="user4";
 
-    private static final String USER_1_PASSWORD="pw1";
-    private static final String USER_2_PASSWORD="pw2";
-    private static final String USER_3_PASSWORD="pw3";
-    private static final String USER_4_PASSWORD="pw4";
+    private static final String USER_1_PASSWORD="password1";
+    private static final String USER_2_PASSWORD="password2";
+    private static final String USER_3_PASSWORD="password3";
+    private static final String USER_4_PASSWORD="password4";
 
     private static final String PROJECT_1_NAME="project1";
     private static final String PROJECT_2_NAME="project2";
