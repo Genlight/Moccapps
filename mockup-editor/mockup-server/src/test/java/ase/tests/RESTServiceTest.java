@@ -50,7 +50,7 @@ public class RESTServiceTest {
     @Test
     public void registerUserWithValidData() throws Exception {
 
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         given(userService.register(user)).willReturn(true);
 
@@ -68,7 +68,7 @@ public class RESTServiceTest {
     @Test
     public void registerUserWithMissingData() throws Exception {
 
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         given(userService.register(user)).willReturn(true);
 
@@ -83,7 +83,7 @@ public class RESTServiceTest {
     @Test
     public void registerUserWithInvalidData() throws Exception {
 
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         given(userService.register(user)).willReturn(false);
 
@@ -100,7 +100,7 @@ public class RESTServiceTest {
 
     @Test
     public void loginUserWithValidData() throws Exception {
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         given(userService.login(user.getEmail(), user.getPassword())).willReturn(true);
 
@@ -116,7 +116,7 @@ public class RESTServiceTest {
 
     @Test
     public void loginUserWithInvalidData() throws Exception {
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         given(userService.login(user.getEmail(), user.getPassword())).willReturn(false);
 
@@ -131,7 +131,7 @@ public class RESTServiceTest {
 
     @Test
     public void logoutUserWithValidData() throws Exception {
-        User user = testData.user1;
+        User user = testData.createdUser1;
 
         given(userService.logout(user.getEmail())).willReturn(false);
 

@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class UserDAOImpl extends AbstractDAO implements UserDAO {
@@ -20,8 +22,10 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
     private static final String PSTMT_CREATE = "INSERT INTO users (email,username,password) VALUES (?,?,?)";
     private static final String PSTMT_UPDATE = "UPDATE users SET email=?, username=?, password=? WHERE id=?";
     private static final String PSTMT_DELETE = "DELETE FROM users WHERE id=?";
+    private static final String PSTMT_DELETE_JT_USERS_PROJECTS="DELETE FROM user_project WHERE user_id=?";
     private static final String PSTMT_FINDBYID = "SELECT * FROM users WHERE id=?";
     private static final String PSTMT_FINDBYEMAIL = "SELECT * FROM users WHERE email=?";
+    private static final String PSTMT_FINDALL="SELECT * FROM users";
     private PreparedStatement pstmt;
 
     @Override
@@ -39,7 +43,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
             pstmt=connection.prepareStatement(PSTMT_CREATE, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,user.getEmail());
             pstmt.setString(2,user.getUsername());
-            pstmt.setBytes(3,user.getPassword().getBytes());
+            pstmt.setString(3,user.getPassword());
             pstmt.executeUpdate();
 
             ResultSet rs=pstmt.getGeneratedKeys();
@@ -64,8 +68,8 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
             logger.error("Error during Update of User: User is empty");
             throw new DAOException("Error during Update of User: User is empty");
         }
-
-        if(findByEmail(user.getEmail())!=null){
+        User checkEmailUser=findByEmail(user.getEmail());
+        if(checkEmailUser!=null&&checkEmailUser.getId()!=user.getId()){
             logger.error("Error during Update of User: E-Mail already exists");
             throw new DAOException("Error during Update of User: E-Mail already exists");
         }
@@ -75,7 +79,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
             pstmt=connection.prepareStatement(PSTMT_UPDATE);
             pstmt.setString(1,user.getEmail());
             pstmt.setString(2,user.getUsername());
-            pstmt.setBytes(3,user.getPassword().getBytes());
+            pstmt.setString(3,user.getPassword());
             pstmt.setInt(4,user.getId());
             pstmt.executeUpdate();
         }catch (SQLException e){
@@ -96,6 +100,12 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 
         try {
             getConnection();
+            pstmt=connection.prepareStatement(PSTMT_DELETE_JT_USERS_PROJECTS);
+            pstmt.setInt(1,id);
+            pstmt.executeUpdate();
+            pstmt.close();
+
+
             pstmt=connection.prepareStatement(PSTMT_DELETE);
             pstmt.setInt(1,id);
             success=pstmt.executeUpdate();
@@ -103,8 +113,8 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 
         }catch (SQLException e){
             logger.error(e.getMessage());
-            logger.error("Error during Update of User: Couldn't connect to database");
-            throw new DAOException("Error during Update of User: Couldn't connect to database");
+            logger.error("Error during Delete of User: Couldn't connect to database");
+            throw new DAOException("Error during Delete of User: Couldn't connect to database");
         }
         return (success>0);
     }
@@ -125,7 +135,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
                     rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("email"),
-                    new String(rs.getBytes("password")));
+                    rs.getString("password"));
             rs.close();
             return user;
         }catch (SQLException e){
@@ -151,10 +161,35 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
                     rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("email"),
-                    new String(rs.getBytes("password")));
+                    rs.getString("password"));
             rs.close();
 
             return user;
+        }catch (SQLException e){
+            logger.error(e.getMessage());
+            logger.error("Error during Find by email of User: Couldn't connect to database");
+            throw new DAOException("Error during Find by email of User: Couldn't connect to database");
+        }
+    }
+
+    @Override
+    public List<User> findAll() throws DAOException {
+        List<User> users=new ArrayList<>();
+        try {
+            getConnection();
+            pstmt=connection.prepareStatement(PSTMT_FINDALL);
+            ResultSet rs=pstmt.executeQuery();
+
+
+            while(rs.next()) {
+                users.add(new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password")));
+            }
+            rs.close();
+            return users;
         }catch (SQLException e){
             logger.error(e.getMessage());
             logger.error("Error during Find by email of User: Couldn't connect to database");

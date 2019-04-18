@@ -2,6 +2,8 @@ package ase.DAO;
 
 import ase.DTO.User;
 
+import java.util.List;
+
 public interface UserDAO {
 
     /* Creates a new User
@@ -43,6 +45,13 @@ public interface UserDAO {
      * @throws DAOException if an error occurs during the execution a exception with a corresponding message is thrown
      */
     User findByEmail(String email) throws DAOException;
+
+    /* Find all registered Users
+     *
+     * @return List of Users
+     * @throws DAOException if an error occurs during the execution a exception with a corresponding message is thrown
+     */
+    List<User> findAll() throws DAOException;
 
 
 }

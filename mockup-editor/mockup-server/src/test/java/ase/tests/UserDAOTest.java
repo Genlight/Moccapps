@@ -22,7 +22,11 @@ import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = TestRdbsConfiguration.class)
@@ -57,9 +61,12 @@ public class UserDAOTest {
 
     @Test
     public void createUserWithValidDataTest() throws DAOException {
-        logger.debug("URL:" + postgresContainer.getJdbcUrl());
-        User user = testData.user1;
-        assertEquals("The returned User has to be equal to the created one", user, userDAO.create(user));
+        User user = testData.user3;
+        User createdUser=userDAO.create(user);
+        user.setId(createdUser.getId());
+        user.setPassword(createdUser.getPassword());
+        assertEquals("user was successfully created", user, createdUser);
+        assertEquals("user was successfully persisted", createdUser,userDAO.findById(createdUser.getId()));
     }
 
     @Test(expected = DAOException.class)
@@ -70,9 +77,9 @@ public class UserDAOTest {
 
     @Test
     public void updateUserWithValidDataTest() throws DAOException {
-        User user = testData.user1;
-        user.setId(1);
+        User user = testData.createdUser1;
         assertEquals("user was successfully updated", user, userDAO.update(user));
+        assertEquals("user was successfully persisted", user, userDAO.findById(user.getId()));
     }
 
     @Test(expected = DAOException.class)
@@ -82,7 +89,7 @@ public class UserDAOTest {
 
     @Test
     public void deleteUserWithValidDataTest() throws DAOException {
-        assertEquals("user was successfully deleted", true, userDAO.delete(2));
+        assertTrue("user was successfully deleted", userDAO.delete(2));
     }
 
     @Test(expected = DAOException.class)
@@ -92,7 +99,7 @@ public class UserDAOTest {
 
     @Test
     public void findUserByIDWithValidDataTest() throws DAOException {
-        User user = new User(2, "tuser2", "temail2", "tpassword2");
+        User user = testData.createdUser2;
         assertEquals("user was found by id", user, userDAO.findById(2));
     }
 
@@ -103,14 +110,22 @@ public class UserDAOTest {
 
     @Test
     public void findUserByEmailWithValidDataTest() throws DAOException {
-        User user = new User(2, "tuser2", "temail2", "tpassword2");
-        assertEquals("user was found by email", user, userDAO.findByEmail("temail2"));
+        User user = testData.createdUser2;
+        assertEquals("user was found by email", user, userDAO.findByEmail("email2"));
+    }
+
+    @Test
+    public void findAllUsers() throws DAOException{
+        List<User> users=new ArrayList<>();
+        users.add(testData.createdUser1);
+        users.add(testData.createdUser2);
+        assertEquals(users,userDAO.findAll());
     }
 
     @Test (expected = DAOException.class)
     public void createUserWithDuplicateEmail() throws DAOException{
-        User user=testData.user1;
-        User duplicateUser=testData.user2;
+        User user=testData.user4;
+        User duplicateUser=testData.user3;
         duplicateUser.setEmail(user.getEmail());
         userDAO.create(user);
         userDAO.create(duplicateUser);
@@ -118,8 +133,8 @@ public class UserDAOTest {
 
     @Test (expected = DAOException.class)
     public void updateUserWithDuplicateEmail() throws DAOException{
-        User user=testData.user1;
-        User duplicateUser=testData.user2;
+        User user=testData.user4;
+        User duplicateUser=testData.user3;
         userDAO.create(user);
         duplicateUser=userDAO.create(duplicateUser);
         duplicateUser.setEmail(user.getEmail());

@@ -2,6 +2,8 @@ package ase.DAO;
 
 import ase.DTO.Project;
 
+import java.util.List;
+
 public interface ProjectDAO {
     /* Creates a new Project
      *
@@ -34,5 +36,12 @@ public interface ProjectDAO {
      * @throws DAOException if an error occurs during the execution a exception with a corresponding message is thrown
      */
     Project findById(int id) throws DAOException;
+
+    /* Find all projects
+     *
+     * @return List of all projects
+     * @throws DAOException if an error occurs during the execution a exception with a corresponding message is thrown
+     */
+    List<Project> findAll() throws DAOException;
 
 }
