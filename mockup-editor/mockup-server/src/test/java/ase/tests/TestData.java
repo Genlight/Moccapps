@@ -1,5 +1,6 @@
 package ase.tests;
 
+import ase.DTO.Page;
 import ase.DTO.Project;
 import ase.DTO.User;
 
@@ -18,15 +19,21 @@ public class TestData {
     private static final String USER_3_USERNAME="user3";
     private static final String USER_4_USERNAME="user4";
 
-    private static final String USER_1_PASSWORD="password1";
-    private static final String USER_2_PASSWORD="password2";
-    private static final String USER_3_PASSWORD="password3";
-    private static final String USER_4_PASSWORD="password4";
+    private static final String USER_1_PASSWORD="pw1";
+    private static final String USER_2_PASSWORD="pw2";
+    private static final String USER_3_PASSWORD="pw3";
+    private static final String USER_4_PASSWORD="pw4";
 
     private static final String PROJECT_1_NAME="project1";
     private static final String PROJECT_2_NAME="project2";
     private static final String PROJECT_3_NAME="project3";
     private static final String PROJECT_4_NAME="project4";
+
+    private static final String PAGE_1_NAME="testpage";
+    private static final int PAGE_1_ORDER=1;
+    private static final String PAGE_1_PAGE_DATA
+            ="{ \"customer\": \"John Doe\", \"items\": {\"product\": \"Beer\",\"qty\": 6}}";
+    private static final int PAGE_1_PROJECT_ID=1;
 
     public User createdUser1;
     public User createdUser2;
@@ -37,6 +44,9 @@ public class TestData {
     public Project createdProject2;
     public Project project3;
     public Project project4;
+
+    public Page page1;
+
 
     public void init(){
         createdUser1=new User(1,USER_1_USERNAME,USER_1_EMAIL,USER_1_PASSWORD);
@@ -57,5 +67,7 @@ public class TestData {
         project3.addUser(1);
         project3.addUser(2);
         project4.addUser(2);
+
+        page1=new Page(PAGE_1_NAME,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA);
     }
 }
