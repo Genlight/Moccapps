@@ -10,21 +10,28 @@
         <fa-icon [icon]="faHandPointer"></fa-icon>
       </button>
     </li>
-    <li class="navbar-item toolbar-item">
+    <li class="navbar-item toolbar-item" (click)="onAddSquare()">
       <button class="btn btn-light btn-toolbar">
         <fa-icon [icon]="faSquare"></fa-icon>
       </button>
     </li>
     <li class="navbar-item toolbar-item">
-        <button class="btn btn-light btn-toolbar">
+        <button class="btn btn-light btn-toolbar" (click)="onAddCircle()">
             <fa-icon [icon]="faCircle"></fa-icon>
           </button>
     </li>
     <li class="navbar-item toolbar-item">
-        <button class="btn btn-light btn-toolbar">
+        <button class="btn btn-light btn-toolbar" (click)="onAddText()">
             <fa-icon [icon]="faFont"></fa-icon>
           </button>
     </li>
+    <li class="navbar-item toolbar-item">
+      <!--toggle button for now with js in toolbar-components-->
+      <button type="button" data-toggle="toggle" aria-pressed="false" id="drawingModeButton" class="btn btn-light btn-toolbar" (click)="onDrawingMode()">
+          <fa-icon [icon]="faPaintBrush">
+          </fa-icon>
+        </button>  
+  </li>
     <li class="navbar-item toolbar-item">
         <button class="btn btn-light btn-toolbar">
             <fa-icon [icon]="faThLarge"></fa-icon>
@@ -33,6 +40,11 @@
     <li class="navbar-item toolbar-item">
         <button class="btn btn-light btn-toolbar">
             <fa-icon [icon]="faLayerGroup"></fa-icon>
+          </button>
+    </li>
+    <li class="navbar-item toolbar-item">
+        <button class="btn btn-light btn-toolbar" (click)="onDelete()">
+            <fa-icon [icon]="faTrash"></fa-icon>
           </button>
     </li>
   </ul>

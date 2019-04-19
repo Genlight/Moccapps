@@ -1,31 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { fabric } from 'fabric';
+import { FabricmodifyService } from '../fabricmodify.service';
+import { ManagePagesService } from '../managepages.service';
 
 @Component({
   selector: 'app-fabric-canvas',
   templateUrl: './fabric-canvas.component.html',
   styleUrls: ['./fabric-canvas.component.scss']
 })
+
 export class FabricCanvasComponent implements OnInit {
 
   // Fabric canvas. Note: this is not html canvas.
   // http://fabricjs.com/
   private canvas: any;
 
-  constructor() { }
+  constructor(private modifyService: FabricmodifyService) { }
 
+  // TODO: manage canvas for different pages and not just one
   ngOnInit() {
-    this.canvas = new fabric.Canvas('canvas',
-      {
-        backgroundColor: '#ffffff'
-      });
-    this.setCanvasSize(400, 400);
-  }
-
-  setCanvasSize(width, height) {
-    // TODO: validate input.
-    this.canvas.setWidth(width);
-    this.canvas.setHeight(height);
+    ManagePagesService.createPage();
+    this.canvas = ManagePagesService.getCanvas();
   }
 
   addText(text: string) {
@@ -34,42 +29,19 @@ export class FabricCanvasComponent implements OnInit {
   }
 
   onAddText() {
-    this.addText('Text');
+    this.modifyService.addText(this.canvas, 'Text');
   }
 
   onRemove() {
-    const actObj = this.canvas.getActiveObject();
-    this.canvas.remove(actObj);
+    this.modifyService.removeElement(this.canvas);
   }
 
   onGroup() {
-    this.group();
+    this.modifyService.group(this.canvas);
   }
 
   onUngroup() {
-    this.ungroup();
-  }
-
-  ungroup() {
-    if (!this.canvas.getActiveObject()) {
-      return;
-    }
-    if (this.canvas.getActiveObject().type !== 'group') {
-      return;
-    }
-    this.canvas.getActiveObject().toActiveSelection();
-    this.canvas.requestRenderAll();
-  }
-
-  group() {
-    if (!this.canvas.getActiveObject()) {
-      return;
-    }
-    if (this.canvas.getActiveObject().type !== 'activeSelection') {
-      return;
-    }
-    this.canvas.getActiveObject().toGroup();
-    this.canvas.requestRenderAll();
+    this.modifyService.ungroup(this.canvas);
   }
 
 }

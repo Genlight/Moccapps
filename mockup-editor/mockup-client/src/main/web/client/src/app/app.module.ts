@@ -15,6 +15,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBars, faUndo, faRedo, faComment } from '@fortawesome/free-solid-svg-icons';
+import { FabricmodifyService } from './editor/fabricmodify.service';
+import { ManagePagesService } from './editor/managepages.service';
 
 library.add(faBars);
 library.add(faUndo);
@@ -36,9 +38,9 @@ library.add(faRedo);
     NgbModule,
     FontAwesomeModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [],
+  providers: [FabricmodifyService, ManagePagesService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
