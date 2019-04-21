@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito:900');
+
+:host {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    @extend .background-color;
+}
+
+.background-color {
+    background: #EBEBEB;
+}
+
+.app-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+}
+
+.welcome-header {
+    font-size: 14px;
+    color: #373A3C;
+}
+
+.welcome-username {
+    font-size: 20px;
+    color: #373A3C;
+    text-align: left;
+}

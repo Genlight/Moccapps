@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-projects',
@@ -7,7 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProjectsComponent implements OnInit {
 
-  constructor() { }
+  user = {
+    username: 'Max Mustermann'
+  };
+
+  constructor(private router: Router) { 
+
+  }
 
   ngOnInit() {
   }
