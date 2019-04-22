@@ -9,8 +9,14 @@
     @extend .background-color;
 }
 
+hr .divider {
+    background: #D8D8D8;
+    height: 4px;
+    //border-radius: 0px;
+}
+
 .background-color {
-    background: #EBEBEB;
+    background: #F0F1F1;
 }
 
 .app-title {
@@ -27,4 +33,17 @@
     font-size: 20px;
     color: #373A3C;
     text-align: left;
+}
+
+.table-project {
+    background-color: white;
+}
+
+.table-project > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.projects h2 {
+    font-size: 16px;
+    color: #606060;
 }

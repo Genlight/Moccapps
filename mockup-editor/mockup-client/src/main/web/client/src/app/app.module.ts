@@ -15,6 +15,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBars, faUndo, faRedo, faComment } from '@fortawesome/free-solid-svg-icons';
+import { CollaboratorPipe } from './shared/pipes/collaborator.pipe';
 
 library.add(faBars);
 library.add(faUndo);
@@ -28,7 +29,8 @@ library.add(faRedo);
     EditorComponent,
     NavbarComponent,
     ToolbarComponent,
-    FabricCanvasComponent
+    FabricCanvasComponent,
+    CollaboratorPipe
   ],
   imports: [
     BrowserModule,
