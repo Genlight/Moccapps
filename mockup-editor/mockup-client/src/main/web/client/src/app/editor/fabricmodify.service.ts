@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { fabric } from 'fabric';
+import { UUID } from 'angular2-uuid';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +9,7 @@ import { fabric } from 'fabric';
 export class FabricmodifyService {
 
   constructor() { }
-    
+  
   group(canvas: any) {
     if (!canvas.getActiveObject()) {
       return;
@@ -32,17 +34,17 @@ export class FabricmodifyService {
 
   addText(canvas: any, text: string) {
     const label = new fabric.Textbox(text);
-    canvas.add(label);
+    canvas.add(appendUUID(label));
   }
 
   addCircle(canvas: any) {
     const circle = new fabric.Circle({ radius: 30, fill: 'red', left: 10, right: 10});
-    canvas.add(circle);
+    canvas.add(appendUUID(circle));
   }
 
   addSquare(canvas: any) {
     const square = new fabric.Rect({width: 50, height: 50, fill: 'blue' , left: 10, right: 10});
-    canvas.add(square);
+    canvas.add(appendUUID(square));
   }
 
   removeElement(canvas: any) {
@@ -63,5 +65,17 @@ export class FabricmodifyService {
       canvas.isDrawingMode = false;
     }
   }
-
+}
+/**
+ * @param fabric.object - any Fabric.object like fabric.Circle, fabric.Rect, etc.
+ */
+function appendUUID (obj: fabric.Object): any {
+  obj.toObject = (extendUuid(obj.toObject))(obj.toObject);
+  obj.uuid = UUID.UUID();
+  return obj;
+}
+function extendUuid (toObject) {
+  return fabric.util.object.extend(toObject.call(this), {
+    uuid: this.uuid
+  });
 }
