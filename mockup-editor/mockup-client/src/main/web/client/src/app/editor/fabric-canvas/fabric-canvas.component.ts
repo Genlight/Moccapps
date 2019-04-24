@@ -41,15 +41,6 @@ export class FabricCanvasComponent implements OnInit {
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); });
   }
-  /**
-   * Siehe enableEvents()
-   */
-  disableEvents() {
-    this.canvas
-    .off('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
-    .off('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
-    .off('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); });
-  }
 
   onAddText() {
     this.modifyService.addText(this.canvas, 'Text');
@@ -68,7 +59,7 @@ export class FabricCanvasComponent implements OnInit {
   }
   /**
    *
-   * @param evt - Event-object
+   * @param evt - Event-object, contains, the modified objects
    * @param action - one of the defined Actions,
    * which will be transmitted s. transformation.interface
    */
@@ -79,12 +70,54 @@ export class FabricCanvasComponent implements OnInit {
         this.Transformation = new AsyncSubject<any>();
       }
       this.Transformation.next({element, Action: action });
-      console.log(`${action} : ${element.uuid}`);
+      console.log(`${action} : ${element.uuid }`);
     });
+    if (transObject.type === 'activeSelection') {
+        this.canvas.getActiveObject().forEachObject(next);
+        return;
+    }
     if (Array.isArray(transObject)) {
       transObject.forEach(next);
     } else {
       next(transObject);
     }
+  }
+  /**
+   * Wendet übergebene Canvas-Objekt-Transformationen auf das Canvas an.
+   * Falls keine UUID gefunden wird, wird eine Exception geworfen (Ausnahme: element:added)
+   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
+   * welches per toJSON() serialissiert/ deserialisiert wurde
+   */
+  async applyTransformation(object: any) {
+    const old = this.getObjectByUUID(object.uuid);
+    this.canvas.removeListeners();
+    // if not existed, jsut add it
+    if (typeof old === 'undefined') {
+      await this.canvas.loadFromJSON(object, () => {
+        console.log(`Element added by other user: ${object.uuid}`);
+      } ).requestRenderAll();
+    } else {
+      await this.canvas.remove(old).loadFromJSON(object, () => {
+        console.log(`Element changed by other user: ${object.uuid}`);
+      } ).requestRenderAll();
+    }
+    this.enableEvents();
+  }
+  /**
+   * gleicher Ablauf wie applyTransformation, nur dass hier ein fabric-Objekt entfernt wird
+   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
+   * welches per toJSON() serialissiert/ deserialisiert wurde
+   */
+  applyRemoval(object: any) {
+    const old = this.getObjectByUUID(object.uuid);
+    if (typeof old !== 'undefined') {
+      this.canvas.removeListeners();
+      this.canvas.remove(old);
+      this.enableEvents();
+    }
+  }
+
+  getObjectByUUID(uuid: string) {
+    return this.canvas.getObjects().find((o) => o.uuid === uuid );
   }
 }

@@ -17,18 +17,21 @@ export class FabricmodifyService {
     if (canvas.getActiveObject().type !== 'activeSelection') {
       return;
     }
-    canvas.getActiveObject().toGroup();
+    appendUUID(canvas.getActiveObject().toGroup());
     canvas.requestRenderAll();
   }
 
   ungroup(canvas: any) {
-    if (!canvas.getActiveObject()) {
+    const activeGrp = canvas.getActiveObject();
+    if (!activeGrp) {
       return;
     }
-    if (canvas.getActiveObject().type !== 'group') {
+    if (activeGrp.type !== 'group') {
       return;
     }
-    canvas.getActiveObject().toActiveSelection();
+    const items = activeGrp._objects;
+    activeGrp.ungroupOnCanvas();
+    items.forEach((obj) => canvas.add(obj));
     canvas.requestRenderAll();
   }
 
@@ -70,7 +73,7 @@ export class FabricmodifyService {
  * @param fabric.object - any Fabric.object like fabric.Circle, fabric.Rect, etc.
  */
 function appendUUID(obj: fabric.Object): fabric.Object {
-  obj.toObject = extendUuid(obj)(obj.toObject);
+  obj.toObject = (extendUuid(obj))(obj.toObject);
   obj.uuid = UUID.UUID();
   return obj;
 }
