@@ -32,19 +32,23 @@ export class FabricCanvasComponent implements OnInit {
     this.canvas = ManagePagesService.getCanvas();
     this.enableEvents();
   }
+  /**
+   * zum ein-/ausschalten der Eventlistener, s. auch Erklärung w.o.
+   */
   enableEvents() {
     this.canvas
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); });
   }
-
+  /**
+   * Siehe enableEvents()
+   */
   disableEvents() {
     this.canvas
     .off('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
     .off('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
     .off('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); });
-
   }
 
   onAddText() {
