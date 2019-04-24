@@ -9,7 +9,7 @@ import { Observable, of } from 'rxjs';
 export class FabricmodifyService {
 
   constructor() { }
-  
+
   group(canvas: any) {
     if (!canvas.getActiveObject()) {
       return;
@@ -69,12 +69,12 @@ export class FabricmodifyService {
 /**
  * @param fabric.object - any Fabric.object like fabric.Circle, fabric.Rect, etc.
  */
-function appendUUID (obj: fabric.Object): any {
+function appendUUID(obj: fabric.Object): any {
   obj.toObject = (extendUuid(obj.toObject))(obj.toObject);
   obj.uuid = UUID.UUID();
   return obj;
 }
-function extendUuid (toObject) {
+function extendUuid(toObject) {
   return fabric.util.object.extend(toObject.call(this), {
     uuid: this.uuid
   });
