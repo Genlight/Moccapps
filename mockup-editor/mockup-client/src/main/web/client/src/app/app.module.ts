@@ -15,6 +15,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBars, faUndo, faRedo, faComment } from '@fortawesome/free-solid-svg-icons';
+import {FormsModule} from "@angular/forms";
+import {RouterModule} from "@angular/router";
 
 library.add(faBars);
 library.add(faUndo);
@@ -36,7 +38,9 @@ library.add(faRedo);
     NgbModule,
     FontAwesomeModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    RouterModule
   ],
   providers: [],
   bootstrap: [AppComponent]

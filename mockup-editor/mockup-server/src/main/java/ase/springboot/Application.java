@@ -47,7 +47,7 @@ public class Application extends SpringBootServletInitializer {
 				.build();
 		return dataSource;
 	}*/
-	@Profile(value="prod")
+	/*@Profile(value="prod")
 	@Bean
 	public DataSource dataSource() {
 		return DataSourceBuilder
@@ -58,7 +58,7 @@ public class Application extends SpringBootServletInitializer {
 				.driverClassName("org.postgresql.Driver")
 				.build();
 	}
-
+*/
 	/*@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 

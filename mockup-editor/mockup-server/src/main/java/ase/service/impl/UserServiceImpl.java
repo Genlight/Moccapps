@@ -22,18 +22,20 @@ public class UserServiceImpl implements UserService {
     private List<String> loggedInUserEmails=new ArrayList<>();
 
     @Override
-    public boolean login(String email, String password) {
+    public User login(String email, String password) {
         try {
             User user=userDAO.findByEmail(email);
-            if (user.getPassword().equals(password)){
-                loggedInUserEmails.add(user.getEmail());
-                return true;
+            if (user != null) {
+                if (user.getPassword().equals(password)) {
+                    loggedInUserEmails.add(user.getEmail());
+                    return user;
+                }
             }
-            return false;
+            return null;
         }catch (DAOException e){
             logger.error("UserService: can not read from Database");
         }
-        return false;
+        return null;
     }
 
     @Override

@@ -49,7 +49,7 @@ public class PageDAOTest extends AbstractDAOTest {
 
     @Test
     public void createPageWithValidDataTest() throws DAOException {
-        Page page = testData.page1;
+        Page page = testData.page2;
         assertEquals("The returned Page has to be equal to the created one", page, pageDAO.create(page));
     }
 

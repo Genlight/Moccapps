@@ -23,36 +23,12 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@ActiveProfiles("test")
-@SpringBootTest(classes = TestRdbsConfiguration.class)
-@ContextConfiguration(classes = Application.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-@SqlGroup({
-        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:insertTestData.sql"),
-        @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:deleteData.sql")
-})
-public class ProjectDAOTest {
-
-    @Rule
-    public Timeout testTimeout = Timeout.seconds(3);
-
-    @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer()
-            .withDatabaseName("test")
-            .withPassword("test")
-            .withUsername("test");
+public class ProjectDAOTest extends AbstractDAOTest {
 
     @Autowired
     private ProjectDAO projectDAO;
-    private static TestData testData;
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectDAOTest.class);
-
-    @BeforeClass
-    public static void setupTestData() {
-        testData = new TestData();
-        testData.init();
-    }
 
     @Test
     public void createProjectWithValidData() throws DAOException {

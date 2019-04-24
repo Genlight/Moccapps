@@ -55,7 +55,7 @@ public class RESTServiceTest {
         given(userService.register(user)).willReturn(true);
 
         mvc.perform(post("/api/v1/register")
-                .with(csrf())
+                //.with(csrf())
                 .param("email", user.getEmail())
                 .param("username", user.getUsername())
                 .param("password", user.getPassword())
@@ -102,7 +102,7 @@ public class RESTServiceTest {
     public void loginUserWithValidData() throws Exception {
         User user = testData.createdUser1;
 
-        given(userService.login(user.getEmail(), user.getPassword())).willReturn(true);
+        given(userService.login(user.getEmail(), user.getPassword())).willReturn(user);
 
         mvc.perform(post("/api/v1/login")
                 .with(csrf())
@@ -110,7 +110,7 @@ public class RESTServiceTest {
                 .param("password", user.getPassword())
                 .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"id\":1,\"username\":\"user1\",\"email\":\"email1\",\"password\":\"password1\"}"));
     }
 
 
@@ -118,15 +118,15 @@ public class RESTServiceTest {
     public void loginUserWithInvalidData() throws Exception {
         User user = testData.createdUser1;
 
-        given(userService.login(user.getEmail(), user.getPassword())).willReturn(false);
+        given(userService.login(user.getEmail(), user.getPassword())).willReturn(null);
 
         mvc.perform(post("/api/v1/login")
                 .with(csrf())
                 .param("email", user.getEmail())
                 .param("password", user.getPassword())
                 .contentType(MediaType.TEXT_PLAIN))
-                .andExpect(status().isOk())
-                .andExpect(content().string("false"));
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string(""));
     }
 
     @Test

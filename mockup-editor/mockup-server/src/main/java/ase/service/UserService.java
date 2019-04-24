@@ -8,9 +8,9 @@ public interface UserService {
      *
      * @param email email of the user to be loggedin
      * @param password password of the user with the given email
-     * @returns boolean returns true if the login was successful, false otherwise
+     * @returns User returns User if the login was successful, null otherwise
      */
-    boolean login(String email,String password);
+    User login(String email, String password);
 
     /* remove the user from the list of logged in users
      *

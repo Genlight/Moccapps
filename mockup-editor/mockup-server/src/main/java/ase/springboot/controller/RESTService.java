@@ -5,12 +5,9 @@ import ase.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController()
+@RestController
 public class RESTService {
 
     @Autowired
@@ -35,13 +32,14 @@ public class RESTService {
     }
 
     @PostMapping("/api/v1/login")
-    public ResponseEntity<Boolean> login(@RequestParam("email") String email,@RequestParam("password") String password){
+    public ResponseEntity<User> login(@RequestParam("email") String email, @RequestParam("password") String password) {
 
-        if(userService.login(email,password)){
-            return new ResponseEntity<>(true, HttpStatus.OK);
+        User user = userService.login(email, password);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(false, HttpStatus.OK);
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
 

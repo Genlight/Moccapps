@@ -113,15 +113,17 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
             pstmt=connection.prepareStatement(PSTMT_FINDBYID);
             pstmt.setInt(1,id);
             ResultSet rs=pstmt.executeQuery();
-            rs.next();
-            Page page=new Page(
-                    rs.getInt("id"),
-                    rs.getString("page_name"),
-                    rs.getInt("page_order"),
-                    rs.getInt("project_id"),
-                    rs.getString("page_data"));
-
+            Page page = null;
+            if (rs.next()) {
+                page = new Page(
+                        rs.getInt("id"),
+                        rs.getString("page_name"),
+                        rs.getInt("page_order"),
+                        rs.getInt("project_id"),
+                        rs.getString("page_data"));
+            }
             rs.close();
+
             return page;
         }catch (SQLException e){
             logger.error(e.getMessage());

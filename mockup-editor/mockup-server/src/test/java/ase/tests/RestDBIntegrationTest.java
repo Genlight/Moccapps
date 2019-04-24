@@ -133,7 +133,7 @@ public class RestDBIntegrationTest {
                 .param("password", user.getPassword())
                 .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"id\":1,\"username\":\"user1\",\"email\":\"email1\",\"password\":\"password1\"}"));
 
 
         assertTrue(userService.isLoggedIn(user.getEmail()));
@@ -180,8 +180,8 @@ public class RestDBIntegrationTest {
                 .param("email", user.getEmail())
                 .param("password", user.getPassword())
                 .contentType(MediaType.TEXT_PLAIN))
-                .andExpect(status().isOk())
-                .andExpect(content().string("false"));
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string(""));
 
         assertFalse(userService.isLoggedIn(user.getEmail()));
     }
@@ -208,7 +208,7 @@ public class RestDBIntegrationTest {
                 .param("password", user.getPassword())
                 .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"id\":1,\"username\":\"user1\",\"email\":\"email1\",\"password\":\"password1\"}"));
 
         assertTrue(userService.isLoggedIn(user.getEmail()));
 
@@ -244,7 +244,7 @@ public class RestDBIntegrationTest {
                 .param("password", user.getPassword())
                 .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"id\":1,\"username\":\"user1\",\"email\":\"email1\",\"password\":\"password1\"}"));
 
         assertTrue(userService.isLoggedIn(user.getEmail()));
 
