@@ -70,7 +70,7 @@ export class FabricmodifyService {
  * @param fabric.object - any Fabric.object like fabric.Circle, fabric.Rect, etc.
  */
 function appendUUID(obj: fabric.Object): fabric.Object {
-  obj.toObject = (extendUuid(obj))(obj.toObject);
+  obj.toObject = extendUuid(obj)(obj.toObject);
   obj.uuid = UUID.UUID();
   return obj;
 }
