@@ -69,13 +69,15 @@ export class FabricmodifyService {
 /**
  * @param fabric.object - any Fabric.object like fabric.Circle, fabric.Rect, etc.
  */
-function appendUUID(obj: fabric.Object): any {
-  obj.toObject = (extendUuid(obj.toObject))(obj.toObject);
+function appendUUID(obj: fabric.Object): fabric.Object {
+  obj.toObject = (extendUuid(obj))(obj.toObject);
   obj.uuid = UUID.UUID();
   return obj;
 }
-function extendUuid(toObject) {
-  return fabric.util.object.extend(toObject.call(this), {
-    uuid: this.uuid
-  });
+function extendUuid(obj) {
+  return function() {
+    return fabric.util.object.extend(obj.callSuper('toObject') , {
+      uuid: UUID.UUID()
+    });
+  };
 }
