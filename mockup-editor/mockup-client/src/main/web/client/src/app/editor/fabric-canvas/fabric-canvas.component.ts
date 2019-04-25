@@ -29,7 +29,6 @@ export class FabricCanvasComponent implements OnInit {
     ManagePagesService.createPage();
     this.canvas = ManagePagesService.getCanvas();
 
-
     this.canvas
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED)})
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED)})
@@ -52,21 +51,20 @@ export class FabricCanvasComponent implements OnInit {
     this.modifyService.ungroup(this.canvas);
   }
   /**
-  *
-  * @param evt - Event-object
-  * @param action - one of the defined Actions,
-  * which will be transmitted s. transformation.interface
-  */
+   * @param evt - Event-object
+   * @param action - one of the defined Actions,
+   * which will be transmitted s. transformation.interface
+   */
   onTransformation(evt, action: Action) {
     const transObject = evt.target;
     const next = ((element) => {
-      if( !this.Transformation) {
+      if (!this.Transformation) {
         this.Transformation = new BehaviorSubject<any>(
-          {'element': element, 'Action': action }
+          { 'element': element, 'Action': action }
         );
         return;
       }
-      this.Transformation.next({'element': element, 'Action': action });
+      this.Transformation.next({ 'element': element, 'Action': action });
       console.log(`${action} : ${element.uuid}`);
     });
     if (Array.isArray(transObject)) {

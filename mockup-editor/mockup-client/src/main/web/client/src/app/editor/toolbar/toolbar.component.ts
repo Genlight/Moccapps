@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faMousePointer, faFont, faLayerGroup, faThLarge, faPaintBrush, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faMousePointer, faFont, faLayerGroup, faThLarge, faPaintBrush, faTrash, faObjectGroup } from '@fortawesome/free-solid-svg-icons';
 import { faHandPaper, faSquare, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
@@ -16,7 +16,7 @@ export class ToolbarComponent implements OnInit {
   faSquare = faSquare;
   faCircle = faCircle;
   faFont = faFont;
-  faLayerGroup = faLayerGroup;
+  faLayerGroup = faObjectGroup;
   faThLarge = faThLarge;
   faPaintBrush = faPaintBrush;
   faTrash = faTrash;
