@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ProjectService } from '../project.service';
 
 @Component({
   selector: 'app-create-project-modal',
@@ -8,7 +9,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class CreateProjectModalComponent implements OnInit {
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal, private projectService: ProjectService) { 
+
+  }
 
   ngOnInit() {
   }
@@ -16,5 +19,4 @@ export class CreateProjectModalComponent implements OnInit {
   openModal(content) {
     this.modalService.open(content);
   }
-
 }
