@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { fabric } from 'fabric';
+import { fabric } from './extendedfabric';
 
 @Injectable({
   providedIn: 'root'

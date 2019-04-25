@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { fabric } from 'fabric';
-import { UUID } from 'angular2-uuid';
 import { Observable, of } from 'rxjs';
+import { fabric } from './extendedfabric';
 
 let savedElements = null;
 
@@ -27,20 +26,21 @@ export class FabricmodifyService {
 
   /* ungroups elements in given canvas if a group of elements is selected */
   ungroup(canvas: any) {
-    if (!canvas.getActiveObject()) {
+    const activeGrp = canvas.getActiveObject();
+    if (!activeGrp) {
       return;
     }
-    if (canvas.getActiveObject().type !== 'group') {
+    if (activeGrp.type !== 'group') {
       return;
     }
-    canvas.getActiveObject().toActiveSelection();
+    activeGrp.toActiveSelection();
     canvas.requestRenderAll();
   }
 
   /* adds a text label to the given canvas */
   addText(canvas: any, text: string) {
     const label = new fabric.Textbox(text);
-    canvas.add(appendUUID(label));
+    canvas.add(label);
   }
 
   /* adds a white circle with a black border to the given canvas */
