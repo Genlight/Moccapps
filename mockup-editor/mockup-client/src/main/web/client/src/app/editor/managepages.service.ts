@@ -15,6 +15,7 @@ export class ManagePagesService {
     this.pageCanvas = new fabric.Canvas('canvas',
       {
         backgroundColor: '#ffffff',
+        preserveObjectStacking: true,
       });
     this.pageCanvas.setDimensions({width: '500', heigth: '500'}, {cssOnly: true});
   }
