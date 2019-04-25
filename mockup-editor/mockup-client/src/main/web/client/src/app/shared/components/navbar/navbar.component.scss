@@ -47,3 +47,51 @@
  *  navbar with left-center-right split
  *  https://stackoverflow.com/questions/33867603/center-an-element-in-bootstrap-4-navbar
  **/
+
+.menu {
+    display:inline;
+}
+
+/* hide arrow on hover */
+.menu > .dropdown-toggle::after {
+    display:none;
+}
+
+.menubtn {
+    display: block;
+    width: 100%;
+    text-align: left;
+}
+
+.divider {
+    height: 1px;
+    margin: 9px 0;
+    overflow: hidden;
+    background-color: #747474;
+}
+
+.dropdown-menu {
+    background: #F7F7F9;
+}
+
+// hide arrow in submenu
+.dropdown-submenu > .dropdown-toggle::after {
+    display:none;
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+}
+
+/* rotate caret on hover */
+.dropdown-menu > li > a:hover:after {
+    text-decoration: underline;
+    transform: rotate(-90deg);
+}
