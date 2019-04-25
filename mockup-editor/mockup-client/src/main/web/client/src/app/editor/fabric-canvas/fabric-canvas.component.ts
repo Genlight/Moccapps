@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { fabric } from 'fabric';
+import { fabric } from './extendedfabric';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
 import { AsyncSubject } from 'rxjs/AsyncSubject';

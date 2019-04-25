@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { fabric } from 'fabric';
-import { UUID } from 'angular2-uuid';
 import { Observable, of } from 'rxjs';
+import { fabric } from './extendedfabric';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +16,7 @@ export class FabricmodifyService {
     if (canvas.getActiveObject().type !== 'activeSelection') {
       return;
     }
-    appendUUID(canvas.getActiveObject().toGroup());
+    canvas.getActiveObject().toGroup();
     canvas.requestRenderAll();
   }
 
@@ -29,25 +28,23 @@ export class FabricmodifyService {
     if (activeGrp.type !== 'group') {
       return;
     }
-    const items = activeGrp._objects;
-    activeGrp.ungroupOnCanvas();
-    items.forEach((obj) => canvas.add(obj));
+    activeGrp.toActiveSelection();
     canvas.requestRenderAll();
   }
 
   addText(canvas: any, text: string) {
     const label = new fabric.Textbox(text);
-    canvas.add(appendUUID(label));
+    canvas.add(label);
   }
 
   addCircle(canvas: any) {
     const circle = new fabric.Circle({ radius: 30, fill: 'red', left: 10, right: 10});
-    canvas.add(appendUUID(circle));
+    canvas.add(circle);
   }
 
   addSquare(canvas: any) {
     const square = new fabric.Rect({width: 50, height: 50, fill: 'blue' , left: 10, right: 10});
-    canvas.add(appendUUID(square));
+    canvas.add(square);
   }
 
   removeElement(canvas: any) {
@@ -69,18 +66,18 @@ export class FabricmodifyService {
     }
   }
 }
-/**
- * @param fabric.object - any Fabric.object like fabric.Circle, fabric.Rect, etc.
- */
-function appendUUID(obj: fabric.Object): fabric.Object {
-  obj.toObject = (extendUuid(obj))(obj.toObject);
-  obj.uuid = UUID.UUID();
-  return obj;
-}
-function extendUuid(obj) {
-  return function() {
-    return fabric.util.object.extend(obj.callSuper('toObject') , {
-      uuid: UUID.UUID()
-    });
-  };
-}
+// /**
+//  * @param fabric.object - any Fabric.object like fabric.Circle, fabric.Rect, etc.
+//  */
+// function appendUUID(obj: fabric.Object): fabric.Object {
+//   obj.toObject = (extendUuid(obj))(obj.toObject);
+//   obj.uuid = UUID.UUID();
+//   return obj;
+// }
+// function extendUuid(obj) {
+//   return function() {
+//     return fabric.util.object.extend(this.call('toObject') , {
+//       uuid: UUID.UUID()
+//     });
+//   };
+// }
