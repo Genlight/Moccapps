@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Observable } from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -11,6 +12,18 @@ const API_URL = environment.apiUrl;
 export class ApiService {
 
   constructor(private http: HttpClient) { }
+
+  public get(path: string, params: HttpParams = new HttpParams()): Observable<any> {
+    return this.http.get(`${API_URL}${path}`, {params});
+  }
+
+  public put(path: string, body: object = {}): Observable<any> {
+    return this.http.put(path, JSON.stringify(body));
+  }
+
+  public post(path: string, body: object = {}): Observable<any> {
+    return this.http.post(path, JSON.stringify(body));
+  }
 
   public registerUser(email:string,password:string,username:string) {
     let postData = new FormData();
