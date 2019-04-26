@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { FabricmodifyService } from './fabricmodify.service';
 
-describe('FabricserviceService', () => {
+describe('FabricmodifyService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
