@@ -157,9 +157,4 @@ export class FabricmodifyService {
     this.copyElement(canvas);
     this.pasteElement(canvas);
   }
-<<<<<<< HEAD
-
 }
-=======
-}
->>>>>>> bug/34856_unit_test
