@@ -20,6 +20,7 @@ import { faBars, faUndo, faRedo, faComment } from '@fortawesome/free-solid-svg-i
 import { CollaboratorPipe } from './shared/pipes/collaborator.pipe';
 import { FabricmodifyService } from './editor/fabricmodify.service';
 import { ManagePagesService } from './editor/managepages.service';
+import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.component';
 
 library.add(faBars);
 library.add(faUndo);
@@ -35,7 +36,8 @@ library.add(faRedo);
     ToolbarComponent,
     FabricCanvasComponent,
     CollaboratorPipe,
-    CreateProjectModalComponent
+    CreateProjectModalComponent,
+    CustomizepanelComponent
   ],
   imports: [
     BrowserModule,
