@@ -18,11 +18,17 @@ export class ApiService {
   }
 
   public put(path: string, body: object = {}): Observable<any> {
-    return this.http.put(path, JSON.stringify(body));
+    return this.http.put(`${API_URL}${path}`, JSON.stringify(body));
   }
 
   public post(path: string, body: object = {}): Observable<any> {
-    return this.http.post(path, JSON.stringify(body));
+    return this.http.post(`${API_URL}${path}`, JSON.stringify(body));
+  }
+
+  public delete(path): Observable<any> {
+    return this.http.delete(
+      `${API_URL}${path}`
+    );
   }
 
   public registerUser(email:string,password:string,username:string) {

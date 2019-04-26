@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectService } from '../project.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-project-modal',
@@ -14,7 +15,8 @@ export class CreateProjectModalComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-    private projectService: ProjectService) { 
+    private projectService: ProjectService,
+    private router: Router) { 
   }
 
   ngOnInit() {
@@ -43,5 +45,6 @@ export class CreateProjectModalComponent implements OnInit {
   createProject(value: any): void {
     alert(JSON.stringify(value));
     this.modal.close();
+    this.router.navigate(['editor']);
   }
 }
