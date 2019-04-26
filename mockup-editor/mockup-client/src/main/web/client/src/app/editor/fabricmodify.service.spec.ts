@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FabricserviceService } from './fabricmodify.service';
+import { FabricmodifyService } from './fabricmodify.service';
 
-describe('FabricserviceService', () => {
+describe('FabricmodifyService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: FabricserviceService = TestBed.get(FabricserviceService);
+    const service: FabricmodifyService = TestBed.get(FabricmodifyService);
     expect(service).toBeTruthy();
   });
 });
