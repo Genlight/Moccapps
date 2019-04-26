@@ -31,7 +31,7 @@ export class FabricCanvasComponent implements OnInit {
     this.canvas = ManagePagesService.getCanvas();
     this.enableEvents();
   }
-  
+
   /**
    * for switching event-listener on and off
    */
@@ -67,7 +67,7 @@ export class FabricCanvasComponent implements OnInit {
   onTransformation(evt, action: Action) {
     const transObject = evt.target;
     const next = ((element) => {
-      if ( !this.Transformation) {
+      if ( typeof this.Transformation === 'undefined') {
         this.Transformation = new AsyncSubject<any>();
       }
       this.Transformation.next({element, Action: action });
