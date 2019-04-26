@@ -46,13 +46,13 @@ export class FabricmodifyService {
   /* adds a white circle with a black border to the given canvas */
   addCircle(canvas: any) {
     const circle = new fabric.Circle({ radius: 30, fill: 'white', left: 10, right: 10, stroke: 'black', strokeWidth: 2 });
-    canvas.add(appendUUID(circle));
+    canvas.add(circle);
   }
 
   /* adds a white square with a black border to the given canvas */
   addSquare(canvas: any) {
     const square = new fabric.Rect({ width: 50, height: 50, fill: 'white', left: 10, right: 10, stroke: 'black', strokeWidth: 2 });
-    canvas.add(appendUUID(square));
+    canvas.add(square);
   }
 
   /* removes one or more selected elements or groups of elements from the given canvas */
@@ -158,17 +158,4 @@ export class FabricmodifyService {
     this.pasteElement(canvas);
   }
 
-}
-/**
- * @param fabric.object - any Fabric.object like fabric.Circle, fabric.Rect, etc.
- */
-function appendUUID(obj: fabric.Object): any {
-  //  obj.toObject = (extendUuid(obj.toObject))(obj.toObject);
-  //  obj.uuid = UUID.UUID();
-  return obj;
-}
-function extendUuid(toObject) {
-  return fabric.util.object.extend(toObject.call(this), {
-    uuid: this.uuid
-  });
 }
