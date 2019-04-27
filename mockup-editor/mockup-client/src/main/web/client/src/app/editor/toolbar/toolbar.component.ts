@@ -60,4 +60,36 @@ export class ToolbarComponent implements OnInit {
     this.modifyService.removeElement(canvas);
   }
 
+  /* toggles extension panel if page button is currently toggled,
+  otherwise switches the page button to toggled and the group button to untoggled */ 
+  onPageToggle() {
+    const panel = document.getElementById('toolbarextension');
+    const groupbutton = document.getElementById('navGroupsButton');
+    if (panel.classList.contains('extensionhidden')) {
+      panel.classList.toggle('extensionhidden');
+    } else if (groupbutton.classList.contains('btn-dark')) {
+      groupbutton.classList.toggle('btn-dark');
+    } else {
+      panel.classList.toggle('extensionhidden');
+    }
+    const pagebutton = document.getElementById('navPagesButton');
+    pagebutton.classList.toggle('btn-dark');
+  }
+
+  /* toggles extension panel if group button is currently toggled,
+  otherwise switches the group button to toggled and the page button to untoggled */
+  onGroupToggle() {
+    const panel = document.getElementById('toolbarextension');
+    const pagebutton = document.getElementById('navPagesButton');
+    if (panel.classList.contains('extensionhidden')) {
+      panel.classList.toggle('extensionhidden');
+    } else if (pagebutton.classList.contains('btn-dark')) {
+      pagebutton.classList.toggle('btn-dark');
+    } else {
+      panel.classList.toggle('extensionhidden');
+    }
+    const groupbutton = document.getElementById('navGroupsButton');
+    groupbutton.classList.toggle('btn-dark');
+  }
+
 }

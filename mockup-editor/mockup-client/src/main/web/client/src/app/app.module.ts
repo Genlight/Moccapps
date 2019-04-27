@@ -21,6 +21,7 @@ import { CollaboratorPipe } from './shared/pipes/collaborator.pipe';
 import { FabricmodifyService } from './editor/fabricmodify.service';
 import { ManagePagesService } from './editor/managepages.service';
 import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.component';
+import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
 
 library.add(faBars);
 library.add(faUndo);
@@ -37,7 +38,8 @@ library.add(faRedo);
     FabricCanvasComponent,
     CollaboratorPipe,
     CreateProjectModalComponent,
-    CustomizepanelComponent
+    CustomizepanelComponent,
+    ToolbarextensionComponent
   ],
   imports: [
     BrowserModule,

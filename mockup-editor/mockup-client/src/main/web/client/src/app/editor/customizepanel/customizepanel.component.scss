@@ -2,16 +2,14 @@
     width: 2em;
     background-color: #F7F7F9;
     height: 100%;
-    line-height: 100%;
-    text-align: left;
 }
 
 .paneltoggle {
-    display: inline;
-    text-align: left;
+    height: 100%;
 }
 
-.paneltoggle > btn {
+.paneltoggle > .btn {
+    height: 100%;
     width: 1em;
 }
 
