@@ -1,16 +1,11 @@
 package ase.springboot;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
 
@@ -21,7 +16,8 @@ import javax.sql.DataSource;
  */
 @Configuration
 @ComponentScan(basePackages = {"ase"})
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
+@EnableAutoConfiguration
+@PropertySource(value = "classpath:application.properties")
 public class Application extends SpringBootServletInitializer {
 
 	
@@ -29,7 +25,7 @@ public class Application extends SpringBootServletInitializer {
 		SpringApplication.run(Application.class,args);
 	}
 
-	@Profile(value="prod")
+/*	@Profile(value="prod")
 	@Bean(name="dataSource")
 	public DataSource dataSource() {
 		return DataSourceBuilder
@@ -50,10 +46,55 @@ public class Application extends SpringBootServletInitializer {
 				.addScripts("schema.sql")
 				.build();
 		return dataSource;
+	}*/
+	@Profile(value="prod")
+	@Bean
+	public DataSource dataSource() {
+		return DataSourceBuilder
+				.create()
+				.username("postgres")
+				.password("test")
+				.url("jdbc:postgresql://localhost:5432/moccapps")
+				.driverClassName("org.postgresql.Driver")
+				.build();
 	}
 
-	@Bean(name="jdbcTemplate")
-	@Qualifier("testDataSource")
+	/*@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+
+		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+		vendorAdapter.setDatabase(Database.POSTGRESQL);
+		vendorAdapter.setGenerateDdl(true);
+		vendorAdapter.setShowSql(true);
+
+		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+		factory.setJpaVendorAdapter(vendorAdapter);
+		factory.setPackagesToScan(getClass().getPackage().getName());
+		factory.setPackagesToScan("ase.DTO");
+		factory.setDataSource(dataSource());
+		factory.setJpaProperties(jpaProperties());
+
+		return factory;
+	}
+
+	private Properties jpaProperties() {
+		Properties properties = new Properties();
+
+		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+		properties.put("hibernate.show_sql", "true");
+		properties.put("spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation","true");
+		return properties;
+	}
+
+	@Bean
+	public PlatformTransactionManager transactionManager() {
+
+		JpaTransactionManager txManager = new JpaTransactionManager();
+		txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+		return txManager;
+	}*/
+
+	@Bean
 	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
 		return new JdbcTemplate(dataSource);
 	}
