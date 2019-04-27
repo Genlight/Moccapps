@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ManageUserModalComponent } from '../shared/components/manage-user-modal/manage-user-modal.component';
+import { RenameProjectModalComponent } from '../shared/components/rename-project-modal/rename-project-modal.component';
+import { DeleteProjectModalComponent } from '../shared/components/delete-project-modal/delete-project-modal.component';
 
 @Component({
   selector: 'app-projects',
@@ -8,6 +12,8 @@ import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./projects.component.scss']
 })
 export class ProjectsComponent implements OnInit {
+
+  faEllipsisV = faEllipsisV;
 
   user = {
     username: 'Max Mustermann'
@@ -45,15 +51,36 @@ export class ProjectsComponent implements OnInit {
     }
   ];
 
-  constructor(private router: Router) { 
+  constructor(private router: Router, private modalService: NgbModal) { 
 
   }
 
-  ngOnInit() {
+  ngOnInit() {        
   }
+
+  /**
+   * Projects 
+   */
 
   onCreateNewProject() {
     this.router.navigate(['editor']);
+  }
+
+  onOpenProject() {
+    this.router.navigate(['editor']);
+  }
+
+  onManageUser(project) {
+    //alert(JSON.stringify(project));
+    this.modalService.open(ManageUserModalComponent);
+  }
+
+  onRenameProject(project) {
+    this.modalService.open(RenameProjectModalComponent);
+  }
+
+  onDeleteProject(project) {
+    this.modalService.open(DeleteProjectModalComponent);
   }
 
 }

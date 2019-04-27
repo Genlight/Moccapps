@@ -20,6 +20,9 @@ import { faBars, faUndo, faRedo, faComment, faEllipsisV } from '@fortawesome/fre
 import { CollaboratorPipe } from './shared/pipes/collaborator.pipe';
 import { FabricmodifyService } from './editor/fabricmodify.service';
 import { ManagePagesService } from './editor/managepages.service';
+import { ManageUserModalComponent } from './shared/components/manage-user-modal/manage-user-modal.component';
+import { DeleteProjectModalComponent } from './shared/components/delete-project-modal/delete-project-modal.component';
+import { RenameProjectModalComponent } from './shared/components/rename-project-modal/rename-project-modal.component';
 
 library.add(faBars);
 library.add(faUndo);
@@ -36,7 +39,10 @@ library.add(faEllipsisV);
     ToolbarComponent,
     FabricCanvasComponent,
     CollaboratorPipe,
-    CreateProjectModalComponent
+    CreateProjectModalComponent,
+    ManageUserModalComponent,
+    DeleteProjectModalComponent,
+    RenameProjectModalComponent
   ],
   imports: [
     BrowserModule,
@@ -46,6 +52,11 @@ library.add(faEllipsisV);
     FontAwesomeModule,
     AppRoutingModule,
     HttpClientModule,
+  ],
+  entryComponents: [
+    ManageUserModalComponent,
+    RenameProjectModalComponent,
+    DeleteProjectModalComponent
   ],
   providers: [FabricmodifyService, ManagePagesService],
   bootstrap: [AppComponent]

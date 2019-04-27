@@ -51,8 +51,16 @@
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
               <span>{{ project.last_edited | date }}</span>
-              <span>
-                <button class="btn btn-primary">Accept</button>
+              <span ngbDropdown>
+                <button class="btn" ngbDropdownToggle>
+                  <fa-icon [icon]="faEllipsisV"></fa-icon>
+                </button>
+                <div ngbDropdownMenu>
+                  <button ngbDropdownItem (click)="onOpenProject(project)">Open</button>
+                  <button ngbDropdownItem (click)="onRenameProject(project)">Rename</button>
+                  <button ngbDropdownItem (click)="onDeleteProject(project)">Delete</button>
+                  <button ngbDropdownItem (click)="onManageUser(project)">Manage users</button>
+                </div>
               </span>
             </div>
           </td>
