@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faMousePointer, faFont, faLayerGroup, faThLarge, faPaintBrush, faTrash, faObjectGroup } from '@fortawesome/free-solid-svg-icons';
+import { faMousePointer, faFont, faLayerGroup, faSitemap, faThLarge, faPaintBrush, faTrash, faObjectGroup, faShapes } from '@fortawesome/free-solid-svg-icons';
 import { faHandPaper, faSquare, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
@@ -16,8 +16,8 @@ export class ToolbarComponent implements OnInit {
   faSquare = faSquare;
   faCircle = faCircle;
   faFont = faFont;
-  faLayerGroup = faObjectGroup;
-  faThLarge = faThLarge;
+  faLayerGroup = faSitemap;
+  faElements = faShapes;
   faPaintBrush = faPaintBrush;
   faTrash = faTrash;
 
@@ -60,9 +60,9 @@ export class ToolbarComponent implements OnInit {
     this.modifyService.removeElement(canvas);
   }
 
-  /* toggles extension panel if page button is currently toggled,
-  otherwise switches the page button to toggled and the group button to untoggled */ 
-  onPageToggle() {
+  /* toggles extension panel if elements button is currently toggled,
+  otherwise switches the elements button to toggled and the group button to untoggled */ 
+  onElementsToggle() {
     const panel = document.getElementById('toolbarextension');
     const groupbutton = document.getElementById('navGroupsButton');
     if (panel.classList.contains('extensionhidden')) {
@@ -72,19 +72,19 @@ export class ToolbarComponent implements OnInit {
     } else {
       panel.classList.toggle('extensionhidden');
     }
-    const pagebutton = document.getElementById('navPagesButton');
-    pagebutton.classList.toggle('btn-dark');
+    const elementsbutton = document.getElementById('navElementsButton');
+    elementsbutton.classList.toggle('btn-dark');
   }
 
   /* toggles extension panel if group button is currently toggled,
-  otherwise switches the group button to toggled and the page button to untoggled */
+  otherwise switches the group button to toggled and the elements button to untoggled */
   onGroupToggle() {
     const panel = document.getElementById('toolbarextension');
-    const pagebutton = document.getElementById('navPagesButton');
+    const elementsbutton = document.getElementById('navElementsButton');
     if (panel.classList.contains('extensionhidden')) {
       panel.classList.toggle('extensionhidden');
-    } else if (pagebutton.classList.contains('btn-dark')) {
-      pagebutton.classList.toggle('btn-dark');
+    } else if (elementsbutton.classList.contains('btn-dark')) {
+      elementsbutton.classList.toggle('btn-dark');
     } else {
       panel.classList.toggle('extensionhidden');
     }

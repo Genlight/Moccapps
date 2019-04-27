@@ -26,7 +26,6 @@
       </button>
     </li>
     <li class="navbar-item toolbar-item">
-      <!--toggle button for now with js in toolbar-components-->
       <button type="button" data-toggle="toggle" aria-pressed="false" id="drawingModeButton"
         class="btn btn-light btn-toolbar" (click)="onDrawingMode()">
         <fa-icon [icon]="faPaintBrush"></fa-icon>
@@ -39,8 +38,8 @@
     </li>
     <ul class="navbar-nav sidebar toolbar-bottom">
       <li class="navbar-item toolbar-item">
-        <button class="btn btn-light btn-toolbar" id="navPagesButton">
-          <fa-icon [icon]="faThLarge" (click)="onPageToggle()"></fa-icon>
+        <button class="btn btn-light btn-toolbar" id="navElementsButton">
+          <fa-icon [icon]="faElements" (click)="onElementsToggle()"></fa-icon>
         </button>
       </li>
       <li class="navbar-item toolbar-item">
