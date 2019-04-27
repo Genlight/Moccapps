@@ -32,6 +32,7 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
     private static final String PSTMT_FINDBYID_JT_USERS_PROJECTS="SELECT * FROM user_project WHERE project_id=?";
     private static final String PSTMT_FINDALL = "SELECT * FROM projects";
     private static final String PSTMT_FINDALL_JT_USERS_PROJECTS="SELECT * FROM user_project ORDER BY project_id";
+    private static final String PSTMT_DELETE_PAGES="DELETE FROM pages WHERE project_id=?";
 
     private PreparedStatement pstmt;
 
@@ -124,6 +125,11 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_DELETE_JT_USERS_PROJECTS);
             pstmt.setInt(1,id);
+            pstmt.executeUpdate();
+            pstmt.close();
+
+            pstmt=connection.prepareStatement(PSTMT_DELETE_PAGES);
+            pstmt.setInt(1,1);
             pstmt.executeUpdate();
             pstmt.close();
 

@@ -49,7 +49,7 @@ public class PageDAOTest extends AbstractDAOTest {
 
     @Test
     public void createPageWithValidDataTest() throws DAOException {
-        Page page = testData.page1;
+        Page page = testData.page2;
         assertEquals("The returned Page has to be equal to the created one", page, pageDAO.create(page));
     }
 
@@ -61,7 +61,7 @@ public class PageDAOTest extends AbstractDAOTest {
 
     @Test
     public void updatePageWithValidDataTest() throws DAOException {
-        Page page = testData.page1;
+        Page page = testData.createdPage1;
         Page pageBefore = pageDAO.findById(1);
         assertEquals(page,pageBefore);
         page.setPage_order(5);
@@ -76,21 +76,21 @@ public class PageDAOTest extends AbstractDAOTest {
 
     @Test
     public void deletePageWithValidDataTest() throws DAOException {
-        Page page = testData.page1;
+        Page page = testData.createdPage1;
         page.setId(1);
         assertTrue(pageDAO.delete(page));
     }
 
     @Test(expected = DAOException.class)
     public void deletePageWithInValidDataTest() throws DAOException {
-        Page page = testData.page1;
+        Page page = testData.createdPage1;
         page.setId(-1);
         pageDAO.delete(page);
     }
 
     @Test
     public void findPageByIDWithValidDataTest() throws DAOException {
-        Page page = testData.page1;
+        Page page = testData.createdPage1;
         page.setId(1);
         Page page1 = pageDAO.findById(1);
         assertEquals(page, page1);

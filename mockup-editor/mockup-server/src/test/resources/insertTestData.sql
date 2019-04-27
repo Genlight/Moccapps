@@ -34,8 +34,6 @@ CREATE TABLE IF NOT EXISTS pages(
 
 );
 
-
-
 INSERT INTO users(id,username,email,password) VALUES
     (1,'user1','email1','password1'),
     (2,'user2','email2','password2');
@@ -48,6 +46,10 @@ INSERT INTO user_project (id, user_id, project_id) VALUES
     (1,1,1),
     (2,2,1),
     (3,2,2);
+
+INSERT INTO pages(id,page_name, page_order, page_data, project_id)
+  VALUES (1,'page1',1,'{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}',1);
+
 
 ALTER SEQUENCE seq_user RESTART WITH 3;
 ALTER SEQUENCE seq_project RESTART WITH 3;

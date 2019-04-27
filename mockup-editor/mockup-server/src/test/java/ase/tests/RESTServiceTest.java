@@ -50,7 +50,7 @@ public class RESTServiceTest {
     @Test
     public void registerUserWithValidData() throws Exception {
 
-        User user = testData.createdUser1;
+        User user = testData.user3;
 
         given(userService.register(user)).willReturn(true);
 
