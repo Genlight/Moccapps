@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faMousePointer, faFont, faLayerGroup, faThLarge, faPaintBrush, faTrash, faObjectGroup } from '@fortawesome/free-solid-svg-icons';
+import { faMousePointer, faFont, faLayerGroup, faSitemap, faThLarge, faPaintBrush, faTrash, faObjectGroup, faShapes } from '@fortawesome/free-solid-svg-icons';
 import { faHandPaper, faSquare, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
@@ -16,8 +16,8 @@ export class ToolbarComponent implements OnInit {
   faSquare = faSquare;
   faCircle = faCircle;
   faFont = faFont;
-  faLayerGroup = faObjectGroup;
-  faThLarge = faThLarge;
+  faLayerGroup = faSitemap;
+  faElements = faShapes;
   faPaintBrush = faPaintBrush;
   faTrash = faTrash;
 
@@ -58,6 +58,38 @@ export class ToolbarComponent implements OnInit {
   onDelete() {
     const canvas = ManagePagesService.getCanvas();
     this.modifyService.removeElement(canvas);
+  }
+
+  /* toggles extension panel if elements button is currently toggled,
+  otherwise switches the elements button to toggled and the group button to untoggled */ 
+  onElementsToggle() {
+    const panel = document.getElementById('toolbarextension');
+    const groupbutton = document.getElementById('navGroupsButton');
+    if (panel.classList.contains('extensionhidden')) {
+      panel.classList.toggle('extensionhidden');
+    } else if (groupbutton.classList.contains('btn-dark')) {
+      groupbutton.classList.toggle('btn-dark');
+    } else {
+      panel.classList.toggle('extensionhidden');
+    }
+    const elementsbutton = document.getElementById('navElementsButton');
+    elementsbutton.classList.toggle('btn-dark');
+  }
+
+  /* toggles extension panel if group button is currently toggled,
+  otherwise switches the group button to toggled and the elements button to untoggled */
+  onGroupToggle() {
+    const panel = document.getElementById('toolbarextension');
+    const elementsbutton = document.getElementById('navElementsButton');
+    if (panel.classList.contains('extensionhidden')) {
+      panel.classList.toggle('extensionhidden');
+    } else if (elementsbutton.classList.contains('btn-dark')) {
+      elementsbutton.classList.toggle('btn-dark');
+    } else {
+      panel.classList.toggle('extensionhidden');
+    }
+    const groupbutton = document.getElementById('navGroupsButton');
+    groupbutton.classList.toggle('btn-dark');
   }
 
 }
