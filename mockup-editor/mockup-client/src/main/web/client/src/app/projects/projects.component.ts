@@ -52,7 +52,6 @@ export class ProjectsComponent implements OnInit {
   ];
 
   constructor(private router: Router, private modalService: NgbModal) { 
-
   }
 
   ngOnInit() {        

@@ -5,9 +5,22 @@
     </button>
   </div>
   <div class="modal-body">
-    <p>Hello, {{name}}!</p>
+    <form>
+        <div class="form-group">
+            <label for="projectName">Project name:</label>
+            <input 
+              type="text" 
+              id="projectName" 
+              class="form-control"
+              name="project_name"
+              #inputname
+              placeholder="Enter your project name"
+              >
+          </div>
+    </form>
   </div>
   <div class="modal-footer">  
-    <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+    <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onSaveChange()">Save Change</button>
   </div>
   

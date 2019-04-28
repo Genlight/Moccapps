@@ -12,9 +12,7 @@
       <span class="welcome-username">{{user.username}}</span>
     </div>
   </div>
-
   <hr class="divider"> 
-
   <div class="row my-4">
     <div class="col p-0">
       <app-create-project-modal></app-create-project-modal>
@@ -87,8 +85,12 @@
             <div style="display: flex; align-items: center; justify-content: space-between">
               <span>{{ project.invited_by.username }}</span>
               <span>
-                <button class="btn btn-primary">Accept</button>
-                <button class="btn btn-outline-secondary ml-2">Decline</button>
+                <button 
+                  class="btn btn-primary" 
+                  (click)="onAcceptInvite(project)">Accept</button>
+                <button 
+                  class="btn btn-outline-secondary ml-2" 
+                  (click)="onDeclineInvite(project)">Decline</button>
               </span>
             </div>
           </td>

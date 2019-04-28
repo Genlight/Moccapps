@@ -8,9 +8,14 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class RenameProjectModalComponent implements OnInit {
 
+  project: Project;
+
   constructor(private activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }
 
+  onSaveChange() {
+
+  }
 }

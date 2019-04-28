@@ -8,7 +8,10 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DeleteProjectModalComponent implements OnInit {
 
-  constructor(private activeModal: NgbActiveModal) { }
+  project;
+
+  constructor(private activeModal: NgbActiveModal) { 
+  }
 
   ngOnInit() {
   }
