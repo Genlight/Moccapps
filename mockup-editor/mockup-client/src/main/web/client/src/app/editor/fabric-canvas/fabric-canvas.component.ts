@@ -23,12 +23,12 @@ export class FabricCanvasComponent implements OnInit {
   // only new events will be 'observed'.
   public Transformation: AsyncSubject<any>;
 
-  constructor(private modifyService: FabricmodifyService) { }
+  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService) { }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
-    ManagePagesService.createPage();
-    this.canvas = ManagePagesService.getCanvas();
+    this.managePagesService.createPage();
+    this.canvas = this.managePagesService.getCanvas();
     this.enableEvents();
   }
 

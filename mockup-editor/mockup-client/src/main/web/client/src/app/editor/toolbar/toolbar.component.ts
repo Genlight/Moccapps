@@ -23,28 +23,28 @@ export class ToolbarComponent implements OnInit {
 
   drawingModeOn = false;
 
-  constructor(private modifyService: FabricmodifyService) { }
+  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService) { }
 
   ngOnInit() {
   }
 
   onAddText() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.addText(canvas, 'Text');
   }
 
   onAddCircle() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.addCircle(canvas);
   }
 
   onAddSquare() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.addSquare(canvas);
   }
 
   onDrawingMode() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.drawingMode(canvas);
     const button = document.getElementById('drawingModeButton');
     button.classList.toggle('btn-dark');
@@ -56,7 +56,7 @@ export class ToolbarComponent implements OnInit {
   }
 
   onDelete() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.removeElement(canvas);
   }
 
