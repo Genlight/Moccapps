@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
-
+import { User } from '../../models/User';
 @Component({
   selector: 'app-manage-user-modal',
   templateUrl: './manage-user-modal.component.html',
@@ -13,7 +13,10 @@ export class ManageUserModalComponent implements OnInit {
 
   faEllipsisV = faEllipsisV;
 
+  @Input() project;
+
   model: any;
+  results = ['Test1', 'Test2'];
 
   projectMembers: User[] = [
     {
@@ -21,9 +24,18 @@ export class ManageUserModalComponent implements OnInit {
       email: 'mark@example.com'
     },
     {
-      name: 'Mark',
+      name: 'Mark2',
+      email: 'mark2@example.com'
+    },
+    {
+      name: 'Mark3',
       email: 'mark@example.com'
-    }];
+    },
+    {
+      name: 'Mark4',
+      email: 'mark@example.com'
+    },
+  ];
 
   constructor(private activeModal: NgbActiveModal) { }
 
@@ -31,9 +43,13 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   onRemoveUserFromProject(user) {
+    const index = this.projectMembers.indexOf(user);
+    this.projectMembers.splice(index, 1);
   }
 
-  results = ['Test1', 'Test2'];
+  onApply() {
+    this.activeModal.close();
+  }
 
   searchUser = (text$: Observable<string>) => {
     return text$.pipe(

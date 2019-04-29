@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class CollaboratorPipe implements PipeTransform {
 
   transform(value: any, args?: any): any {
-    return value.map(collaborator => collaborator.username).join(', ');
+    return value.map(collaborator => collaborator.name).join(', ');
   }
 
 }

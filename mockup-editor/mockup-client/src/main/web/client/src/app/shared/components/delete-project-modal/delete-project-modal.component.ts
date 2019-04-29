@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ProjectService } from '../../services/project.service';
 
 @Component({
   selector: 'app-delete-project-modal',
@@ -8,12 +9,23 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DeleteProjectModalComponent implements OnInit {
 
+  @Input()
   project;
+  
+  @Output() 
+  confirm: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  constructor(private activeModal: NgbActiveModal) { 
+  constructor(private activeModal: NgbActiveModal, private projectService: ProjectService) { 
   }
 
   ngOnInit() {
+  }
+
+  onDeleteProject() {
+    // TODO
+    // this.projectService.deleteProject(this.project);
+    this.confirm.emit(true);
+    this.activeModal.close();
   }
 
 }

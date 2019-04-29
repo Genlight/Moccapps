@@ -5,11 +5,11 @@
     </button>
   </div>
   <div class="modal-body">
-    <div>Project {{project}} will be deleted.</div>
+    <div><b>{{project.name}}</b> will be deleted.</div>
     <span>Attention: This action can not be reversed.</span>
   </div>
   <div class="modal-footer">  
     <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Cancel')">Cancel</button>
-    <button type="button" class="btn btn-danger" (click)="onDeleteProject()">Save Change</button>
+    <button type="button" class="btn btn-danger" (click)="onDeleteProject()">Delete Project</button>
   </div>
   
