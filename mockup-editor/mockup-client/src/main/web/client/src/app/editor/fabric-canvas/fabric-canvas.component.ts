@@ -1,8 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
-import { AsyncSubject } from 'rxjs/AsyncSubject';
-import { Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { Itransformation, Action } from './transformation.interface';
 
@@ -12,7 +11,7 @@ import { Itransformation, Action } from './transformation.interface';
   styleUrls: ['./fabric-canvas.component.scss']
 })
 
-export class FabricCanvasComponent implements OnInit {
+export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   // Fabric canvas. Note: this is not html canvas.
   // http://fabricjs.com/
@@ -21,7 +20,7 @@ export class FabricCanvasComponent implements OnInit {
   // AsyncSubject is used, because we don't want to get notified, if we update
   // the canvas with Transformation from other users. AsyncSubject works so, that
   // only new events will be 'observed'.
-  public Transformation: AsyncSubject<any>;
+  public Transformation: Subject<Itransformation>;
 
   constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService) { }
 
@@ -30,13 +29,13 @@ export class FabricCanvasComponent implements OnInit {
     this.managePagesService.createPage();
     this.canvas = this.managePagesService.getCanvas();
     this.enableEvents();
+    this.Transformation = new Subject<Itransformation>();
   }
 
   /**
    * for switching event-listener on and off
    */
   enableEvents() {
-
     this.canvas
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
@@ -68,9 +67,9 @@ export class FabricCanvasComponent implements OnInit {
     const transObject = evt.target;
     const next = ((element) => {
       if ( typeof this.Transformation === 'undefined') {
-        this.Transformation = new AsyncSubject<any>();
+        this.Transformation = new Subject<any>();
       }
-      this.Transformation.next({element, Action: action });
+      this.Transformation.next({element, action });
       console.log(`${action} : ${element.uuid }`);
     });
     if (transObject.type === 'activeSelection') {
@@ -120,5 +119,8 @@ export class FabricCanvasComponent implements OnInit {
 
   getObjectByUUID(uuid: string) {
     return this.canvas.getObjects().find((o) => o.uuid === uuid );
+  }
+  ngOnDestroy() {
+
   }
 }
