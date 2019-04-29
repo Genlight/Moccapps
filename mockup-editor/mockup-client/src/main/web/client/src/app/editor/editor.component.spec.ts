@@ -5,6 +5,9 @@ import { AppModule } from '../app.module';
 import { NavbarComponent } from '../shared/components/navbar/navbar.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { FabricCanvasComponent } from './fabric-canvas/fabric-canvas.component';
+import { ToolbarextensionComponent } from './toolbarextension/toolbarextension.component';
+import { CustomizepanelComponent } from './customizepanel/customizepanel.component';
+
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -20,6 +23,8 @@ describe('EditorComponent', () => {
         NavbarComponent, 
         ToolbarComponent,
         FabricCanvasComponent,
+        ToolbarextensionComponent,
+        CustomizepanelComponent,
         FaIconComponent,
         NgbTooltip
       ],

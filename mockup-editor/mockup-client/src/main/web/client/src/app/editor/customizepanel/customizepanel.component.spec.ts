@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 import { CustomizepanelComponent } from './customizepanel.component';
 
@@ -8,7 +9,10 @@ describe('CustomizepanelComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CustomizepanelComponent ]
+      declarations: [ 
+        CustomizepanelComponent,
+        FaIconComponent
+      ]
     })
     .compileComponents();
   }));
