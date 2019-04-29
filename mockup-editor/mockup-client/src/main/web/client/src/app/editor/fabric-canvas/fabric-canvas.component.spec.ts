@@ -14,11 +14,6 @@ describe('FabricCanvasComponent', () => {
   let transformed;
   let count: number;
   const rect = new fabric.Rect();
-  const origtimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-
-  beforeAll(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
-  });
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -71,8 +66,4 @@ describe('FabricCanvasComponent', () => {
     expect(transformed).toBe(false);
     expect(component.Transformation).toBeDefined();
   });
-});
-
-afterAll(() => {
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = origtimeout;
 });
