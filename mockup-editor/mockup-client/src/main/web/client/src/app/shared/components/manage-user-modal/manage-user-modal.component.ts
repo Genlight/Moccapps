@@ -55,7 +55,7 @@ export class ManageUserModalComponent implements OnInit {
     return text$.pipe(
       debounceTime(200),
       map(term => (term.length < 2) ? [] : this.results)
-      //map(term => this.results.filter(result => result.toLowerCase().indexOf(term.toLowerCase())))
+      // map(term => this.results.filter(result => result.toLowerCase().indexOf(term.toLowerCase())))
     );
   }
 }

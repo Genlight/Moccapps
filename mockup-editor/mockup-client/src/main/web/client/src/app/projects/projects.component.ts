@@ -62,7 +62,7 @@ export class ProjectsComponent implements OnInit {
 
   invites: Invite[] = [
     
-  ]
+  ];
 
   constructor(private router: Router, private modalService: NgbModal) { 
   }
@@ -82,7 +82,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   onManageUser(project: Project) {
-    //alert(JSON.stringify(project));
+    // alert(JSON.stringify(project));
     const modelRef = this.modalService.open(ManageUserModalComponent);
     modelRef.componentInstance.project = project;
   }
@@ -101,10 +101,10 @@ export class ProjectsComponent implements OnInit {
   }
 
   onAcceptInvite(project) {
-    //TODO
+    // TODO
   }
 
   onDeclineInvite(project) {
-    //TODO
+    // TODO
   }
 }
