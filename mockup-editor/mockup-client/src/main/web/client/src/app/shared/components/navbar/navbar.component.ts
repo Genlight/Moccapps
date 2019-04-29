@@ -33,7 +33,7 @@ export class NavbarComponent implements OnInit {
   // usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
   projectname = 'My project 1';
 
-  constructor(private router: Router, private modifyService: FabricmodifyService) { }
+  constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService) { }
 
   ngOnInit() {
   }
@@ -75,57 +75,57 @@ export class NavbarComponent implements OnInit {
   }
 
   onCut() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.cutElement(canvas);
   }
 
   onCopy() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.copyElement(canvas);
   }
 
   onPaste() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.pasteElement(canvas);
   }
 
   onDuplicate() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.duplicateElement(canvas);
   }
 
   onDelete() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.removeElement(canvas);
   }
 
   onBringToFront() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.bringToFront(canvas);
   }
 
   onBringForward() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.bringForward(canvas);
   }
 
   onSendBackwards() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.sendBackwards(canvas);
   }
 
   onSendToBack() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.sendToBack(canvas);
   }
 
   onGroup() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.group(canvas);
   }
 
   onUngroup() {
-    const canvas = ManagePagesService.getCanvas();
+    const canvas = this.managePagesService.getCanvas();
     this.modifyService.ungroup(canvas);
   }
 }

@@ -23,6 +23,8 @@ import { ManagePagesService } from './editor/managepages.service';
 import { ManageUserModalComponent } from './shared/components/manage-user-modal/manage-user-modal.component';
 import { DeleteProjectModalComponent } from './shared/components/delete-project-modal/delete-project-modal.component';
 import { RenameProjectModalComponent } from './shared/components/rename-project-modal/rename-project-modal.component';
+import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.component';
+import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
 
 library.add(faBars);
 library.add(faUndo);
@@ -39,6 +41,9 @@ library.add(faEllipsisV);
     ToolbarComponent,
     FabricCanvasComponent,
     CollaboratorPipe,
+    CreateProjectModalComponent,
+    CustomizepanelComponent,
+    ToolbarextensionComponent
     CreateProjectModalComponent,
     ManageUserModalComponent,
     DeleteProjectModalComponent,

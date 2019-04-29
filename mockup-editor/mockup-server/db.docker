@@ -1,0 +1,9 @@
+FROM postgres:alpine
+
+#RUN mkdir -p /docker-entrypoint-initdb.d
+#RUN mkdir -p /postgres
+#RUN chmod 777 /postgres
+#RUN chown postgres:postgres /postgres
+#COPY ./queries/setup-pg.sql /docker-entrypoint-initdb.d/20-setup_pg.sql
+#COPY ./queries/logging.sql /docker-entrypoint-initdb.d/30-logging.sql
+#COPY ./create_user.sh   /docker-entrypoint-initdb.d/10-create_user.sh

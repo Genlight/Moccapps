@@ -9,7 +9,7 @@ import { UUID } from 'angular2-uuid';
 fabric.Object.prototype.toObject = (function(toObject) {
         return function() {
             return fabric.util.object.extend(toObject.call(this), {
-                uuid: this.uuid,//my custom property
+                uuid: this.uuid,
             });
         };
     })(fabric.Object.prototype.toObject);
@@ -21,7 +21,7 @@ fabric.Object.prototype.initialize = function(options) {
         this.setOptions(options);
       }
       this.uuid = UUID.UUID();
-}
+};
 
 // exportier das gewrappte fabric-Objekt; nicht zu verwechseln mit new fabric.Object()!
 export { fabric };

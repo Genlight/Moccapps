@@ -6,12 +6,12 @@ import { fabric } from './extendedfabric';
 })
 export class ManagePagesService {
 
-  private static pageCanvas: any;
+  private pageCanvas: any;
 
   constructor() { }
 
   // TODO: change page size, possibly to relative values
-  static createPage() {
+  createPage() {
     this.pageCanvas = new fabric.Canvas('canvas',
       {
         backgroundColor: '#ffffff',
@@ -22,7 +22,7 @@ export class ManagePagesService {
 
   // TODO: change parameter to page name or number and make pageCanvas an array
   // for now only one page implemented, so only one canvas element to manage
-  static getCanvas() {
+  getCanvas() {
     return this.pageCanvas;
   }
 

@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CreateProjectModalComponent } from './create-project-modal.component';
+import { FormsModule } from '@angular/forms';
 
 describe('CreateProjectModalComponent', () => {
   let component: CreateProjectModalComponent;
@@ -8,7 +9,10 @@ describe('CreateProjectModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateProjectModalComponent ]
+      declarations: [ CreateProjectModalComponent ],
+      imports: [
+        FormsModule
+      ]
     })
     .compileComponents();
   }));

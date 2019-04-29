@@ -25,6 +25,9 @@ public class UserServiceImpl implements UserService {
     public boolean login(String email, String password) {
         try {
             User user=userDAO.findByEmail(email);
+            if(user==null){
+                return false;
+            }
             if (user.getPassword().equals(password)){
                 loggedInUserEmails.add(user.getEmail());
                 return true;

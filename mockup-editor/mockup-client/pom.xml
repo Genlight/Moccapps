@@ -41,7 +41,7 @@
             </goals>
         </execution>
 
-<!--        <execution>
+  <!--      <execution>
           <id>TSlint</id>
           <goals>
               <goal>npm</goal>
@@ -62,7 +62,7 @@
             </configuration>
             <phase>generate-resources</phase>
         </execution>
-<!--
+
         <execution>
           <id>test Frontend with headless-chrome</id>
           <goals>
@@ -74,6 +74,7 @@
           <phase>test</phase>
         </execution>
 
+       <!--
         <execution>
           <id>integration-tests for Angular-Frontend </id>
           <goals>
