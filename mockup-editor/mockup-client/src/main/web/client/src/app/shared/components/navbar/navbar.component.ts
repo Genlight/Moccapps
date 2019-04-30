@@ -1,11 +1,11 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import { faBars, faUndo, faRedo} from '@fortawesome/free-solid-svg-icons';
-import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
-import { Router } from '@angular/router';
-import {UserModel} from "../../models/user.model";
-import {Subscription} from "rxjs";
+import {Component, OnInit} from '@angular/core';
+import {faBars, faRedo, faUndo} from '@fortawesome/free-solid-svg-icons';
+import {faCommentAlt} from '@fortawesome/free-regular-svg-icons';
+import {Router} from '@angular/router';
 import {DataService} from "../../../data.service";
-import {ApiService} from "../../../api.service";
+import {TokenStorageService} from "../../../auth/token-storage.service";
+import {AuthService} from "../../../auth/auth.service";
+import {AuthLogoutInfo} from "../../../auth/logout-info";
 
 @Component({
   selector: 'app-navbar',
@@ -27,11 +27,9 @@ export class NavbarComponent implements OnInit {
     { name: 'Matthias Deimel', initials: 'MD'},
     { name: 'Brigitte Blank-Landeshammer', initials: 'BB'}
   ];
+  info: any;
 
-  user1 = new UserModel("testUserNav", "test@test.com");
-  currUser: UserModel = this.user1;
 
-  testUser: UserModel;
 
 
   /**
@@ -41,19 +39,25 @@ export class NavbarComponent implements OnInit {
   // usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
   projectname = 'My project 1';
 
+  constructor(private router: Router,
+              private data: DataService,
+              private tokenStorage: TokenStorageService,
+              private authService: AuthService,) {
+  }
+
   ngOnInit() {
     this.data.currentMessage.subscribe(item => {
-      this.currUser = item, console.log("updated:" + this.currUser.toString())
+      this.info = {
+        token: this.tokenStorage.getToken(),
+        username: this.tokenStorage.getUsername(),
+      };
     })
   }
 
-  constructor(private router: Router,
-              private data: DataService,
-              private api: ApiService) {
-  }
-
   onLogout() {
-    this.api.logout(this.currUser.email);
+    // this.api.logout(this.currUser.email);
+    this.authService.logout(new AuthLogoutInfo(this.tokenStorage.getEmail()));
+    this.tokenStorage.signOut();
     this.router.navigate(['']);
   }
 }

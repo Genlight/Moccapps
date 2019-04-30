@@ -31,7 +31,7 @@
       <li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>
       <span class="my-auto">|</span>
       <li class="navbar-item ml-3 my-auto" ngbDropdown>
-        <button class="btn btn-light navbar-username dropdown-toggle" ngbDropdownToggle>{{currUser.username}}</button>
+        <button class="btn btn-light navbar-username dropdown-toggle" ngbDropdownToggle>{{info.username}}</button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
           <button ngbDropdownItem>Edit profile</button>
           <button ngbDropdownItem (click)="onLogout()">Sign out</button>

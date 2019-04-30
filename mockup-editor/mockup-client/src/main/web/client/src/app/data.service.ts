@@ -1,19 +1,19 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {UserModel} from "./shared/models/user.model";
+import {AuthLoginInfo} from "./auth/login-info";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  private messageSource = new BehaviorSubject(new UserModel("dataTest", "data@test.com"));
+  private messageSource = new BehaviorSubject(new AuthLoginInfo("dataTest", "data@test.com"));
   currentMessage = this.messageSource.asObservable();
 
   constructor() {
   }
 
-  changeMessage(message: UserModel) {
+  changeMessage(message: AuthLoginInfo) {
     console.log("updated:" + message.toString());
     this.messageSource.next(message);
   }
