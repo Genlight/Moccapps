@@ -5,6 +5,7 @@ import { CreateProjectModalComponent } from './create-project-modal/create-proje
 import { CollaboratorPipe } from '../shared/pipes/collaborator.pipe';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -14,12 +15,14 @@ describe('ProjectsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ 
         ProjectsComponent,
-        FaIconComponent 
+        FaIconComponent,
         CreateProjectModalComponent,
         CollaboratorPipe
       ],
       imports: [
         FormsModule,
+        RouterTestingModule,
+        HttpClientModule,
         RouterTestingModule
       ]
     })

@@ -43,7 +43,7 @@ library.add(faEllipsisV);
     CollaboratorPipe,
     CreateProjectModalComponent,
     CustomizepanelComponent,
-    ToolbarextensionComponent
+    ToolbarextensionComponent,
     CreateProjectModalComponent,
     ManageUserModalComponent,
     DeleteProjectModalComponent,
