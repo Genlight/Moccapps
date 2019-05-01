@@ -43,7 +43,7 @@ public class RESTService {
     @Autowired
     JwtProvider jwtProvider;
 
-    @PostMapping("/api/v1/register")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody SignUpForm signUpRequest) {
 
         if (userService.existsByEmail(signUpRequest.getEmail())) {
@@ -67,13 +67,13 @@ public class RESTService {
 
     }
 
-    @PostMapping("/api/v1/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginForm loginRequest) {
 
         return ResponseEntity.ok(userService.login(loginRequest.getUsername(), loginRequest.getPassword()));
     }
 
-    @PostMapping("/api/v1/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Boolean> logout(@Valid @RequestBody LogoutForm logoutRequest) {
 
         if (userService.logout(logoutRequest.getEmail())) {
@@ -83,7 +83,7 @@ public class RESTService {
         }
     }
 
-    @PostMapping("/api/v1/test")
+    @PostMapping("/test")
     public ResponseEntity<?> test() {
 
         HttpHeaders headers = new HttpHeaders();

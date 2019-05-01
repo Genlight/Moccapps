@@ -1,0 +1,27 @@
+<div class="modal-header">
+    <h4 class="modal-title">Rename Project</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+        <div class="form-group">
+            <label for="projectName">Project name:</label>
+            <input 
+              type="text" 
+              id="projectName" 
+              class="form-control"
+              name="project_name"
+              #inputname
+              placeholder="Enter your project name"
+              [(ngModel)]="projectName"
+              >
+          </div>
+    </form>
+  </div>
+  <div class="modal-footer">  
+    <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onSaveChange()">Save Change</button>
+  </div>
+  

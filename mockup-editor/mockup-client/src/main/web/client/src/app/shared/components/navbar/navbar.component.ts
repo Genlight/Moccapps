@@ -44,7 +44,7 @@ export class NavbarComponent implements OnInit {
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
-              private authService: AuthService,) { }
+              private authService: AuthService) { }
 
   ngOnInit() {
     this.data.currentMessage.subscribe(item => {
@@ -57,9 +57,15 @@ export class NavbarComponent implements OnInit {
 
   onLogout() {
     // this.api.logout(this.currUser.email);
-    this.authService.logout(new AuthLogoutInfo(this.tokenStorage.getEmail()));
-    this.tokenStorage.signOut();
-    this.router.navigate(['']);
+    this.authService.logout(new AuthLogoutInfo(this.tokenStorage.getEmail())).subscribe(
+      data => {
+        this.tokenStorage.signOut();
+        this.router.navigate(['']);
+      }
+      );
+
+
+
   }
 
   onNewProject() {

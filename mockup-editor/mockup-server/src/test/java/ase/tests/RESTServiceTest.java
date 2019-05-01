@@ -82,7 +82,7 @@ public class RESTServiceTest {
         //doReturn(true).when(userService).register(user);
         given(userService.register(user)).willReturn(true);
 
-        mvc.perform(post("/api/v1/register")
+        mvc.perform(post("/register")
                 //.with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -104,7 +104,7 @@ public class RESTServiceTest {
 
         given(userService.register(user)).willReturn(true);
 
-        mvc.perform(post("/api/v1/register")
+        mvc.perform(post("/register")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -123,7 +123,7 @@ public class RESTServiceTest {
 
         given(userService.register(user)).willReturn(false);
 
-        mvc.perform(post("/api/v1/register")
+        mvc.perform(post("/register")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -152,7 +152,7 @@ public class RESTServiceTest {
 
         given(userService.login(user.getEmail(), user.getPassword())).willReturn(jwtResponse);
 
-        mvc.perform(post("/api/v1/login")
+        mvc.perform(post("/login")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -168,7 +168,7 @@ public class RESTServiceTest {
 
         given(userService.logout(user.getEmail())).willReturn(true);
 
-        mvc.perform(post("/api/v1/logout")
+        mvc.perform(post("/logout")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))

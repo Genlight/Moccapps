@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { ProjectService } from '../project.service';
+import { Router } from '@angular/router';
+import { ProjectService } from 'src/app/shared/services/project.service';
+import { Project } from 'src/app/shared/models/Project';
 
 @Component({
   selector: 'app-create-project-modal',
@@ -14,7 +16,8 @@ export class CreateProjectModalComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-    private projectService: ProjectService) { 
+    private projectService: ProjectService,
+    private router: Router) { 
   }
 
   ngOnInit() {
@@ -40,8 +43,15 @@ export class CreateProjectModalComponent implements OnInit {
     );
   }
 
-  createProject(value: any): void {
-    alert(JSON.stringify(value));
+  onCreateProject(value: any): void {
+    // alert(JSON.stringify(value));
+
+    const project = new Project();
+    // TODO: Pass height/width to editor page
+    // const project = new Project();
+    // project.name = value.name;
+    // this.projectService.createProject(project);
     this.modal.close();
+    this.router.navigate(['editor']);
   }
 }

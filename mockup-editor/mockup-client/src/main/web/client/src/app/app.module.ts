@@ -16,10 +16,13 @@ import { CreateProjectModalComponent } from './projects/create-project-modal/cre
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBars, faUndo, faRedo, faComment } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faUndo, faRedo, faComment, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { CollaboratorPipe } from './shared/pipes/collaborator.pipe';
 import { FabricmodifyService } from './editor/fabricmodify.service';
 import { ManagePagesService } from './editor/managepages.service';
+import { ManageUserModalComponent } from './shared/components/manage-user-modal/manage-user-modal.component';
+import { DeleteProjectModalComponent } from './shared/components/delete-project-modal/delete-project-modal.component';
+import { RenameProjectModalComponent } from './shared/components/rename-project-modal/rename-project-modal.component';
 import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.component';
 import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
 import {AuthInterceptor} from "./auth/auth-interceptor";
@@ -27,6 +30,7 @@ import {AuthInterceptor} from "./auth/auth-interceptor";
 library.add(faBars);
 library.add(faUndo);
 library.add(faRedo);
+library.add(faEllipsisV);
 
 @NgModule({
   declarations: [
@@ -40,7 +44,11 @@ library.add(faRedo);
     CollaboratorPipe,
     CreateProjectModalComponent,
     CustomizepanelComponent,
-    ToolbarextensionComponent
+    ToolbarextensionComponent,
+    CreateProjectModalComponent,
+    ManageUserModalComponent,
+    DeleteProjectModalComponent,
+    RenameProjectModalComponent
   ],
   imports: [
     BrowserModule,
@@ -51,11 +59,16 @@ library.add(faRedo);
     AppRoutingModule,
     HttpClientModule,
   ],
+  entryComponents: [
+    ManageUserModalComponent,
+    RenameProjectModalComponent,
+    DeleteProjectModalComponent
+  ],
   providers: [FabricmodifyService, ManagePagesService,{
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true
-  }],
+  provide: HTTP_INTERCEPTORS,
+  useClass: AuthInterceptor,
+  multi: true
+}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

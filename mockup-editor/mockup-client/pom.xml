@@ -63,7 +63,7 @@
             <phase>generate-resources</phase>
         </execution>
 
-        <execution>
+ <!--       <execution>
           <id>test Frontend with headless-chrome</id>
           <goals>
               <goal>npm</goal>
@@ -72,7 +72,7 @@
               <arguments>run-script test-headless</arguments>
           </configuration>
           <phase>test</phase>
-        </execution>
+        </execution>-->
 
        <!--
         <execution>

@@ -35,7 +35,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public JwtResponse login(String email, String password) {
         try {
-<<<<<<< HEAD
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password));
 
@@ -48,18 +47,6 @@ public class UserServiceImpl implements UserService {
             return new JwtResponse(jwt, userDAO.findByEmail(email).getUsername(), email);
 
         } catch (DAOException e) {
-=======
-            User user=userDAO.findByEmail(email);
-            if(user==null){
-                return false;
-            }
-            if (user.getPassword().equals(password)){
-                loggedInUserEmails.add(user.getEmail());
-                return true;
-            }
-            return false;
-        }catch (DAOException e){
->>>>>>> origin/devel
             logger.error("UserService: can not read from Database");
         }
         return null;

@@ -33,7 +33,7 @@ export class AuthService {
     return this.http.post<string>(API_URL + '/register', info, httpOptions);
   }
 
-  logout(info: AuthLogoutInfo) {
-    this.http.post(API_URL + '/logout', info, httpOptions);
+  logout(info: AuthLogoutInfo): Observable<string> {
+    return this.http.post<string>(API_URL + '/logout', info, httpOptions);
   }
 }

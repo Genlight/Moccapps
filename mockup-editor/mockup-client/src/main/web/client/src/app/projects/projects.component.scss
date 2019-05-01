@@ -9,11 +9,12 @@
     @extend .background-color;
 }
 
-hr .divider {
-    background: #D8D8D8;
-    height: 4px;
+hr {
+    border-top: 4px solid #D8D8D8;
+    border-radius: 2px;
     width: 68px;
-    //border-radius: 0px;
+    margin-left: -15px;
+    margin-top: 0px;
 }
 
 .background-color {
@@ -31,7 +32,7 @@ hr .divider {
 }
 
 .welcome-username {
-    font-size: 20px;
+    font-size: 22px;
     color: #373A3C;
     text-align: left;
 }
@@ -47,4 +48,8 @@ hr .divider {
 .projects h2 {
     font-size: 16px;
     color: #606060;
+}
+
+.dropdown-toggle::after{
+    display:none;
 }

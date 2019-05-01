@@ -18,13 +18,19 @@ export class ApiService {
   }
 
   public put(path: string, body: object = {}): Observable<any> {
-    return this.http.put(path, JSON.stringify(body));
+    return this.http.put(`${API_URL}${path}`, JSON.stringify(body));
   }
 
   public post(path: string, body: object = {}): Observable<any> {
-    return this.http.post(path, JSON.stringify(body));
+    return this.http.post(`${API_URL}${path}`, JSON.stringify(body));
   }
 
+  public delete(path): Observable<any> {
+    return this.http.delete(
+      `${API_URL}${path}`
+    );
+  }
+/*
   public registerUser(email:string,password:string,username:string) {
     let postData = new FormData();
     postData.append('password' ,password);
@@ -38,9 +44,9 @@ export class ApiService {
         err => {
           console.log('Error: ' + err.error);
         });
-  }
+  }*/
 
-  public login(email:string,password:string,username:string) {
+/*  public login(email:string,password:string,username:string) {
     let postData = new FormData();
     postData.append('username' ,username);
     postData.append('password' ,password);
@@ -54,7 +60,7 @@ export class ApiService {
         err => {
           console.log('Error: ' + err.error);
         });
-  }
+  }*/
 
   public logout(email:string) {
     let postData = new FormData();

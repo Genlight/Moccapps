@@ -39,12 +39,14 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
                 authorizeRequests()
-                .antMatchers("/editor", "/index.html", "/", "/home", "/login", "/*", "/api/v1/login/**", "/api/v1/register/**", "/api/v1/logout/**").permitAll()
+                .antMatchers("/editor", "/index.html", "/", "/home", "/login/**", "/*", "/register/**", "/logout/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .requestCache()
                 .requestCache(new NullRequestCache())
                 .and()
+                .formLogin().disable()
+                .logout().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).maximumSessions(1);
 
