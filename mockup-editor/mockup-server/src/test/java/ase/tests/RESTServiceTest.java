@@ -70,7 +70,8 @@ public class RESTServiceTest {
     @Test
     public void registerUserWithValidData() throws Exception {
 
-        User user = testData.createdUser1;
+        //User user = testData.createdUser1;
+        User user = testData.user3;
         JSONObject testUser = new JSONObject();
         testUser.put("username", user.getUsername());
         testUser.put("email", user.getEmail());

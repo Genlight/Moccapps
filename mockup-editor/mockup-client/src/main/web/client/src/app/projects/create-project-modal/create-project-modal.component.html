@@ -1,0 +1,65 @@
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="modal-basic-title">Create new project</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form 
+      novalidate
+      #form="ngForm"
+    >
+      <div class="form-group">
+        <label for="projectName">Project name:</label>
+        <input 
+          type="text" 
+          id="projectName" 
+          class="form-control"
+          name="project_name"
+          #inputname
+          [(ngModel)]="project.name">
+      </div>
+      <hr>
+      <div class="row">
+        <div class="from-group col">
+          <label for="inputWidth" class="control-label">Height:</label>
+          <div class="input-group">
+            <input 
+              type="number" 
+              id="inputWidth" 
+              class="form-control"
+              name="height" 
+              value="300"
+              [(ngModel)]="project.height"
+            >
+            <div class="input-group-append">
+              <span class="input-group-text">px</span>
+            </div>
+          </div>
+        </div>
+        <div class="from-group col">
+          <label for="inputWidth" class="control-label">Width:</label>
+          <div class="input-group">
+            <input 
+              type="number" 
+              id="inputWidth" 
+              class="form-control"
+              name="width" 
+              value="300"
+              [(ngModel)]="project.width"
+            >
+            <div class="input-group-append">
+              <span class="input-group-text">px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('Cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="createProject(form.value)">Create Project</button>
+  </div>
+</ng-template>
+<button class="btn btn-primary" (click)="openModal(content)">Create new project</button>

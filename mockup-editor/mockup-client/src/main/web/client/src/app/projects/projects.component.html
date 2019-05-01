@@ -1,3 +1,82 @@
-<p>
-  projects works!
-</p>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="mx">
+    <span class="navbar-brand app-title">MOCAPPS</span>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row my-4">
+    <p>
+      <span class="welcome-header">Welcome back</span>
+      <br>
+      <span class="welcome-username">{{user.username}}</span>
+    </p>
+  </div>
+  <hr class="divider">
+  <div class="row my-4">
+    <div class="col">
+      <app-create-project-modal></app-create-project-modal>
+    </div>
+    <div class="col">
+      <div class="float-right btn-group btn-group-toggle" ngbRadioGroup name="radioBasic">
+        <label ngbButtonLabel class="btn-primary">
+          <input ngbButton type="radio" value="all">All
+        </label>
+        <label ngbButtonLabel class="btn-primary">
+          <input ngbButton type="radio" value="projects">My projects
+        </label>
+        <label ngbButtonLabel class="btn-primary">
+          <input ngbButton type="radio" value="shared">Shared projects
+        </label>
+      </div>
+    </div>
+  </div>
+  <!--Projects table-->
+  <div class="row projects">
+    <h2>My projects</h2>
+    <table class="table table-bordered table-project">
+      <thead>
+        <tr>
+          <th scope="col">Project name</th>
+          <th scope="col">Collaborators</th>
+          <th scope="col">Last edited</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let project of projects">
+          <td>{{ project.name }}</td>
+          <td>{{ project.collaborators | collaborator }}</td>
+          <td>{{ project.last_edited | date }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!--Shared projects table-->
+  <div class="row projects my-2">
+    <h2>Invited</h2>
+    <table class="table table-bordered table-project">
+      <thead>
+        <tr>
+          <th scope="col">Project name</th>
+          <th scope="col">Invited by</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let project of invitedProject">
+          <td>
+            <span>{{ project.name }}</span>
+          </td>
+          <td>
+            <div style="display: flex; align-items: center; justify-content: space-between">
+              <span>{{ project.invited_by.username }}</span>
+              <span>
+                <button class="btn btn-primary">Accept</button>
+                <button class="btn btn-outline-secondary ml-2">Decline</button>
+              </span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
