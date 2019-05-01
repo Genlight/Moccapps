@@ -30,7 +30,7 @@ export class ApiService {
       `${API_URL}${path}`
     );
   }
-
+/*
   public registerUser(email:string,password:string,username:string) {
     let postData = new FormData();
     postData.append('password' ,password);
@@ -44,9 +44,9 @@ export class ApiService {
         err => {
           console.log('Error: ' + err.error);
         });
-  }
+  }*/
 
-  public login(email:string,password:string,username:string) {
+/*  public login(email:string,password:string,username:string) {
     let postData = new FormData();
     postData.append('username' ,username);
     postData.append('password' ,password);
@@ -60,7 +60,7 @@ export class ApiService {
         err => {
           console.log('Error: ' + err.error);
         });
-  }
+  }*/
 
   public logout(email:string) {
     let postData = new FormData();

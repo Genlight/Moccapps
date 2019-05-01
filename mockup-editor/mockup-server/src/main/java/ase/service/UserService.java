@@ -1,16 +1,18 @@
 package ase.service;
 
 import ase.DTO.User;
+import ase.message.response.JwtResponse;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     /* set the passed user to logged in if the password is correct
      *
      * @param email email of the user to be loggedin
      * @param password password of the user with the given email
-     * @returns boolean returns true if the login was successful, false otherwise
+     * @returns User returns User if the login was successful, null otherwise
      */
-    boolean login(String email,String password);
+    JwtResponse login(String email, String password);
 
     /* remove the user from the list of logged in users
      *
@@ -32,4 +34,12 @@ public interface UserService {
      * @returns boolean returns true if the registration was succesful, false otherwise
      */
     boolean register(User user);
+
+    boolean existsByEmail(String email);
+
+    User getUserByEmail(String email);
+
+    String getToken(String username);
+
+    void setToken(String username, String newToken);
 }
