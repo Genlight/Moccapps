@@ -4,6 +4,8 @@ import { HomeComponent } from './home.component';
 import { NgbTab, NgbTabset } from '@ng-bootstrap/ng-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
 import {FormsModule} from "@angular/forms";
+import {AuthService} from "../auth/auth.service";
+import {HttpClient, HttpClientModule} from "@angular/common/http";
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -17,7 +19,12 @@ describe('HomeComponent', () => {
         NgbTabset
       ], imports: [
         RouterTestingModule,
-        FormsModule
+        FormsModule,
+        HttpClient,
+        HttpClientModule
+      ],
+      providers:[
+        AuthService
       ]
     })
     .compileComponents();
