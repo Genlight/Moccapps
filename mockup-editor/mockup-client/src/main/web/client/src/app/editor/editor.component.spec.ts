@@ -11,6 +11,7 @@ import { CustomizepanelComponent } from './customizepanel/customizepanel.compone
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -29,7 +30,8 @@ describe('EditorComponent', () => {
         NgbTooltip
       ],
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
+        HttpClientModule
       ],
       providers: [AppModule]
     })

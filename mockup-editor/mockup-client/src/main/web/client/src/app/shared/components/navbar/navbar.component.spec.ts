@@ -4,9 +4,8 @@ import { NavbarComponent } from './navbar.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
-import {AuthService} from "../../../auth/auth.service";
+import { HttpClientModule } from '@angular/common/http';
+import { AuthService } from '../../../auth/auth.service';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;

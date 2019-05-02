@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -25,7 +25,7 @@ import { DeleteProjectModalComponent } from './shared/components/delete-project-
 import { RenameProjectModalComponent } from './shared/components/rename-project-modal/rename-project-modal.component';
 import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.component';
 import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
-import {AuthInterceptor} from "./auth/auth-interceptor";
+import { AuthInterceptor } from './auth/auth-interceptor';
 
 library.add(faBars);
 library.add(faUndo);
@@ -58,14 +58,13 @@ library.add(faEllipsisV);
     FontAwesomeModule,
     AppRoutingModule,
     HttpClientModule,
-    HttpClient
   ],
   entryComponents: [
     ManageUserModalComponent,
     RenameProjectModalComponent,
     DeleteProjectModalComponent
   ],
-  providers: [FabricmodifyService, ManagePagesService,{
+  providers: [FabricmodifyService, ManagePagesService, {
   provide: HTTP_INTERCEPTORS,
   useClass: AuthInterceptor,
   multi: true
