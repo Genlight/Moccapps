@@ -57,7 +57,7 @@
         <button ngbDropdownItem>Help</button>
       </div>
     </div>
-    
+
     <button class="btn btn-light ml-5" (click)="onUndo()">
       <fa-icon [icon]="faUndo"></fa-icon>
     </button>
@@ -87,7 +87,7 @@
       <li class="navbar-item ml-3 my-auto" ngbDropdown>
         <button class="btn btn-light navbar-username dropdown-toggle" ngbDropdownToggle>Max Mustermann</button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-          <button ngbDropdownItem>Edit profile</button>
+          <button ngbDropdownItem (click)='onEditProfile(content)'>Edit profile</button>
           <button ngbDropdownItem (click)="onLogout()">Sign out</button>
         </div>
       </li>

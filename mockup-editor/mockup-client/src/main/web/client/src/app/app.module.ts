@@ -25,6 +25,7 @@ import { DeleteProjectModalComponent } from './shared/components/delete-project-
 import { RenameProjectModalComponent } from './shared/components/rename-project-modal/rename-project-modal.component';
 import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.component';
 import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
+import { UserModalComponent } from './shared/components/user-modal/user-modal.component';
 
 library.add(faBars);
 library.add(faUndo);
@@ -47,7 +48,8 @@ library.add(faEllipsisV);
     CreateProjectModalComponent,
     ManageUserModalComponent,
     DeleteProjectModalComponent,
-    RenameProjectModalComponent
+    RenameProjectModalComponent,
+    UserModalComponent
   ],
   imports: [
     BrowserModule,
