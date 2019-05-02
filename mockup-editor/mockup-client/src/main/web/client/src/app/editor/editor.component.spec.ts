@@ -13,6 +13,8 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+
 describe('EditorComponent', () => {
   let component: EditorComponent;
   let fixture: ComponentFixture<EditorComponent>;
@@ -32,6 +34,7 @@ describe('EditorComponent', () => {
       ],
       imports: [
         RouterTestingModule,
+        HttpClientModule,
         FormsModule
       ],
       providers: [AppModule]
