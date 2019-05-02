@@ -5,8 +5,6 @@ import { UserinfoService } from './userinfo.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
-
 import { UserModalComponent } from './user-modal.component';
 
 describe('UserModalComponent', () => {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { User } from '../../models/User';
+import { User, Pwd } from '../../models/User';
 import { UserinfoService } from './userinfo.service';
 import { Router } from '@angular/router';
 
@@ -13,7 +13,8 @@ export class UserModalComponent implements OnInit {
 
   modal: NgbModalRef;
   user: User;
-
+  pwd: Pwd;
+  showPwdForm = false;
   constructor(
     private modalService: NgbModal,
     private userInfoService: UserinfoService,
@@ -24,7 +25,6 @@ export class UserModalComponent implements OnInit {
     this.user = new User();
     this.userInfoService.getUserInfo()
       .subscribe((data: any) => this.user = {
-        id: data.id,
         name:  data.name,
         email: data.email
     });
@@ -44,5 +44,13 @@ export class UserModalComponent implements OnInit {
     this.modal.close();
     this.router.navigate(['editor']);
   }
-
+  onUpdatePwd(value: any) {
+      console.log('onUpdatePwd: ' + JSON.stringify(value));
+      this.userInfoService.updatePassword(this.pwd);
+      alert('Password changed successfully.');
+      this.showPwdForm = !this.showPwdForm;
+  }
+  onPwdClick() {
+    this.showPwdForm = !this.showPwdForm;
+  }
 }

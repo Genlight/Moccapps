@@ -3,3 +3,7 @@ export class User {
     name: string;
     email: string;
 }
+export class Pwd {
+  current: string;
+  new: string; 
+}
