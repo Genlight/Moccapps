@@ -3,66 +3,118 @@ package ase.service.impl;
 import ase.DAO.DAOException;
 import ase.DAO.UserDAO;
 import ase.DTO.User;
+import ase.Security.JwtProvider;
+import ase.message.response.JwtResponse;
 import ase.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    JwtProvider jwtProvider;
     @Autowired
     private UserDAO userDAO;
-
-    private static final Logger logger= LoggerFactory.getLogger(UserServiceImpl.class);
-    private List<String> loggedInUserEmails=new ArrayList<>();
+    private HashMap<String, String> loggedInUserToken = new HashMap<>();
 
     @Override
-    public boolean login(String email, String password) {
+    public JwtResponse login(String email, String password) {
         try {
-            User user=userDAO.findByEmail(email);
-            if(user==null){
-                return false;
-            }
-            if (user.getPassword().equals(password)){
-                loggedInUserEmails.add(user.getEmail());
-                return true;
-            }
-            return false;
-        }catch (DAOException e){
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String jwt = jwtProvider.generateJwtToken(authentication);
+
+            loggedInUserToken.put(email, jwt);
+
+            return new JwtResponse(jwt, userDAO.findByEmail(email).getUsername(), email);
+
+        } catch (DAOException e) {
             logger.error("UserService: can not read from Database");
         }
-        return false;
+        return null;
     }
 
     @Override
     public boolean logout(String email) {
-        if(loggedInUserEmails.contains(email)){
-            loggedInUserEmails.remove(email);
-            return true;
+        return loggedInUserToken.remove(email) != null;
+    }
+
+    @Override
+    public boolean isLoggedIn(String email) {
+        if (loggedInUserToken.containsKey(email)) {
+            String token = loggedInUserToken.get(email);
+            return jwtProvider.validateJwtToken(token);
         }
         return false;
     }
 
     @Override
-    public boolean isLoggedIn(String email) {
-        if(loggedInUserEmails.contains(email)){
-            return true;
-        }
-        return false;
-    }
-    @Override
     public boolean register(User user) {
-        try{
+        try {
             userDAO.create(user);
             return true;
-        }catch(DAOException e){
+        } catch (DAOException e) {
             logger.error("UserService: can not create User");
         }
         return false;
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        try {
+            if (userDAO.findByEmail(email) != null) {
+                return true;
+            }
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        try {
+            return userDAO.findByEmail(email);
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public String getToken(String username) {
+        return this.loggedInUserToken.getOrDefault(username, null);
+    }
+
+    @Override
+    public void setToken(String username, String newToken) {
+        this.loggedInUserToken.put(username, newToken);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        try {
+            return ase.Security.UserDetails.build(userDAO.findByEmail(s));
+        } catch (DAOException e) {
+            throw new UsernameNotFoundException("Email: " + s + " not found");
+        }
     }
 }

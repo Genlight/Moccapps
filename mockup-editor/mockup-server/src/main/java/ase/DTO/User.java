@@ -79,10 +79,10 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return
-                Objects.equals(id,user.id) &&
                 Objects.equals(username, user.username) &&
                 Objects.equals(email, user.email) &&
-                Objects.equals(password, user.password);
+                        Objects.equals(id, user.id);
+        //Objects.equals(password, user.password); //Bcrypt encodes passwords differently each time, this is never true
     }
 
 }

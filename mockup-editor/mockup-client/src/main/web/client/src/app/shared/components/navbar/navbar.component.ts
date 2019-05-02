@@ -4,8 +4,14 @@ import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
 import { Router } from '@angular/router';
 import { FabricmodifyService } from '../../../editor/fabricmodify.service';
 import { ManagePagesService } from '../../../editor/managepages.service';
+
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UserModalComponent } from '../user-modal/user-modal.component';
+
+import {DataService} from '../../../data.service';
+import {TokenStorageService} from '../../../auth/token-storage.service';
+import {AuthService} from '../../../auth/auth.service';
+import {AuthLogoutInfo} from '../../../auth/logout-info';
 
 @Component({
   selector: 'app-navbar',
@@ -27,6 +33,10 @@ export class NavbarComponent implements OnInit {
     { name: 'Matthias Deimel', initials: 'MD'},
     { name: 'Brigitte Blank-Landeshammer', initials: 'BB'}
   ];
+  info: any;
+
+
+
 
   /**
    * users.map(x => `${user.split(' ')[0][0]}${user.split(' ')[1][0]}`);
@@ -35,17 +45,31 @@ export class NavbarComponent implements OnInit {
   // usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
   projectname = 'My project 1';
 
-  constructor(
-    private router: Router,
-    private modifyService: FabricmodifyService,
-    private managePagesService: ManagePagesService,
-    private modalService: NgbModal) { }
+  constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
+              private data: DataService,
+              private tokenStorage: TokenStorageService,
+              private authService: AuthService) { }
 
   ngOnInit() {
+    this.data.currentMessage.subscribe(item => {
+      this.info = {
+        token: this.tokenStorage.getToken(),
+        username: this.tokenStorage.getUsername(),
+      };
+    });
   }
 
   onLogout() {
-    this.router.navigate(['']);
+    // this.api.logout(this.currUser.email);
+    this.authService.logout(new AuthLogoutInfo(this.tokenStorage.getEmail())).subscribe(
+      data => {
+        this.tokenStorage.signOut();
+        this.router.navigate(['']);
+      }
+      );
+
+
+
   }
 
   onNewProject() {

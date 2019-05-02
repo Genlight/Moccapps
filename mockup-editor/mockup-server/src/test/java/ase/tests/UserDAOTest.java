@@ -71,8 +71,8 @@ public class UserDAOTest extends AbstractDAOTest{
         User createdUser=userDAO.create(user);
         user.setId(createdUser.getId());
         user.setPassword(createdUser.getPassword());
-        assertEquals("user was successfully created", user, createdUser);
-        assertEquals("user was successfully persisted", createdUser,userDAO.findById(createdUser.getId()));
+        assertEquals("user.model.ts was successfully created", user, createdUser);
+        assertEquals("user.model.ts was successfully persisted", createdUser, userDAO.findById(createdUser.getId()));
     }
 
     @Test(expected = DAOException.class)
@@ -84,8 +84,8 @@ public class UserDAOTest extends AbstractDAOTest{
     @Test
     public void updateUserWithValidDataTest() throws DAOException {
         User user = testData.createdUser1;
-        assertEquals("user was successfully updated", user, userDAO.update(user));
-        assertEquals("user was successfully persisted", user, userDAO.findById(user.getId()));
+        assertEquals("user.model.ts was successfully updated", user, userDAO.update(user));
+        assertEquals("user.model.ts was successfully persisted", user, userDAO.findById(user.getId()));
     }
 
     @Test(expected = DAOException.class)
@@ -95,7 +95,7 @@ public class UserDAOTest extends AbstractDAOTest{
 
     @Test
     public void deleteUserWithValidDataTest() throws DAOException {
-        assertTrue("user was successfully deleted", userDAO.delete(2));
+        assertTrue("user.model.ts was successfully deleted", userDAO.delete(2));
     }
 
     @Test(expected = DAOException.class)
@@ -106,7 +106,7 @@ public class UserDAOTest extends AbstractDAOTest{
     @Test
     public void findUserByIDWithValidDataTest() throws DAOException {
         User user = testData.createdUser2;
-        assertEquals("user was found by id", user, userDAO.findById(2));
+        assertEquals("user.model.ts was found by id", user, userDAO.findById(2));
     }
 
     @Test(expected = DAOException.class)
@@ -117,7 +117,7 @@ public class UserDAOTest extends AbstractDAOTest{
     @Test
     public void findUserByEmailWithValidDataTest() throws DAOException {
         User user = testData.createdUser2;
-        assertEquals("user was found by email", user, userDAO.findByEmail("email2"));
+        assertEquals("user.model.ts was found by email", user, userDAO.findByEmail("email2"));
     }
 
     @Test

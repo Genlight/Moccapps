@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -26,6 +26,8 @@ import { RenameProjectModalComponent } from './shared/components/rename-project-
 import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.component';
 import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
 import { UserModalComponent } from './shared/components/user-modal/user-modal.component';
+import { AuthInterceptor } from './auth/auth-interceptor';
+
 
 library.add(faBars);
 library.add(faUndo);
@@ -65,7 +67,11 @@ library.add(faEllipsisV);
     DeleteProjectModalComponent,
     UserModalComponent
   ],
-  providers: [FabricmodifyService, ManagePagesService],
+  providers: [FabricmodifyService, ManagePagesService, {
+  provide: HTTP_INTERCEPTORS,
+  useClass: AuthInterceptor,
+  multi: true
+}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
