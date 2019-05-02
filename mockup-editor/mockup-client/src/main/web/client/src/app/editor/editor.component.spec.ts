@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditorComponent } from './editor.component';
 import { AppModule } from '../app.module';
 import { NavbarComponent } from '../shared/components/navbar/navbar.component';
+import { UserModalComponent } from '../shared/components/user-modal/user-modal.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { FabricCanvasComponent } from './fabric-canvas/fabric-canvas.component';
 import { ToolbarextensionComponent } from './toolbarextension/toolbarextension.component';
@@ -11,25 +12,27 @@ import { CustomizepanelComponent } from './customizepanel/customizepanel.compone
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
-
+import { FormsModule } from '@angular/forms';
 describe('EditorComponent', () => {
   let component: EditorComponent;
   let fixture: ComponentFixture<EditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ 
-        EditorComponent, 
-        NavbarComponent, 
+      declarations: [
+        EditorComponent,
+        NavbarComponent,
         ToolbarComponent,
         FabricCanvasComponent,
         ToolbarextensionComponent,
         CustomizepanelComponent,
         FaIconComponent,
-        NgbTooltip
+        NgbTooltip,
+        UserModalComponent
       ],
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
+        FormsModule
       ],
       providers: [AppModule]
     })

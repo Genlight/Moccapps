@@ -45,7 +45,6 @@ library.add(faEllipsisV);
     CreateProjectModalComponent,
     CustomizepanelComponent,
     ToolbarextensionComponent,
-    CreateProjectModalComponent,
     ManageUserModalComponent,
     DeleteProjectModalComponent,
     RenameProjectModalComponent,
@@ -63,7 +62,8 @@ library.add(faEllipsisV);
   entryComponents: [
     ManageUserModalComponent,
     RenameProjectModalComponent,
-    DeleteProjectModalComponent
+    DeleteProjectModalComponent,
+    UserModalComponent
   ],
   providers: [FabricmodifyService, ManagePagesService],
   bootstrap: [AppComponent]

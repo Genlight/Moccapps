@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { User } from '../models/User';
+import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { User } from '../../models/User';
 import { UserinfoService } from './userinfo.service';
 
 import { UserModalComponent } from './user-modal.component';

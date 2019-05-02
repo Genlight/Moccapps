@@ -6,6 +6,7 @@ import { FabricmodifyService } from '../../../editor/fabricmodify.service';
 import { ManagePagesService } from '../../../editor/managepages.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UserModalComponent } from '../user-modal/user-modal.component';
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -135,6 +136,7 @@ export class NavbarComponent implements OnInit {
   }
 
   onEditProfile(content) {
+    console.log('clicked oneditProfile');
     const modelRef = this.modalService.open(UserModalComponent);
     // modelRef.componentInstance.user = project;
   }

@@ -26,7 +26,7 @@ export class UserService {
     // postData.append('password', user.password);
     postData.append('email' , user.email);
     postData.append('username', user.name);
-    postData.append('id', user.id);
+    postData.append('id', user.id.toString());
     this.apiService.post('/user', postData );
   }
   // updatePassword(user: User, password: string) {

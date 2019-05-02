@@ -21,9 +21,16 @@ export class UserModalComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.user = this.userInfoService.getUserInfo();
+    this.user = new User();
+    this.userInfoService.getUserInfo()
+      .subscribe((data: any) => this.user = {
+        id: data.id,
+        name:  data.name,
+        email: data.email
+    });
   }
-  openModal() {
+  openModal(content) {
+    this.modal = this.modalService.open(content);
     this.modal.result.then(
       (result) => {
         console.log(`Closed user info dialog with update to infos. ${result}`);
@@ -33,7 +40,7 @@ export class UserModalComponent implements OnInit {
     );
   }
   onUpdateUserInfo(value: any): void {
-    this.userInfoService.setUserInfo(value.user);
+    this.userInfoService.updateUserInfo(value.user);
     this.modal.close();
     this.router.navigate(['editor']);
   }
