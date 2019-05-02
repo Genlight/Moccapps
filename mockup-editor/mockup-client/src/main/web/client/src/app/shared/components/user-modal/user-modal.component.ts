@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { User, Pwd } from '../../models/User';
+import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { User } from '../../models/User';
 import { UserinfoService } from './userinfo.service';
 import { Router } from '@angular/router';
 
@@ -10,13 +11,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./user-modal.component.scss']
 })
 export class UserModalComponent implements OnInit {
-
-  modal: NgbModalRef;
   user: User;
-  pwd: Pwd;
+
   showPwdForm = false;
   constructor(
-    private modalService: NgbModal,
+    private activeModal: NgbActiveModal,
+    // private modalService: NgbModal,
     private userInfoService: UserinfoService,
     private router: Router
   ) { }
@@ -29,28 +29,24 @@ export class UserModalComponent implements OnInit {
         email: data.email
     });
   }
-  openModal(content) {
-    this.modal = this.modalService.open(content);
-    this.modal.result.then(
-      (result) => {
-        console.log(`Closed user info dialog with update to infos. ${result}`);
-      }, (reason) => {
-        console.log(`Dismissed user info modal dialog without changing infos. ${reason}`);
+  onUpdateUserInfo(): void {
+    this.userInfoService.updateUserInfo(this.user).subscribe(
+    {
+      next(data: any) {
+        if (data.message === 'success') {
+          alert('success onUpdateUserInfo');
+        } else {
+          alert('Fail at onUpdateUserInfo, s. Console Output');
+        }
+      },
+      error(err) {
+        alert(err);
+      },
+      complete() {
+        this.activeModal.close();
+        this.router.navigate(['editor']);
       }
-    );
-  }
-  onUpdateUserInfo(value: any): void {
-    this.userInfoService.updateUserInfo(value.user);
-    this.modal.close();
-    this.router.navigate(['editor']);
-  }
-  onUpdatePwd(value: any) {
-      console.log('onUpdatePwd: ' + JSON.stringify(value));
-      this.userInfoService.updatePassword(this.pwd);
-      alert('Password changed successfully.');
-      this.showPwdForm = !this.showPwdForm;
-  }
-  onPwdClick() {
-    this.showPwdForm = !this.showPwdForm;
+    }
+  );
   }
 }
