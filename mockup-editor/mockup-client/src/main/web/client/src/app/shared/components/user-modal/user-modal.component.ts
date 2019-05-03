@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 // import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../../models/User';
 import { UserinfoService } from './userinfo.service';
 import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-user-modal',
@@ -11,12 +12,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./user-modal.component.scss']
 })
 export class UserModalComponent implements OnInit {
+
   user: User;
 
-  showPwdForm = false;
   constructor(
     private activeModal: NgbActiveModal,
-    // private modalService: NgbModal,
+    private modalService: NgbModal,
     private userInfoService: UserinfoService,
     private router: Router
   ) { }
@@ -31,22 +32,20 @@ export class UserModalComponent implements OnInit {
   }
   onUpdateUserInfo(): void {
     this.userInfoService.updateUserInfo(this.user).subscribe(
-    {
-      next(data: any) {
+      (data: any) => {
         if (data.message === 'success') {
           alert('success onUpdateUserInfo');
         } else {
           alert('Fail at onUpdateUserInfo, s. Console Output');
         }
       },
-      error(err) {
-        alert(err);
+      () => {
+        alert('error');
       },
-      complete() {
+      () => {
         this.activeModal.close();
         this.router.navigate(['editor']);
       }
-    }
-  );
+    );
   }
 }

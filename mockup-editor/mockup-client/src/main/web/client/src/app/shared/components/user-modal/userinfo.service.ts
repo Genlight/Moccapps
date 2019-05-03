@@ -22,29 +22,18 @@ export class UserinfoService {
     // return this.http.get('/user');
     return source;
   }
-  updateUserInfo(user: User) {
+  updateUserInfo(user: User): Observable<any> {
     const postData = new FormData();
     postData.append('password', user.pwd);
     postData.append('username', user.name);
 
-    return this.http.post(API_URL + '/user', postData)
-      .pipe(
-        tap(_ => { console.log('called POST on /user'); }),
-    catchError(this.handleError<any>('updateUserInfo', []))
-      );
+    return of({message: 'success'});
+    // return this.http.post(API_URL + '/user', postData)
+    //   .pipe(
+    //     tap(_ => { console.log('called POST on /user'); }),
+    // catchError(this.handleError<any>('updateUserInfo', []))
+    //   );
   }
-  // updatePassword(user: User, password: string) {
-  //   const postData = new FormData();
-  //   // postData.append('password', user.password);
-  //   postData.append('email' , user.email);
-  //   postData.append('username', user.name);
-  //   postData.append('id', user.id.toString());
-  //
-  //   return this.http.post('/user/pwd', postData)
-  //   .pipe(
-  //     catchError(this.handleError<any>('updateUserInfo', []))
-  //   );
-  // }
   /**
    * copied from: https://angular.io/tutorial/toh-pt6
    * Handle Http operation that failed.

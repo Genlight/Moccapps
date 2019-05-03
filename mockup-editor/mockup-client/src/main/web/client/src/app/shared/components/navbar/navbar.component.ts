@@ -48,7 +48,9 @@ export class NavbarComponent implements OnInit {
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private modalService: NgbModal
+          ) { }
 
   ngOnInit() {
     this.data.currentMessage.subscribe(item => {
