@@ -2,10 +2,13 @@
     width: 2em;
     background-color: #F7F7F9;
     height: 100%;
+    position: fixed;
+    right: 0px;
 }
 
 .paneltoggle {
     height: 100%;
+    position: fixed;
 }
 
 .paneltoggle > .btn {

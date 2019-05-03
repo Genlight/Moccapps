@@ -26,7 +26,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
-    this.managePagesService.createPage();
+    this.managePagesService.createPage(900, 600);
     this.canvas = this.managePagesService.getCanvas();
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();

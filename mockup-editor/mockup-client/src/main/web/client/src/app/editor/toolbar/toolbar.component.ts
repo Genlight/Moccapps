@@ -72,6 +72,8 @@ export class ToolbarComponent implements OnInit {
     } else {
       panel.classList.toggle('extensionhidden');
     }
+    const title = document.getElementById('extToolbarTitle');
+    title.innerHTML = 'Available Elements';
     const elementsbutton = document.getElementById('navElementsButton');
     elementsbutton.classList.toggle('btn-dark');
   }
@@ -88,6 +90,8 @@ export class ToolbarComponent implements OnInit {
     } else {
       panel.classList.toggle('extensionhidden');
     }
+    const title = document.getElementById('extToolbarTitle');
+    title.innerHTML = 'Group Overview';
     const groupbutton = document.getElementById('navGroupsButton');
     groupbutton.classList.toggle('btn-dark');
   }
