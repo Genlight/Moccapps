@@ -9,13 +9,13 @@ import { Project } from '../../models/Project';
 })
 export class RenameProjectModalComponent implements OnInit {
 
-  private projectName: string;
-  private projectRef: Project;
+  projectName: string;
+  projectRef: Project;
 
   @Output() 
   confirmed: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  constructor(private activeModal: NgbActiveModal) { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   @Input()
   set project(project) {

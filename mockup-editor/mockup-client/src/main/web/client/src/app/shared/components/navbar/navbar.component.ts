@@ -161,7 +161,7 @@ export class NavbarComponent implements OnInit {
     this.modifyService.ungroup(canvas);
   }
 
-  onEditProfile(content) {
+  onEditProfile() {
     console.log('clicked oneditProfile');
     const modelRef = this.modalService.open(UserModalComponent);
     // modelRef.componentInstance.user = project;

@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ng serve --proxy-config proxy.conf.js",
+    "build": "ng build --prod=true",
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=PhantomJS",
     "lint": "ng lint",

@@ -16,8 +16,7 @@ export class UserModalComponent implements OnInit {
   user: User;
 
   constructor(
-    private activeModal: NgbActiveModal,
-    private modalService: NgbModal,
+    public activeModal: NgbActiveModal,
     private userInfoService: UserinfoService,
     private router: Router
   ) { }

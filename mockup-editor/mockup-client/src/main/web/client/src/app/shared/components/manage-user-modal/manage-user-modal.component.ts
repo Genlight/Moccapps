@@ -37,7 +37,7 @@ export class ManageUserModalComponent implements OnInit {
     },
   ];
 
-  constructor(private activeModal: NgbActiveModal) { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

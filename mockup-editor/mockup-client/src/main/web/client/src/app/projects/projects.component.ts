@@ -7,6 +7,7 @@ import { RenameProjectModalComponent } from '../shared/components/rename-project
 import { DeleteProjectModalComponent } from '../shared/components/delete-project-modal/delete-project-modal.component';
 import { Project } from '../shared/models/Project';
 import { Invite } from '../shared/models/Invite';
+import { ProjectService } from '../shared/services/project.service';
 
 @Component({
   selector: 'app-projects',
@@ -64,10 +65,23 @@ export class ProjectsComponent implements OnInit {
     
   ];
 
-  constructor(private router: Router, private modalService: NgbModal) { 
+  constructor(private router: Router, private modalService: NgbModal, private projectService: ProjectService) { 
   }
 
-  ngOnInit() {        
+  ngOnInit() {
+    this.loadProjects();
+  }
+
+  loadProjects(): void {
+    this.projectService.getProjects<Project[]>().subscribe(
+      projects => {
+        alert(projects);
+      }
+    );
+  }
+
+  deleteProject(project: Project) {
+    this.projects.splice(this.projects.indexOf(project), 1);
   }
 
   /**
@@ -96,7 +110,7 @@ export class ProjectsComponent implements OnInit {
     const modelRef = this.modalService.open(DeleteProjectModalComponent);
     modelRef.componentInstance.project = project;
     modelRef.componentInstance.confirm.subscribe(() => 
-      this.projects.splice(this.projects.indexOf(project), 1) 
+      this.deleteProject(project)
     );
   }
 

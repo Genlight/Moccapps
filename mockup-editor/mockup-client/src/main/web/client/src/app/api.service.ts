@@ -13,8 +13,10 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  public get(path: string, params: HttpParams = new HttpParams()): Observable<any> {
-    return this.http.get(`${API_URL}${path}`, {params});
+
+
+  public get<T>(path: string, params: HttpParams = new HttpParams()): Observable<T> {
+    return this.http.get<T>(`${API_URL}${path}`, {params});
   }
 
   public put(path: string, body: object = {}): Observable<any> {

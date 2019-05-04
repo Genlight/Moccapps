@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
 
           this.isLoginFailed = false;
           this.isLoggedIn = true;
-          this.router.navigate(['editor']);
+          this.router.navigate(['projects']);
         },
         error => {
           console.log(error);
