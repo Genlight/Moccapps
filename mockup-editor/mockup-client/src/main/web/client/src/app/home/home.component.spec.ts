@@ -13,7 +13,7 @@ describe('HomeComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ 
+      declarations: [
         HomeComponent,
         NgbTab,
         NgbTabset
@@ -22,7 +22,7 @@ describe('HomeComponent', () => {
         FormsModule,
         HttpClientModule
       ],
-      providers:[
+      providers: [
         AuthService
       ]
     })

@@ -4,8 +4,14 @@ import { NavbarComponent } from './navbar.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
+
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { User } from '../../models/User';
+import { UserinfoService } from '../user-modal/userinfo.service';
+
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../../auth/auth.service';
+
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -13,8 +19,8 @@ describe('NavbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ 
-        NavbarComponent, 
+      declarations: [
+        NavbarComponent,
         FaIconComponent,
         NgbTooltip
       ],
@@ -22,7 +28,7 @@ describe('NavbarComponent', () => {
         RouterTestingModule,
         HttpClientModule
       ],
-      providers:[
+      providers: [
         AuthService
       ]
     })

@@ -25,7 +25,9 @@ import { DeleteProjectModalComponent } from './shared/components/delete-project-
 import { RenameProjectModalComponent } from './shared/components/rename-project-modal/rename-project-modal.component';
 import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.component';
 import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
+import { UserModalComponent } from './shared/components/user-modal/user-modal.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
+
 
 library.add(faBars);
 library.add(faUndo);
@@ -45,10 +47,10 @@ library.add(faEllipsisV);
     CreateProjectModalComponent,
     CustomizepanelComponent,
     ToolbarextensionComponent,
-    CreateProjectModalComponent,
     ManageUserModalComponent,
     DeleteProjectModalComponent,
-    RenameProjectModalComponent
+    RenameProjectModalComponent,
+    UserModalComponent
   ],
   imports: [
     BrowserModule,
@@ -62,7 +64,8 @@ library.add(faEllipsisV);
   entryComponents: [
     ManageUserModalComponent,
     RenameProjectModalComponent,
-    DeleteProjectModalComponent
+    DeleteProjectModalComponent,
+    UserModalComponent
   ],
   providers: [FabricmodifyService, ManagePagesService, {
   provide: HTTP_INTERCEPTORS,

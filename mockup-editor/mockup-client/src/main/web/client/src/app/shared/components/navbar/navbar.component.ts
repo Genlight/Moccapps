@@ -4,10 +4,14 @@ import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
 import { Router } from '@angular/router';
 import { FabricmodifyService } from '../../../editor/fabricmodify.service';
 import { ManagePagesService } from '../../../editor/managepages.service';
-import {DataService} from "../../../data.service";
-import {TokenStorageService} from "../../../auth/token-storage.service";
-import {AuthService} from "../../../auth/auth.service";
-import {AuthLogoutInfo} from "../../../auth/logout-info";
+
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { UserModalComponent } from '../user-modal/user-modal.component';
+
+import {DataService} from '../../../data.service';
+import {TokenStorageService} from '../../../auth/token-storage.service';
+import {AuthService} from '../../../auth/auth.service';
+import {AuthLogoutInfo} from '../../../auth/logout-info';
 
 @Component({
   selector: 'app-navbar',
@@ -44,7 +48,9 @@ export class NavbarComponent implements OnInit {
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private modalService: NgbModal
+          ) { }
 
   ngOnInit() {
     this.data.currentMessage.subscribe(item => {
@@ -52,7 +58,7 @@ export class NavbarComponent implements OnInit {
         token: this.tokenStorage.getToken(),
         username: this.tokenStorage.getUsername(),
       };
-    })
+    });
   }
 
   onLogout() {
@@ -153,5 +159,11 @@ export class NavbarComponent implements OnInit {
   onUngroup() {
     const canvas = this.managePagesService.getCanvas();
     this.modifyService.ungroup(canvas);
+  }
+
+  onEditProfile(content) {
+    console.log('clicked oneditProfile');
+    const modelRef = this.modalService.open(UserModalComponent);
+    // modelRef.componentInstance.user = project;
   }
 }

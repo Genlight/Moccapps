@@ -1,0 +1,38 @@
+
+  <div class="modal-header">
+    <h5 class="modal-title" id="modal-basic-title">User Information</h5>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form
+      novalidate
+      #form="ngForm"
+    >
+      <div class="form-group">
+        <label for="user-name">user name</label>
+        <input
+          type="text"
+          id="userName"
+          class="form-control"
+          name="user-name"
+          #inputname
+          [(ngModel)]="user.name">
+      </div>
+      <div class="form-group">
+        <label for="user-pwd">password</label>
+        <input
+          type="password"
+          id="pwd"
+          class="form-control"
+          name="user-pwd"
+          #inputname
+          [(ngModel)]="user.pwd">
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onUpdateUserInfo()">Apply</button>
+  </div>

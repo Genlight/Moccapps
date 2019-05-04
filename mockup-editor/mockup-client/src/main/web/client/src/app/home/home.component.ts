@@ -1,12 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {NgForm} from "@angular/forms";
-import {NgbTabset} from "@ng-bootstrap/ng-bootstrap";
-import {DataService} from "../data.service";
-import {AuthService} from "../auth/auth.service";
-import {TokenStorageService} from "../auth/token-storage.service";
-import {AuthLoginInfo} from "../auth/login-info";
-import {SignUpInfo} from "../auth/signup-info";
+import {NgForm} from '@angular/forms';
+import {NgbTabset} from '@ng-bootstrap/ng-bootstrap';
+import {DataService} from '../data.service';
+import {AuthService} from '../auth/auth.service';
+import {TokenStorageService} from '../auth/token-storage.service';
+import {AuthLoginInfo} from '../auth/login-info';
+import {SignUpInfo} from '../auth/signup-info';
 
 @Component({
   selector: 'app-home',
@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit {
               private data: DataService,
               private authService: AuthService,
               private tokenStorage: TokenStorageService) {
-  };
+  }
 
   ngOnInit() {
     if (this.tokenStorage.getToken()) {
@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
 
   onSubmit(logForm: NgForm) {
     console.log(logForm);
-    if (document.activeElement.id == 'register') {
+    if (document.activeElement.id === 'register') {
       console.log('register');
 
 
@@ -54,7 +54,7 @@ export class HomeComponent implements OnInit {
           console.log(data);
           this.isSignedUp = true;
           this.isSignUpFailed = false;
-          this.tabs.select("loginTab");
+          this.tabs.select('loginTab');
         },
         error => {
           console.log(error);
@@ -63,7 +63,7 @@ export class HomeComponent implements OnInit {
         }
       );
 
-    } else if (document.activeElement.id == 'login') {
+    } else if (document.activeElement.id === 'login') {
 
       this.loginInfo = new AuthLoginInfo(
         logForm.form.value.email,
