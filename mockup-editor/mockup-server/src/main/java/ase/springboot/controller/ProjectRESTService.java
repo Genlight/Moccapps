@@ -32,7 +32,6 @@ public class ProjectRESTService {
 
     @GetMapping("/project")
     public ResponseEntity<?> getProjects(){
-        System.out.println("JHA: "+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         ase.Security.UserDetails userDetails=(ase.Security.UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(userDetails==null){
             return new ResponseEntity<>(new ResponseMessage("not authorized"),HttpStatus.UNAUTHORIZED);
@@ -75,7 +74,6 @@ public class ProjectRESTService {
                 project.addUser(user.getId());
             }
         }
-        System.out.println(project.toString());
         if(projectService.createProject(project)){
             return new ResponseEntity<>(new ResponseMessage("success"),HttpStatus.OK);
         }
