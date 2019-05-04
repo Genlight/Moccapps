@@ -18,7 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-
+/**
+ * @author Matthias Deimel
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -75,6 +77,15 @@ public class UserServiceImpl implements UserService {
             logger.error("UserService: can not create User");
         }
         return false;
+    }
+
+    @Override
+    public User findUserByID(int id) {
+        try {
+            return userDAO.findById(id);
+        } catch (DAOException e) {
+            return null;
+        }
     }
 
     @Override
