@@ -5,7 +5,6 @@ import ase.DAO.DAOException;
 import ase.DAO.ProjectDAO;
 import ase.DAO.UserDAO;
 import ase.DTO.Project;
-import ase.DTO.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,7 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
             }
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_CREATE, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setString(1,project.getUsername());
+            pstmt.setString(1,project.getProjectname());
             pstmt.executeUpdate();
             ResultSet rs=pstmt.getGeneratedKeys();
             rs.next();
@@ -102,7 +101,7 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
             }
 
             pstmt=connection.prepareStatement(PSTMT_UPDATE);
-            pstmt.setString(1,project.getUsername());
+            pstmt.setString(1,project.getProjectname());
             pstmt.setInt(2,project.getId());
             pstmt.executeUpdate();
             pstmt.close();
@@ -166,7 +165,7 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
 
             pstmt=connection.prepareStatement(PSTMT_FINDBYID_JT_USERS_PROJECTS);
             pstmt.setInt(1,project.getId());
-            logger.error(project.getUsername());
+            logger.error(project.getProjectname());
             rs=pstmt.executeQuery();
             while(rs.next()) {
                 userIds.add(rs.getInt("user_id"));

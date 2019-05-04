@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Project {
 
     private int id;
-    private String username;
+    private String projectname;
     private List<Integer> usersId;
     private List pages;
 
@@ -16,13 +16,13 @@ public class Project {
     }
 
     public Project(String username) {
-        this.username = username;
+        this.projectname = username;
         usersId =new ArrayList<>();
     }
 
     public Project(int id, String username) {
         this.id=id;
-        this.username = username;
+        this.projectname = username;
         usersId =new ArrayList<>();
     }
 
@@ -34,12 +34,12 @@ public class Project {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getProjectname() {
+        return projectname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setProjectname(String projectname) {
+        this.projectname = projectname;
     }
 
     public List<Integer> getUsers() {
@@ -66,7 +66,7 @@ public class Project {
     public String toString() {
         return "Project{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", projectname='" + projectname + '\'' +
                 ", users=" + usersId +
                 ", pages=" + pages +
                 '}';
@@ -77,7 +77,7 @@ public class Project {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Project project = (Project) o;
-        return  Objects.equals(username, project.username) &&
+        return  Objects.equals(projectname, project.projectname) &&
                 Objects.equals(usersId, project.usersId) &&
                 Objects.equals(pages, project.pages);
     }
