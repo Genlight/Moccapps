@@ -10,6 +10,7 @@ import { Invite } from '../shared/models/Invite';
 import { ProjectService } from '../shared/services/project.service';
 import { DataService } from '../data.service';
 import { TokenStorageService } from '../auth/token-storage.service';
+import { InviteService } from '../shared/services/invite.service';
 
 @Component({
   selector: 'app-projects',
@@ -73,6 +74,7 @@ export class ProjectsComponent implements OnInit {
     private router: Router, 
     private modalService: NgbModal, 
     private projectService: ProjectService,
+    private inviteService: InviteService,
     private tokenStorage: TokenStorageService,
     private data: DataService
   ) { }
@@ -105,8 +107,38 @@ export class ProjectsComponent implements OnInit {
     );
   }
 
+  loadInvites(): void {
+    this.projectService.getProjects()
+    .subscribe(
+      (response) => {
+        const jsonInvites = ((response as any).message);
+        let invites = JSON.parse(jsonInvites) as Invite[];
+        for (let invite of invites) {
+          console.log(invite);
+        }
+        this.invites = invites;
+      }
+    );
+  }
+
   deleteProject(project: Project): void {
     this.projects.splice(this.projects.indexOf(project), 1);
+  }
+
+  acceptInvite(invite: Invite): void {
+    this.inviteService.acceptInvite(invite).subscribe(
+      () => {
+        this.invites.splice(this.invites.indexOf(invite), 1);
+      }
+    );
+  }
+
+  declineInvite(invite: Invite): void {
+    this.inviteService.declineInvite(invite).subscribe(
+      () => {
+        this.invites.splice(this.invites.indexOf(invite), 1);
+      }
+    );
   }
 
   /**
@@ -135,11 +167,11 @@ export class ProjectsComponent implements OnInit {
     );
   }
 
-  onAcceptInvite(invite) {
-    this.invites.splice(this.invites.indexOf(invite), 1);
+  onAcceptInvite(invite: Invite) {
+    this.acceptInvite(invite);
   }
 
-  onDeclineInvite(invite) {
-    this.invites.splice(this.invites.indexOf(invite), 1);
+  onDeclineInvite(invite: Invite) {
+    this.declineInvite(invite);
   }
 }
