@@ -8,6 +8,8 @@ import { DeleteProjectModalComponent } from '../shared/components/delete-project
 import { Project } from '../shared/models/Project';
 import { Invite } from '../shared/models/Invite';
 import { ProjectService } from '../shared/services/project.service';
+import { DataService } from '../data.service';
+import { TokenStorageService } from '../auth/token-storage.service';
 
 @Component({
   selector: 'app-projects',
@@ -18,15 +20,11 @@ export class ProjectsComponent implements OnInit {
 
   faEllipsisV = faEllipsisV;
 
-  user = {
-    username: 'Max Mustermann'
-  };
-
   projects: Project[] = [
-    {
+/*     {
       id: 1,
       projectname: 'Project 1',
-      members: [
+      users: [
         { 
           name: 'User 1',
           email: 'sadfasdf@asdf.com'
@@ -37,57 +35,83 @@ export class ProjectsComponent implements OnInit {
         }
       ],
       lastEdited: new Date()
-    },
+    }, */
   ];
 
-  invitedProject: Invite[] = [
+  invites: Invite[] = [
     {
-      projectname: 'Super project',
-      invited_by: {
-        username: 'User 5'
-      }
-    },
-    {
-      projectname: 'Super project 2',
-      invited_by: {
-        username: 'User 5'
-      }
-    },
-    {
-      projectname:  'Super project 3',
-      invited_by: {
-        username: 'User 5'
+      id: 1,
+      project: {
+        id: 1,
+        projectname: 'Project 1',
+        users: [
+          { 
+            name: 'User 1',
+            email: 'sadfasdf@asdf.com'
+          },
+          { 
+            name: 'user 2',
+            email: 'asdfdsa@sdafds.com'
+          }
+        ],
+        lastEdited: new Date()
+      },
+      invited: { 
+        name: 'User 1',
+        email: 'sadfasdf@asdf.com'
+      },
+      inviter: {   
+        name: 'User 1',
+        email: 'sadfasdf@asdf.com'
       }
     }
   ];
 
-  invites: Invite[] = [
-    
-  ];
+  info: any;
 
-  constructor(private router: Router, private modalService: NgbModal, private projectService: ProjectService) { 
-  }
+  constructor(
+    private router: Router, 
+    private modalService: NgbModal, 
+    private projectService: ProjectService,
+    private tokenStorage: TokenStorageService,
+    private data: DataService
+  ) { }
 
   ngOnInit() {
     this.loadProjects();
+    this.loadUserInfo();
+  }
+
+  loadUserInfo(): void {
+    this.data.currentMessage.subscribe(item => {
+      this.info = {
+        token: this.tokenStorage.getToken(),
+        username: this.tokenStorage.getUsername(),
+      };
+    });
   }
 
   loadProjects(): void {
-    this.projectService.getProjects().subscribe(
-      projects => {
-        console.log(JSON.stringify(projects));
+    this.projectService.getProjects()
+    .subscribe(
+      (response) => {
+        const jsonProjects = ((response as any).message);
+        let projects = JSON.parse(jsonProjects) as Project[];
+        for (let project of projects) {
+          console.log(project);
+        }
+        this.projects = projects;
       }
     );
   }
 
-  deleteProject(project: Project) {
+  deleteProject(project: Project): void {
     this.projects.splice(this.projects.indexOf(project), 1);
   }
 
   /**
    * Projects 
    */
-
   onOpenProject() {
     this.router.navigate(['editor']);
   }
@@ -111,11 +135,11 @@ export class ProjectsComponent implements OnInit {
     );
   }
 
-  onAcceptInvite(project) {
-    // TODO
+  onAcceptInvite(invite) {
+    this.invites.splice(this.invites.indexOf(invite), 1);
   }
 
-  onDeclineInvite(project) {
-    // TODO
+  onDeclineInvite(invite) {
+    this.invites.splice(this.invites.indexOf(invite), 1);
   }
 }

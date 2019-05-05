@@ -20,7 +20,7 @@ export class ApiService {
   }
 
   public put(path: string, body: object = {}): Observable<any> {
-    return this.http.put(`${API_URL}${path}`, JSON.stringify(body));
+    return this.http.put(`${API_URL}${path}`, body);
   }
 
   public post(path: string, body: object = {}): Observable<any> {

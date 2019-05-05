@@ -9,7 +9,7 @@
     <div>
       <span class="welcome-header">Welcome back</span>
       <br>
-      <span class="welcome-username">{{user.username}}</span>
+      <span class="welcome-username">{{info.username}}</span>
     </div>
   </div>
   <hr class="divider"> 
@@ -47,7 +47,7 @@
       <tbody>
         <tr *ngFor="let project of projects">
           <td>{{ project.projectname }}</td>
-          <td>{{ project.members | collaborator }}</td>
+          <td>{{ project.users | collaborator }}</td>
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
               <span>{{ project.lastEdited | date }}</span>
@@ -79,13 +79,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let project of invitedProject">
+        <tr *ngFor="let invite of invites">
           <td>
-            <span>{{ project.projectname }}</span>
+            <span>{{ invite.project.projectname }}</span>
           </td>
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
-              <span>{{ project.invited_by.username }}</span>
+              <span>{{ invite.inviter.name }}</span>
               <span>
                 <button 
                   class="btn btn-primary" 

@@ -18,14 +18,15 @@ export class ProjectService {
     return this.apiService.post('/project', project);
   }
 
-  deleteProject(project: Project) {
+  deleteProject(project: Project): Observable<any> {
     if (!project.id) {
       console.error(`ERROR: deleteProject: Project id is not defined`);
+      return;
     }
-    this.apiService.delete(`/project/${project.id}`);
+    return this.apiService.delete(`/project/${project.id}`);
   }
 
-  updateProject(project: Project) {
-    this.apiService.put(`/project/${project.id}`, project);
+  updateProject(project: Project): Observable<any> {
+    return this.apiService.put(`/project/${project.id}`, project);
   }
 }

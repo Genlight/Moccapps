@@ -11,10 +11,12 @@ import { Project } from '../../models/Project';
 export class DeleteProjectModalComponent implements OnInit {
 
   projectName: string;
+  private projectRef: Project;
 
   @Input()
   set project(project: Project) {
     this.projectName = project.projectname;
+    this.projectRef = project;
   }
   
   @Output() 
@@ -27,10 +29,12 @@ export class DeleteProjectModalComponent implements OnInit {
   }
 
   onDeleteProject() {
-    // TODO
-    // this.projectService.deleteProject(this.project);
-    this.confirm.emit(true);
-    this.activeModal.close();
+    this.projectService.deleteProject(this.projectRef).subscribe((
+      () => {   
+        this.confirm.emit(true);
+        this.activeModal.close();
+      }
+    ));
   }
 
 }
