@@ -3,6 +3,7 @@ package ase.springboot.controller;
 import ase.DTO.User;
 import ase.Security.JwtProvider;
 import ase.message.request.LoginForm;
+import ase.message.request.EditUserForm;
 import ase.message.request.LogoutForm;
 import ase.message.request.SignUpForm;
 import ase.message.response.ResponseMessage;
@@ -81,6 +82,27 @@ public class RESTService {
         } else {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/user")
+    public ResponseEntity<?> user(@Valid @RequestBody EditUserForm editUserRequest) {
+      if (!userService.existsByEmail(editUserRequest.getEmail())) {
+          return new ResponseEntity<>(new ResponseMessage("Fail -> Email not found!"),
+                  HttpStatus.BAD_REQUEST);
+      }
+      User user = userService.getUserByEmail(editUserRequest.getEmail());
+      if(editUserRequest.getPassword() != "") {
+        user.setPassword(encoder.encode(editUserRequest.getPassword()));
+      }
+      user.setUsername(editUserRequest.getUsername());
+
+      System.out.println("Attempt to update User info: " + user.toString());
+
+      if (userService.update(user)) {
+          return new ResponseEntity<>(new ResponseMessage("User info updated!"), HttpStatus.OK);
+      } else {
+          return new ResponseEntity<>(new ResponseMessage("Something else went wrong"), HttpStatus.BAD_REQUEST);
+      }
     }
 
     @PostMapping("/test")
