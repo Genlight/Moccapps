@@ -47,10 +47,14 @@ export class CreateProjectModalComponent implements OnInit {
     // alert(JSON.stringify(value));
 
     const project = new Project();
+    project.projectname = this.project.name;
     // TODO: Pass height/width to editor page
     // const project = new Project();
     // project.name = value.name;
-    // this.projectService.createProject(project);
+    this.projectService.createProject(project).subscribe(
+      res => console.log('HTTP response', res),
+      err => console.log('HTTP Error', err)
+    );
     this.modal.close();
     this.router.navigate(['editor']);
   }

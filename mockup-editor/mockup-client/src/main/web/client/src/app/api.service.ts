@@ -24,7 +24,7 @@ export class ApiService {
   }
 
   public post(path: string, body: object = {}): Observable<any> {
-    return this.http.post(`${API_URL}${path}`, JSON.stringify(body));
+    return this.http.post(`${API_URL}${path}`, body);
   }
 
   public delete(path): Observable<any> {

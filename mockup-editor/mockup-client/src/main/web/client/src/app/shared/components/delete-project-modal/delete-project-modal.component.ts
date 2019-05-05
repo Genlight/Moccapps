@@ -14,7 +14,7 @@ export class DeleteProjectModalComponent implements OnInit {
 
   @Input()
   set project(project: Project) {
-    this.projectName = project.name;
+    this.projectName = project.projectname;
   }
   
   @Output() 

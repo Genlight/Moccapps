@@ -27,6 +27,7 @@ import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.
 import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
 import { UserModalComponent } from './shared/components/user-modal/user-modal.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
+import { RequestInterceptor } from './shared/interceptor/request.interceptor';
 
 
 library.add(faBars);
@@ -68,10 +69,16 @@ library.add(faEllipsisV);
     UserModalComponent
   ],
   providers: [FabricmodifyService, ManagePagesService, {
-  provide: HTTP_INTERCEPTORS,
-  useClass: AuthInterceptor,
-  multi: true
-}],
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  },
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: RequestInterceptor,
+    multi: true
+  }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -25,7 +25,7 @@ export class ProjectsComponent implements OnInit {
   projects: Project[] = [
     {
       id: 1,
-      name: 'Project 1',
+      projectname: 'Project 1',
       members: [
         { 
           name: 'User 1',
@@ -40,21 +40,21 @@ export class ProjectsComponent implements OnInit {
     },
   ];
 
-  invitedProject = [
+  invitedProject: Invite[] = [
     {
-      name: 'Super project',
+      projectname: 'Super project',
       invited_by: {
         username: 'User 5'
       }
     },
     {
-      name: 'Super project 2',
+      projectname: 'Super project 2',
       invited_by: {
         username: 'User 5'
       }
     },
     {
-      name: 'Super project 3',
+      projectname:  'Super project 3',
       invited_by: {
         username: 'User 5'
       }
@@ -73,9 +73,9 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadProjects(): void {
-    this.projectService.getProjects<Project[]>().subscribe(
+    this.projectService.getProjects().subscribe(
       projects => {
-        alert(projects);
+        console.log(JSON.stringify(projects));
       }
     );
   }
@@ -87,9 +87,6 @@ export class ProjectsComponent implements OnInit {
   /**
    * Projects 
    */
-  onCreateNewProject() {
-    this.router.navigate(['editor']);
-  }
 
   onOpenProject() {
     this.router.navigate(['editor']);

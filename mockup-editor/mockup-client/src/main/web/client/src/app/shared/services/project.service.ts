@@ -14,8 +14,8 @@ export class ProjectService {
     return this.apiService.get<T>('/project');
   }
 
-  createProject(project: Project) {
-    this.apiService.post('/project');
+  createProject(project: Project): Observable<any> {
+    return this.apiService.post('/project', project);
   }
 
   deleteProject(project: Project) {

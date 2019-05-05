@@ -19,7 +19,7 @@ export class RenameProjectModalComponent implements OnInit {
 
   @Input()
   set project(project) {
-    this.projectName = project.name;
+    this.projectName = project.projectname;
     this.projectRef = project;
   }
 
@@ -27,7 +27,7 @@ export class RenameProjectModalComponent implements OnInit {
   }
 
   onSaveChange() {
-    this.projectRef.name = this.projectName;
+    this.projectRef.projectname = this.projectName;
     this.confirmed.emit(true);
     this.activeModal.close();
   }

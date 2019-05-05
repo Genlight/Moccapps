@@ -46,7 +46,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let project of projects">
-          <td>{{ project.name }}</td>
+          <td>{{ project.projectname }}</td>
           <td>{{ project.members | collaborator }}</td>
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
@@ -81,7 +81,7 @@
       <tbody>
         <tr *ngFor="let project of invitedProject">
           <td>
-            <span>{{ project.name }}</span>
+            <span>{{ project.projectname }}</span>
           </td>
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
