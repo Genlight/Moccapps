@@ -83,6 +83,28 @@ public class RESTService {
         }
     }
 
+    @PostMapping("/user")
+    public ResponseEntity<?> user(@Valid @RequestBody EditUserForm editUserRequest) {
+      if (!userService.existsByEmail(editUserRequest.getEmail())) {
+          return new ResponseEntity<>(new ResponseMessage("Fail -> Email not found!"),
+                  HttpStatus.BAD_REQUEST);
+      }
+      User user = userService.getUserByEmail(editUserRequest.getEmail());
+
+      if( editUserRequest.getPassword() != null ) {
+        user.setPassword(encoder.encode(editUserRequest.getPassword()));
+      }
+      user.setUsername(editUserRequest.getUsername());
+
+      System.out.println("Attempt to update User info: " + user.toString());
+
+      if (userService.update(user)) {
+          return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
+      } else {
+          return new ResponseEntity<>(new ResponseMessage("Something else went wrong"), HttpStatus.BAD_REQUEST);
+      }
+    }
+
     @PostMapping("/test")
     public ResponseEntity<?> test() {
 

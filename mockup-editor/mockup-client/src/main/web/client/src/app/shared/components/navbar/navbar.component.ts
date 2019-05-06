@@ -98,6 +98,10 @@ export class NavbarComponent implements OnInit {
     // TODO
   }
 
+  onAllProjects() {
+    this.router.navigate(['projects']);
+  }
+
   onUndo() {
     // TODO
   }
@@ -164,6 +168,12 @@ export class NavbarComponent implements OnInit {
   onEditProfile() {
     console.log('clicked oneditProfile');
     const modelRef = this.modalService.open(UserModalComponent);
-    // modelRef.componentInstance.user = project;
+    modelRef.result.then((result) => {
+      if ( result === 'success' ) {
+        this.info.username = this.tokenStorage.getUsername();
+      }
+    }, (reason) => {
+      
+    });
   }
 }

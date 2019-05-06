@@ -140,4 +140,15 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public boolean update(User user) {
+      try {
+        userDAO.update(user);
+        return true;
+      } catch (DAOException e) {
+          e.printStackTrace();
+      }
+      return false;
+    }
 }

@@ -1,4 +1,5 @@
 # moccapps
+
 the best Prototype Mockup - Editor you have ever seen.
 
 We present to you the slim and fast editor, in which you you can operate with your team simultanously on objects.
@@ -15,6 +16,16 @@ https://www-us.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-b
 ### Java JDK 1.8
 https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-windows-x64.exe
 > Path has to be set sysstem wide, see further below
+
+### Docker for Windows
+Because of changes in our DB Setup, we require Docker. 
+For Windows10 Pro, Education or Enterprise, install [Docker for Windows] (https://docs.docker.com/docker-for-windows/install/) 
+
+
+For older Windows Versions (and Home Ed), install [Docker Toolbox] 
+(https://github.com/docker/toolbox/releases/tag/v18.09.3)
+
+see usage with Postgres and docker toolbox, [this README](https://gitlab.com/ase_grp02/moccapps/tree/devel/mockup-editor/mockup-server/README.md)
 
 # Windows-dev-tools
 für node-gyp wird Python v2.7, einC++-COmpiler und Visual Studio Code 2015/17 benötigt. 
@@ -38,17 +49,20 @@ Add these in Windows with these steps:
 - click ok through all views 
 
 ## Build locally
-`cd /<YOUR_DIR>/mockup-editor` \
-`mvn clean install`  \
-For the first time, use clean, \
+`cd /<YOUR_DIR>/mockup-editor` 
+
+`mvn clean install` 
+
+For the first time, use clean,
+
 then use mvn install for all following builds)
  
 This will build the project.
  This command will install node.js locally for this project, as well as make an angular project in mockup-client.
  
- ## Run Spring Server
- `cd /YOUR_DIR/mockup-editor` \
- `mvn spring-boot:run` \
+## Run Spring Server 
+ `cd /YOUR_DIR/mockup-editor`  
+ `mvn spring-boot:run`  
  
  server available at http://localhost:8090
  
@@ -61,6 +75,7 @@ with powershell: \
 `Get-Process -Id (Get-NetTCPConnection -LocalPort 8090 -ea SilentlyContinue).OwningProcess | Stop-Process` \
 
 headsUp: needs Powershell v3 or higher to be installed.
+
 
 
 

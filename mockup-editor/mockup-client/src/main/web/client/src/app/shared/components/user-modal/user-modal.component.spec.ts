@@ -6,6 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { UserModalComponent } from './user-modal.component';
+import { AuthService } from '../../../auth/auth.service';
+import { AuthLogoutInfo } from '../../../auth/logout-info';
 
 describe('UserModalComponent', () => {
   let component: UserModalComponent;

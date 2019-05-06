@@ -20,7 +20,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 
     private static final Logger logger  = LoggerFactory.getLogger(UserDAOImpl.class);
     private static final String PSTMT_CREATE = "INSERT INTO users (email,username,password) VALUES (?,?,?)";
-    private static final String PSTMT_UPDATE = "UPDATE users SET email=?, username=?, password=? WHERE id=?";
+    private static final String PSTMT_UPDATE = "UPDATE users SET username=?, password=? WHERE id=?";
     private static final String PSTMT_DELETE = "DELETE FROM users WHERE id=?";
     private static final String PSTMT_DELETE_JT_USERS_PROJECTS="DELETE FROM user_project WHERE user_id=?";
     private static final String PSTMT_FINDBYID = "SELECT * FROM users WHERE id=?";
@@ -78,10 +78,9 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
         try {
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_UPDATE);
-            pstmt.setString(1,user.getEmail());
-            pstmt.setString(2,user.getUsername());
-            pstmt.setString(3,user.getPassword());
-            pstmt.setInt(4,user.getId());
+            pstmt.setString(1,user.getUsername());
+            pstmt.setString(2,user.getPassword());
+            pstmt.setInt(3,user.getId());
             pstmt.executeUpdate();
         }catch (SQLException e){
             logger.error(e.getMessage());

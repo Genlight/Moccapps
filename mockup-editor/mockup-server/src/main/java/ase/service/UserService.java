@@ -57,6 +57,8 @@ public interface UserService extends UserDetailsService {
 
     void setToken(String username, String newToken);
 
+    boolean update(User user);
+
     /**
      * Find users by the given searchterm matching the email or the username.
      *
