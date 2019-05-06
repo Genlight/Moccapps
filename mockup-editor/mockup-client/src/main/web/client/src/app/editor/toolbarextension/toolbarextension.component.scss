@@ -4,8 +4,17 @@
     //border-left: 1px solid #CACACA;
     height: 100%;
     position: fixed;
+    z-index: 1;
 }
 
 .extensionhidden {
     display: none;
+}
+
+.elementImage {
+    width: 90%;
+}
+
+.referenceImage {
+    width: 100%;
 }

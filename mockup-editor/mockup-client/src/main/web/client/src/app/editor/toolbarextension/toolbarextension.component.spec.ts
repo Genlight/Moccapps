@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { DndModule } from 'ngx-drag-drop';
 
 import { ToolbarextensionComponent } from './toolbarextension.component';
 
@@ -8,7 +9,8 @@ describe('ToolbarextensionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToolbarextensionComponent ]
+      declarations: [ ToolbarextensionComponent ],
+      imports: [ DndModule ],
     })
     .compileComponents();
   }));

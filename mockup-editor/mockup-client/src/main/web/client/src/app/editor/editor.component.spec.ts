@@ -14,6 +14,7 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { DndModule } from 'ngx-drag-drop';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -35,7 +36,8 @@ describe('EditorComponent', () => {
       imports: [
         RouterTestingModule,
         HttpClientModule,
-        FormsModule
+        FormsModule,
+        DndModule
       ],
       providers: [AppModule]
     })
