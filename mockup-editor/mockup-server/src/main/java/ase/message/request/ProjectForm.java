@@ -1,16 +1,23 @@
 package ase.message.request;
 
 import ase.DTO.User;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
 @XmlRootElement
+@ApiModel
 public class ProjectForm implements Serializable {
+    @ApiModelProperty(example = "1")
     private int id;
+    @ApiModelProperty(example = "projectname")
     private String projectname;
+    @ApiModelProperty(dataType = "List", example = "user1,user2,user3")
     private List<User> users;
+    @ApiModelProperty(dataType = "List", example = "user1,user2,user3")
     private List<User> invitedUsers;
 
     public int getId() {
