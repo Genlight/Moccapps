@@ -91,7 +91,8 @@ public class RESTService {
                   HttpStatus.BAD_REQUEST);
       }
       User user = userService.getUserByEmail(editUserRequest.getEmail());
-      if(editUserRequest.getPassword() != "") {
+
+      if( editUserRequest.getPassword() != null ) {
         user.setPassword(encoder.encode(editUserRequest.getPassword()));
       }
       user.setUsername(editUserRequest.getUsername());
@@ -99,7 +100,7 @@ public class RESTService {
       System.out.println("Attempt to update User info: " + user.toString());
 
       if (userService.update(user)) {
-          return new ResponseEntity<>(new ResponseMessage("User info updated!"), HttpStatus.OK);
+          return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
       } else {
           return new ResponseEntity<>(new ResponseMessage("Something else went wrong"), HttpStatus.BAD_REQUEST);
       }

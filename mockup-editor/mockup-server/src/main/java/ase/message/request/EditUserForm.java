@@ -21,6 +21,9 @@ public class EditUserForm implements Serializable {
     }
 
     public String getPassword() {
+        if(this.password == null) {
+          return null;
+        }
         return password;
     }
 
