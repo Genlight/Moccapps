@@ -7,8 +7,18 @@
 <div class="modal-body">
   <div class="form-group">
     <label for="input_invite">Invite a user:</label>
-    <input type="text" id="input_invite" class="form-control" placeholder="Search for user by email or username"
-      [(ngModel)]="model" [(ngbTypeahead)]="searchUser">
+    <input 
+      #input
+      type="text"
+      id="input_invite" 
+      class="form-control" 
+      placeholder="Search for user by email or username"
+      (selectItem)="onSelectUser($event, input)"
+      [inputFormatter]="formatter"
+      [resultFormatter]="formatter"
+      [(ngModel)]="model"
+      [(ngbTypeahead)]="searchUser"
+    >
   </div>
   <div class="form-group">
     <label for="input_invite">Project members:</label>
@@ -22,11 +32,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of projectMembers">
-          <td>{{user.name}}</td>
+        <tr *ngFor="let userItem of projectUsers">
+          <td>{{userItem.user.username}}</td>
           <td>
             <span class="float-right">
-              <span class="badge badge-success">Team member</span>
+              <span class="badge badge-success" *ngIf="!userItem.hasInvite">Team member</span>
+              <span class="badge badge-warning" *ngIf="userItem.hasInvite">Invited</span>
               <span ngbDropdown class="ml-3">
                 <span ngbDropdownToggle>
                   <fa-icon [icon]="faEllipsisV"></fa-icon>

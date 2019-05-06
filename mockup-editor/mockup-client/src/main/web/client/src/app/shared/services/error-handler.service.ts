@@ -10,6 +10,7 @@ export class ErrorHandlerService {
 
   constructor() { 
     PNotifyButtons;
+    PNotify.defaults.styling = 'bootstrap4'; 
   }
 
   public handleError(error: HttpErrorResponse) {

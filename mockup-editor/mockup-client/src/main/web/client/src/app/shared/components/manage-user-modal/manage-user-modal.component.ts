@@ -5,6 +5,9 @@ import { Observable, of } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
 import { User } from '../../models/User';
 import { UserService } from '../../services/user.service';
+import { Project } from '../../models/Project';
+import { Invite } from '../../models/Invite';
+import { NotificationService } from '../../services/notification.service';
 @Component({
   selector: 'app-manage-user-modal',
   templateUrl: './manage-user-modal.component.html',
@@ -14,89 +17,135 @@ export class ManageUserModalComponent implements OnInit {
 
   faEllipsisV = faEllipsisV;
 
-  @Input() project;
+  projectRef: Project;
+
+  @Input()
+  set project(project) {
+    this.projectRef = project;
+  }
 
   model: any;
-  results = ['Test1', 'Test2'];
 
-  projectMembers: User[] = [
+  projectUsers: ManageUserItem[] = [
     {
-      name: 'Mark',
-      email: 'mark@example.com'
-    },
-    {
-      name: 'Mark2',
-      email: 'mark2@example.com'
-    },
-    {
-      name: 'Mark3',
-      email: 'mark@example.com'
-    },
-    {
-      name: 'Mark4',
-      email: 'mark@example.com'
-    },
-  ];
-
-  testUsers: Observable<User[]> = of(
-    [
-      {
-        name: 'Mark',
+      user: {
+        id: 1,
+        name: '',
+        username: 'Mark4',
         email: 'mark@example.com'
       },
-      {
-        name: 'Mark',
+      hasInvite: false
+    },
+    {
+      user: {
+        id: 2,
+        name: '',
+        username: 'Mark5',
         email: 'mark@example.com'
-      }
-    ]
-  )
+      },
+      hasInvite: false
+    },
+    {
+      user: {
+        id: 3,
+        name: '',
+        username: 'Mark6',
+        email: 'mark@example.com'
+      },
+      hasInvite: true
+    }
+  ];
 
-
+  invites: Invite[];
 
   constructor(
     public activeModal: NgbActiveModal,
+    private notificationService: NotificationService,
     private userService: UserService
   ) { }
 
   ngOnInit() {
+    this.loadProjectUsers();
+  }
+
+  loadProjectUsers() {
+    if (!this.projectRef) {
+      console.error('Project is null');
+    }
+
+    this.projectUsers = [];
+
+    for (let user of this.projectRef.users) {
+      this.projectUsers.push(
+        new ManageUserItem(user)
+      );
+    }
   }
 
   onRemoveUserFromProject(user) {
-    const index = this.projectMembers.indexOf(user);
-    this.projectMembers.splice(index, 1);
+    const index = this.projectUsers.indexOf(user);
+    this.projectUsers.splice(index, 1);
+  }
+
+  onSelectUser(user) {
+    console.log(user.item);
+    this.addUser(user.item);
+  }
+
+  addUser(user: User) {
+    let existingUsers: User[] = this.projectUsers.map(item => item.user);
+    let matches = existingUsers.filter(u => (u.email === user.email));
+    if (matches.length >= 1) {
+      this.notificationService.showError('User already exists in project.');
+      return;
+    }
+
+    this.projectUsers.push(
+      new ManageUserItem(user)
+    );
   }
 
   onApply() {
+    alert(JSON.stringify(this.projectUsers));
+
     this.activeModal.close();
   }
 
+  /**
+   * Typeahead search box
+   */
+
   search(searchTerm) {
-    //return of(['m1']);
     return this.userService.searchUser(searchTerm).pipe(
       map((response) => {
         const jsonUsers = ((response as any).message);
         let users = JSON.parse(jsonUsers) as User[];
-        //console.log(users);
-     
-        let usernames = users.map(user => user.username);
-        return usernames;
+        return users;
       })
-    )
+    );
   }
 
   searchUser = (text$: Observable<string>) => {
     return text$.pipe(
       debounceTime(200),
-      //map(term => (term.length < 2) ? [] : this.results),
       switchMap(term => 
-        this.search(term)
-        //this.search(term)
+        (term.length < 2) ? [] : this.search(term)
       )
-    /*   switchMap(term => 
-        
-      ); */
-      
-      // map(term => this.results.filter(result => result.toLowerCase().indexOf(term.toLowerCase())))
     );
+  }
+
+  formatter = (user: any) => user.username;
+}
+
+export class ManageUserItem {
+  constructor(user: User, invite?: Invite) {
+    this.user = user;
+    this.invite = invite;
+  }
+
+  user: User;
+  invite?: Invite;
+  get hasInvite(): boolean {
+    return (!!this.invite);
   }
 }
