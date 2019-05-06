@@ -54,4 +54,6 @@ public interface UserService extends UserDetailsService {
     String getToken(String username);
 
     void setToken(String username, String newToken);
+
+    boolean update(User user);
 }

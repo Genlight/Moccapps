@@ -3,36 +3,40 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { User } from '../../models/User';
+import { TokenStorageService } from '../../../auth/token-storage.service';
+import { environment } from '../../../../environments/environment';
+// const testUser = { id: 1, name: 'Name1', email: 'some.email@outlook.com' };
+// const source: Observable<User> = of(testUser);
 
-const testUser = { id: 1, name: 'Name1', email: 'some.email@outlook.com' };
-const source: Observable<User> = of(testUser);
-
-// const API_URL = environment.apiUrl;
-const API_URL = 'locahost:4200';
+const API_URL = environment.apiUrl;
 @Injectable({
   providedIn: 'root'
 })
 export class UserinfoService {
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private tokenService: TokenStorageService
   ) { }
 
   getUserInfo() {
-    // return this.http.get('/user');
-    return source;
+    return of({name: this.tokenService.getUsername(), email:  this.tokenService.getEmail });
   }
   updateUserInfo(user: User): Observable<any> {
+    // return of({message: 'success'});
+
     const postData = new FormData();
     postData.append('password', user.pwd);
     postData.append('username', user.name);
+    postData.append('email', this.tokenService.getEmail());
 
-    return of({message: 'success'});
-    // return this.http.post(API_URL + '/user', postData)
-    //   .pipe(
-    //     tap(_ => { console.log('called POST on /user'); }),
-    // catchError(this.handleError<any>('updateUserInfo', []))
-    //   );
+    this.tokenService.saveUsername(user.name);
+
+    return this.http.post(API_URL + '/user', postData)
+      .pipe(
+        tap(_ => { console.log('called POST on /user'); }),
+    catchError(this.handleError<any>('updateUserInfo', []))
+      );
   }
   /**
    * copied from: https://angular.io/tutorial/toh-pt6

@@ -128,4 +128,15 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Email: " + s + " not found");
         }
     }
+
+    @Override
+    public boolean update(User user) {
+      try {
+        userDAO.update(user);
+        return true;
+      } catch (DAOException e) {
+          e.printStackTrace();
+      }
+      return false;
+    }
 }
