@@ -98,6 +98,10 @@ export class NavbarComponent implements OnInit {
     // TODO
   }
 
+  onAllProjects() {
+    this.router.navigate(['projects']);
+  }
+
   onUndo() {
     // TODO
   }
