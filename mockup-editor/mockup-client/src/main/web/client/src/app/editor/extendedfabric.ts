@@ -6,13 +6,17 @@ import { UUID } from 'angular2-uuid';
 // Diese Klasse wrappt also alles, was wir für alle fabric-Objekte gleich haben wollen.
 //
 // ff. snippet dazu gefunden unter https://stackoverflow.com/questions/34347336/the-toobject-function-in-fabric-js
+/**
+ * overriding the toObject function from fabric.js to include the uuid correctly in the object
+ */
 fabric.Object.prototype.toObject = (function(toObject) {
-        return function() {
-            return fabric.util.object.extend(toObject.call(this), {
-                uuid: this.uuid,
-            });
-        };
-    })(fabric.Object.prototype.toObject);
+    return function(propertiesToInclude) {
+        propertiesToInclude = (propertiesToInclude || []).concat(
+          ['uuid']
+        );
+        return toObject.apply(this, [propertiesToInclude]);
+    };
+})(fabric.Object.prototype.toObject);
 
 // copied original initialize function, added UUID, works for all objects on new-call
 // see http://fabricjs.com/docs/fabric.js.html#line13062
@@ -25,3 +29,6 @@ fabric.Object.prototype.initialize = function(options) {
 
 // exportier das gewrappte fabric-Objekt; nicht zu verwechseln mit new fabric.Object()!
 export { fabric };
+
+
+
