@@ -18,7 +18,8 @@ public class OpenAPIConfiguration {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors
+                    .basePackage("ase"))
                 .paths(PathSelectors.any())
                 .build().apiInfo(apiEndPointsInfo());
     }
