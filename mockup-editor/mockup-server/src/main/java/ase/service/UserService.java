@@ -4,6 +4,8 @@ import ase.DTO.User;
 import ase.message.response.JwtResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
+
 public interface UserService extends UserDetailsService {
 
     /**
@@ -54,4 +56,14 @@ public interface UserService extends UserDetailsService {
     String getToken(String username);
 
     void setToken(String username, String newToken);
+
+    /**
+     * Find users by the given searchterm matching the email or the username.
+     *
+     * @author Yikai Yang
+     *
+     * @param searchterm the searchterm
+     * @return  A list of matching users.
+     */
+    List<User> searchByEmailOrUsername(String searchterm);
 }

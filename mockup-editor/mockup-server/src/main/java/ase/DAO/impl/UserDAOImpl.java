@@ -25,6 +25,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
     private static final String PSTMT_DELETE_JT_USERS_PROJECTS="DELETE FROM user_project WHERE user_id=?";
     private static final String PSTMT_FINDBYID = "SELECT * FROM users WHERE id=?";
     private static final String PSTMT_FINDBYEMAIL = "SELECT * FROM users WHERE email=?";
+    private static final String PSTMT_FINDBYEMAIL_OR_USERNAME = "SELECT * FROM users WHERE email LIKE ? OR username LIKE ?";
     private static final String PSTMT_FINDALL="SELECT * FROM users";
     private PreparedStatement pstmt;
 
@@ -195,5 +196,32 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
             logger.error("Error during Find by email of User: Couldn't connect to database");
             throw new DAOException("Error during Find by email of User: Couldn't connect to database");
         }
+    }
+
+    public List<User> searchByEmailOrUsername(String searchterm) throws DAOException {
+        List<User> users = new ArrayList<>();
+        try {
+            getConnection();
+            pstmt=connection.prepareStatement(PSTMT_FINDBYEMAIL_OR_USERNAME);
+            pstmt.setString(1, "%"+ searchterm + "%");
+            pstmt.setString(2, "%"+ searchterm + "%");
+            ResultSet rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+                users.add(new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password")));
+            }
+            rs.close();
+
+            return users;
+        }catch (SQLException e){
+            logger.error(e.getMessage());
+            logger.error("Error during Find by email of User: Couldn't connect to database");
+            throw new DAOException("Error during Find by email of User: Couldn't connect to database");
+        }
+
     }
 }

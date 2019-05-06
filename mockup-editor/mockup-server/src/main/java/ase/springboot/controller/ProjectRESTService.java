@@ -88,7 +88,8 @@ public class ProjectRESTService {
 
         //Add the initial creator to users field of the project, if he/she was not already in the users field.
         if (!containsCreator) {
-            project.addUser(userDetails.getId());
+            if (userDetails.getId() > 0)
+                project.addUser(userDetails.getId());
         }
 
         if(projectService.createProject(project)){

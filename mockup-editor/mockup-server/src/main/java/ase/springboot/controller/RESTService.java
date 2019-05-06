@@ -18,9 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -107,5 +105,12 @@ public class RESTService {
 
         return new ResponseEntity<String>("Success", headers, HttpStatus.OK);
 
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> searchUser(@RequestParam String searchTerm){
+        userService.searchByEmailOrUsername(searchTerm);
+
+        return new ResponseEntity<String>("Success", HttpStatus.OK);
     }
 }
