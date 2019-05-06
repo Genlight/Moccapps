@@ -105,8 +105,7 @@ public class ProjectRESTServiceTest {
     }
 
     @Test
-    public void createValidProject() throws Exception{
-
+    public void createValidProject() throws Exception {
        /* Project project=testData.project3;
         ObjectMapper objectMapper=new ObjectMapper();
 
