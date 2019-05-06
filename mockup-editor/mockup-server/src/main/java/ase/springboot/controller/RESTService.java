@@ -2,9 +2,9 @@ package ase.springboot.controller;
 
 import ase.DTO.User;
 import ase.Security.JwtProvider;
-import ase.message.request.LoginForm;
-import ase.message.request.LogoutForm;
-import ase.message.request.SignUpForm;
+import ase.message.request.User.LoginForm;
+import ase.message.request.User.LogoutForm;
+import ase.message.request.User.SignUpForm;
 import ase.message.response.ResponseMessage;
 import ase.service.UserService;
 import org.slf4j.Logger;

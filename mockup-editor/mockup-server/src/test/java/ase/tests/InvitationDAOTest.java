@@ -38,7 +38,7 @@ public class InvitationDAOTest extends AbstractDAOTest  {
         Invitation invitationBefore = invitationDAO.findById(1);
         assertEquals(invitation,invitationBefore);
         invitation.setInviter_user_id(2);
-        assertEquals(invitation, invitationDAO.update(invitation));
+        assertTrue(invitationDAO.update(invitation));
         invitation.setInviter_user_id(1);
     }
 

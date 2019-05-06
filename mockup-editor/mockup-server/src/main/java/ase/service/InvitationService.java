@@ -2,13 +2,13 @@ package ase.service;
 
 import ase.DTO.Invitation;
 import ase.DTO.User;
-import ase.message.request.InvitationForm;
+import ase.message.request.Invitation.InvitationForm;
 
 import java.util.List;
 
 public interface InvitationService {
 
-    Invitation create (InvitationForm invitation);
+    boolean create (InvitationForm invitationForm);
 
     boolean delete (Invitation invitation);
 
@@ -18,5 +18,5 @@ public interface InvitationService {
 
     List<Invitation> getAllInvitationsForInvitedUser(User user);
 
-
+    Invitation getInvitationById(int id);
 }

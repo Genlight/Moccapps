@@ -3,6 +3,7 @@ package ase.springboot.controller;
 
 import ase.DTO.Project;
 import ase.DTO.User;
+import ase.Security.UserDetails;
 import ase.message.request.ProjectForm;
 import ase.message.response.ResponseMessage;
 import ase.service.ProjectService;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,11 +34,15 @@ public class ProjectRESTService {
 
     @GetMapping("/project")
     public ResponseEntity<?> getProjects(){
-        ase.Security.UserDetails userDetails=(ase.Security.UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User tempUser = userService.getUserByEmail(userDetails.getUsername());
+
         if(userDetails==null){
             return new ResponseEntity<>(new ResponseMessage("not authorized"),HttpStatus.UNAUTHORIZED);
         }
-        List<Project> results=projectService.findProjectByUserId(userDetails.getId());
+
+        List<Project> results=projectService.findProjectByUserId(tempUser.getId());
         if(results==null){
             return ResponseEntity.notFound().build();
         }
@@ -50,14 +56,16 @@ public class ProjectRESTService {
                 if(user==null) {
                     return  ResponseEntity.notFound().build();
                 }
-                projectForm.addUser(user);
+                else{
+                    projectForm.addUser(user);
+                }
             }
             projectForms.add(projectForm);
         }
         ObjectMapper objectMapper=new ObjectMapper();
         try {
             String json=objectMapper.writeValueAsString(projectForms);
-            return new ResponseEntity<>(new ResponseMessage(json),HttpStatus.OK);
+            return ResponseEntity.ok(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new ResponseEntity<>(new ResponseMessage("error"),HttpStatus.BAD_REQUEST);

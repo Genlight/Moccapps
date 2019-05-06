@@ -65,7 +65,7 @@ public class InvitationDAOImpl extends AbstractDAO implements InvitationDAO {
     }
 
     @Override
-    public Invitation update(Invitation invitation) throws DAOException {
+    public boolean update(Invitation invitation) throws DAOException {
         if(invitation==null){
             logger.error("Error during Update of Invitation: invitation is empty");
             throw new DAOException("Error during Update of Invitation: invitation is empty");
@@ -85,7 +85,7 @@ public class InvitationDAOImpl extends AbstractDAO implements InvitationDAO {
             logger.error("Error during Update of Invitation: Couldn't connect to database");
             throw new DAOException("Error during Update of Invitation: Couldn't connect to database");
         }
-        return invitation;
+        return true;
     }
 
     @Override

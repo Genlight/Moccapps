@@ -4,6 +4,7 @@ import ase.DTO.User;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement
@@ -12,6 +13,8 @@ public class ProjectForm implements Serializable {
     private String projectname;
     private List<User> users;
     private List<User> invitedUsers;
+
+
 
     public int getId() {
         return id;
@@ -38,6 +41,9 @@ public class ProjectForm implements Serializable {
     }
 
     public void addUser(User user) {
+        if(this.users == null){
+            this.users = new ArrayList<>();
+        }
         this.users.add(user);
     }
 

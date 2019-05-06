@@ -41,6 +41,8 @@ public interface ProjectService {
      */
     boolean createProject(Project project);
 
+    Project getProjectById(int id);
+
 
 }
 

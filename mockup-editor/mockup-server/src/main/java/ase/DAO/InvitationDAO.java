@@ -8,7 +8,7 @@ public interface InvitationDAO {
 
     Invitation create(Invitation invitation) throws DAOException;
 
-    Invitation update(Invitation invitation) throws DAOException;
+    boolean update(Invitation invitation) throws DAOException;
 
     boolean delete(Invitation invitation) throws DAOException;
 

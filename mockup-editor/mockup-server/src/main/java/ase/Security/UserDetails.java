@@ -10,7 +10,6 @@ import java.util.Objects;
 
 public class UserDetails implements org.springframework.security.core.userdetails.UserDetails, Serializable {
 
-    public String name;
     private int id;
     private String username; //username = email because email is identifier
 
@@ -19,11 +18,10 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetails(int id, String name,
+    public UserDetails(int id,
                        String username, String password,
                        Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-        this.name = name;
         this.username = username;
         this.password = password;
         this.authorities = authorities;
@@ -42,10 +40,6 @@ public class UserDetails implements org.springframework.security.core.userdetail
                 user.getEmail(),
                 user.getPassword()
         );
-    }
-
-    public int getId() {
-        return id;
     }
 
     @Override

@@ -21,19 +21,19 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectDAO projectDAO;
 
-    private static final Logger logger= LoggerFactory.getLogger(ProjectServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
     @Override
     public List<Project> findProjectByUserId(int userId) {
-        List<Project> projects=new ArrayList<>();
-        try{
-            for(Project project:projectDAO.findAll()){
-                if(project.getUsers()!=null&&project.getUsers().contains(userId)) {
+        List<Project> projects = new ArrayList<>();
+        try {
+            for (Project project : projectDAO.findAll()) {
+                if (project.getUsers() != null && project.getUsers().contains(userId)) {
                     projects.add(project);
                 }
             }
             return projects;
-        }catch (DAOException e){
+        } catch (DAOException e) {
             logger.error(e.getMessage());
         }
         return null;
@@ -41,9 +41,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public boolean deleteProject(int id) {
-        try{
+        try {
             return projectDAO.delete(id);
-        }catch (DAOException e){
+        } catch (DAOException e) {
             return false;
         }
     }
@@ -67,5 +67,16 @@ public class ProjectServiceImpl implements ProjectService {
         } catch (DAOException e) {
             return false;
         }
+    }
+
+    @Override
+    public Project getProjectById(int id) {
+        try {
+            return projectDAO.findById(id);
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
 }
