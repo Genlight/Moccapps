@@ -9,6 +9,7 @@ import { Project } from '../../models/Project';
 import { Invite } from '../../models/Invite';
 import { NotificationService } from '../../services/notification.service';
 import { isUndefined } from 'util';
+import { ProjectService } from '../../services/project.service';
 @Component({
   selector: 'app-manage-user-modal',
   templateUrl: './manage-user-modal.component.html',
@@ -30,38 +31,39 @@ export class ManageUserModalComponent implements OnInit {
   model: any;
 
   manageUserList: ManageUserItem[] = [
-    // {
-    //   user: {
-    //     id: 1,
-    //     name: '',
-    //     username: 'Mark4',
-    //     email: 'mark@example.com'
-    //   },
-    //   invite = null
-    // },
-    // {
-    //   user: {
-    //     id: 2,
-    //     name: '',
-    //     username: 'Mark5',
-    //     email: 'mark@example.com'
-    //   }
-    // },
-    // {
-    //   user: {
-    //     id: 3,
-    //     name: '',
-    //     username: 'Mark6',
-    //     email: 'mark@example.com'
-    //   },
-    //   hasInvite: true
-    // }
+ /*    {
+      user: {
+        id: 1,
+        name: '',
+        username: 'Mark4',
+        email: 'mark@example.com'
+      },
+      invite = null
+    },
+    {
+      user: {
+        id: 2,
+        name: '',
+        username: 'Mark5',
+        email: 'mark@example.com'
+      }
+    },
+    {
+      user: {
+        id: 3,
+        name: '',
+        username: 'Mark6',
+        email: 'mark@example.com'
+      },
+      hasInvite: true
+    } */
   ];
   
   constructor(
     public activeModal: NgbActiveModal,
     private notificationService: NotificationService,
-    private userService: UserService
+    private userService: UserService,
+    private projectService: ProjectService,
   ) { }
 
   ngOnInit() {
@@ -94,8 +96,16 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   onRemoveUserFromProject(listItem: ManageUserItem) {
+    //Check if there is at least one team member left.
+    let members: ManageUserItem[] = this.manageUserList.filter(i => (i.status === TeamMemberStatus.Member));
+    if (members.length <= 1 && listItem.status === TeamMemberStatus.Member){
+      this.notificationService.showError('A project must have at least one team member', 'Remove unsuccessful');
+      return;
+    }
+
     const index = this.manageUserList.indexOf(listItem);
     this.manageUserList.splice(index, 1);
+
     if (listItem.status === TeamMemberStatus.Member) {
       const userIndex = this.projectClone.users.indexOf(listItem.user);
       this.projectClone.users.splice(userIndex, 1);
@@ -126,7 +136,8 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   onApply() {
-    alert(JSON.stringify(this.projectClone));
+    //alert(JSON.stringify(this.projectClone));
+    this.projectService.updateProject(this.projectClone);
     this.activeModal.close();
   }
 

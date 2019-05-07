@@ -6,10 +6,8 @@
     </button>
   </div>
   <div class="modal-body">
-    <form 
-      novalidate
-      #form="ngForm"
-    >
+      <form
+        #form="ngForm">
       <div class="form-group">
         <label for="projectName">Project name:</label>
         <input 
@@ -18,7 +16,8 @@
           class="form-control"
           name="project_name"
           #inputname
-          [(ngModel)]="project.name">
+          [(ngModel)]="project.name"
+          required>
       </div>
       <hr>
       <div class="row">
@@ -32,6 +31,7 @@
               name="height" 
               value="300"
               [(ngModel)]="project.height"
+              required
             >
             <div class="input-group-append">
               <span class="input-group-text">px</span>
@@ -48,6 +48,7 @@
               name="width" 
               value="300"
               [(ngModel)]="project.width"
+              required
             >
             <div class="input-group-append">
               <span class="input-group-text">px</span>
@@ -59,7 +60,7 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="modal.close('Cancel')">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="onCreateProject(form.value)">Create Project</button>
+    <button type="button" class="btn btn-primary" [disabled]="form.invalid" (click)="onCreateProject(form.value)">Create Project</button>
   </div>
 </ng-template>
 <button class="btn btn-primary" (click)="openModal(content)">Create new project</button>
