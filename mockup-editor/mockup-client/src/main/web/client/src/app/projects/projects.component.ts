@@ -68,11 +68,15 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadProjects(): void {
-    this.projectService.getProjects()
+    this.projectService.getProjects<Project[]>()
     .subscribe(
       (response) => {
+        console.log(response);
+        this.projects = response;
+        /* 
         const jsonProjects = ((response as any).message);
 
+        console.log(jsonProjects);
         try {
           let projects = JSON.parse(jsonProjects) as Project[];
           for (let project of projects) {
@@ -81,8 +85,11 @@ export class ProjectsComponent implements OnInit {
           this.projects = projects;
         } catch(e) {
           this.notificationService.showError('Response could not be parsed', 'ERROR');
-        }
-       
+        } */
+      },
+      (error) => {
+        console.error(error);
+        this.notificationService.showError(error, 'ERROR');
       }
     );
   }
@@ -91,12 +98,17 @@ export class ProjectsComponent implements OnInit {
     this.inviteService.getInvites()
     .subscribe(
       (response) => {
-        const jsonInvites = ((response as any).message);
+        let invites = (response as Invite[]);
+        this.invites = invites;
+        /*  const jsonInvites = ((response as any).message);
         let invites = JSON.parse(jsonInvites) as Invite[];
         for (let invite of invites) {
           console.log(invite);
         }
-        this.invites = invites;
+        this.invites = invites; */
+      },
+      (error) => {
+        this.notificationService.showError(error, 'ERROR');
       }
     );
   }
