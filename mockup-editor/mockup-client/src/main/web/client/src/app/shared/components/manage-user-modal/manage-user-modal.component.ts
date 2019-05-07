@@ -137,8 +137,11 @@ export class ManageUserModalComponent implements OnInit {
 
   onApply() {
     //alert(JSON.stringify(this.projectClone));
-    this.projectService.updateProject(this.projectClone);
-    this.activeModal.close();
+    this.projectService.updateProject(this.projectClone).subscribe(
+      (response) => {
+        this.activeModal.close();
+      }
+    );
   }
 
   /**

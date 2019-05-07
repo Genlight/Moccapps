@@ -106,7 +106,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadInvites(): void {
-    this.projectService.getProjects()
+    this.inviteService.getInvites()
     .subscribe(
       (response) => {
         const jsonInvites = ((response as any).message);
