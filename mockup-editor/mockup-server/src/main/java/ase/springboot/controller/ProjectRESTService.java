@@ -112,7 +112,7 @@ public class ProjectRESTService {
 
         if(projectForm.getUsers()!=null) {
             for (User user : projectForm.getUsers()) {
-                if (user.getId() == userDetails.getId()){
+                if (user.getEmail() == userDetails.getUsername()){
                     containsCreator = true;
                 }
                 project.addUser(user.getId());
@@ -121,13 +121,10 @@ public class ProjectRESTService {
 
         //Add the initial creator to users field of the project, if he/she was not already in the users field.
         if (!containsCreator) {
-            if (userDetails.getId() > 0)
-                project.addUser(userDetails.getId());
+            int userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+            project.addUser(userId);
         }
 
-        if(projectService.createProject(project)){
-            return new ResponseEntity<>(new ResponseMessage("success"),HttpStatus.OK);
-        }
         //TODO: TEST IF THIS WORKS AFTER MERGE
  		InvitationForm invitationForm = new InvitationForm();
         invitationForm.setProjectID(project.getId());

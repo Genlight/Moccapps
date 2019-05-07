@@ -59,6 +59,7 @@ public class ProjectForm implements Serializable {
     //TO BE REMOVED
     public void setInvitations(List<String> invitations) {
         this.invitations = invitations;
+    }
 
     public void setInvitedUsers(List<User> invitedUsers) {
         this.invitedUsers = invitedUsers;
