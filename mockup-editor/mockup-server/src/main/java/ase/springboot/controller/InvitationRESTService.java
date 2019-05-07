@@ -14,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,8 @@ public class InvitationRESTService {
 
     @Autowired
     ProjectService projectService;
+
+    private static final Logger logger = LoggerFactory.getLogger(InvitationRESTService.class);
 
 
     //GET		/project/invite
@@ -77,6 +80,7 @@ public class InvitationRESTService {
     //POST		/project/invite
     @PostMapping("/project/invite")
     public ResponseEntity<?> createInvitation(@Valid @RequestBody InvitationForm invitationForm) {
+        logger.error("CREATE:" + invitationForm);
         if (invitationService.create(invitationForm)) {
             return new ResponseEntity<>(new ResponseMessage("Success"), HttpStatus.OK);
         } else {
@@ -85,9 +89,9 @@ public class InvitationRESTService {
     }
 
 
-    //POST		/project/invite/{id}
+    //PUT		/project/invite/{id}
     @PutMapping(value = "/project/invite/{id}")
-    public ResponseEntity<?> updateProject(@Valid @RequestBody InvitationActionForm invitationForm){
+    public ResponseEntity<?> updateInvitation(@Valid @RequestBody InvitationActionForm invitationForm) {
         Invitation invitation = invitationService.getInvitationById(invitationForm.getId());
         String action = invitationForm.getAction();
 
@@ -106,8 +110,9 @@ public class InvitationRESTService {
     }
     //DELETE	/project/invite/{id}
     @DeleteMapping("/project/invite/{id}")
-    public ResponseEntity<?> deleteProject(@PathVariable("id") int id) {
+    public ResponseEntity<?> deleteInvitation(@PathVariable("id") int id) {
         Invitation invitation = invitationService.getInvitationById(id);
+        logger.error("DELETE:" + invitation.toString());
 
         if (invitationService.delete(invitation)){
             return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);

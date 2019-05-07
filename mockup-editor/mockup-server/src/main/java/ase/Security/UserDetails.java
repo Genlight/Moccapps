@@ -85,4 +85,14 @@ public class UserDetails implements org.springframework.security.core.userdetail
         UserDetails user = (UserDetails) o;
         return Objects.equals(id, user.id);
     }
+
+    @Override
+    public String toString() {
+        return "UserDetails{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", authorities=" + authorities +
+                '}';
+    }
 }

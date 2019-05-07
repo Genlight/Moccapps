@@ -3,6 +3,7 @@ package ase.service.impl;
 import ase.DAO.DAOException;
 import ase.DAO.InvitationDAO;
 import ase.DTO.Invitation;
+import ase.DTO.Project;
 import ase.DTO.User;
 import ase.message.request.Invitation.InvitationForm;
 import ase.service.InvitationService;
@@ -87,6 +88,18 @@ public class InvitationServiceImpl implements InvitationService {
             e.printStackTrace();
         }
 
+        return invitations;
+    }
+
+
+    @Override
+    public List<Invitation> getAllInvitationsForProject(Project project) {
+        List<Invitation> invitations = new ArrayList<>();
+        try {
+            invitations = invitationDAO.findInvitationsForProject(project.getId());
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
         return invitations;
     }
 

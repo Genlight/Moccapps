@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean logout(String email) {
+        logger.error("LOGOUT:" + email);
         return loggedInUserToken.remove(email) != null;
     }
 
@@ -70,6 +71,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean register(User user) {
+        System.out.println("Attempt to register:" + user.toString());
         try {
             userDAO.create(user);
             return true;
@@ -122,10 +124,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        try {
-            return ase.Security.UserDetails.build(userDAO.findByEmail(s));
-        } catch (DAOException e) {
+        if (!this.existsByEmail(s)) {
             throw new UsernameNotFoundException("Email: " + s + " not found");
         }
+        return ase.Security.UserDetails.build(this.getUserByEmail(s));
     }
 }

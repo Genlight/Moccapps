@@ -1,8 +1,7 @@
-package ase.tests;
+package ase.tests.DAOTests;
 
 import ase.DAO.DAOException;
 import ase.DAO.InvitationDAO;
-import ase.DTO.Invitation;
 import ase.DTO.Invitation;
 import org.junit.Test;
 import org.slf4j.Logger;

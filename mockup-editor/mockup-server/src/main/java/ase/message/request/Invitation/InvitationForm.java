@@ -18,6 +18,9 @@ public class InvitationForm {
         this.inviteeEmailList = inviteeEmailList;
     }
 
+    public InvitationForm() {
+    }
+
     public int getProjectID() {
         return projectID;
     }
@@ -40,6 +43,35 @@ public class InvitationForm {
 
     public void setInviteeEmailList(List<String> inviteeEmailList) {
         this.inviteeEmailList = inviteeEmailList;
+    }
+
+    @Override
+    public String toString() {
+        return "InvitationForm{" +
+                "projectID=" + projectID +
+                ", inviterID='" + inviterID + '\'' +
+                ", inviteeEmailList=" + inviteeEmailList +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InvitationForm that = (InvitationForm) o;
+
+        if (projectID != that.projectID) return false;
+        if (inviterID != null ? !inviterID.equals(that.inviterID) : that.inviterID != null) return false;
+        return inviteeEmailList != null ? inviteeEmailList.equals(that.inviteeEmailList) : that.inviteeEmailList == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = projectID;
+        result = 31 * result + (inviterID != null ? inviterID.hashCode() : 0);
+        result = 31 * result + (inviteeEmailList != null ? inviteeEmailList.hashCode() : 0);
+        return result;
     }
 }
 

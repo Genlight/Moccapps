@@ -44,6 +44,7 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             return projectDAO.delete(id);
         } catch (DAOException e) {
+            logger.error(e.getMessage());
             return false;
         }
     }
@@ -60,13 +61,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public boolean createProject(Project project) {
+    public Project createProject(Project project) {
         try {
-            projectDAO.create(project);
-            return true;
+            return projectDAO.create(project);
         } catch (DAOException e) {
-            return false;
+            logger.error(e.getMessage());
         }
+        return null;
     }
 
     @Override

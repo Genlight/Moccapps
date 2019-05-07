@@ -1,6 +1,7 @@
 package ase.service;
 
 import ase.DTO.Invitation;
+import ase.DTO.Project;
 import ase.DTO.User;
 import ase.message.request.Invitation.InvitationForm;
 
@@ -17,6 +18,8 @@ public interface InvitationService {
     boolean declineInvitation(Invitation invitation);
 
     List<Invitation> getAllInvitationsForInvitedUser(User user);
+
+    List<Invitation> getAllInvitationsForProject(Project project);
 
     Invitation getInvitationById(int id);
 }

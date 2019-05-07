@@ -10,6 +10,9 @@ public class InvitationActionForm implements Serializable{
     @NotBlank
     private String action;
 
+    public InvitationActionForm() {
+    }
+
     public InvitationActionForm(int id, String action) {
         this.id = id;
         this.action = action;
