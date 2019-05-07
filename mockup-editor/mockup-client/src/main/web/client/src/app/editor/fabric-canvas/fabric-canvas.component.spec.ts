@@ -6,7 +6,7 @@ import { ManagePagesService } from '../managepages.service';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { Observable } from 'rxjs';
 import { fabric } from '../extendedfabric';
-import {AppModule} from '../../app.module';
+import { DndModule } from 'ngx-drag-drop';
 
 describe('FabricCanvasComponent', () => {
   let component: FabricCanvasComponent;
@@ -18,7 +18,8 @@ describe('FabricCanvasComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ FabricCanvasComponent ],
-      providers: [ FabricmodifyService, ManagePagesService]
+      providers: [ FabricmodifyService, ManagePagesService],
+      imports: [ DndModule ],
     })
     .compileComponents();
   }));

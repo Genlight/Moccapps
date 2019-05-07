@@ -1,4 +1,7 @@
-<div id="canvasWrapper">
+<button (click)=onSaveToLocalStorage()>Save to Local Storage</button>
+<button (click)=onLoadFromLocalStorage()>Load from Local Storage</button>
+<div id="canvasWrapper" dndDropzone
+    (dndDrop)="onDrop($event)">
     <div class="canvas-container">
         <canvas id="canvas"></canvas>
     </div>

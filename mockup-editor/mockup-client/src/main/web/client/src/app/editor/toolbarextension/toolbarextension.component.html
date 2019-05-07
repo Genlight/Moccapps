@@ -1,3 +1,17 @@
 <div class="toolbarextension extensionhidden" id="toolbarextension">
-    <label id="extToolbarTitle">extended toolbar</label>
+  <label id="extToolbarTitle">extended toolbar</label>
+  <div id="extToolbarContent" class="referenceElement">
+    <span *ngFor="let elem of draggableElements">
+      <div [dndDraggable]="elem.data" 
+          [dndEffectAllowed]="elem.effectAllowed"
+          (dndStart)="onDragStart($event)"
+          (dndEnd)="onDragEnd($event)">
+        {{elem.name}}
+        <!--optionalchild element used as preview when dragging-->
+        <div dndDragImageRef class="elementImage">
+          <img src="{{elem.image}}" class="referenceImage">
+        </div>
+      </div>
+    </span>
   </div>
+</div>

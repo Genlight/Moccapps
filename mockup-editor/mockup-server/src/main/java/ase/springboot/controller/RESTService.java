@@ -2,12 +2,11 @@ package ase.springboot.controller;
 
 import ase.DTO.User;
 import ase.Security.JwtProvider;
-import ase.message.request.LoginForm;
-import ase.message.request.EditUserForm;
-import ase.message.request.LogoutForm;
-import ase.message.request.SignUpForm;
+import ase.message.request.*;
 import ase.message.response.ResponseMessage;
 import ase.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +18,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 //@RequestMapping("/api/v1")
@@ -130,5 +129,28 @@ public class RESTService {
 
         return new ResponseEntity<String>("Success", headers, HttpStatus.OK);
 
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> searchUser(@RequestParam String search){
+        List<User> users = userService.searchByEmailOrUsername(search);
+
+        List<UserForm> userForms = new ArrayList<>();
+        for(User user: users){
+            UserForm userForm = new UserForm();
+            userForm.setId(user.getId());
+            userForm.setEmail(user.getEmail());
+            userForm.setUsername(user.getUsername());
+            userForm.setPassword(user.getPassword());
+            userForms.add(userForm);
+        }
+        ObjectMapper objectMapper=new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(userForms);
+            return new ResponseEntity<>(new ResponseMessage(json),HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ResponseMessage("error"),HttpStatus.BAD_REQUEST);
+        }
     }
 }

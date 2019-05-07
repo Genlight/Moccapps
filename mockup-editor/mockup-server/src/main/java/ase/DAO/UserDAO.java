@@ -53,5 +53,14 @@ public interface UserDAO {
      */
     List<User> findAll() throws DAOException;
 
-
+    /**
+     * Find users by the given searchterm matching the email or the username.
+     *
+     * @author Yikai Yang
+     *
+     * @param searchterm the searchterm
+     * @return List of Users
+     * @throws DAOException if an error occurs during the execution a exception with a corresponding message is thrown
+     */
+    List<User> searchByEmailOrUsername(String searchterm) throws DAOException;
 }

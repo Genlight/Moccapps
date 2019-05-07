@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Project } from '../../models/Project';
+import { ProjectService } from '../../services/project.service';
 
 @Component({
   selector: 'app-rename-project-modal',
@@ -9,17 +10,20 @@ import { Project } from '../../models/Project';
 })
 export class RenameProjectModalComponent implements OnInit {
 
-  private projectName: string;
-  private projectRef: Project;
+  projectName: string;
+  projectRef: Project;
 
   @Output() 
   confirmed: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  constructor(private activeModal: NgbActiveModal) { }
+  constructor(
+    public activeModal: NgbActiveModal,
+    private projectService: ProjectService  
+  ) { }
 
   @Input()
   set project(project) {
-    this.projectName = project.name;
+    this.projectName = project.projectname;
     this.projectRef = project;
   }
 
@@ -27,8 +31,13 @@ export class RenameProjectModalComponent implements OnInit {
   }
 
   onSaveChange() {
-    this.projectRef.name = this.projectName;
-    this.confirmed.emit(true);
-    this.activeModal.close();
+    this.projectRef.projectname = this.projectName;
+    this.projectService.updateProject(this.projectRef).subscribe(
+      (response) => {
+        this.confirmed.emit(true);
+        this.activeModal.close();
+      }
+    );
+
   }
 }

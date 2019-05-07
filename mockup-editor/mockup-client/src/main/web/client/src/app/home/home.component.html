@@ -41,7 +41,7 @@
                          placeholder="Password" required ngModel>
                 </div>
 
-                <button type="submit" id='login' class="btn btn-primary btn-login">Login</button>
+                <button type="submit" id='login' [disabled]="logForm.invalid" class="btn btn-primary btn-login">Login</button>
               </form>
 
             </ng-template>
@@ -51,30 +51,30 @@
             <ng-template ngbTabContent>
               <form #regForm='ngForm' (ngSubmit)="onSubmit(regForm)">
                 <div class="form-group">
-                  <label for="inputFullname">Fullname</label>
-                  <input name='fullname' type="text" class="form-control form-control-user" id="inputFullname"
-                         placeholder="John Blabla" required ngModel>
-                </div>
-
-                <div class="form-group">
-                  <label for="inputUsername">Username</label>
+                  <label for="inputUsername">Username*</label>
                   <input name='username' type="text" class="form-control form-control-user" id="inputUsername"
                          aria-describedby="emailHelp" placeholder="Username" required ngModel>
                 </div>
 
                 <div class="form-group">
-                  <label for="inputEmail">Email</label>
+                  <label for="inputEmail">Email*</label>
                   <input name='email' type="email" class="form-control form-control-user" id="inputEmail"
                          aria-describedby="emailHelp" placeholder="Enter email address" required ngModel>
                 </div>
 
                 <div class="form-group">
-                  <label for="inputPassword">Password</label>
+                  <label for="inputPassword">Password*</label>
                   <input name='password' type="password" class="form-control form-control-user" id="inputPassword"
                          placeholder="Password" required ngModel>
                 </div>
+                <div class="form-group">
+                    <label for="inputPassword"></label>
+                    <input type="checkbox" name="serviceAgreement" class="" id="serviceAgreement"
+                            required ngModel> I agree to the terms of service and the privacy policy*
+                  </div>
 
-                <button type="submit" id='register' class="btn btn-primary btn-login">Register</button>
+                <button type="submit" id='register' [disabled]="regForm.invalid" class="btn btn-primary btn-login">Register</button>
+                <div style="font-size: small; text-align: center">Fields marked with * are mandatory.</div>
               </form>
 
             </ng-template>

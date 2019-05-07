@@ -12,6 +12,7 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { ToolbarComponent } from './editor/toolbar/toolbar.component';
 import { FabricCanvasComponent } from './editor/fabric-canvas/fabric-canvas.component';
 import { CreateProjectModalComponent } from './projects/create-project-modal/create-project-modal.component';
+import { DndModule } from 'ngx-drag-drop';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -27,6 +28,8 @@ import { CustomizepanelComponent } from './editor/customizepanel/customizepanel.
 import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarextension.component';
 import { UserModalComponent } from './shared/components/user-modal/user-modal.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
+import { RequestInterceptor } from './shared/interceptor/request.interceptor';
+import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 
 
 library.add(faBars);
@@ -50,7 +53,8 @@ library.add(faEllipsisV);
     ManageUserModalComponent,
     DeleteProjectModalComponent,
     RenameProjectModalComponent,
-    UserModalComponent
+    UserModalComponent,
+    LastediteddatePipe
   ],
   imports: [
     BrowserModule,
@@ -60,6 +64,7 @@ library.add(faEllipsisV);
     FontAwesomeModule,
     AppRoutingModule,
     HttpClientModule,
+    DndModule
   ],
   entryComponents: [
     ManageUserModalComponent,
@@ -68,10 +73,16 @@ library.add(faEllipsisV);
     UserModalComponent
   ],
   providers: [FabricmodifyService, ManagePagesService, {
-  provide: HTTP_INTERCEPTORS,
-  useClass: AuthInterceptor,
-  multi: true
-}],
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  },
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: RequestInterceptor,
+    multi: true
+  }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

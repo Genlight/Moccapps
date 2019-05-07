@@ -5,7 +5,7 @@
     </button>
   </div>
   <div class="modal-body">
-    <form>
+    <form #projNameForm='ngForm'>
         <div class="form-group">
             <label for="projectName">Project name:</label>
             <input 
@@ -15,6 +15,7 @@
               name="project_name"
               #inputname
               placeholder="Enter your project name"
+              required
               [(ngModel)]="projectName"
               >
           </div>
@@ -22,6 +23,6 @@
   </div>
   <div class="modal-footer">  
     <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Cancel')">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="onSaveChange()">Save Change</button>
+    <button type="button" [disabled]="projNameForm.invalid" class="btn btn-primary" (click)="onSaveChange()">Save Change</button>
   </div>
   
