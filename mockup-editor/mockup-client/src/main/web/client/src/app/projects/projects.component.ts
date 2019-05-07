@@ -28,6 +28,7 @@ export class ProjectsComponent implements OnInit {
 
   invites: Invite[] = [
     {
+      /*
       id: 1,
       project: {
         id: 1,
@@ -44,14 +45,14 @@ export class ProjectsComponent implements OnInit {
         ],
         lastEdited: new Date()
       },
-      invited: { 
+       invited: { 
         name: 'User 1',
         email: 'sadfasdf@asdf.com'
       },
       inviter: {   
         name: 'User 1',
         email: 'sadfasdf@asdf.com'
-      }
+      } */
     }
   ];
 
