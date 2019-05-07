@@ -74,6 +74,10 @@ export class ToolbarComponent implements OnInit {
     }
     const title = document.getElementById('extToolbarTitle');
     title.innerHTML = 'Available Elements';
+    const content = document.getElementById('extToolbarContent');
+    if (content.classList.contains('extensionhidden')) {
+      content.classList.remove('extensionhidden');
+    }
     const elementsbutton = document.getElementById('navElementsButton');
     elementsbutton.classList.toggle('btn-dark');
   }
@@ -92,6 +96,10 @@ export class ToolbarComponent implements OnInit {
     }
     const title = document.getElementById('extToolbarTitle');
     title.innerHTML = 'Group Overview';
+    const content = document.getElementById('extToolbarContent');
+    if (!content.classList.contains('extensionhidden')) {
+      content.classList.add('extensionhidden');
+    }
     const groupbutton = document.getElementById('navGroupsButton');
     groupbutton.classList.toggle('btn-dark');
   }
