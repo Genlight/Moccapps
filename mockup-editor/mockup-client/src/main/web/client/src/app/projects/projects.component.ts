@@ -13,6 +13,7 @@ import { TokenStorageService } from '../auth/token-storage.service';
 import { InviteService } from '../shared/services/invite.service';
 import { AuthService } from '../auth/auth.service';
 import { AuthLogoutInfo } from '../auth/logout-info';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-projects',
@@ -27,33 +28,6 @@ export class ProjectsComponent implements OnInit {
   ];
 
   invites: Invite[] = [
-    {
-      /*
-      id: 1,
-      project: {
-        id: 1,
-        projectname: 'Project 1',
-        users: [
-          { 
-            name: 'User 1',
-            email: 'sadfasdf@asdf.com'
-          },
-          { 
-            name: 'user 2',
-            email: 'asdfdsa@sdafds.com'
-          }
-        ],
-        lastEdited: new Date()
-      },
-       invited: { 
-        name: 'User 1',
-        email: 'sadfasdf@asdf.com'
-      },
-      inviter: {   
-        name: 'User 1',
-        email: 'sadfasdf@asdf.com'
-      } */
-    }
   ];
 
   info: any;
@@ -65,7 +39,8 @@ export class ProjectsComponent implements OnInit {
     private inviteService: InviteService,
     private tokenStorage: TokenStorageService,
     private data: DataService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -97,11 +72,17 @@ export class ProjectsComponent implements OnInit {
     .subscribe(
       (response) => {
         const jsonProjects = ((response as any).message);
-        let projects = JSON.parse(jsonProjects) as Project[];
-        for (let project of projects) {
-          console.log(project);
+
+        try {
+          let projects = JSON.parse(jsonProjects) as Project[];
+          for (let project of projects) {
+            console.log(project);
+          }
+          this.projects = projects;
+        } catch(e) {
+          this.notificationService.showError('Response could not be parsed', 'ERROR');
         }
-        this.projects = projects;
+       
       }
     );
   }

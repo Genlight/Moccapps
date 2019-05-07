@@ -125,12 +125,9 @@ public class ProjectRESTService {
             project.addUser(userId);
         }
 
-        //TODO: TEST IF THIS WORKS AFTER MERGE
- 		InvitationForm invitationForm = new InvitationForm();
-        invitationForm.setProjectID(project.getId());
-        invitationForm.setInviteeEmailList(projectForm.getInvitations());
-        logger.error("Project-Invite:" + invitationForm.toString());
-        if (!invitationService.create(invitationForm, userDetails.getUsername())) {
+        try {
+            this.projectService.createProject(project);
+        } catch (Exception e){
             return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
         }
 
