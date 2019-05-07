@@ -1,0 +1,339 @@
+{
+	"info": {
+		"_postman_id": "0b4b6ecc-1884-40ba-a3e9-90a3b9f1c644",
+		"name": "moccapps - regUser",
+		"description": "All API Requests which need Authentication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "user - Update pwd",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a13c066c-757d-49f7-b106-5b2362899cc7",
+								"exec": [
+									"pm.environment.set(\"password\",\"test3\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "947022b5-b7d2-4ffa-9172-136153ce9b38",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \t\"username\": \"john\",\n\t\"email\": \"john.tester@gmail.com\",\n\t\"password\": \"test3\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user - Update username",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a13c066c-757d-49f7-b106-5b2362899cc7",
+								"exec": [
+									"pm.environment.set(\"username\",\"Damn\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "947022b5-b7d2-4ffa-9172-136153ce9b38",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \t\"username\": \"Damn\",\n\t\"email\": \"john.tester@gmail.com\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder for user"
+		},
+		{
+			"name": "logout",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9b24cfbc-af99-4039-8986-ca7b69802e45",
+						"exec": [
+							"",
+							"const echoPostRequest = {",
+							"  url: 'https://lopcalhost:8090/login',",
+							"  method: 'POST',",
+							"  header: 'Content-Type:application/json',",
+							"  body: {",
+							"    mode: 'application/json',",
+							"    raw: JSON.stringify(",
+							"        {",
+							"        \tusername:pm.environment.get('username'),",
+							"        \tpassword:pm.environment.get('password')",
+							"        })",
+							"  }",
+							"};",
+							"",
+							"pm.sendRequest(echoPostRequest, function (err, res) {",
+							"console.log(err ? err : res.json());",
+							"    if (err === null) {",
+							"        console.log('Saving the token and expiry date')",
+							"        var responseJson = res.json();",
+							"        pm.environment.set('currentAccessToken', responseJson.access_token)",
+							"",
+							"        var expiryDate = new Date();",
+							"        expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+							"        pm.environment.set('accessTokenExpiry', expiryDate.getTime());",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "704e378e-c73d-497c-929f-febf1378fd31",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"john.tester@gmail.com\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/logout",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{currentAccessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "3fd85cfe-53c5-4aec-9647-4ae7bcb568c6",
+				"type": "text/javascript",
+				"exec": [
+					"",
+					"const echoPostRequest = {",
+					"  url: 'https://lopcalhost:8090/login',",
+					"  method: 'POST',",
+					"  header: 'Content-Type:application/json',",
+					"  body: {",
+					"    mode: 'application/json',",
+					"    raw: JSON.stringify(",
+					"        {",
+					"        \tusername:pm.environment.get('username'),",
+					"        \tpassword:pm.environment.get('password')",
+					"        })",
+					"  }",
+					"};",
+					"",
+					"var getToken = true;",
+					"",
+					"if (!pm.environment.get('accessTokenExpiry') || ",
+					"    !pm.environment.get('currentAccessToken')) {",
+					"    console.log('Token or expiry date are missing')",
+					"} else if (pm.environment.get('accessTokenExpiry') <= (new Date()).getTime()) {",
+					"    console.log('Token is expired')",
+					"} else {",
+					"    getToken = false;",
+					"    console.log('Token and expiry date are all good');",
+					"}",
+					"",
+					"if (getToken === true) {",
+					"    pm.sendRequest(echoPostRequest, function (err, res) {",
+					"    console.log(err ? err : res.json());",
+					"        if (err === null) {",
+					"            console.log('Saving the token and expiry date')",
+					"            var responseJson = res.json();",
+					"            pm.environment.set('currentAccessToken', responseJson.access_token)",
+					"    ",
+					"            var expiryDate = new Date();",
+					"            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+					"            pm.environment.set('accessTokenExpiry', expiryDate.getTime());",
+					"        }",
+					"    });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "4bed3a19-ea2d-400b-b567-b874b5d6b2a3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "c68f434c-03df-4750-b9a4-173883edbaf2",
+			"key": "email",
+			"value": "john.tester@gmail.com",
+			"type": "string"
+		},
+		{
+			"id": "c40614c1-9322-44cc-b59e-214c6fc4477e",
+			"key": "username",
+			"value": "john",
+			"type": "string"
+		},
+		{
+			"id": "dbd428d7-b02b-4538-b54f-2221eec7ac30",
+			"key": "password",
+			"value": "test1",
+			"type": "string"
+		},
+		{
+			"id": "df179f83-69e1-45e4-acf5-b68ffe2f59ab",
+			"key": "currentAccessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "b6810624-bcdc-4110-bc05-314329697e98",
+			"key": "accessTokenExpiry",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "164aed02-b376-448a-b146-eff1e175b7aa",
+			"key": "url",
+			"value": "localhost:8090",
+			"type": "string"
+		},
+		{
+			"id": "972801d4-a86c-45fa-aafe-2aadcd7e914f",
+			"key": "ContentTypeDefault",
+			"value": "application/json, text/plain, */*",
+			"type": "string"
+		},
+		{
+			"id": "ceae4e96-1350-4138-b4b6-e1c8f71ecb15",
+			"key": "project_name",
+			"value": "my_project",
+			"type": "string"
+		},
+		{
+			"id": "a26a53c9-43da-4fd6-8fa7-f139acf676ea",
+			"key": "project_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "f41d3fb7-a31b-4f5a-9880-dc7789e63d5f",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
