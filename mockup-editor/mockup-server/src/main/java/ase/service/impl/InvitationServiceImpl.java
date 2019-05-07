@@ -28,8 +28,8 @@ public class InvitationServiceImpl implements InvitationService {
     UserService userService;
 
     @Override
-    public boolean create(InvitationForm invitationForm) {
-        User inviter = userService.getUserByEmail(invitationForm.getInvitorID());
+    public boolean create(InvitationForm invitationForm, String username) {
+        User inviter = userService.getUserByEmail(username);
 
         for(String inviteeEmail:invitationForm.getInviteeEmailList()){
             User invitee = userService.getUserByEmail(inviteeEmail);
@@ -100,7 +100,13 @@ public class InvitationServiceImpl implements InvitationService {
         } catch (DAOException e) {
             e.printStackTrace();
         }
-        return invitations;
+        List<Invitation> resultInvitations = new ArrayList<>();
+        for (Invitation e : invitations) {
+            if (e.getStatus() == -1) {
+                resultInvitations.add(e);
+            }
+        }
+        return resultInvitations;
     }
 
     @Override
@@ -111,5 +117,60 @@ public class InvitationServiceImpl implements InvitationService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public boolean update(InvitationForm invitationForm, String inviterEmail) {
+        User inviter = userService.getUserByEmail(inviterEmail);
+        List<Invitation> currentInvitationList = new ArrayList<>();
+        List<User> currentInvitationUserList = new ArrayList<>();
+
+        List<User> newInvitationUserList = new ArrayList<>();
+        try {
+            currentInvitationList = invitationDAO.findInvitationsForProject(invitationForm.getProjectID());
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+
+        for (Invitation e : currentInvitationList) {
+            currentInvitationUserList.add(userService.findUserByID(e.getInvitee_user_id()));
+        }
+
+        for (String inviteeEmail : invitationForm.getInviteeEmailList()) {
+            User invitee = userService.getUserByEmail(inviteeEmail);
+            newInvitationUserList.add(invitee);
+        }
+
+        for (User invitee : newInvitationUserList) {
+
+            if (!currentInvitationUserList.contains(invitee)) {  //user is in new and not in current -> create invitation
+                Invitation invitation = new Invitation(invitationForm.getProjectID(), inviter.getId(), invitee.getId(), -1);
+                try {
+                    invitationDAO.create(invitation);
+                    return true;
+                } catch (DAOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        }
+
+        for (User e : currentInvitationUserList) {
+            if (!newInvitationUserList.contains(e)) { //User is in current list but not in new -> invitation deleted
+                for (Invitation f : currentInvitationList) {
+                    if (f.getInvitee_user_id() == e.getId()) {
+                        try {
+                            invitationDAO.delete(f);
+                            return true;
+                        } catch (DAOException e1) {
+                            e1.printStackTrace();
+                            return false;
+                        }
+
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

@@ -1,6 +1,6 @@
 package ase.message.response;
 
-import ase.DTO.Invitation;
+import ase.DTO.InvitationU;
 import ase.DTO.User;
 
 import javax.validation.constraints.NotBlank;
@@ -17,7 +17,7 @@ public class ProjectFormResponse implements Serializable {
     @NotBlank
     private String projectname;
     private List<User> users;
-    private List<Invitation> invitations;
+    private List<InvitationU> invitations;
 
     public int getId() {
         return id;
@@ -50,18 +50,18 @@ public class ProjectFormResponse implements Serializable {
         this.users.add(user);
     }
 
-    public void addInvitation(Invitation invitation) {
+    public void addInvitation(InvitationU invitation) {
         if (this.invitations == null) {
             this.invitations = new ArrayList<>();
         }
         this.invitations.add(invitation);
     }
 
-    public List<Invitation> getInvitations() {
+    public List<InvitationU> getInvitations() {
         return invitations;
     }
 
-    public void setInvitations(List<Invitation> invitations) {
+    public void setInvitations(List<InvitationU> invitations) {
         this.invitations = invitations;
     }
 
@@ -74,4 +74,5 @@ public class ProjectFormResponse implements Serializable {
                 ", invitations=" + invitations +
                 '}';
     }
+
 }
