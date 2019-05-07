@@ -2,6 +2,7 @@ package ase.springboot.controller;
 
 
 import ase.DTO.Invitation;
+import ase.DTO.InvitationU;
 import ase.DTO.Project;
 import ase.DTO.User;
 import ase.Security.UserDetails;
@@ -69,7 +70,20 @@ public class ProjectRESTService {
                 }
             }
             List<Invitation> invitations = invitationService.getAllInvitationsForProject(project);
-            projectForm.setInvitations(invitations);
+
+            List<InvitationU> invitationUS = new ArrayList<>();
+
+            for (Invitation e : invitations) {
+                InvitationU b = new InvitationU();
+                b.setId(e.getId());
+                b.setProject_id(e.getProject_id());
+                b.setInvitee(userService.findUserByID(e.getInvitee_user_id()));
+                b.setInviter(userService.findUserByID(e.getInviter_user_id()));
+                invitationUS.add(b);
+
+            }
+
+            projectForm.setInvitations(invitationUS);
 
             projectFormResponses.add(projectForm);
         }
@@ -104,12 +118,10 @@ public class ProjectRESTService {
 
         InvitationForm invitationForm = new InvitationForm();
         invitationForm.setProjectID(project.getId());
-        invitationForm.setInvitorID(userDetails.getUsername());
         invitationForm.setInviteeEmailList(projectForm.getInvitations());
-
         logger.error("Project-Invite:" + invitationForm.toString());
-        if (!invitationService.create(invitationForm)) {
-            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_GATEWAY);
+        if (!invitationService.create(invitationForm, userDetails.getUsername())) {
+            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
@@ -127,6 +139,18 @@ public class ProjectRESTService {
         if (projectService.updateProject(project)) {
             return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
         }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        InvitationForm invitationForm = new InvitationForm();
+        invitationForm.setProjectID(project.getId());
+        invitationForm.setInviteeEmailList(projectForm.getInvitations());
+        logger.error("Project-Invite:" + invitationForm.toString());
+        if (!invitationService.update(invitationForm, userDetails.getUsername())) {
+            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
+        }
+
         return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
     }
 
