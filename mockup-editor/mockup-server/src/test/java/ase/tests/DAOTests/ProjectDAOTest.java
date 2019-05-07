@@ -1,23 +1,13 @@
-package ase.tests;
+package ase.tests.DAOTests;
 
 import ase.DAO.DAOException;
 import ase.DAO.ProjectDAO;
-import ase.DAO.UserDAO;
 import ase.DTO.Project;
-import ase.springboot.Application;
-import org.junit.*;
-import org.junit.rules.Timeout;
-import org.junit.runner.RunWith;
+import org.junit.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.List;
 
@@ -56,7 +46,7 @@ public class ProjectDAOTest extends AbstractDAOTest {
 
     @Test
     public void findProjectByIdWithValidData() throws DAOException{
-        assertEquals("The returned Project equals the one provided by the id",testData.createdProject1,projectDAO.findById(1));
+        Assert.assertEquals("The returned Project equals the one provided by the id", testData.createdProject1, projectDAO.findById(1));
     }
 
     @Test

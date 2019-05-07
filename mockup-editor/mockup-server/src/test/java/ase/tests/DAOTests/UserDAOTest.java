@@ -1,26 +1,12 @@
-package ase.tests;
+package ase.tests.DAOTests;
 
 import ase.DAO.DAOException;
 import ase.DAO.UserDAO;
 import ase.DTO.User;
-import ase.springboot.Application;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.Timeout;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.ArrayList;
 import java.util.List;

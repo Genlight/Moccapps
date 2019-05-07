@@ -2,14 +2,23 @@ package ase.tests;
 
 import ase.DAO.UserDAO;
 import ase.DTO.User;
+import ase.Security.UserDetails;
 import ase.service.UserService;
+import ase.service.impl.UserServiceImpl;
 import ase.springboot.Application;
 import org.json.JSONObject;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -40,7 +49,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:schema.sql"),
         @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:deleteData.sql")
 })
-@Ignore
 public class RestDBIntegrationTest {
 
     @Autowired
@@ -73,6 +81,8 @@ public class RestDBIntegrationTest {
             .withPassword("test")
             .withUsername("test");
 
+    private static final Logger logger = LoggerFactory.getLogger(RestDBIntegrationTest.class);
+
     @Test
     public void registerUserWithValidData() throws Exception {
 
@@ -82,15 +92,18 @@ public class RestDBIntegrationTest {
         testUser.put("email", user.getEmail());
         testUser.put("password", user.getPassword());
 
-        mvc.perform(post("/api/v1/register")
-                .with(csrf())
+        mvc.perform(post("/register")
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"message\":\"User registered successfully!\"}"));
 
         User user1 = userDAO.findByEmail(user.getEmail());
+        user1.toString();
+        logger.error(user1.toString());
         assertEquals(user,user1);
+
+        assertEquals(UserDetails.build(user1), UserDetails.build(user));
 
     }
 
@@ -103,22 +116,21 @@ public class RestDBIntegrationTest {
         testUser.put("email", user.getEmail());
         testUser.put("password", user.getPassword());
 
-        mvc.perform(post("/api/v1/register")
+        mvc.perform(post("/register")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"message\":\"User registered successfully!\"}"));
 
         User user1 = userDAO.findByEmail(user.getEmail());
         assertEquals(user,user1);
 
-        mvc.perform(post("/api/v1/register")
+        mvc.perform(post("/register")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("false"));
+                .andExpect(status().isBadRequest());
 
 
     }
@@ -131,22 +143,24 @@ public class RestDBIntegrationTest {
         testUser.put("email", user.getEmail());
         testUser.put("password", user.getPassword());
 
-        mvc.perform(post("/api/v1/register")
-                .with(csrf())
+        mvc.perform(post("/register")
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"message\":\"User registered successfully!\"}"));
 
         User user1 = userDAO.findByEmail(user.getEmail());
         assertEquals(user,user1);
+        logger.error(user1.toString());
 
-        mvc.perform(post("/api/v1/login")
-                .with(csrf())
+        testUser = new JSONObject();
+        testUser.put("username", user.getEmail());
+        testUser.put("password", user.getPassword());
+
+        mvc.perform(post("/login")
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("{\"id\":1,\"username\":\"user1\",\"email\":\"email1\",\"password\":\"password1\"}"));
+                .andExpect(status().isOk());
 
 
         assertTrue(userService.isLoggedIn(user.getEmail()));
@@ -163,28 +177,24 @@ public class RestDBIntegrationTest {
         testUser.put("email", user.getEmail());
         testUser.put("password", user.getPassword());
 
-        mvc.perform(post("/api/v1/register")
+        mvc.perform(post("/register")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"message\":\"User registered successfully!\"}"));
 
         User user1 = userDAO.findByEmail(user.getEmail());
         assertEquals(user,user1);
 
-        mvc.perform(post("/api/v1/logout")
-                .with(csrf())
+        testUser = new JSONObject();
+        testUser.put("email", user.getEmail());
+
+        mvc.perform(post("/logout")
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("false"));
-
-
-        assertFalse(userService.isLoggedIn(user.getEmail()));
-
+                .andExpect(status().isBadRequest());
     }
-
 
     @Test
     @WithMockUser(value = "spring")
@@ -195,13 +205,11 @@ public class RestDBIntegrationTest {
         testUser.put("email", "b");
         testUser.put("password", "c");
 
-        mvc.perform(post("/api/v1/login")
+        mvc.perform(post("/login")
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string(""));
-
-        assertFalse(userService.isLoggedIn(user.getEmail()));
     }
 
     @Test
@@ -212,26 +220,33 @@ public class RestDBIntegrationTest {
         testUser.put("email", user.getEmail());
         testUser.put("password", user.getPassword());
 
-        mvc.perform(post("/api/v1/register")
+        mvc.perform(post("/register")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"message\":\"User registered successfully!\"}"));
 
         User user1 = userDAO.findByEmail(user.getEmail());
         assertEquals(user,user1);
 
-        mvc.perform(post("/api/v1/login")
+        testUser = new JSONObject();
+        testUser.put("username", user.getEmail());
+        testUser.put("password", user.getPassword());
+
+        mvc.perform(post("/login")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("{\"id\":1,\"username\":\"user1\",\"email\":\"email1\",\"password\":\"password1\"}"));
+                .andExpect(status().isOk());
 
         assertTrue(userService.isLoggedIn(user.getEmail()));
 
-        mvc.perform(post("/api/v1/logout")
+
+        testUser = new JSONObject();
+        testUser.put("email", user.getEmail());
+
+        mvc.perform(post("/logout")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -249,26 +264,32 @@ public class RestDBIntegrationTest {
         testUser.put("email", user.getEmail());
         testUser.put("password", user.getPassword());
 
-        mvc.perform(post("/api/v1/register")
+        mvc.perform(post("/register")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string("{\"message\":\"User registered successfully!\"}"));
 
         User user1 = userDAO.findByEmail(user.getEmail());
         assertEquals(user,user1);
 
-        mvc.perform(post("/api/v1/login")
+        testUser = new JSONObject();
+        testUser.put("username", user.getEmail());
+        testUser.put("password", user.getPassword());
+
+        mvc.perform(post("/login")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("{\"id\":1,\"username\":\"user1\",\"email\":\"email1\",\"password\":\"password1\"}"));
+                .andExpect(status().isOk());
 
         assertTrue(userService.isLoggedIn(user.getEmail()));
 
-        mvc.perform(post("/api/v1/logout")
+        testUser = new JSONObject();
+        testUser.put("email", user.getEmail());
+
+        mvc.perform(post("/logout")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -277,14 +298,24 @@ public class RestDBIntegrationTest {
 
         assertFalse(userService.isLoggedIn(user.getEmail()));
 
-        mvc.perform(post("/api/v1/logout")
+        testUser = new JSONObject();
+        testUser.put("email", user.getEmail());
+
+        mvc.perform(post("/logout")
                 .with(csrf())
                 .content(testUser.toString())
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("false"));
+                .andExpect(status().isBadRequest());
 
-        assertFalse(userService.isLoggedIn(user.getEmail()));
+    }
+
+    @TestConfiguration
+    protected static class Config {
+
+        @Bean
+        public UserService userService() {
+            return new UserServiceImpl();
+        }
     }
 
 

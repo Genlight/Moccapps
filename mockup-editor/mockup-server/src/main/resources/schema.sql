@@ -2,6 +2,7 @@ CREATE SEQUENCE IF NOT EXISTS seq_user;
 CREATE SEQUENCE IF NOT EXISTS seq_project;
 CREATE SEQUENCE IF NOT EXISTS seq_page;
 CREATE SEQUENCE IF NOT EXISTS seq_user_project;
+CREATE SEQUENCE IF NOT EXISTS seq_invitation;
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -35,6 +36,20 @@ CREATE TABLE IF NOT EXISTS pages
   page_data  json         NOT NULL,
   project_id INTEGER,
   FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
+
+);
+
+CREATE TABLE IF NOT EXISTS invitations
+(
+  id              INTEGER DEFAULT nextval('seq_invitation') PRIMARY KEY,
+  project_id      INTEGER NOT NULL,
+  inviter_user_id INTEGER NOT NULL,
+  invitee_user_id INTEGER NOT NULL,
+  status INTEGER NOT NULL,
+  FOREIGN KEY (inviter_user_id) REFERENCES users (id)  ON DELETE CASCADE,
+  FOREIGN KEY (invitee_user_id) REFERENCES users (id)  ON DELETE CASCADE,
+  FOREIGN KEY (project_id) REFERENCES projects (id)  ON DELETE CASCADE
+
 
 );
 

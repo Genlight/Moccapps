@@ -1,5 +1,6 @@
 package ase.tests;
 
+import ase.DTO.Invitation;
 import ase.DTO.Page;
 import ase.DTO.Project;
 import ase.DTO.User;
@@ -57,6 +58,10 @@ public class TestData {
     public Page createdPage1;
     public Page page2;
 
+
+    public Invitation createdInvitation1;
+    public Invitation invitation2;
+
     public void init(){
         createdUser1=new User(1,USER_1_USERNAME,USER_1_EMAIL,USER_1_PASSWORD);
         createdUser2=new User(2,USER_2_USERNAME,USER_2_EMAIL,USER_2_PASSWORD);
@@ -79,6 +84,9 @@ public class TestData {
 
         createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA);
         page2=new Page(PAGE_2_NAME,PAGE_2_ORDER,PAGE_2_PROJECT_ID,PAGE_2_PAGE_DATA);
+
+        createdInvitation1 = new Invitation(1,1,1,2,-1);
+        invitation2 = new Invitation(2,2,1,-1);
 
     }
 }

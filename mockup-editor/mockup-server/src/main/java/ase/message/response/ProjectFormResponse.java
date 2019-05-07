@@ -1,5 +1,6 @@
-package ase.message.request;
+package ase.message.response;
 
+import ase.DTO.Invitation;
 import ase.DTO.User;
 
 import javax.validation.constraints.NotBlank;
@@ -10,16 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement
-public class ProjectForm implements Serializable {
+public class ProjectFormResponse implements Serializable {
     @NotNull
     private int id;
     @NotBlank
     private String projectname;
-
-    private List<User> users = new ArrayList<>();
-    private List<String> invitations; //TO BE REMOVED
-    
-    private List<User> invitedUsers = new ArrayList<>();
+    private List<User> users;
+    private List<Invitation> invitations;
 
     public int getId() {
         return id;
@@ -46,22 +44,25 @@ public class ProjectForm implements Serializable {
     }
 
     public void addUser(User user) {
-        if(this.users == null){
+        if (this.users == null) {
             this.users = new ArrayList<>();
         }
         this.users.add(user);
     }
 
-    public List<String> getInvitations() {
+    public void addInvitation(Invitation invitation) {
+        if (this.invitations == null) {
+            this.invitations = new ArrayList<>();
+        }
+        this.invitations.add(invitation);
+    }
+
+    public List<Invitation> getInvitations() {
         return invitations;
     }
 
-    //TO BE REMOVED
-    public void setInvitations(List<String> invitations) {
+    public void setInvitations(List<Invitation> invitations) {
         this.invitations = invitations;
-
-    public void setInvitedUsers(List<User> invitedUsers) {
-        this.invitedUsers = invitedUsers;
     }
 
     @Override
@@ -71,7 +72,6 @@ public class ProjectForm implements Serializable {
                 ", projectname='" + projectname + '\'' +
                 ", users=" + users +
                 ", invitations=" + invitations +
-                ", invitedUsers=" + invitedUsers +
                 '}';
     }
 }

@@ -1,7 +1,6 @@
 package ase.service;
 
 import ase.DTO.Project;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.List;
 
@@ -37,9 +36,11 @@ public interface ProjectService {
      * persists the given project
      *
      * @param project to be created
-     * @return true on success, false otherwise
+     * @return project on success, null otherwise
      */
-    boolean createProject(Project project);
+    Project createProject(Project project);
+
+    Project getProjectById(int id);
 
 
 }
