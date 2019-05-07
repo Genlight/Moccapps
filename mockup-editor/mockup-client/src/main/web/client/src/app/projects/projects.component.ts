@@ -11,6 +11,8 @@ import { ProjectService } from '../shared/services/project.service';
 import { DataService } from '../data.service';
 import { TokenStorageService } from '../auth/token-storage.service';
 import { InviteService } from '../shared/services/invite.service';
+import { AuthService } from '../auth/auth.service';
+import { AuthLogoutInfo } from '../auth/logout-info';
 
 @Component({
   selector: 'app-projects',
@@ -22,21 +24,6 @@ export class ProjectsComponent implements OnInit {
   faEllipsisV = faEllipsisV;
 
   projects: Project[] = [
-/*     {
-      id: 1,
-      projectname: 'Project 1',
-      users: [
-        { 
-          name: 'User 1',
-          email: 'sadfasdf@asdf.com'
-        },
-        { 
-          name: 'user 2',
-          email: 'asdfdsa@sdafds.com'
-        }
-      ],
-      lastEdited: new Date()
-    }, */
   ];
 
   invites: Invite[] = [
@@ -76,7 +63,8 @@ export class ProjectsComponent implements OnInit {
     private projectService: ProjectService,
     private inviteService: InviteService,
     private tokenStorage: TokenStorageService,
-    private data: DataService
+    private data: DataService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -91,6 +79,16 @@ export class ProjectsComponent implements OnInit {
         username: this.tokenStorage.getUsername(),
       };
     });
+  }
+
+  onLogout() {
+    // this.api.logout(this.currUser.email);
+    this.authService.logout(new AuthLogoutInfo(this.tokenStorage.getEmail())).subscribe(
+      data => {
+        this.tokenStorage.signOut();
+        this.router.navigate(['']);
+      }
+    );
   }
 
   loadProjects(): void {
@@ -125,6 +123,9 @@ export class ProjectsComponent implements OnInit {
     this.projects.splice(this.projects.indexOf(project), 1);
   }
 
+  /**
+   * Invites
+   */
   acceptInvite(invite: Invite): void {
     this.inviteService.acceptInvite(invite).subscribe(
       () => {

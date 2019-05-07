@@ -32,16 +32,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let userItem of projectUsers">
+        <tr *ngFor="let userItem of manageUserList">
           <td>{{userItem.user.username}}</td>
           <td>
             <span class="float-right">
-              <span class="badge badge-success" *ngIf="!userItem.hasInvite">Team member</span>
-              <span class="badge badge-warning" *ngIf="userItem.hasInvite">Invited</span>
+              <span class="badge badge-success" *ngIf="isTeamMember(userItem.status)">Team member</span>
+              <span class="badge badge-warning" *ngIf="!isTeamMember(userItem.status)">Invited</span>
               <span ngbDropdown class="ml-3">
-                <span ngbDropdownToggle>
+                <button class="btn" ngbDropdownToggle>
                   <fa-icon [icon]="faEllipsisV"></fa-icon>
-                </span>
+                </button>
                 <div ngbDropdownMenu>
                   <button ngbDropdownItem (click)="onRemoveUserFromProject(user)">Remove</button>
                 </div>

@@ -28,6 +28,7 @@ import { ToolbarextensionComponent } from './editor/toolbarextension/toolbarexte
 import { UserModalComponent } from './shared/components/user-modal/user-modal.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
 import { RequestInterceptor } from './shared/interceptor/request.interceptor';
+import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 
 
 library.add(faBars);
@@ -51,7 +52,8 @@ library.add(faEllipsisV);
     ManageUserModalComponent,
     DeleteProjectModalComponent,
     RenameProjectModalComponent,
-    UserModalComponent
+    UserModalComponent,
+    LastediteddatePipe
   ],
   imports: [
     BrowserModule,

@@ -8,6 +8,7 @@ import { UserService } from '../../services/user.service';
 import { Project } from '../../models/Project';
 import { Invite } from '../../models/Invite';
 import { NotificationService } from '../../services/notification.service';
+import { isUndefined } from 'util';
 @Component({
   selector: 'app-manage-user-modal',
   templateUrl: './manage-user-modal.component.html',
@@ -18,46 +19,45 @@ export class ManageUserModalComponent implements OnInit {
   faEllipsisV = faEllipsisV;
 
   projectRef: Project;
+  projectClone: Project;
 
   @Input()
   set project(project) {
     this.projectRef = project;
+    this.projectClone = Object.assign({}, project);
   }
 
   model: any;
 
-  projectUsers: ManageUserItem[] = [
-    {
-      user: {
-        id: 1,
-        name: '',
-        username: 'Mark4',
-        email: 'mark@example.com'
-      },
-      hasInvite: false
-    },
-    {
-      user: {
-        id: 2,
-        name: '',
-        username: 'Mark5',
-        email: 'mark@example.com'
-      },
-      hasInvite: false
-    },
-    {
-      user: {
-        id: 3,
-        name: '',
-        username: 'Mark6',
-        email: 'mark@example.com'
-      },
-      hasInvite: true
-    }
+  manageUserList: ManageUserItem[] = [
+    // {
+    //   user: {
+    //     id: 1,
+    //     name: '',
+    //     username: 'Mark4',
+    //     email: 'mark@example.com'
+    //   },
+    //   invite = null
+    // },
+    // {
+    //   user: {
+    //     id: 2,
+    //     name: '',
+    //     username: 'Mark5',
+    //     email: 'mark@example.com'
+    //   }
+    // },
+    // {
+    //   user: {
+    //     id: 3,
+    //     name: '',
+    //     username: 'Mark6',
+    //     email: 'mark@example.com'
+    //   },
+    //   hasInvite: true
+    // }
   ];
-
-  invites: Invite[];
-
+  
   constructor(
     public activeModal: NgbActiveModal,
     private notificationService: NotificationService,
@@ -65,56 +65,74 @@ export class ManageUserModalComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.resetView();
     this.loadProjectUsers();
   }
 
+  resetView() {
+    this.manageUserList = [];
+  }
+
   loadProjectUsers() {
-    if (!this.projectRef) {
+    if (!this.projectClone) {
       console.error('Project is null');
     }
 
-    this.projectUsers = [];
+    //Add team members
+    for (const user of this.projectClone.users) {
+      this.manageUserList.push(
+        new ManageUserItem(user, TeamMemberStatus.Member)
+      );
+    }
 
-    for (let user of this.projectRef.users) {
-      this.projectUsers.push(
-        new ManageUserItem(user)
+    //Add invited members
+    for (const user of this.projectClone.invitedUsers) {
+      this.manageUserList.push(
+        new ManageUserItem(user, TeamMemberStatus.Invited)
       );
     }
   }
 
-  onRemoveUserFromProject(user) {
-    const index = this.projectUsers.indexOf(user);
-    this.projectUsers.splice(index, 1);
+  onRemoveUserFromProject(listItem: ManageUserItem) {
+    const index = this.manageUserList.indexOf(listItem);
+    this.manageUserList.splice(index, 1);
+    if (listItem.status === TeamMemberStatus.Member) {
+      const userIndex = this.projectClone.users.indexOf(listItem.user);
+      this.projectClone.users.splice(userIndex, 1);
+    } else {
+      const userIndex = this.projectClone.invitedUsers.indexOf(listItem.user);
+      this.projectClone.users.splice(userIndex, 1);
+    }
   }
 
   onSelectUser(user) {
     console.log(user.item);
-    this.addUser(user.item);
+    this.addNewUser(user.item);
   }
 
-  addUser(user: User) {
-    let existingUsers: User[] = this.projectUsers.map(item => item.user);
+  addNewUser(user: User) {
+    let existingUsers: User[] = this.manageUserList.map(item => item.user);
     let matches = existingUsers.filter(u => (u.email === user.email));
     if (matches.length >= 1) {
       this.notificationService.showError('User already exists in project.');
       return;
     }
 
-    this.projectUsers.push(
-      new ManageUserItem(user)
+    this.manageUserList.push(
+      new ManageUserItem(user, TeamMemberStatus.Invited)
     );
+
+    this.projectClone.invitedUsers.push(user);
   }
 
   onApply() {
-    alert(JSON.stringify(this.projectUsers));
-
+    alert(JSON.stringify(this.projectClone));
     this.activeModal.close();
   }
 
   /**
    * Typeahead search box
    */
-
   search(searchTerm) {
     return this.userService.searchUser(searchTerm).pipe(
       map((response) => {
@@ -135,17 +153,40 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   formatter = (user: any) => user.username;
+
+  isTeamMember(teammember: TeamMemberStatus): boolean {
+    if (teammember == TeamMemberStatus.Member) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
+/**
+ * List item container for manage user item dialog.
+ */
 export class ManageUserItem {
-  constructor(user: User, invite?: Invite) {
+  constructor(user: User, status: TeamMemberStatus, invite?: Invite) {
     this.user = user;
-    this.invite = invite;
+    this.invite = invite || undefined;
+    this.status = status;
   }
 
   user: User;
   invite?: Invite;
-  get hasInvite(): boolean {
-    return (!!this.invite);
+  status: TeamMemberStatus;
+  
+  hasInvite(): boolean {
+    return !isUndefined(this.invite);
   }
+}
+
+
+/**
+ * Enum indicating the member status of the user in the current project.
+ */
+export enum TeamMemberStatus {
+  Member,
+  Invited,
 }

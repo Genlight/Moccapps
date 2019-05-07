@@ -51,12 +51,6 @@
             <ng-template ngbTabContent>
               <form #regForm='ngForm' (ngSubmit)="onSubmit(regForm)">
                 <div class="form-group">
-                  <label for="inputFullname">Fullname*</label>
-                  <input name='fullname' type="text" class="form-control form-control-user" id="inputFullname"
-                         placeholder="John Doe" required ngModel>
-                </div>
-
-                <div class="form-group">
                   <label for="inputUsername">Username*</label>
                   <input name='username' type="text" class="form-control form-control-user" id="inputUsername"
                          aria-describedby="emailHelp" placeholder="Username" required ngModel>
