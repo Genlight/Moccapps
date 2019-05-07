@@ -45,13 +45,13 @@ export class FabricmodifyService {
 
   /* adds a white circle with a black border to the given canvas */
   addCircle(canvas: any) {
-    const circle = new fabric.Circle({ radius: 30, fill: 'white', left: 10, right: 10, stroke: 'black', strokeWidth: 2 });
+    const circle = new fabric.Circle({ radius: 60, fill: 'white', left: 10, right: 10, stroke: 'black', strokeWidth: 2 });
     canvas.add(circle);
   }
 
   /* adds a white square with a black border to the given canvas */
   addSquare(canvas: any) {
-    const square = new fabric.Rect({ width: 50, height: 50, fill: 'white', left: 10, right: 10, stroke: 'black', strokeWidth: 2 });
+    const square = new fabric.Rect({ width: 100, height: 100, fill: 'white', left: 10, right: 10, stroke: 'black', strokeWidth: 2 });
     canvas.add(square);
   }
 

@@ -44,16 +44,32 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); });
   }
 
+  /**
+   * saves the elements in the workspace as JSON string in the local storage
+   */
+  onSaveToLocalStorage() {
+    const json = JSON.stringify(this.canvas);
+    console.log(json);
+    localStorage.setItem('Canvas', json);
+  }
+
+  /**
+   * loads previously saved elements from the local storage and updates the workspace
+   * this overwrites all elements currently in the workspace, so elements that were not
+   * saved before are lost
+   */
+  onLoadFromLocalStorage() {
+    const storedCanvas = localStorage.getItem('Canvas');
+    this.canvas.loadFromJSON(storedCanvas, () => {
+      this.canvas.renderAll();
+    });
+  }
+
+  /**
+   * only used for tests in this component
+   */
   onAddText() {
-    this.modifyService.addText(this.canvas, 'Text');
-  }
-
-  onRemove() {
-    this.modifyService.removeElement(this.canvas);
-  }
-
-  onGroup() {
-    this.modifyService.group(this.canvas);
+    this.modifyService.addText(this.canvas, 'text');
   }
 
   onUngroup() {
