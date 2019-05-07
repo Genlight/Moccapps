@@ -67,13 +67,31 @@ public class ProjectRESTService {
 
     @PostMapping("/project")
     public ResponseEntity<?> createProject(@Valid @RequestBody ProjectForm projectForm){
+        ase.Security.UserDetails userDetails=(ase.Security.UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetails==null){
+            return new ResponseEntity<>(new ResponseMessage("not authorized"),HttpStatus.UNAUTHORIZED);
+        }
+
         Project project=new Project();
         project.setProjectname(projectForm.getProjectname());
+
+        boolean containsCreator = false;
+
         if(projectForm.getUsers()!=null) {
             for (User user : projectForm.getUsers()) {
+                if (user.getId() == userDetails.getId()){
+                    containsCreator = true;
+                }
                 project.addUser(user.getId());
             }
         }
+
+        //Add the initial creator to users field of the project, if he/she was not already in the users field.
+        if (!containsCreator) {
+            if (userDetails.getId() > 0)
+                project.addUser(userDetails.getId());
+        }
+
         if(projectService.createProject(project)){
             return new ResponseEntity<>(new ResponseMessage("success"),HttpStatus.OK);
         }

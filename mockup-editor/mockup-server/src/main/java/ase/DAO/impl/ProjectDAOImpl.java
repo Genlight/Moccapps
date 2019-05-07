@@ -72,37 +72,45 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
     }
 
     @Override
-    public Project update(Project project) throws DAOException {
-        if(project==null){
+    public Project update(Project updatedProject) throws DAOException {
+        if(updatedProject==null){
             logger.error("Error during Update of Project: Project is empty");
             throw new DAOException("Error during Update of Project: Project is empty");
         }
         try {
             getConnection();
-            List<Integer> userIds=findById(project.getId()).getUsers();
-            for (int userId:userIds){
-                if(!project.getUsers().contains(userId)){
-                    pstmt=connection.prepareStatement(PSTMT_CREATE_JT_USERS_PROJECTS);
-                    pstmt.setInt(1,userId);
-                    pstmt.setInt(2,project.getId());
-                    pstmt.executeUpdate();
-                    pstmt.close();
-                }
-            }
 
-            for(int userId : project.getUsers()){
-                if(userIds.contains(userId)){
+            //Existing user ids from project
+            List<Integer> existingUserIds=findById(updatedProject.getId()).getUsers();
+
+
+            //Delete entry for removed User
+            for (int userId:existingUserIds){
+                //If existing id is not in the updated project anymore. Then delete it.
+                if(!updatedProject.getUsers().contains(userId)){
                     pstmt=connection.prepareStatement(PSTMT_DELETE_JT_USERS_PROJECTS_SINGLE_ENTRY);
-                    pstmt.setInt(1,project.getId());
+                    pstmt.setInt(1,updatedProject.getId());
                     pstmt.setInt(2,userId);
                     pstmt.executeUpdate();
                     pstmt.close();
                 }
             }
 
+            //Create new entry for each new user
+            for(int userId : updatedProject.getUsers()){
+                //If new user id is not existant. Then add it.
+                if(!existingUserIds.contains(userId)){
+                    pstmt=connection.prepareStatement(PSTMT_CREATE_JT_USERS_PROJECTS);
+                    pstmt.setInt(1,userId);
+                    pstmt.setInt(2,updatedProject.getId());
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                }
+            }
+
             pstmt=connection.prepareStatement(PSTMT_UPDATE);
-            pstmt.setString(1,project.getProjectname());
-            pstmt.setInt(2,project.getId());
+            pstmt.setString(1,updatedProject.getProjectname());
+            pstmt.setInt(2,updatedProject.getId());
             pstmt.executeUpdate();
             pstmt.close();
 
@@ -111,7 +119,7 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
             logger.error("Error during Update of Project: Couldn't connect to database");
             throw new DAOException("Error during Update of Project: Couldn't connect to database");
         }
-        return project;
+        return updatedProject;
     }
 
     @Override

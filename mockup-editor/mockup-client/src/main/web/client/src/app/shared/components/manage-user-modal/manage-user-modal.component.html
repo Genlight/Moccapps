@@ -7,8 +7,18 @@
 <div class="modal-body">
   <div class="form-group">
     <label for="input_invite">Invite a user:</label>
-    <input type="text" id="input_invite" class="form-control" placeholder="Search for user by email or username"
-      [(ngModel)]="model" [(ngbTypeahead)]="searchUser">
+    <input 
+      #input
+      type="text"
+      id="input_invite" 
+      class="form-control" 
+      placeholder="Search for user by email or username"
+      (selectItem)="onSelectUser($event)"
+      [inputFormatter]="formatter"
+      [resultFormatter]="formatter"
+      [(ngModel)]="model"
+      [(ngbTypeahead)]="searchUser"
+    >
   </div>
   <div class="form-group">
     <label for="input_invite">Project members:</label>
@@ -22,17 +32,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of projectMembers">
-          <td>{{user.name}}</td>
+        <tr *ngFor="let userItem of manageUserList">
+          <td>{{userItem.user.username}}</td>
           <td>
             <span class="float-right">
-              <span class="badge badge-success">Team member</span>
+              <span class="badge badge-success" *ngIf="isTeamMember(userItem.status)">Team member</span>
+              <span class="badge badge-warning" *ngIf="!isTeamMember(userItem.status)">Invited</span>
               <span ngbDropdown class="ml-3">
-                <span ngbDropdownToggle>
+                <button class="btn" ngbDropdownToggle>
                   <fa-icon [icon]="faEllipsisV"></fa-icon>
-                </span>
+                </button>
                 <div ngbDropdownMenu>
-                  <button ngbDropdownItem (click)="onRemoveUserFromProject(user)">Remove</button>
+                  <button ngbDropdownItem (click)="onRemoveUserFromProject(userItem)">Remove</button>
                 </div>
               </span>
             </span>

@@ -6,6 +6,7 @@ import { CollaboratorPipe } from '../shared/pipes/collaborator.pipe';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
+import { LastediteddatePipe } from '../shared/pipes/lastediteddate.pipe';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -17,7 +18,8 @@ describe('ProjectsComponent', () => {
         ProjectsComponent,
         FaIconComponent,
         CreateProjectModalComponent,
-        CollaboratorPipe
+        CollaboratorPipe,
+        LastediteddatePipe
       ],
       imports: [
         FormsModule,

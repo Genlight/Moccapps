@@ -10,27 +10,31 @@ import { Project } from '../../models/Project';
 })
 export class DeleteProjectModalComponent implements OnInit {
 
-  private projectName: string;
+  projectName: string;
+  private projectRef: Project;
 
   @Input()
   set project(project: Project) {
-    this.projectName = project.name;
+    this.projectName = project.projectname;
+    this.projectRef = project;
   }
   
   @Output() 
   confirm: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  constructor(private activeModal: NgbActiveModal, private projectService: ProjectService) { 
+  constructor(public activeModal: NgbActiveModal, private projectService: ProjectService) { 
   }
 
   ngOnInit() {
   }
 
   onDeleteProject() {
-    // TODO
-    // this.projectService.deleteProject(this.project);
-    this.confirm.emit(true);
-    this.activeModal.close();
+    this.projectService.deleteProject(this.projectRef).subscribe((
+      () => {   
+        this.confirm.emit(true);
+        this.activeModal.close();
+      }
+    ));
   }
 
 }

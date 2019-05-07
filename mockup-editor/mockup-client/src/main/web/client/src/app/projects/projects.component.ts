@@ -7,6 +7,12 @@ import { RenameProjectModalComponent } from '../shared/components/rename-project
 import { DeleteProjectModalComponent } from '../shared/components/delete-project-modal/delete-project-modal.component';
 import { Project } from '../shared/models/Project';
 import { Invite } from '../shared/models/Invite';
+import { ProjectService } from '../shared/services/project.service';
+import { DataService } from '../data.service';
+import { TokenStorageService } from '../auth/token-storage.service';
+import { InviteService } from '../shared/services/invite.service';
+import { AuthService } from '../auth/auth.service';
+import { AuthLogoutInfo } from '../auth/logout-info';
 
 @Component({
   selector: 'app-projects',
@@ -17,66 +23,128 @@ export class ProjectsComponent implements OnInit {
 
   faEllipsisV = faEllipsisV;
 
-  user = {
-    username: 'Max Mustermann'
-  };
-
   projects: Project[] = [
-    {
-      id: 1,
-      name: 'Project 1',
-      members: [
-        { 
-          name: 'User 1',
-          email: 'sadfasdf@asdf.com'
-        },
-        { 
-          name: 'user 2',
-          email: 'asdfdsa@sdafds.com'
-        }
-      ],
-      lastEdited: new Date()
-    },
   ];
 
-  invitedProject = [
+  invites: Invite[] = [
     {
-      name: 'Super project',
-      invited_by: {
-        username: 'User 5'
-      }
-    },
-    {
-      name: 'Super project 2',
-      invited_by: {
-        username: 'User 5'
-      }
-    },
-    {
-      name: 'Super project 3',
-      invited_by: {
-        username: 'User 5'
+      id: 1,
+      project: {
+        id: 1,
+        projectname: 'Project 1',
+        users: [
+          { 
+            name: 'User 1',
+            email: 'sadfasdf@asdf.com'
+          },
+          { 
+            name: 'user 2',
+            email: 'asdfdsa@sdafds.com'
+          }
+        ],
+        lastEdited: new Date()
+      },
+      invited: { 
+        name: 'User 1',
+        email: 'sadfasdf@asdf.com'
+      },
+      inviter: {   
+        name: 'User 1',
+        email: 'sadfasdf@asdf.com'
       }
     }
   ];
 
-  invites: Invite[] = [
-    
-  ];
+  info: any;
 
-  constructor(private router: Router, private modalService: NgbModal) { 
+  constructor(
+    private router: Router, 
+    private modalService: NgbModal, 
+    private projectService: ProjectService,
+    private inviteService: InviteService,
+    private tokenStorage: TokenStorageService,
+    private data: DataService,
+    private authService: AuthService
+  ) { }
+
+  ngOnInit() {
+    this.loadProjects();
+    this.loadUserInfo();
   }
 
-  ngOnInit() {        
+  loadUserInfo(): void {
+    this.data.currentMessage.subscribe(item => {
+      this.info = {
+        token: this.tokenStorage.getToken(),
+        username: this.tokenStorage.getUsername(),
+      };
+    });
+  }
+
+  onLogout() {
+    // this.api.logout(this.currUser.email);
+    this.authService.logout(new AuthLogoutInfo(this.tokenStorage.getEmail())).subscribe(
+      data => {
+        this.tokenStorage.signOut();
+        this.router.navigate(['']);
+      }
+    );
+  }
+
+  loadProjects(): void {
+    this.projectService.getProjects()
+    .subscribe(
+      (response) => {
+        const jsonProjects = ((response as any).message);
+        let projects = JSON.parse(jsonProjects) as Project[];
+        for (let project of projects) {
+          console.log(project);
+        }
+        this.projects = projects;
+      }
+    );
+  }
+
+  loadInvites(): void {
+    this.inviteService.getInvites()
+    .subscribe(
+      (response) => {
+        const jsonInvites = ((response as any).message);
+        let invites = JSON.parse(jsonInvites) as Invite[];
+        for (let invite of invites) {
+          console.log(invite);
+        }
+        this.invites = invites;
+      }
+    );
+  }
+
+  deleteProject(project: Project): void {
+    this.projects.splice(this.projects.indexOf(project), 1);
+  }
+
+  /**
+   * Invites
+   */
+  acceptInvite(invite: Invite): void {
+    this.inviteService.acceptInvite(invite).subscribe(
+      () => {
+        this.invites.splice(this.invites.indexOf(invite), 1);
+      }
+    );
+  }
+
+  declineInvite(invite: Invite): void {
+    this.inviteService.declineInvite(invite).subscribe(
+      () => {
+        this.invites.splice(this.invites.indexOf(invite), 1);
+      }
+    );
   }
 
   /**
    * Projects 
    */
-  onCreateNewProject() {
-    this.router.navigate(['editor']);
-  }
-
   onOpenProject() {
     this.router.navigate(['editor']);
   }
@@ -96,15 +164,15 @@ export class ProjectsComponent implements OnInit {
     const modelRef = this.modalService.open(DeleteProjectModalComponent);
     modelRef.componentInstance.project = project;
     modelRef.componentInstance.confirm.subscribe(() => 
-      this.projects.splice(this.projects.indexOf(project), 1) 
+      this.deleteProject(project)
     );
   }
 
-  onAcceptInvite(project) {
-    // TODO
+  onAcceptInvite(invite: Invite) {
+    this.acceptInvite(invite);
   }
 
-  onDeclineInvite(project) {
-    // TODO
+  onDeclineInvite(invite: Invite) {
+    this.declineInvite(invite);
   }
 }

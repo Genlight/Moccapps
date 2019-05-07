@@ -7,6 +7,7 @@ import {AuthService} from '../auth/auth.service';
 import {TokenStorageService} from '../auth/token-storage.service';
 import {AuthLoginInfo} from '../auth/login-info';
 import {SignUpInfo} from '../auth/signup-info';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +30,9 @@ export class HomeComponent implements OnInit {
   constructor(private router: Router,
               private data: DataService,
               private authService: AuthService,
-              private tokenStorage: TokenStorageService) {
+              private tokenStorage: TokenStorageService,
+              private notificationService: NotificationService
+              ) {
   }
 
   ngOnInit() {
@@ -55,6 +58,7 @@ export class HomeComponent implements OnInit {
           this.isSignedUp = true;
           this.isSignUpFailed = false;
           this.tabs.select('loginTab');
+          this.notificationService.showSuccess(`Thank you for registering, ${logForm.form.value.username}`, 'Successfully registered.');
         },
         error => {
           console.log(error);
@@ -77,7 +81,7 @@ export class HomeComponent implements OnInit {
 
           this.isLoginFailed = false;
           this.isLoggedIn = true;
-          this.router.navigate(['editor']);
+          this.router.navigate(['projects']);
         },
         error => {
           console.log(error);

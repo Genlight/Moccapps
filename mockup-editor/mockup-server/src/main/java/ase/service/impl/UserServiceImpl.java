@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
+
 /**
  * @author Matthias Deimel
  */
@@ -127,6 +129,16 @@ public class UserServiceImpl implements UserService {
         } catch (DAOException e) {
             throw new UsernameNotFoundException("Email: " + s + " not found");
         }
+    }
+
+    @Override
+    public List<User> searchByEmailOrUsername(String searchterm){
+        try {
+            return userDAO.searchByEmailOrUsername(searchterm);
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

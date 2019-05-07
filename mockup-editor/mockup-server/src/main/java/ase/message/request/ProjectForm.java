@@ -4,14 +4,15 @@ import ase.DTO.User;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement
 public class ProjectForm implements Serializable {
     private int id;
     private String projectname;
-    private List<User> users;
-    private List<User> invitedUsers;
+    private List<User> users = new ArrayList<>();
+    private List<User> invitedUsers = new ArrayList<>();
 
     public int getId() {
         return id;

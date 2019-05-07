@@ -28,7 +28,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<Project> projects=new ArrayList<>();
         try{
             for(Project project:projectDAO.findAll()){
-                if(project.getUsers()!=null&&project.getUsers().contains(userId)) {
+                if(project != null && project.getUsers()!=null&&project.getUsers().contains(userId)) {
                     projects.add(project);
                 }
             }
