@@ -8,7 +8,7 @@ import { UserService } from '../../services/user.service';
 import { Project } from '../../models/Project';
 import { Invite } from '../../models/Invite';
 import { NotificationService } from '../../services/notification.service';
-import { isUndefined } from 'util';
+import { isUndefined, isArray } from 'util';
 import { ProjectService } from '../../services/project.service';
 import { ProjectUpdateRequest } from '../../api/request/project-update-request';
 @Component({
@@ -62,9 +62,9 @@ export class ManageUserModalComponent implements OnInit {
       this.projectUsers.push(user);
     }
 
-    //Create a copy of the invited users field.
-    for (let invitedUser of (this.projectRef.invitedUsers || [])) {
-      this.invitedUsers.push(invitedUser);
+    //Create a copy of the invitations list.
+    for (let invitation of (this.projectRef.invitations || [])) {
+      this.invitedUsers.push(invitation.invitee);
     }
 
     //Add team members
@@ -123,15 +123,12 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   onApply() {
-    //alert(JSON.stringify(this.projectClone));
-
-    const requestProject = new Project();
+    const requestProject: ProjectUpdateRequest = new ProjectUpdateRequest();
     requestProject.id = this.projectRef.id;
     requestProject.projectname = this.projectRef.projectname;
-    requestProject.invitedUsers = this.invitedUsers;
-    requestProject.users = this.projectUsers;
+    requestProject.invitations = (isArray(this.invitedUsers)) ? this.invitedUsers.map(invite => invite.email) : [];
 
-    this.projectService.updateProject(requestProject).subscribe(
+    this.projectService.updateProjectWithRequestEntity(requestProject).subscribe(
       (response) => {
         this.activeModal.close();
       },
