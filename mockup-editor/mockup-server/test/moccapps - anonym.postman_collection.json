@@ -1,0 +1,473 @@
+{
+	"info": {
+		"_postman_id": "4a12a15c-4cca-4da5-9874-e40b70f3f01c",
+		"name": "moccapps - anonym",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register",
+			"item": [
+				{
+					"name": "/register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "79c0b387-5366-4f87-8452-7cebad51f6f0",
+								"exec": [
+									"pm.test(\"Register a user\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if(jsonData.message !== \"Fail -> Email is already in use!\") {",
+									"        console.log(\"Status code should be 200\");",
+									"        pm.response.to.have.status(200);",
+									"    }",
+									"    else {",
+									"        pm.expect(jsonData.message).to.eql(\"Fail -> Email is already in use!\");",
+									"        console.log(\"User already registered.\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\t\n \t\"username\": \"Damn\",\n\t\"email\": \"john.testerdam@gmail.com\",\n\t\"password\": \"test1\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"register"
+							]
+						},
+						"description": "register an anonym user "
+					},
+					"response": []
+				},
+				{
+					"name": "/register - after",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "79c0b387-5366-4f87-8452-7cebad51f6f0",
+								"exec": [
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql(\"Fail -> Email is already in use!\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\t\n \t\"username\": \"Damn\",\n\t\"email\": \"john.tester@gmail.com\",\n\t\"password\": \"test1\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"register"
+							]
+						},
+						"description": "register an anonym user "
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "90af2f85-d3d8-4c34-ae91-b2bd6cfffafa",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Got the Bearer-Type\", function () {",
+									"    pm.expect(jsonData.tokenType).to.eql(\"Bearer\");",
+									"});",
+									"",
+									"var schema = {",
+									"  \"items\": {",
+									"    \"type\": \"string\"",
+									"  }",
+									"};",
+									"",
+									"pm.test('got a accesstoken', function() {",
+									"    pm.expect(tv4.validate(jsonData.accessToken, schema)).to.be.true; ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\n\t\"username\": \"john.tester@gmail.com\",\n\t\"password\": \"test1\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8090/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder for login"
+		},
+		{
+			"name": "home",
+			"item": [
+				{
+					"name": "home",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7337a838-cbe3-4aeb-9ea7-80a0939a97f4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8090/home",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"home"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder for home"
+		},
+		{
+			"name": "project - anonym",
+			"item": [
+				{
+					"name": "createProject",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "projectForm"
+						},
+						"url": {
+							"raw": "http://localhost:8090/project",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getProjects",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8090/project",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateProject",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "projectForm"
+						},
+						"url": {
+							"raw": "http://localhost:8090/project/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"project",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteProject",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "http://localhost:8090/project/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"project",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder for project calls, but for an anaonym user, so all calls should fail",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1e724353-d3c7-4dff-abad-91fc05868e57",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "de284fe3-18bc-4692-933e-4d700017857b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "user - anonym",
+			"item": [
+				{
+					"name": "user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "editUserRequest"
+						},
+						"url": {
+							"raw": "http://localhost:8090/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder for user calls, but for an anonym user, so all requests should fail, tests will be added",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c101968e-85cc-403a-83c6-6849b5e757e9",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1a50e2c4-3ff1-4881-a71c-2295d0b2a5cc",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "3bb6e4c4-f067-4854-a27d-1826e57f789c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "69c29e77-31d9-49d7-a65c-111366cfc49d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "f66511f6-d6b9-40a5-b34f-c435b319ba52",
+			"key": "url",
+			"value": "localhost:8090",
+			"type": "string"
+		}
+	]
+}
