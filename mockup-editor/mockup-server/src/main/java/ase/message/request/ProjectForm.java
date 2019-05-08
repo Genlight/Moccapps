@@ -1,6 +1,8 @@
 package ase.message.request;
 
 import ase.DTO.User;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -10,13 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement
+@ApiModel
 public class ProjectForm implements Serializable {
     @NotNull
+    @ApiModelProperty(example = "1")
     private int id;
     @NotBlank
+    @ApiModelProperty(example = "projectname")
     private String projectname;
-
-    private List<User> users = new ArrayList<>();
+    @ApiModelProperty(dataType = "List", example = "user1,user2,user3")
+    private List<User> users;
+    @ApiModelProperty(dataType = "List", example = "user1,user2,user3")
     private List<String> invitations = new ArrayList<>();
 
     public int getId() {
