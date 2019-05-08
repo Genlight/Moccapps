@@ -62,7 +62,6 @@ export class ManageUserModalComponent implements OnInit {
 
     //Create a copy of the users field.
     for (let user of (this.projectRef.users || [])) {
-      console.log(user);
       this.projectUsers.push(user);
     }
 
@@ -130,7 +129,6 @@ export class ManageUserModalComponent implements OnInit {
     const requestProject: ProjectUpdateRequest = new ProjectUpdateRequest();
     requestProject.id = this.projectRef.id;
     requestProject.projectname = this.projectRef.projectname;
-    alert(JSON.stringify(this.projectUsers));
     requestProject.users = this.projectUsers;
     requestProject.invitations = (isArray(this.invitedUsers)) ? this.invitedUsers.map(invite => invite.email) : [];
 
