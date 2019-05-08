@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface InvitationService {
 
-    boolean create (InvitationForm invitationForm);
+    boolean create(InvitationForm invitationForm, String username);
 
     boolean delete (Invitation invitation);
 
@@ -22,4 +22,6 @@ public interface InvitationService {
     List<Invitation> getAllInvitationsForProject(Project project);
 
     Invitation getInvitationById(int id);
+
+    boolean update(InvitationForm invitationForm, String username);
 }

@@ -4,7 +4,6 @@ import ase.DTO.Invitation;
 import ase.DTO.Project;
 import ase.DTO.User;
 import ase.message.request.Invitation.InvitationActionForm;
-import ase.message.request.Invitation.InvitationForm;
 import ase.message.response.Invitation.UserInvitationResponse;
 import ase.message.response.ResponseMessage;
 import ase.service.InvitationService;
@@ -73,11 +72,9 @@ public class InvitationRESTService {
             return new ResponseEntity<>(new ResponseMessage("error"),HttpStatus.BAD_REQUEST);
         }
 
-
-
     }
 
-    //POST		/project/invite
+/*    //POST		/project/invite
     @PostMapping("/project/invite")
     public ResponseEntity<?> createInvitation(@Valid @RequestBody InvitationForm invitationForm) {
         logger.error("CREATE:" + invitationForm);
@@ -86,7 +83,7 @@ public class InvitationRESTService {
         } else {
             return new ResponseEntity<>(new ResponseMessage("Error"), HttpStatus.BAD_REQUEST);
         }
-    }
+    }*/
 
 
     //PUT		/project/invite/{id}

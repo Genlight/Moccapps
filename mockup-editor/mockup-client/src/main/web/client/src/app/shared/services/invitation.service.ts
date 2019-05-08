@@ -19,7 +19,23 @@ export class InvitationService {
     constructor(id: number, action: string) {
       this.id = id;
       this.action = action;
+
     }
+  }
+
+
+  static invitationForm = class {
+    _projectID: number;
+    _inviterID: string;
+    _inviteeID: string[];
+
+
+    constructor(projectID: number, inviterID: string, inviteeID: string[]) {
+      this._projectID = projectID;
+      this._inviterID = inviterID;
+      this._inviteeID = inviteeID;
+    }
+
   }
 
   constructor(private apiService: ApiService) {
@@ -29,16 +45,30 @@ export class InvitationService {
     this.apiService.get('/project/invite');
   }
 
-  createInvitation(invitation: Invite) {
-    this.apiService.post('/project/invite', invitation);
-  }
+  /*  createInvitation(invitation: Invite) {
+      //const postData = new FormData();
+      // postData.append('password', user.password);
+      //postData.append('projectID' , invitation.id.toString());
+      //postData.append('inviterID', invitation.inviter.email);
 
-  deleteInvitation(invitation: Invite) {
-    if (!invitation.id) {
-      console.error(`ERROR: Invitation undefined`);
+      var stringList :string[] = [];
+
+      invitation.invitee.forEach(function (value) {
+        stringList.push(value.email);
+      });
+
+      //postData.append('inviterID', JSON.stringify(stringList));
+      var temp = new InvitationService.invitationForm(invitation.project.id,invitation.inviter.email,stringList);
+
+      this.apiService.post('/project/invite', temp);
     }
-    this.apiService.delete(`/project/invite/${invitation.id}`);
-  }
+
+    deleteInvitation(invitation: Invite) {
+      if (!invitation.id) {
+        console.error(`ERROR: Invitation undefined`);
+      }
+      this.apiService.delete(`/project/invite/${invitation.id}`);
+    }*/
 
   declineInvitation(invitation: Invite) {
     var temp = new InvitationService.actionMessage(invitation.id, "decline");

@@ -8,8 +8,9 @@ import { UserService } from '../../services/user.service';
 import { Project } from '../../models/Project';
 import { Invite } from '../../models/Invite';
 import { NotificationService } from '../../services/notification.service';
-import { isUndefined } from 'util';
+import { isUndefined, isArray } from 'util';
 import { ProjectService } from '../../services/project.service';
+import { ProjectUpdateRequest } from '../../api/request/project-update-request';
 @Component({
   selector: 'app-manage-user-modal',
   templateUrl: './manage-user-modal.component.html',
@@ -20,45 +21,21 @@ export class ManageUserModalComponent implements OnInit {
   faEllipsisV = faEllipsisV;
 
   projectRef: Project;
-  projectClone: Project;
+
+  invitedUsers: User[] = []; // List of who are/shall be invited to this project.
+  projectUsers: User[] = []; // List of all users who are already users of this project.
+
 
   @Input()
-  set project(project) {
+  set project(project: Project) {
     this.projectRef = project;
-    this.projectClone = Object.assign({}, project);
   }
 
   model: any;
 
   manageUserList: ManageUserItem[] = [
- /*    {
-      user: {
-        id: 1,
-        name: '',
-        username: 'Mark4',
-        email: 'mark@example.com'
-      },
-      invite = null
-    },
-    {
-      user: {
-        id: 2,
-        name: '',
-        username: 'Mark5',
-        email: 'mark@example.com'
-      }
-    },
-    {
-      user: {
-        id: 3,
-        name: '',
-        username: 'Mark6',
-        email: 'mark@example.com'
-      },
-      hasInvite: true
-    } */
   ];
-  
+
   constructor(
     public activeModal: NgbActiveModal,
     private notificationService: NotificationService,
@@ -76,19 +53,29 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   loadProjectUsers() {
-    if (!this.projectClone) {
-      console.error('Project is null');
+    if (this.projectRef == null) {
+      console.error('Project reference is null');
+    }
+
+    //Create a copy of the users field.
+    for (let user of (this.projectRef.users || [])) {
+      this.projectUsers.push(user);
+    }
+
+    //Create a copy of the invitations list.
+    for (let invitation of (this.projectRef.invitations || [])) {
+      this.invitedUsers.push(invitation.invitee);
     }
 
     //Add team members
-    for (const user of this.projectClone.users) {
+    for (const user of this.projectUsers) {
       this.manageUserList.push(
         new ManageUserItem(user, TeamMemberStatus.Member)
       );
     }
 
     //Add invited members
-    for (const user of this.projectClone.invitedUsers) {
+    for (const user of this.invitedUsers) {
       this.manageUserList.push(
         new ManageUserItem(user, TeamMemberStatus.Invited)
       );
@@ -97,8 +84,8 @@ export class ManageUserModalComponent implements OnInit {
 
   onRemoveUserFromProject(listItem: ManageUserItem) {
     //Check if there is at least one team member left.
-    let members: ManageUserItem[] = this.manageUserList.filter(i => (i.status === TeamMemberStatus.Member));
-    if (members.length <= 1 && listItem.status === TeamMemberStatus.Member){
+    let members: ManageUserItem[] = this.manageUserList.filter(i => (i.status === TeamMemberStatus.Member)); //all members
+    if (members.length <= 1 && listItem.status === TeamMemberStatus.Member) {
       this.notificationService.showError('A project must have at least one team member', 'Remove unsuccessful');
       return;
     }
@@ -107,11 +94,11 @@ export class ManageUserModalComponent implements OnInit {
     this.manageUserList.splice(index, 1);
 
     if (listItem.status === TeamMemberStatus.Member) {
-      const userIndex = this.projectClone.users.indexOf(listItem.user);
-      this.projectClone.users.splice(userIndex, 1);
+      const userIndex = this.projectUsers.indexOf(listItem.user);
+      this.projectUsers.splice(userIndex, 1);
     } else {
-      const userIndex = this.projectClone.invitedUsers.indexOf(listItem.user);
-      this.projectClone.users.splice(userIndex, 1);
+      const userIndex = this.invitedUsers.indexOf(listItem.user);
+      this.invitedUsers.splice(userIndex, 1);
     }
   }
 
@@ -121,8 +108,8 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   addNewUser(user: User) {
-    let existingUsers: User[] = this.manageUserList.map(item => item.user);
-    let matches = existingUsers.filter(u => (u.email === user.email));
+    const existingUsers: User[] = this.manageUserList.map(item => item.user);
+    const matches = existingUsers.filter(u => (u.email === user.email));
     if (matches.length >= 1) {
       this.notificationService.showError('User already exists in project.');
       return;
@@ -132,14 +119,21 @@ export class ManageUserModalComponent implements OnInit {
       new ManageUserItem(user, TeamMemberStatus.Invited)
     );
 
-    this.projectClone.invitedUsers.push(user);
+    this.invitedUsers.push(user);
   }
 
   onApply() {
-    //alert(JSON.stringify(this.projectClone));
-    this.projectService.updateProject(this.projectClone).subscribe(
+    const requestProject: ProjectUpdateRequest = new ProjectUpdateRequest();
+    requestProject.id = this.projectRef.id;
+    requestProject.projectname = this.projectRef.projectname;
+    requestProject.invitations = (isArray(this.invitedUsers)) ? this.invitedUsers.map(invite => invite.email) : [];
+
+    this.projectService.updateProjectWithRequestEntity(requestProject).subscribe(
       (response) => {
         this.activeModal.close();
+      },
+      (error) => {
+        this.notificationService.showError(error, 'ERROR');
       }
     );
   }
@@ -160,7 +154,7 @@ export class ManageUserModalComponent implements OnInit {
   searchUser = (text$: Observable<string>) => {
     return text$.pipe(
       debounceTime(200),
-      switchMap(term => 
+      switchMap(term =>
         (term.length < 2) ? [] : this.search(term)
       )
     );
@@ -190,7 +184,7 @@ export class ManageUserItem {
   user: User;
   invite?: Invite;
   status: TeamMemberStatus;
-  
+
   hasInvite(): boolean {
     return !isUndefined(this.invite);
   }

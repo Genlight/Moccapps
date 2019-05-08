@@ -41,4 +41,11 @@ export class TokenStorageService {
   public getEmail(): string {
     return sessionStorage.getItem(EMAIL_KEY);
   }
+
+  public isLoggedIn(): boolean {
+    if (this.getToken() == null) {
+      return false;
+    }
+    return true;
+  }
 }

@@ -1,11 +1,13 @@
 import { User } from './User';
+import { Invite } from './Invite';
 
 export class Project {
     id: number;
     projectname: string;
     private _lastEdited?: Date;
     users?: User[];
-    invitedUsers?: User[];
+    //invitedUsers?: User[];
+    invitations: Invite[];
 
     get lastEdited(): Date {
         alert(this._lastEdited);

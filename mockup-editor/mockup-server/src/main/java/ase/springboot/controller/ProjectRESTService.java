@@ -2,6 +2,7 @@ package ase.springboot.controller;
 
 
 import ase.DTO.Invitation;
+import ase.DTO.InvitationU;
 import ase.DTO.Project;
 import ase.DTO.User;
 import ase.Security.UserDetails;
@@ -69,7 +70,20 @@ public class ProjectRESTService {
                 }
             }
             List<Invitation> invitations = invitationService.getAllInvitationsForProject(project);
-            projectForm.setInvitations(invitations);
+
+            List<InvitationU> invitationUS = new ArrayList<>();
+
+            for (Invitation e : invitations) {
+                InvitationU b = new InvitationU();
+                b.setId(e.getId());
+                b.setProject_id(e.getProject_id());
+                b.setInvitee(userService.findUserByID(e.getInvitee_user_id()));
+                b.setInviter(userService.findUserByID(e.getInviter_user_id()));
+                invitationUS.add(b);
+
+            }
+
+            projectForm.setInvitations(invitationUS);
 
             projectFormResponses.add(projectForm);
         }
@@ -98,7 +112,7 @@ public class ProjectRESTService {
 
         if(projectForm.getUsers()!=null) {
             for (User user : projectForm.getUsers()) {
-                if (user.getId() == userDetails.getId()){
+                if (user.getEmail() == userDetails.getUsername()){
                     containsCreator = true;
                 }
                 project.addUser(user.getId());
@@ -107,22 +121,14 @@ public class ProjectRESTService {
 
         //Add the initial creator to users field of the project, if he/she was not already in the users field.
         if (!containsCreator) {
-            if (userDetails.getId() > 0)
-                project.addUser(userDetails.getId());
+            int userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+            project.addUser(userId);
         }
 
-        if(projectService.createProject(project)){
-            return new ResponseEntity<>(new ResponseMessage("success"),HttpStatus.OK);
-        }
-        //TODO: TEST IF THIS WORKS AFTER MERGE
- 		InvitationForm invitationForm = new InvitationForm();
-        invitationForm.setProjectID(project.getId());
-        invitationForm.setInvitorID(userDetails.getUsername());
-        invitationForm.setInviteeEmailList(projectForm.getInvitations());
-
-        logger.error("Project-Invite:" + invitationForm.toString());
-        if (!invitationService.create(invitationForm)) {
-            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_GATEWAY);
+        try {
+            this.projectService.createProject(project);
+        } catch (Exception e){
+            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
@@ -137,9 +143,22 @@ public class ProjectRESTService {
         for (User user : projectForm.getUsers()) {
             project.addUser(user.getId());
         }
+        /**
         if (projectService.updateProject(project)) {
             return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
+        }**/
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        InvitationForm invitationForm = new InvitationForm();
+        invitationForm.setProjectID(project.getId());
+        invitationForm.setInviteeEmailList(projectForm.getInvitations());
+        logger.error("Project-Invite:" + invitationForm.toString());
+        if (invitationService.update(invitationForm, userDetails.getUsername())) {
+            return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
         }
+
         return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
     }
 
