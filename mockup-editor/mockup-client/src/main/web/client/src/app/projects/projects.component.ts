@@ -75,19 +75,6 @@ export class ProjectsComponent implements OnInit {
       (response) => {
         console.log(response);
         this.projects = response;
-        /* 
-        const jsonProjects = ((response as any).message);
-
-        console.log(jsonProjects);
-        try {
-          let projects = JSON.parse(jsonProjects) as Project[];
-          for (let project of projects) {
-            console.log(project);
-          }
-          this.projects = projects;
-        } catch(e) {
-          this.notificationService.showError('Response could not be parsed', 'ERROR');
-        } */
       },
       (error) => {
         console.error(error);
@@ -126,6 +113,11 @@ export class ProjectsComponent implements OnInit {
     this.inviteService.acceptInvite(invite).subscribe(
       () => {
         this.invites.splice(this.invites.indexOf(invite), 1);
+        //Reload projects
+        this.loadProjects();
+      },
+      (error) => {
+        this.notificationService.showError(`Error: ${error}`, 'Error');
       }
     );
   }
@@ -134,6 +126,8 @@ export class ProjectsComponent implements OnInit {
     this.inviteService.declineInvite(invite).subscribe(
       () => {
         this.invites.splice(this.invites.indexOf(invite), 1);
+        //Reload projects
+        this.loadProjects();
       }
     );
   }
@@ -166,6 +160,7 @@ export class ProjectsComponent implements OnInit {
 
   onAcceptInvite(invite: Invite) {
     this.acceptInvite(invite);
+    
   }
 
   onDeclineInvite(invite: Invite) {
