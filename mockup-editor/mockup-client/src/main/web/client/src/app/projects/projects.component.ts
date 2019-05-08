@@ -143,6 +143,9 @@ export class ProjectsComponent implements OnInit {
     // alert(JSON.stringify(project));
     const modelRef = this.modalService.open(ManageUserModalComponent);
     modelRef.componentInstance.project = project;
+    modelRef.componentInstance.confirm.subscribe(() => 
+      this.loadProjects()
+    );
   }
 
   onRenameProject(project: Project) {

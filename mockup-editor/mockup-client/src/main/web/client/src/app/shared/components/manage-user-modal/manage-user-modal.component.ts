@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { Observable, of } from 'rxjs';
@@ -30,6 +30,9 @@ export class ManageUserModalComponent implements OnInit {
   set project(project: Project) {
     this.projectRef = project;
   }
+
+  @Output()
+  confirm: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   model: any;
 
@@ -130,6 +133,7 @@ export class ManageUserModalComponent implements OnInit {
 
     this.projectService.updateProjectWithRequestEntity(requestProject).subscribe(
       (response) => {
+        this.confirm.emit(true);
         this.activeModal.close();
       },
       (error) => {
