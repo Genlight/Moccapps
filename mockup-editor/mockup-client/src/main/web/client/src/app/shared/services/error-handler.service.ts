@@ -17,7 +17,7 @@ export class ErrorHandlerService {
     console.error(error);
     PNotify.error({
       title: error.statusText,
-      text: error.message
+      text: 'Error while communcating with server.'
     });
   }
 }

@@ -129,6 +129,7 @@ export class ManageUserModalComponent implements OnInit {
     const requestProject: ProjectUpdateRequest = new ProjectUpdateRequest();
     requestProject.id = this.projectRef.id;
     requestProject.projectname = this.projectRef.projectname;
+    requestProject.users = this.projectUsers;
     requestProject.invitations = (isArray(this.invitedUsers)) ? this.invitedUsers.map(invite => invite.email) : [];
 
     this.projectService.updateProjectWithRequestEntity(requestProject).subscribe(
