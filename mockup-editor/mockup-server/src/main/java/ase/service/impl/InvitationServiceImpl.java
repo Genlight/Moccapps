@@ -30,13 +30,13 @@ public class InvitationServiceImpl implements InvitationService {
     @Override
     public boolean create(InvitationForm invitationForm, String username) {
         User inviter = userService.getUserByEmail(username);
-
         for(String inviteeEmail:invitationForm.getInviteeEmailList()){
             User invitee = userService.getUserByEmail(inviteeEmail);
             Invitation invitation = new Invitation(invitationForm.getProjectID(),inviter.getId(),invitee.getId(),-1);
             try {
                 invitationDAO.create(invitation);
             } catch (DAOException e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
                 return false;
             }
@@ -58,7 +58,6 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     public boolean acceptInvitation(Invitation invitation) {
-        logger.error("ServiceImpl:"+invitation.toString());
         invitation.setStatus(1);
         try {
             return invitationDAO.update(invitation);
@@ -142,12 +141,11 @@ public class InvitationServiceImpl implements InvitationService {
         }
 
         for (User invitee : newInvitationUserList) {
-
             if (!currentInvitationUserList.contains(invitee)) {  //user is in new and not in current -> create invitation
                 Invitation invitation = new Invitation(invitationForm.getProjectID(), inviter.getId(), invitee.getId(), -1);
+                logger.info("Create new Invitation:" + invitation.toString());
                 try {
                     invitationDAO.create(invitation);
-                    return true;
                 } catch (DAOException e) {
                     e.printStackTrace();
                     return false;
@@ -159,9 +157,9 @@ public class InvitationServiceImpl implements InvitationService {
             if (!newInvitationUserList.contains(e)) { //User is in current list but not in new -> invitation deleted
                 for (Invitation f : currentInvitationList) {
                     if (f.getInvitee_user_id() == e.getId()) {
+                        logger.info("Delete Invitation:" + f.toString());
                         try {
                             invitationDAO.delete(f);
-                            return true;
                         } catch (DAOException e1) {
                             e1.printStackTrace();
                             return false;
