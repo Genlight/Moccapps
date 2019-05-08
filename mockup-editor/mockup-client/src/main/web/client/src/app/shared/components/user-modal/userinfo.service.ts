@@ -23,19 +23,7 @@ export class UserinfoService {
     return of({name: this.tokenService.getUsername(), email:  this.tokenService.getEmail });
   }
   updateUserInfo(user: User): Observable<any> {
-    // return of({message: 'success'});
-
-    const postData = new FormData();
-    // postData.append('password', user.pwd);
-    // postData.append('username', user.name);
-    // postData.append('email', this.tokenService.getEmail());
-    // let pwd = '';
-    // this.tokenService.saveUsername(user.name);
-
-    // if (user.pwd !== '') {
-    const pwd = user.pwd;
-    // }
-    return this.http.post(API_URL + '/user', {username: user.name, email: this.tokenService.getEmail(), password: pwd })
+    return this.http.post(API_URL + '/user', {username: user.name, email: this.tokenService.getEmail(), password: user.pwd })
       .pipe(
         tap(_ => {
           console.log('called POST on /user with profile: ' + JSON.stringify(user));
