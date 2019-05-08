@@ -7,6 +7,7 @@ import ase.DTO.Project;
 import ase.DTO.User;
 import ase.message.request.Invitation.InvitationForm;
 import ase.service.InvitationService;
+import ase.service.ProjectService;
 import ase.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,9 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    ProjectService projectService;
 
     @Override
     public boolean create(InvitationForm invitationForm, String username) {
@@ -61,6 +65,11 @@ public class InvitationServiceImpl implements InvitationService {
         logger.error("ServiceImpl:"+invitation.toString());
         invitation.setStatus(1);
         try {
+            //Add user to project's users field
+            Invitation invite = invitationDAO.findById(invitation.getId());
+            Project project = this.projectService.getProjectById(invite.getProject_id());
+            project.addUser(invite.getInvitee_user_id());
+
             return invitationDAO.update(invitation);
         } catch (DAOException e) {
             e.printStackTrace();

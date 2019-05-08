@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from 'src/app/api.service';
 import { Project } from '../models/Project';
 import { Observable } from 'rxjs';
+import { ProjectUpdateRequest } from '../api/request/project-update-request';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,12 @@ export class ProjectService {
   }
 
   updateProject(project: Project): Observable<any> {
-    return this.apiService.put(`/project/${project.id}`, project);
+    const projectRequest = new ProjectUpdateRequest();
+    projectRequest.id = project.id;
+    projectRequest.users = project.users;
+    projectRequest.projectname = project.projectname;
+    const invitedUserEmails: string[] = project.invitedUsers.map(user => user.email);
+    projectRequest.invitations = invitedUserEmails;
+    return this.apiService.put(`/project/${project.id}`, projectRequest);
   }
 }

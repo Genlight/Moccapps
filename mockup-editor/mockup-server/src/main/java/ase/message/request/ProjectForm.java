@@ -17,9 +17,7 @@ public class ProjectForm implements Serializable {
     private String projectname;
 
     private List<User> users = new ArrayList<>();
-    private List<String> invitations; //TO BE REMOVED
-    
-    private List<User> invitedUsers = new ArrayList<>();
+    private List<String> invitations = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -56,23 +54,8 @@ public class ProjectForm implements Serializable {
         return invitations;
     }
 
-    //TO BE REMOVED
     public void setInvitations(List<String> invitations) {
         this.invitations = invitations;
     }
 
-    public void setInvitedUsers(List<User> invitedUsers) {
-        this.invitedUsers = invitedUsers;
-    }
-
-    @Override
-    public String toString() {
-        return "ProjectForm{" +
-                "id=" + id +
-                ", projectname='" + projectname + '\'' +
-                ", users=" + users +
-                ", invitations=" + invitations +
-                ", invitedUsers=" + invitedUsers +
-                '}';
-    }
 }

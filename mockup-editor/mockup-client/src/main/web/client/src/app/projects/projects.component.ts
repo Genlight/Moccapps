@@ -14,6 +14,7 @@ import { InviteService } from '../shared/services/invite.service';
 import { AuthService } from '../auth/auth.service';
 import { AuthLogoutInfo } from '../auth/logout-info';
 import { NotificationService } from '../shared/services/notification.service';
+import { isArray } from 'util';
 
 @Component({
   selector: 'app-projects',
@@ -46,6 +47,7 @@ export class ProjectsComponent implements OnInit {
   ngOnInit() {
     this.loadProjects();
     this.loadUserInfo();
+    this.loadInvites();
   }
 
   loadUserInfo(): void {
@@ -96,20 +98,20 @@ export class ProjectsComponent implements OnInit {
 
   loadInvites(): void {
     this.inviteService.getInvites()
-    .subscribe(
-      (response) => {
-        let invites = (response as Invite[]);
-        this.invites = invites;
-        /*  const jsonInvites = ((response as any).message);
-        let invites = JSON.parse(jsonInvites) as Invite[];
-        for (let invite of invites) {
-          console.log(invite);
+      .subscribe(
+        (response) => {
+          console.log(`loadInvites: ${JSON.stringify(response)}`);
+          let invites = (response as Invite[]);
+          
+          if (!isArray(invites)) {
+            invites = [];
+          }
+         
+          this.invites = invites;
+        },
+        (error) => {
+          this.notificationService.showError(error, 'ERROR');
         }
-        this.invites = invites; */
-      },
-      (error) => {
-        this.notificationService.showError(error, 'ERROR');
-      }
     );
   }
 

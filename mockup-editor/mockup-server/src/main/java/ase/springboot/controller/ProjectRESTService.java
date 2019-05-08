@@ -143,9 +143,10 @@ public class ProjectRESTService {
         for (User user : projectForm.getUsers()) {
             project.addUser(user.getId());
         }
+        /**
         if (projectService.updateProject(project)) {
             return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
-        }
+        }**/
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -154,8 +155,8 @@ public class ProjectRESTService {
         invitationForm.setProjectID(project.getId());
         invitationForm.setInviteeEmailList(projectForm.getInvitations());
         logger.error("Project-Invite:" + invitationForm.toString());
-        if (!invitationService.update(invitationForm, userDetails.getUsername())) {
-            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
+        if (invitationService.update(invitationForm, userDetails.getUsername())) {
+            return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
