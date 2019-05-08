@@ -68,6 +68,7 @@ public class InvitationServiceImpl implements InvitationService {
             Invitation invite = invitationDAO.findById(invitation.getId());
             Project project = this.projectService.getProjectById(invite.getProject_id());
             project.addUser(invite.getInvitee_user_id());
+            projectService.updateProject(project);
 
             return invitationDAO.update(invitation);
         } catch (DAOException e) {
