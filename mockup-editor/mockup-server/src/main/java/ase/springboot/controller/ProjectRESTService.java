@@ -143,10 +143,8 @@ public class ProjectRESTService {
         for (User user : projectForm.getUsers()) {
             project.addUser(user.getId());
         }
-        /**
-        if (projectService.updateProject(project)) {
-            return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
-        }**/
+
+        projectService.updateProject(project);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
