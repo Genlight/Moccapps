@@ -96,8 +96,13 @@ public class InvitationServiceImpl implements InvitationService {
         } catch (DAOException e) {
             e.printStackTrace();
         }
-
-        return invitations;
+        List<Invitation> resultInvitations = new ArrayList<>();
+        for (Invitation e : invitations) {
+            if (e.getStatus() == -1) {
+                resultInvitations.add(e);
+            }
+        }
+        return resultInvitations;
     }
 
 
