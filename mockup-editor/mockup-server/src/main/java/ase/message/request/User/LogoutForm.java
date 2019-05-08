@@ -1,4 +1,4 @@
-package ase.message.request;
+package ase.message.request.User;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;

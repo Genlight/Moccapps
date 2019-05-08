@@ -92,11 +92,11 @@
       <tbody>
         <tr *ngFor="let invite of invites">
           <td>
-            <span>{{ invite.project.projectname }}</span>
+            <span>{{ invite.project.name }}</span>
           </td>
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
-              <span>{{ invite.inviter.name }}</span>
+              <span>{{ invite.inviter.username }}</span>
               <span>
                 <button 
                   class="btn btn-primary" 

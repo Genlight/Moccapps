@@ -13,6 +13,8 @@ import { TokenStorageService } from '../auth/token-storage.service';
 import { InviteService } from '../shared/services/invite.service';
 import { AuthService } from '../auth/auth.service';
 import { AuthLogoutInfo } from '../auth/logout-info';
+import { NotificationService } from '../shared/services/notification.service';
+import { isArray } from 'util';
 
 @Component({
   selector: 'app-projects',
@@ -27,32 +29,6 @@ export class ProjectsComponent implements OnInit {
   ];
 
   invites: Invite[] = [
-    {
-      id: 1,
-      project: {
-        id: 1,
-        projectname: 'Project 1',
-        users: [
-          { 
-            name: 'User 1',
-            email: 'sadfasdf@asdf.com'
-          },
-          { 
-            name: 'user 2',
-            email: 'asdfdsa@sdafds.com'
-          }
-        ],
-        lastEdited: new Date()
-      },
-      invited: { 
-        name: 'User 1',
-        email: 'sadfasdf@asdf.com'
-      },
-      inviter: {   
-        name: 'User 1',
-        email: 'sadfasdf@asdf.com'
-      }
-    }
   ];
 
   info: any;
@@ -64,12 +40,14 @@ export class ProjectsComponent implements OnInit {
     private inviteService: InviteService,
     private tokenStorage: TokenStorageService,
     private data: DataService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
     this.loadProjects();
     this.loadUserInfo();
+    this.loadInvites();
   }
 
   loadUserInfo(): void {
@@ -92,30 +70,35 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadProjects(): void {
-    this.projectService.getProjects()
+    this.projectService.getProjects<Project[]>()
     .subscribe(
       (response) => {
-        const jsonProjects = ((response as any).message);
-        let projects = JSON.parse(jsonProjects) as Project[];
-        for (let project of projects) {
-          console.log(project);
-        }
-        this.projects = projects;
+        console.log(response);
+        this.projects = response;
+      },
+      (error) => {
+        console.error(error);
+        this.notificationService.showError(error, 'ERROR');
       }
     );
   }
 
   loadInvites(): void {
     this.inviteService.getInvites()
-    .subscribe(
-      (response) => {
-        const jsonInvites = ((response as any).message);
-        let invites = JSON.parse(jsonInvites) as Invite[];
-        for (let invite of invites) {
-          console.log(invite);
+      .subscribe(
+        (response) => {
+          console.log(`loadInvites: ${JSON.stringify(response)}`);
+          let invites = (response as Invite[]);
+          
+          if (!isArray(invites)) {
+            invites = [];
+          }
+         
+          this.invites = invites;
+        },
+        (error) => {
+          this.notificationService.showError(error, 'ERROR');
         }
-        this.invites = invites;
-      }
     );
   }
 
@@ -130,6 +113,11 @@ export class ProjectsComponent implements OnInit {
     this.inviteService.acceptInvite(invite).subscribe(
       () => {
         this.invites.splice(this.invites.indexOf(invite), 1);
+        //Reload projects
+        this.loadProjects();
+      },
+      (error) => {
+        this.notificationService.showError(`Error: ${error}`, 'Error');
       }
     );
   }
@@ -138,6 +126,8 @@ export class ProjectsComponent implements OnInit {
     this.inviteService.declineInvite(invite).subscribe(
       () => {
         this.invites.splice(this.invites.indexOf(invite), 1);
+        //Reload projects
+        this.loadProjects();
       }
     );
   }
@@ -170,6 +160,7 @@ export class ProjectsComponent implements OnInit {
 
   onAcceptInvite(invite: Invite) {
     this.acceptInvite(invite);
+    
   }
 
   onDeclineInvite(invite: Invite) {

@@ -1,15 +1,17 @@
-package ase.tests;
+package ase.tests.RESTServiceTests;
 
 import ase.DTO.Project;
 import ase.DTO.User;
+import ase.Security.UserDetails;
+import ase.message.request.Invitation.InvitationForm;
 import ase.message.request.ProjectForm;
+import ase.service.InvitationService;
 import ase.service.ProjectService;
 import ase.springboot.Application;
 import ase.springboot.controller.ProjectRESTService;
-import org.json.JSONObject;
+import ase.tests.TestData;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -20,6 +22,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -55,6 +60,9 @@ public class ProjectRESTServiceTest {
     private ProjectService projectService;
 
     @Autowired
+    private InvitationService invitationService;
+
+    @Autowired
     private ProjectRESTService projectRESTService;
 
     @BeforeClass
@@ -81,6 +89,7 @@ public class ProjectRESTServiceTest {
 
     @Test
     public void updateValidProject()throws Exception{
+/*
         Project project=testData.createdProject1;
         ObjectMapper objectMapper=new ObjectMapper();
 
@@ -101,30 +110,53 @@ public class ProjectRESTServiceTest {
             .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("{\"message\":\"success\"}"));
+*/
 
     }
 
+    //TODO: TEST IF THIS WORKS AFTER MERGE
     @Test
-    public void createValidProject() throws Exception {
-       /* Project project=testData.project3;
+    public void createValidProject() throws Exception{
+  /**      UserDetails userDetails = new UserDetails(1, testData.createdUser1.getEmail(), testData.createdUser1.getPassword());
+        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, "");
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+
+        Project project=testData.project3;
+        project.setId(3);
         ObjectMapper objectMapper=new ObjectMapper();
 
         List<User> userList=new ArrayList<>();
         userList.add(testData.createdUser1);
         userList.add(testData.createdUser2);
 
+        List<String> userEmailList = new ArrayList<>();
+        userEmailList.add(testData.createdUser1.getEmail());
+        userEmailList.add(testData.createdUser2.getEmail());
+
+
         ProjectForm projectForm=new ProjectForm();
         projectForm.setProjectname(project.getProjectname());
         projectForm.setUsers(userList);
+        projectForm.setInvitations(userEmailList);
         String json=objectMapper.writeValueAsString(projectForm);
 
-        given(projectService.createProject(project)).willReturn(true);
+
+        InvitationForm invitationForm = new InvitationForm();
+        invitationForm.setProjectID(project.getId());
+        invitationForm.setInvitorID(userDetails.getUsername());
+        invitationForm.setInviteeEmailList(projectForm.getInvitations());
+
+        given(projectService.createProject(project)).willReturn(project);
+        given(invitationService.create(invitationForm)).willReturn(true);
 
         mvc.perform(post("/project")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("{\"message\":\"success\"}"));*/
+
     }
 
     @TestConfiguration
@@ -133,6 +165,11 @@ public class ProjectRESTServiceTest {
         @Bean
         public ProjectService projectService() {
             return Mockito.mock(ProjectService.class);
+        }
+
+        @Bean
+        public InvitationService inviteService() {
+            return Mockito.mock(InvitationService.class);
         }
 
     }

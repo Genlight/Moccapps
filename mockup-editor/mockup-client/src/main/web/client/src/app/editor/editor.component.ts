@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {TokenStorageService} from "../auth/token-storage.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-editor',
@@ -7,9 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EditorComponent implements OnInit {
 
-  constructor() { }
-
-  ngOnInit() {
+  constructor(private router: Router, private tokenStorage: TokenStorageService) {
   }
 
+  ngOnInit() {
+    if (!this.tokenStorage.isLoggedIn()) {
+      this.router.navigate(['']);
+    }
+  }
 }

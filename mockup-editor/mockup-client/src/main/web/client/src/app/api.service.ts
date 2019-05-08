@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { environment } from '../environments/environment';
+import {Injectable} from '@angular/core';
+import {environment} from '../environments/environment';
 
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable } from 'rxjs';
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {Observable} from 'rxjs';
 
 const API_URL = environment.apiUrl;
 
@@ -64,7 +64,7 @@ export class ApiService {
         });
   }*/
 
-  public logout(email:string) {
+  /*public logout(email:string) {
     let postData = new FormData();
     postData.append('email' ,email);
 
@@ -76,5 +76,5 @@ export class ApiService {
         err => {
           console.log('Error: ' + err.error);
         });
-  }
+  }*/
 }
