@@ -20,7 +20,7 @@ export class UserinfoService {
   ) { }
 
   getUserInfo() {
-    return of({name: this.tokenService.getUsername(), email:  this.tokenService.getEmail });
+    return of({name: this.tokenService.getUsername(), email:  this.tokenService.getEmail() });
   }
   updateUserInfo(user: User): Observable<any> {
     return this.http.post(API_URL + '/user', {username: user.name, email: this.tokenService.getEmail(), password: user.pwd })

@@ -37,14 +37,11 @@ export class UserModalComponent implements OnInit {
       (data: any) => {
         if (data.message === 'success') {
           if (this.user.pwd !== '') {
-              this.authService.logout(new AuthLogoutInfo(this.user.email)).subscribe(
-                () => {
-                  this.notificationService.showSuccess(
-                    `Because you changed your Password, you will be logged out. Pleas Sign in again.`,
-                    'Success on Update'
-                  );
-                }
-              );
+                this.notificationService.showSuccess(
+                  `Because you changed your Password, you will be logged out. Pleas Sign in again.`,
+                  'Success on Update'
+                );
+                this.router.navigate(['']);
           } else {
             this.notificationService.showSuccess('Update successful');
             this.router.navigate(['editor']);
