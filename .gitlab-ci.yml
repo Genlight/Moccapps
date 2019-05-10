@@ -28,14 +28,15 @@ build:
     refs:
       - master
       - devel
-      - bug/36755_gitlab_ci_tests
+      - .bug/36755_gitlab_ci_tests
 
 frontend-test:
   stage: test
   services: 
     - weboaks/node-karma-protractor-chrome:alpine
   script:
-    - mvn $MAVEN_CLI_OPTS test -pl mockup-client
+    - pushd ./mockup-editor/mockup-client/src/main/web/client
+    - ng test -browsers ChromeHeadless
   only:
     refs:
       - master
