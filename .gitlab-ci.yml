@@ -26,7 +26,7 @@ frontend-test:
   script:
     - pushd ./mockup-editor/mockup-client/src/main/web/client
     - npm i 
-    - ng test -browsers ChromeHeadless
+    - npm run-script test-headless
     - popd
   only:
     refs:
