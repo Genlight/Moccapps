@@ -18,19 +18,43 @@
           class="form-control"
           name="user-name"
           #inputname
+          minlength=4
           [(ngModel)]="user.name">
       </div>
       <div class="form-group">
-        <label for="user-pwd">password</label>
-        <input
-          type="password"
-          id="pwd"
-          class="form-control"
-          name="user-pwd"
-          placeholder="New Password"
-          #inputname
-          
-          [(ngModel)]="user.pwd">
+       <input type="password"
+        [(ngModel)]="user.password"
+        name="pwd" placeholder="Old Password"
+        class="form-control"
+        required
+        #password="ngModel"
+         />
+       <div *ngIf="password.invalid && (form.submitted || password.touched)"
+        class="alert alert-danger">
+         <div *ngIf="password.errors.required">Old Password is required. </div>
+       </div>
+      </div>
+      <div class="form-group">
+       <input type="password"
+        [(ngModel)]="pwd.pwd"
+        name="newPwd" placeholder="New Password"
+        class="form-control"
+        required
+        #newPwd="ngModel"
+        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" />
+       <div *ngIf="newPwd.invalid && (form.submitted || newPwd.touched)"
+        class="alert alert-danger">
+         <div *ngIf="newPwd.errors.required"> Password is required. </div>
+         <div *ngIf="newPwd.errors.pattern"> Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters.</div>
+       </div>
+      </div>
+
+      <div class="form-group">
+       <input type="password" [(ngModel)]="pwd.confirmpassword" name="confirmpassword" placeholder="Confirm Password" class="form-control" required #confirmpassword="ngModel" pattern="{{ newPwd.value }}" />
+       <div *ngIf=" confirmpassword.invalid && (form.submitted || confirmpassword.touched)" class="alert alert-danger">
+         <div *ngIf="confirmpassword.errors.required"> Confirm password is required. </div>
+         <div *ngIf="confirmpassword.errors.pattern"> Password & Confirm Password does not match.</div>
+       </div>
       </div>
     </form>
   </div>

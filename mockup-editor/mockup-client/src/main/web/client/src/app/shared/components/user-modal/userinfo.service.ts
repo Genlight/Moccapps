@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { User } from '../../models/User';
+import { Password } from '../../models/Password';
 import { TokenStorageService } from '../../../auth/token-storage.service';
 import { environment } from '../../../../environments/environment';
 // const testUser = { id: 1, name: 'Name1', email: 'some.email@outlook.com' };
@@ -22,11 +23,15 @@ export class UserinfoService {
   getUserInfo() {
     return of({name: this.tokenService.getUsername(), email:  this.tokenService.getEmail() });
   }
-  updateUserInfo(user: User): Observable<any> {
-    return this.http.post(API_URL + '/user', {username: user.name, email: this.tokenService.getEmail(), password: user.pwd })
+  updateUserInfo(user: User, pwd: Password): Observable<any> {
+    return this.http.post(API_URL + '/user', {
+        username: user.name,
+        email: this.tokenService.getEmail(),
+        password: user.password,
+        newPassword: pwd.pwd })
       .pipe(
         tap(_ => {
-          console.log('called POST on /user with profile: ' + JSON.stringify(user));
+          console.log('called POST on /user');
           this.tokenService.saveUsername(user.name);
        }),
     catchError(this.handleError<any>('updateUserInfo', []))
