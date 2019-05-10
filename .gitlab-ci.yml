@@ -30,13 +30,25 @@ build:
       - master
       - devel
 
-test:
+frontend-test:
   stage: test
+   services: 
+    - weboaks/node-karma-protractor-chrome:alpine
   script:
-    - mvn $MAVEN_CLI_OPTS test
+    - mvn $MAVEN_CLI_OPTS test :mockup-client
   only:
     refs:
       - master
       - devel
+      - bug/36755_gitlab_ci_tests
+
+backend-test: 
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS test :mockup-server
+  only:
+    refs:
+      - master
+      - .devel
 
 

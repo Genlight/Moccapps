@@ -28,8 +28,14 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Firefox'],
-    singleRun: false,
+    browsers: ['Chrome_no_sandbox'],
+    customLaunchers: {
+      Chrome_no_sandbox: {
+        base: 'Chrome',
+        flags: ['--no-sandbox']
+      }
+    },
+    singleRun: true,
     restartOnFileChange: true
   });
 };
