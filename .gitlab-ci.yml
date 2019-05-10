@@ -35,7 +35,7 @@ frontend-test:
   services: 
     - weboaks/node-karma-protractor-chrome:alpine
   script:
-    - mvn $MAVEN_CLI_OPTS test :mockup-client
+    - mvn $MAVEN_CLI_OPTS test -pl mockup-client
   only:
     refs:
       - master
@@ -45,7 +45,7 @@ frontend-test:
 backend-test: 
   stage: test
   script:
-    - mvn $MAVEN_CLI_OPTS test :mockup-server
+    - mvn $MAVEN_CLI_OPTS test -pl mockup-server
   only:
     refs:
       - master
