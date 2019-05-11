@@ -9,7 +9,6 @@ import ase.springboot.Application;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -41,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ContextConfiguration(classes = Application.class)
-@SpringBootTest(classes = TestRdbsConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc()
@@ -74,13 +72,6 @@ public class RestDBIntegrationTest {
                 .apply(springSecurity())
                 .build();
     }
-
-    @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer()
-            .withDatabaseName("test")
-            .withPassword("test")
-            .withUsername("test");
-
     private static final Logger logger = LoggerFactory.getLogger(RestDBIntegrationTest.class);
 
     @Test

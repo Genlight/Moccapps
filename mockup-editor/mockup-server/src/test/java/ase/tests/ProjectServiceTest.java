@@ -5,7 +5,6 @@ import ase.service.ProjectService;
 import ase.service.impl.ProjectServiceImpl;
 import ase.springboot.Application;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.List;
 
@@ -30,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 //@Ignore //does not work because the project service gets mocked for other testcases
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestRdbsConfiguration.class)
+@SpringBootTest
 @ContextConfiguration(classes = {ProjectServiceTest.Config.class})
 @ActiveProfiles("test")
 @SqlGroup({
@@ -39,11 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 })
 public class ProjectServiceTest {
 
-    @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer()
-            .withDatabaseName("test")
-            .withPassword("test")
-            .withUsername("test");
+
     @Autowired
     protected static TestData testData;
 

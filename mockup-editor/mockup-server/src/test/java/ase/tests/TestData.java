@@ -5,9 +5,6 @@ import ase.DTO.Page;
 import ase.DTO.Project;
 import ase.DTO.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TestData {
 
     private static final String USER_1_EMAIL="email1";
