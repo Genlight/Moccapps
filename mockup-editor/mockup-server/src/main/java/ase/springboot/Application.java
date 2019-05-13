@@ -1,15 +1,15 @@
 package ase.springboot;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import javax.validation.Valid;
 
 /**
  * @author group2
@@ -22,7 +22,10 @@ import javax.sql.DataSource;
 @PropertySource(value = "classpath:application.properties")
 public class Application extends SpringBootServletInitializer {
 
-	
+	@Value("${spring.datasource.url.test:jdbc:postgresql://localhost:5432/test}")
+	public String testDataUrl;
+
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class,args);
 	}
@@ -49,18 +52,19 @@ public class Application extends SpringBootServletInitializer {
 				.build();
 		return dataSource;
 	}*/
-	/*@Profile(value="prod")
+	@Profile(value="test")
 	@Bean
 	public DataSource dataSource() {
 		return DataSourceBuilder
 				.create()
 				.username("postgres")
 				.password("test")
-				.url("jdbc:postgresql://localhost:5432/moccapps")
+				//.url("jdbc:postgresql://${SERVER_IP}:5432/test")
+				.url(testDataUrl)
 				.driverClassName("org.postgresql.Driver")
 				.build();
 	}
-*/
+
 	/*@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 

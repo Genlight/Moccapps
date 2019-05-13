@@ -1,0 +1,1 @@
+﻿createdb --username=postgres --owner=postgres test

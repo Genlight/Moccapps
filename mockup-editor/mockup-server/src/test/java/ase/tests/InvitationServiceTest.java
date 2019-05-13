@@ -6,7 +6,6 @@ import ase.service.InvitationService;
 import ase.service.impl.InvitationServiceImpl;
 import ase.springboot.Application;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestRdbsConfiguration.class)
+@SpringBootTest
 @ContextConfiguration(classes = {InvitationServiceTest.Config.class})
 @ActiveProfiles("test")
 @SqlGroup({
@@ -42,11 +40,7 @@ public class InvitationServiceTest {
 
 
     private static final Logger logger = LoggerFactory.getLogger(InvitationServiceTest.class);
-    @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer()
-            .withDatabaseName("test")
-            .withPassword("test")
-            .withUsername("test");
+
     @Autowired
     protected static TestData testData;
     @Autowired
