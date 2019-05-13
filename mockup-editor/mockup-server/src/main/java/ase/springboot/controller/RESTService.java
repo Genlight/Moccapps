@@ -94,7 +94,7 @@ public class RESTService {
       }
       User user = userService.getUserByEmail(editUserRequest.getEmail());
 
-      if(encoder.encode(user.getPassword()) != editUserRequest.getPassword()) {
+      if(!encoder.matches(editUserRequest.getPassword(), user.getPassword())) {
         return new ResponseEntity<>(new ResponseMessage("Fail -> Wrong original Password!"),
         HttpStatus.BAD_REQUEST);
       }

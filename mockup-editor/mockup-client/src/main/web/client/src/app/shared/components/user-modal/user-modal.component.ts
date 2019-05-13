@@ -30,6 +30,7 @@ export class UserModalComponent implements OnInit {
 
   ngOnInit() {
     this.user = new User();
+    this.pwd = new Password();
     this.userInfoService.getUserInfo()
       .subscribe((data: any) => this.user = {
         name:  data.name,
@@ -51,12 +52,12 @@ export class UserModalComponent implements OnInit {
             this.router.navigate(['editor']);
           }
         } else {
-          this.notificationService.showError('Fail at onUpdateUserInfo, s. Console Output');
+          this.notificationService.showError(data.message);
           this.activeModal.close('error');
         }
       },
       () => {
-        this.notificationService.showError('error');
+        this.notificationService.showError('Error');
         this.activeModal.close('error');
       },
       () => {
