@@ -27,15 +27,12 @@ fabric.Object.prototype.initialize = function(options) {
       this.uuid = UUID.UUID();
 };
 
-// exportier das gewrappte fabric-Objekt; nicht zu verwechseln mit new fabric.Object()!
-export { fabric };
 
-
-/** 
+/**
  * overrides renderStroke to redraw the border of objects on resize,
  * so the border doesn't get scaled in x and y direction
  * based on https://stackoverflow.com/questions/39548747/fabricjs-how-to-scale-object-but-keep-the-border-stroke-width-fixed
- * TODO: still reverts back to original stroke when object is grouped 
+ * TODO: still reverts back to original stroke when object is grouped
  */
 fabric.Object.prototype._renderStroke = function(ctx) {
     if (!this.stroke || this.strokeWidth === 0) {
@@ -56,7 +53,7 @@ fabric.Object.prototype._renderStroke = function(ctx) {
     ctx.restore();
 };
 
-/** 
+/**
  * overrides getTransformationDimensions to get the correct bounding box
  * with the changes made to renderStroke
  * based on https://stackoverflow.com/questions/39548747/fabricjs-how-to-scale-object-but-keep-the-border-stroke-width-fixed
@@ -95,8 +92,8 @@ fabric.Object.prototype._getTransformedDimensions = function(skewX, skewY) {
     };
 };
 
-fabric.Object.prototype.resizeToScale = function () {
-    if  (this.type !=='group') {
+fabric.Object.prototype.resizeToScale = function() {
+    if  (this.type !== 'group') {
       this.strokeWidth = this._origStrokeWidth / Math.max(this.scaleX, this.scaleY);
     } else {
       this._objects.forEach( function(obj) {
@@ -105,3 +102,6 @@ fabric.Object.prototype.resizeToScale = function () {
       });
     }
   };
+
+// export wrapped fabric-object
+export { fabric };
