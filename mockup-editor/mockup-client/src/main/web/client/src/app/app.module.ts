@@ -13,6 +13,7 @@ import { ToolbarComponent } from './editor/toolbar/toolbar.component';
 import { FabricCanvasComponent } from './editor/fabric-canvas/fabric-canvas.component';
 import { CreateProjectModalComponent } from './projects/create-project-modal/create-project-modal.component';
 import { DndModule } from 'ngx-drag-drop';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -64,7 +65,8 @@ library.add(faEllipsisV);
     FontAwesomeModule,
     AppRoutingModule,
     HttpClientModule,
-    DndModule
+    DndModule,
+    ColorPickerModule
   ],
   entryComponents: [
     ManageUserModalComponent,

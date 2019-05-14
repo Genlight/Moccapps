@@ -20,3 +20,36 @@
 .showoptions {
     width: 15em;
 }
+
+.hidden {
+    display: none;
+}
+
+.customizecontent {
+    text-align: center;
+    display: block;
+    padding-top: 2em;
+    padding-right: 1em;
+}
+
+//for buttongroups with svgs
+.arrangeoptions {
+    line-height: 1em;
+    border: 1px solid gray;
+}
+
+.btn > svg {
+    width: 1em;
+    height: 1em;
+}
+
+.colorPicker {
+    width: 50%;
+    height: 2em;
+    border: 1px solid gray;
+}
+
+.editorslider {
+    display: inline;
+    width: 80%;
+}

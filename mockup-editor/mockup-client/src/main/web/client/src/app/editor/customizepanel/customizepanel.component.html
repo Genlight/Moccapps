@@ -4,4 +4,60 @@
       <fa-icon [icon]="faEllipsisV"></fa-icon>
     </button>
   </div>
+  <ul>
+    <li class="customizecontent">
+      <div>Arrange Active Elements</div>
+      <div class="btn-group" role="group">
+        <button data-toggle="tooltip" data-placement="bottom" title="Bring to front" type="button"
+          class="btn btn-outline-primary arrangeoptions" [disabled]="!selected" (click)="bringToFront();">
+          <svg viewBox="0 0 24 24" width="1em">
+            <path d="M2,2H11V6H9V4H4V9H6V11H2V2M22,13V22H13V18H15V20H20V15H18V13H22M8,8H16V16H8V8Z" />
+          </svg>
+        </button>
+        <button data-toggle="tooltip" data-placement="bottom" title="Bring forward" type="button"
+          class="btn btn-outline-primary arrangeoptions" [disabled]="!selected" (click)="bringForward();">
+          <svg viewBox="0 0 24 24">
+            <path d="M2,2H16V16H2V2M22,8V22H8V18H10V20H20V10H18V8H22Z" />
+          </svg>
+        </button>
+        <button data-toggle="tooltip" data-placement="bottom" title="Send backwards" type="button"
+          class="btn btn-outline-primary arrangeoptions" [disabled]="!selected" (click)="sendBackwards();">
+          <svg viewBox="0 0 24 24">
+            <path d="M2,2H16V16H2V2M22,8V22H8V18H18V8H22M4,4V14H14V4H4Z" />
+          </svg>
+        </button>
+        <button data-toggle="tooltip" data-placement="bottom" title="Sent to back" type="button"
+          class="btn btn-outline-primary arrangeoptions" [disabled]="!selected" (click)="sendToBack();">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M2,2H11V11H2V2M9,4H4V9H9V4M22,13V22H13V13H22M15,20H20V15H15V20M16,8V11H13V8H16M11,16H8V13H11V16Z" />
+          </svg>
+        </button>
+      </div>
+    <br />
+        <div>Background/Fill Color</div>
+        <button class="btn colorPicker" [(colorPicker)]="elementProperties.backgroundColor"
+          [style.background]="elementProperties.backgroundColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
+          [value]="elementProperties.backgroundColor" (colorPickerChange)="setBackgroundColor()">
+        </button>
+        <div *ngIf="selected">Element Settings
+        <div>Opacity:</div>
+          <input class="editorslider" type="range" min="0" max="100" step="1" [value]="elementProperties.opacity" [(ngModel)]="elementProperties.opacity" (change)="setElementOpacity()">
+          
+          <div *ngIf="selected && selected.type == 'textbox'">Text Settings</div>
+        </div>
+        <br />
+          <div id="drawingModeSettings" class="hidden">Drawing Mode Settings
+          <div>Line Color:</div>
+          <button class="btn colorPicker" [(colorPicker)]="drawingMode.color"
+          [style.background]="drawingMode.color" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
+          [value]="drawingMode.color" (colorPickerChange)="setDrawingModeColor()">
+        </button>
+          <div>Size:</div> 
+          <input class="editorslider" type="range" min="1" max="35" step="1" [value]="drawingMode.stroke" [(ngModel)]="drawingMode.stroke" (change)="setDrawingModeStroke()">
+          <label id="drawingModeStroke">{{drawingMode.stroke}}</label><br />
+          <div>Style:</div>
+        </div>
+    </li>
+  </ul>
 </div>
