@@ -43,7 +43,6 @@ frontend-unittest:
     refs:
       - master
       - devel
-      - bug/ci
 
 backend-test:
   stage: test
@@ -53,4 +52,4 @@ backend-test:
     refs:
       - master
       - devel
-      - task/36848_Change_DB_deployment
+      - bug/ci
