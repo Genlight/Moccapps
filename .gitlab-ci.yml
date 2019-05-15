@@ -53,4 +53,4 @@ backend-test:
     refs:
       - master
       - devel
-      - feature/36798/_pwd_validation
+      - feature/36798_pwd_validation
