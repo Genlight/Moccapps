@@ -4,7 +4,7 @@
     [string]
     $WorkingDir="$PSScriptRoot",
     # DB host, default is localhost
-    [string]$serverIp="localhost"
+    # [string]$serverIp="localhost"
 )
 
 # check if Service is up and running
@@ -13,11 +13,11 @@ if( (get-service "postgres*" | measure ).Count -eq 0 ) {
 }
 $pgSrv = (get-service 'postgres*') | select -First 1
 if( $pgSrv.Status -ne "Running" ) {
-  $pgSrv | Start-Service -ea Stop 
+  $pgSrv | Start-Service -ea Stop
 }
 Push-Location $WorkingDir
 
-mvn -DSERVER_IP=$serverIp clean install
+mvn -DSERVER_IP=localhost clean install
 
 pause
 
