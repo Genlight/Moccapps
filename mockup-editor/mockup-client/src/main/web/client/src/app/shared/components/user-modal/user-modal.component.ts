@@ -20,6 +20,8 @@ export class UserModalComponent implements OnInit {
 
   user: User;
   pwd: Password;
+  formSubmitted;
+
   constructor(
     public activeModal: NgbActiveModal,
     private userInfoService: UserinfoService,
@@ -36,28 +38,29 @@ export class UserModalComponent implements OnInit {
         name:  data.name,
         email: data.email
     });
+    this.formSubmitted = false;
   }
   onUpdateUserInfo(): void {
     this.userInfoService.updateUserInfo(this.user, this.pwd).subscribe(
       (data: any) => {
         if (data.message === 'success') {
-          if (this.pwd.pwd !== '') {
-                this.notificationService.showSuccess(
-                  `Because you changed your Password, you will be logged out. Pleas Sign in again.`,
-                  'Success on Update'
-                );
-                this.router.navigate(['']);
-          } else {
+          if (typeof this.pwd.pwd === 'undefined') {
             this.notificationService.showSuccess('Update successful');
             this.router.navigate(['editor']);
+          } else {
+            this.notificationService.showSuccess(
+              `Because you changed your Password, you will be logged out. Pleas Sign in again.`,
+              'Success on Update'
+            );
+            this.router.navigate(['']);
           }
         } else {
-          this.notificationService.showError(data.message);
+          this.notificationService.showError(data.error, data.message);
           this.activeModal.close('error');
         }
       },
       () => {
-        this.notificationService.showError('Error');
+        this.notificationService.showError('Unknown Error');
         this.activeModal.close('error');
       },
       () => {

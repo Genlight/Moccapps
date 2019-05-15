@@ -29,9 +29,9 @@
         required
         #password="ngModel"
          />
-       <div *ngIf="password.invalid && (form.submitted || password.touched)"
+       <div *ngIf="password.invalid && (inputname.touched || password.touched)"
         class="alert alert-danger">
-         <div *ngIf="password.errors.required">Old Password is required. </div>
+         <div *ngIf="password.errors.required">Current Password is required. </div>
        </div>
       </div>
       <div class="form-group">
@@ -42,7 +42,7 @@
         required
         #newPwd="ngModel"
         pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" />
-       <div *ngIf="newPwd.invalid && (form.submitted || newPwd.touched)"
+       <div *ngIf="newPwd.invalid && (formSubmitted || newPwd.touched)"
         class="alert alert-danger">
          <div *ngIf="newPwd.errors.required"> Password is required. </div>
          <div *ngIf="newPwd.errors.pattern"> Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters.</div>
@@ -55,7 +55,7 @@
        class="form-control"
        required #confirmpassword="ngModel"
        pattern="{{ newPwd.value }}" />
-       <div *ngIf=" confirmpassword.invalid && (form.submitted || confirmpassword.touched)" class="alert alert-danger">
+       <div *ngIf=" confirmpassword.invalid && (formSubmitted || confirmpassword.touched)" class="alert alert-danger">
          <div *ngIf="confirmpassword.errors.required"> Confirm password is required. </div>
          <div *ngIf="confirmpassword.errors.pattern"> Password & Confirm Password does not match.</div>
        </div>
@@ -64,5 +64,7 @@
   </div>
   <div class="modal-footer">
     <button type="button"  class="btn btn-outline-secondary" (click)="activeModal.close('Cancel')">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="onUpdateUserInfo()">Apply</button>
+
+    <button type="button" [disabled]="password.invalid || (confirmpassword.invalid && confirmpassword.touched) || (newPwd.invalid && newPwd.touched)"
+            class="btn btn-primary" (click)="onUpdateUserInfo()">Apply</button>
   </div>

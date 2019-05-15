@@ -23,7 +23,7 @@
       <span class="welcome-username">{{info.username}}</span>
     </div>
   </div>
-  <hr class="divider"> 
+  <hr class="divider">
   <div class="row my-4">
     <div class="col p-0">
       <app-create-project-modal></app-create-project-modal>
@@ -57,7 +57,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let project of projects">
-          <td>{{ project.projectname }}</td>
+          <td (click)="onOpenProject(project)">{{ project.projectname }}</td>
           <td>{{ project.users | collaborator }}</td>
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
@@ -98,11 +98,11 @@
             <div style="display: flex; align-items: center; justify-content: space-between">
               <span>{{ invite.inviter.username }}</span>
               <span>
-                <button 
-                  class="btn btn-primary" 
+                <button
+                  class="btn btn-primary"
                   (click)="onAcceptInvite(invite)">Accept</button>
-                <button 
-                  class="btn btn-outline-secondary ml-2" 
+                <button
+                  class="btn btn-outline-secondary ml-2"
                   (click)="onDeclineInvite(invite)">Decline</button>
               </span>
             </div>

@@ -24,11 +24,14 @@ export class UserinfoService {
     return of({name: this.tokenService.getUsername(), email:  this.tokenService.getEmail() });
   }
   updateUserInfo(user: User, pwd: Password): Observable<any> {
+    if ( typeof pwd.pwd === 'undefined') {
+        pwd.pwd = '';
+    }
     return this.http.post(API_URL + '/user', {
         username: user.name,
         email: this.tokenService.getEmail(),
         password: user.password,
-        newPassword: pwd.pwd })
+        newPwd: pwd.pwd })
       .pipe(
         tap(_ => {
           console.log('called POST on /user');
