@@ -22,7 +22,7 @@ import javax.validation.Valid;
 @PropertySource(value = "classpath:application.properties")
 public class Application extends SpringBootServletInitializer {
 
-	@Value("${spring.datasource.url.test}") // removed default :jdbc:postgresql://localhost:5432/test
+	@Value("${spring.datasource.url.test}")
 	public String testDataUrl;
 
 

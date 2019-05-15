@@ -94,9 +94,15 @@ public class RESTService {
       }
       User user = userService.getUserByEmail(editUserRequest.getEmail());
 
-      if( editUserRequest.getPassword() != null ) {
-        user.setPassword(encoder.encode(editUserRequest.getPassword()));
+      if(!encoder.matches(editUserRequest.getPassword(), user.getPassword())) {
+        return new ResponseEntity<>(new ResponseMessage("Fail -> Wrong original Password!"),
+        HttpStatus.BAD_REQUEST);
       }
+
+      if( editUserRequest.getNewPassword() != null ) {
+        user.setPassword(encoder.encode(editUserRequest.getNewPassword()));
+      }
+
       user.setUsername(editUserRequest.getUsername());
 
       System.out.println("Attempt to update User info: " + user.toString());
