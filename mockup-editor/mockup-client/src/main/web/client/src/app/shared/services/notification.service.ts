@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 export class NotificationService {
 
   constructor() {
-    // PNotifyButtons;
+    PNotifyButtons; // Initiates the module. Important!
     PNotify.defaults.styling = 'bootstrap4';
   }
 

@@ -31,7 +31,7 @@ export class UserinfoService {
         username: user.name,
         email: this.tokenService.getEmail(),
         password: user.password,
-        newPwd: pwd.pwd })
+        newpwd: pwd.pwd })
       .pipe(
         tap(_ => {
           console.log('called POST on /user');

@@ -57,7 +57,10 @@
       </thead>
       <tbody>
         <tr *ngFor="let project of projects">
-          <td (click)="onOpenProject(project)">{{ project.projectname }}</td>
+          <td>
+            <button class="btn btn-light menubtn" (click)="onOpenProject(project)">{{ project.projectname }}
+            </button>
+            </td>
           <td>{{ project.users | collaborator }}</td>
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
