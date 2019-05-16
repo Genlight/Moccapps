@@ -48,10 +48,15 @@ Add these in Windows with these steps:
 - Important: some java applications install java under commonfiles/javapath; they will be set at the front in the settings, make sure that they get set at the end (with "nach unten" set the ranking)
 - click ok through all views 
 
+## Db Setup
+We use PostgreSQL x64, v11, for that, download the image for Windows from [here](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
+
+After start, please run createTestDB.ps1 a single time. this is needed for a local installation of postgreSQL. It uses a CLI tool. If you don't work with Windows7 or above, use the command of the script and run it manually. this tools come with each version of postgres and should be named and behave the same. 
+
 ## Build locally
 `cd /<YOUR_DIR>/mockup-editor` 
 
-`mvn clean install` 
+`mvn -DSERVER_IP=localhost clean install` 
 
 For the first time, use clean,
 
@@ -69,6 +74,10 @@ This will build the project.
  login credentials:
  user="user"
  password=generated string in the spring terminal
+
+
+### Alternative 
+you can use the Powershell script mockup-editor/install-and-startup.ps1 to 
 
 ### Killing used ports
 with powershell: \
