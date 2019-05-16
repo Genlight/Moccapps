@@ -30,7 +30,7 @@ build:
     refs:
       - master
       - devel
-      - bug/ci
+      - merge_requests
 
 frontend-unittest:
   stage: test
@@ -44,7 +44,7 @@ frontend-unittest:
     refs:
       - master
       - devel
-
+      - merge_requests
 backend-test:
   stage: test
   script:
@@ -53,4 +53,5 @@ backend-test:
     refs:
       - master
       - devel
-      - feature/36798_pwd_validation
+      - merge_requests
+
