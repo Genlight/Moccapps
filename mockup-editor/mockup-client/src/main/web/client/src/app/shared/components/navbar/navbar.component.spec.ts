@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../../models/User';
-import { UserinfoService } from '../user-modal/userinfo.service';
+import { UserinfoService } from '../../services/userinfo.service';
 
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../../auth/auth.service';
