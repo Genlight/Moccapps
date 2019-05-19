@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { LastediteddatePipe } from '../shared/pipes/lastediteddate.pipe';
+import { UserModalComponent } from '../shared/components/user-modal/user-modal.component';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -14,7 +15,7 @@ describe('ProjectsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ 
+      declarations: [
         ProjectsComponent,
         FaIconComponent,
         CreateProjectModalComponent,

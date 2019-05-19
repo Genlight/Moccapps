@@ -2,7 +2,7 @@ import { Component, OnInit, Output } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../../models/User';
 import { Password } from '../../models/Password';
-import { UserinfoService } from './userinfo.service';
+import { UserinfoService } from '../../services/userinfo.service';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService } from '../../../auth/auth.service';
@@ -20,6 +20,8 @@ export class UserModalComponent implements OnInit {
 
   user: User;
   pwd: Password;
+  formSubmitted;
+
   constructor(
     public activeModal: NgbActiveModal,
     private userInfoService: UserinfoService,
@@ -36,8 +38,10 @@ export class UserModalComponent implements OnInit {
         name:  data.name,
         email: data.email
     });
+    this.formSubmitted = false;
   }
   onUpdateUserInfo(): void {
+    const pnote = this.notificationService.getPNotify();
     this.userInfoService.updateUserInfo(this.user, this.pwd).subscribe(
       (data: any) => {
         if (data.message === 'success') {
@@ -48,16 +52,16 @@ export class UserModalComponent implements OnInit {
                 );
                 this.router.navigate(['']);
           } else {
-            this.notificationService.showSuccess('Update successful');
+            pnote.success('Update successful');
             this.router.navigate(['editor']);
           }
         } else {
-          this.notificationService.showError(data.message);
+          pnote.error(data.message);
           this.activeModal.close('error');
         }
       },
       () => {
-        this.notificationService.showError('Error');
+        pnote.error('Unknown Error');
         this.activeModal.close('error');
       },
       () => {

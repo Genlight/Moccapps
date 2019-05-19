@@ -54,4 +54,3 @@ backend-test:
       - master
       - devel
       - merge_requests
-

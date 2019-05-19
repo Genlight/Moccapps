@@ -3,8 +3,11 @@ package ase.message.request;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+
 @ApiModel
 public class EditUserForm implements Serializable {
     @NotBlank
@@ -12,6 +15,7 @@ public class EditUserForm implements Serializable {
     private String username;
 
     @NotBlank
+    //@Email
     @ApiModelProperty(example = "email")
     private String email;
 
@@ -19,7 +23,7 @@ public class EditUserForm implements Serializable {
     @ApiModelProperty(example = "password")
     private String password;
 
-    @ApiModelProperty(example = "passwordNew")
+    @ApiModelProperty(example = "newpwd")
     private String newPassword;
 
     public String getUsername() {
@@ -31,7 +35,6 @@ public class EditUserForm implements Serializable {
     }
 
     public String getPassword() {
-
         return password;
     }
 

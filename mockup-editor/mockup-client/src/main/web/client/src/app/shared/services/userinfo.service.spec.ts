@@ -3,7 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { Injectable } from '@angular/core';
 import { HttpClientModule, HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { User } from '../../models/User';
+import { User } from '../models/User';
+import { Password } from '../models/Password';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UserinfoService } from './userinfo.service';
 
