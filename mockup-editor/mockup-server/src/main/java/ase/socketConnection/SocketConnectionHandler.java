@@ -1,4 +1,4 @@
-package ase.service.impl;
+package ase.socketConnection;
 
 import ase.message.socket.SocketMessage;
 import org.slf4j.Logger;
@@ -29,7 +29,6 @@ public class SocketConnectionHandler implements Runnable{
         while(true){
             try {
                 currentMessage=messages.take();
-                logger.info("hallo");
                 messagingTemplate.convertAndSendToUser(user,"/queue/reply",currentMessage);
             } catch (InterruptedException e) {
                 e.printStackTrace();

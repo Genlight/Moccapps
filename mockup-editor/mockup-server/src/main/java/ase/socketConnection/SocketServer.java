@@ -1,4 +1,4 @@
-package ase.service.impl;
+package ase.socketConnection;
 
 import ase.message.socket.SocketMessage;
 import org.slf4j.Logger;
@@ -35,7 +35,6 @@ public class SocketServer {
     public SocketServer(){
         messageQueues=Collections.synchronizedMap(new HashMap<>());
         executorService= Executors.newCachedThreadPool();
-        logger.info("socket server started");
     }
 
     @EventListener
@@ -53,12 +52,9 @@ public class SocketServer {
 
     @MessageMapping("/send")
     public void onReceive(@Payload SocketMessage message) throws IOException {
-        logger.info("message : "+message.getContent());
         for(String clientname:messageQueues.keySet()){
-            logger.info(clientname);
             if(!message.getUser().equals(clientname)){
                 try {
-                    logger.info(clientname);
                     messageQueues.get(clientname).put(message);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
