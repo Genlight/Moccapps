@@ -24,8 +24,8 @@
         <li class="dropdown-submenu">
           <button class="dropdown-item dropdown-toggle menucursor">Edit</button>
           <ul class="dropdown-menu">
-              <button class="btn btn-light menubtn" (click)="onUndo()" disabled>Undo</button>
-              <button class="btn btn-light menubtn" (click)="onRedo()" disabled>Redo</button>
+              <button [disabled]="undoDisabled" class="btn btn-light menubtn" (click)="onUndo()" disabled>Undo</button>
+              <button [disabled]="redoDisabled" class="btn btn-light menubtn" (click)="onRedo()" disabled>Redo</button>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" (click)="onCut()">Cut</button>
               <button class="btn btn-light menubtn" (click)="onCopy()">Copy</button>

@@ -3,9 +3,10 @@ import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
 import { DndDropEvent } from 'ngx-drag-drop';
 import { Subject } from 'rxjs';
-
 import { Itransformation, Action } from './transformation.interface';
 import { fabric } from '../extendedfabric';
+
+import { UndoRedoService } from '../../shared/services/undo-redo.service';
 
 @Component({
   selector: 'app-fabric-canvas',
@@ -24,12 +25,18 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   // only new events will be 'observed'.
   public Transformation: Subject<Itransformation>;
 
-  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService) { }
+  constructor(
+    private modifyService: FabricmodifyService,
+    private managePagesService: ManagePagesService,
+    private undoRedoService: UndoRedoService) { }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
     this.managePagesService.createPage(900, 600);
     this.canvas = this.managePagesService.getCanvas();
+
+    // saving initial state of canvas
+    this.undoRedoService.save(this.canvas);
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
   }
@@ -41,7 +48,10 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.canvas
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
-      .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); });
+      .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
+      .on('object:added', () => this.onSaveState)
+      .on('object:modified', () => this.onSaveState)
+      .on('object:removed', () => this.onSaveState);
   }
 
   /**
@@ -90,7 +100,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     const canvas = this.managePagesService.getCanvas();
     const url = event.data;
     if (url.includes('.svg') === true) {
-      fabric.loadSVGFromURL(url, function (objects, options) {
+      fabric.loadSVGFromURL(url, function(objects, options) {
         const loadedObjects = fabric.util.groupSVGElements(objects, options);
         loadedObjects.scaleToWidth(300);
         canvas.add(loadedObjects);
@@ -177,6 +187,13 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     return this.canvas.getObjects().find((o) => o.uuid === uuid);
   }
   ngOnDestroy() {
-
+    this.canvas.dispose();
+  }
+  /**
+   * Undo Redo - functionality
+   * @{author}: Alexander Genser
+   */
+  onSaveState() {
+    this.undoRedoService.save(this.canvas);
   }
 }
