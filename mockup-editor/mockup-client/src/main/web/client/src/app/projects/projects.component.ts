@@ -15,6 +15,7 @@ import { AuthService } from '../auth/auth.service';
 import { AuthLogoutInfo } from '../auth/logout-info';
 import { NotificationService } from '../shared/services/notification.service';
 import { isArray } from 'util';
+import { SocketConnectionService } from '../socketConnection/socket-connection.service';
 
 @Component({
   selector: 'app-projects',
@@ -41,13 +42,22 @@ export class ProjectsComponent implements OnInit {
     private tokenStorage: TokenStorageService,
     private data: DataService,
     private authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private socketService: SocketConnectionService
   ) { }
 
   ngOnInit() {
     this.loadProjects();
     this.loadUserInfo();
     this.loadInvites();
+  }
+
+  connectToSocket(){
+    this.socketService.connect(this.tokenStorage.getEmail());
+  }
+
+  sendMessageToSocket(){
+    this.socketService.send('hallo',this.tokenStorage.getEmail(),'EDIT');
   }
 
   loadUserInfo(): void {
