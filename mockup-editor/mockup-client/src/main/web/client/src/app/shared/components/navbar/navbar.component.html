@@ -57,10 +57,10 @@
         <button ngbDropdownItem disabled>Help</button>
       </div>
     </div>
-    <button class="btn btn-light ml-5" (click)="onUndo()" disabled>
+    <button [disabled]="undoDisabled class="btn btn-light ml-5" (click)="onUndo()" disabled>
       <fa-icon [icon]="faUndo"></fa-icon>
     </button>
-    <button class="btn btn-light ml-1" (click)="onRedo()" disabled>
+    <button [disabled]="redoDisabled class="btn btn-light ml-1" (click)="onRedo()" disabled>
       <fa-icon [icon]="faRedo"></fa-icon>
     </button>
     <button class="btn btn-light ml-4" disabled>

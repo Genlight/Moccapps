@@ -117,11 +117,13 @@ export class NavbarComponent implements OnInit {
   }
 
   onUndo() {
-    this.undoRedoService.undo();
+    const canvas = this.managePagesService.getCanvas();
+    this.undoRedoService.undo(canvas);
   }
 
   onRedo() {
-    this.undoRedoService.redo();
+    const canvas = this.managePagesService.getCanvas();
+    this.undoRedoService.redo(canvas);
   }
 
   onCut() {
