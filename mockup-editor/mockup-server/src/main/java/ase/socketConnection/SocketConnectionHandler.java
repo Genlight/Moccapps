@@ -29,11 +29,14 @@ public class SocketConnectionHandler implements Runnable{
         while(true){
             try {
                 currentMessage=messages.take();
+                if(currentMessage.getCommand().equals("disconnect")){
+                    break;
+                }
                 messagingTemplate.convertAndSendToUser(user,"/queue/send",currentMessage);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Caught Error while communcating with SocketServer");
+                logger.error("closing thread...");
             }
         }
-
     }
 }

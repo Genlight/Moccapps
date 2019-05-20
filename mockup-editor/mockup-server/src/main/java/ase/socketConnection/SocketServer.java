@@ -24,6 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class SocketServer {
 
     private Map<String, LinkedBlockingQueue<SocketMessage>> messageQueues;
+    private Map<String, String> sessionIdClientnameMap;
 
     private ExecutorService executorService;
     private SocketConnectionHandler connectionHandler;
@@ -36,11 +37,14 @@ public class SocketServer {
     public SocketServer(){
         messageQueues=Collections.synchronizedMap(new HashMap<>());
         executorService= Executors.newCachedThreadPool();
+        sessionIdClientnameMap=Collections.synchronizedMap(new HashMap<>());
     }
 
     @EventListener
     public void handleWebSocketSubscribeListener(SessionSubscribeEvent sessionSubscribeEvent){
+        logger.info(sessionSubscribeEvent.getMessage().toString());
         String destination=(String) sessionSubscribeEvent.getMessage().getHeaders().get("simpDestination");
+        String sessionId=(String) sessionSubscribeEvent.getMessage().getHeaders().get("simpSessionId");
         if(!destination.matches("/user/.*/queue/send")){
             return;
         }
@@ -48,12 +52,19 @@ public class SocketServer {
         destination=destination.split("/")[2];
         connectionHandler=new SocketConnectionHandler(queue,destination,messagingTemplate);
         messageQueues.put(destination,queue);
+        sessionIdClientnameMap.put(sessionId,destination);
         executorService.submit(connectionHandler);
     }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent sessionDisconnectEvent){
-        logger.info("disconnected");
+        String sessionId=(String) sessionDisconnectEvent.getMessage().getHeaders().get("simpSessionId");
+        String clientname=sessionIdClientnameMap.get(sessionId);
+        try {
+            messageQueues.get(clientname).put(new SocketMessage(clientname,"disconnect",""));
+        } catch (InterruptedException e) {
+            logger.error("Client Socket Connection Handler Thread is already closed");
+        }
     }
 
     @MessageMapping("/send")
@@ -63,7 +74,7 @@ public class SocketServer {
                 try {
                     messageQueues.get(clientname).put(message);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.error("Can not communicate with Client Socket Connection Handler Thread");
                 }
             }
         }

@@ -6,6 +6,16 @@ public class SocketMessage {
     private String command;
     private String content;
 
+    public SocketMessage(){
+
+    }
+
+    public SocketMessage(String user, String command, String content) {
+        this.user = user;
+        this.command = command;
+        this.content = content;
+    }
+
     public String getUser() {
         return user;
     }
