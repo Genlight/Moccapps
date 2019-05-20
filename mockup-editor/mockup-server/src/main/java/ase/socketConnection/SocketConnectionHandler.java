@@ -29,7 +29,7 @@ public class SocketConnectionHandler implements Runnable{
         while(true){
             try {
                 currentMessage=messages.take();
-                messagingTemplate.convertAndSendToUser(user,"/queue/reply",currentMessage);
+                messagingTemplate.convertAndSendToUser(user,"/queue/send",currentMessage);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

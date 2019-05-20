@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import java.io.IOException;
@@ -38,9 +39,9 @@ public class SocketServer {
     }
 
     @EventListener
-    public void handelWebSocketSubscribeListener(SessionSubscribeEvent sessionSubscribeEvent){
+    public void handleWebSocketSubscribeListener(SessionSubscribeEvent sessionSubscribeEvent){
         String destination=(String) sessionSubscribeEvent.getMessage().getHeaders().get("simpDestination");
-        if(!destination.matches("/user/.*/queue/reply")){
+        if(!destination.matches("/user/.*/queue/send")){
             return;
         }
         LinkedBlockingQueue<SocketMessage> queue=new LinkedBlockingQueue<>();
@@ -48,6 +49,11 @@ public class SocketServer {
         connectionHandler=new SocketConnectionHandler(queue,destination,messagingTemplate);
         messageQueues.put(destination,queue);
         executorService.submit(connectionHandler);
+    }
+
+    @EventListener
+    public void handleWebSocketDisconnectListener(SessionDisconnectEvent sessionDisconnectEvent){
+        logger.info("disconnected");
     }
 
     @MessageMapping("/send")

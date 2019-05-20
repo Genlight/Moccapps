@@ -53,11 +53,15 @@ export class ProjectsComponent implements OnInit {
   }
 
   connectToSocket(){
-    this.socketService.connect(this.tokenStorage.getEmail());
+    this.socketService.connect(this.tokenStorage.getToken());
   }
 
   sendMessageToSocket(){
-    this.socketService.send('hallo',this.tokenStorage.getEmail(),'EDIT');
+    this.socketService.send('hallo','EDIT');
+  }
+
+  disconnectSocket(){
+    this.socketService.disconnect();
   }
 
   loadUserInfo(): void {
