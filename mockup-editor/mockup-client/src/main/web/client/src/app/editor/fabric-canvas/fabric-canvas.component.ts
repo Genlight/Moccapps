@@ -36,7 +36,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.canvas = this.managePagesService.getCanvas();
 
     // saving initial state of canvas
-    this.undoRedoService.save(this.canvas);
+    this.undoRedoService.save(this.canvas, Action.PAGECREATED);
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
   }
@@ -49,9 +49,9 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-      .on('object:added', () => this.onSaveState)
-      .on('object:modified', () => this.onSaveState)
-      .on('object:removed', () => this.onSaveState);
+      .on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
+      .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
+      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
   }
 
   /**
@@ -148,12 +148,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       next(transObject);
     }
   }
-  /**
-   * Wendet übergebene Canvas-Objekt-Transformationen auf das Canvas an.
-   * Falls keine UUID gefunden wird, wird eine Exception geworfen (Ausnahme: element:added)
-   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
-   * welches per toJSON() serialissiert/ deserialisiert wurde
-   */
   async applyTransformation(object: any) {
     const old = this.getObjectByUUID(object.uuid);
     this.canvas.removeListeners();
@@ -193,7 +187,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    * Undo Redo - functionality
    * @{author}: Alexander Genser
    */
-  onSaveState() {
-    this.undoRedoService.save(this.canvas);
+  onSaveState(evt: any, action: Action) {
+    this.undoRedoService.save(this.canvas, action);
   }
 }
+//

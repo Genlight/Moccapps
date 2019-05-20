@@ -2,8 +2,8 @@ import { fabric } from '../../editor/extendedfabric';
 import { Action } from './Transformation';
 
 export class UndoRedoState {
-  objects?: fabric.Object[];
-  action: Action;
+  objects: any;
+  action?: Action;
 }
 
 export enum ReplayAction {

@@ -9,6 +9,7 @@
 import { Injectable } from '@angular/core';
 import { Action } from '../models/Transformation';
 import { ManagePagesService } from '../../editor/managepages.service';
+import { FabricmodifyService } from '../../editor/fabricmodify.service';
 import { UndoRedoState, ReplayAction } from '../models/UndoRedoState';
 import { fabric } from '../../editor/extendedfabric';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -20,9 +21,9 @@ import { Observable, BehaviorSubject } from 'rxjs';
 export class UndoRedoService {
 
   //  the fabricJS canvas Object
-  canvas: any;
+  canvas: fabric.Object;
   // current unsaved state
-  state: fabric.Object;
+  state: UndoRedoState;
   // past states
   undoStack: UndoRedoState[];
   // reverted states
@@ -30,7 +31,10 @@ export class UndoRedoService {
   undoObs: BehaviorSubject<boolean>;
   redoObs: BehaviorSubject<boolean>;
 
-  constructor(private managepageService: ManagePagesService) {
+  constructor(
+    private managepageService: ManagePagesService,
+    private modifyService: FabricmodifyService
+  ) {
     this.redoObs = new BehaviorSubject<boolean>(false);
     this.undoObs = new BehaviorSubject<boolean>(false);
     this.canvas = this.managepageService.getCanvas();
@@ -43,10 +47,23 @@ export class UndoRedoService {
    * @param  state [description]
    * @return        [description]
    */
-  save(state: fabric.Canvas): void {
+  save(canvas: any, action: Action): void {
+    // set to null
     this.redoStack = [];
+    // if ( !Array.isArray(objects)){
+    //   objects = [objects];
+    // }
+    // if (state.type === 'activeSelection') {
+    //   this.canvas.getActiveObject().forEachObject(next);
+    //   return;
+    // }
+    // if (Array.isArray(transObject)) {
+    //   transObject.forEach(next);
+    // } else {
+    //   next(transObject);
+    // }
 
-    this.state = state;
+    this.state = {objects: JSON.stringify(canvas), action };
 
     console.log('redo disabled.');
     this.redoObs.next(false);
@@ -56,6 +73,24 @@ export class UndoRedoService {
       console.log('undo enabled');
       this.undoObs.next(true);
     }
+    // switch (action) {
+    //   case Action.ADDED : {
+    //     break;
+    //   }
+    //   case Action.MODIFIED: {
+    //     this.undoStack.push({objects: this.state, action}: UndoRedoState);
+    //     console.log('undo enabled');
+    //     break;
+    //   }
+    //   case Action.REMOVED: {
+    //     break;
+    //   }
+    //   default: {
+    //     console.log('Undefined Action received. Action: ' + action);
+    //     break;
+    //   }
+    // }
+    // this.undoObs.next(true);
   }
   /**
    * Save the current state in the redo stack, reset to a state in the undo stack, and enable the buttons accordingly.
@@ -65,28 +100,31 @@ export class UndoRedoService {
    * @param player associated is**doing, after state change it will be checked if there are any states left n this stack
    * @param stacker associated is**doing, same as above
    */
-   replay(playStack, saveStack, player: BehaviorSubject<boolean>, stacker: BehaviorSubject<boolean>) {
-   // (playStack, saveStack, buttonsOn, buttonsOff) {
-    saveStack.push(this.state);
-    this.state = playStack.pop();
-    // turn both buttons off for the moment to prevent rapid clicking
-    player.next(false);
-    stacker.next(false);
-    this.canvas.clear();
-    this.canvas.set(this.state, () => {
-      this.canvas.renderAll();
-      stacker.next(true);
-      // true, if any states left
-      if (playStack.length) {
-        player.next(false);
-      }
-    });
+  replay(playStack, saveStack, player: BehaviorSubject<boolean>, stacker: BehaviorSubject<boolean>) {
+     this.canvas = this.managepageService.getCanvas();
+     // (playStack, saveStack, buttonsOn, buttonsOff) {
+     saveStack.push(this.state);
+     this.state = playStack.pop();
+     // turn both buttons off for the moment to prevent rapid clicking
+     player.next(false);
+     stacker.next(false);
+     this.canvas.clear();
+     this.canvas.loadFromJSON(this.state, () => {
+       this.canvas.renderAll();
+       stacker.next(true);
+       // true, if any states left
+       if (playStack.length) {
+         player.next(false);
+       }
+     });
   }
 
-  undo() {
+  undo(canvas) {
+    this.canvas = canvas;
     this.replay(this.undoStack, this.redoStack, this.undoObs, this.redoObs);
   }
-  redo() {
+  redo(canvas) {
+    this.canvas = canvas;
     this.replay(this.redoStack, this.undoStack, this.redoObs, this.undoObs);
   }
   getRedoObs(): Observable<boolean> {
