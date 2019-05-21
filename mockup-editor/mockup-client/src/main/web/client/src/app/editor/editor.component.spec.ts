@@ -15,6 +15,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { DndModule } from 'ngx-drag-drop';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -37,7 +38,8 @@ describe('EditorComponent', () => {
         RouterTestingModule,
         HttpClientModule,
         FormsModule,
-        DndModule
+        DndModule,
+        ColorPickerModule
       ],
       providers: [AppModule]
     })
