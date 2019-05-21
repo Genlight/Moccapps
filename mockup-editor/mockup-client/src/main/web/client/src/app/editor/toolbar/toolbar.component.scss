@@ -2,6 +2,13 @@
     width: 60px;
     padding: 8px;
     background-color: #F7F7F9;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    top: 55px;
+    z-index: 1;
+    overflow-y:hidden;
+    overflow-x:hidden;
 }
 
 .toolbar-item {
@@ -12,7 +19,7 @@
 
 .toolbar-bottom {
     position: absolute;
-    bottom: 0px;
+    bottom: 55px;
 }
 
 .btn-toolbar {

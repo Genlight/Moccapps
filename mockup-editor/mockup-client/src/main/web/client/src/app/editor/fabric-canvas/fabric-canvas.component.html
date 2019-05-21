@@ -1,6 +1,6 @@
 <button (click)=onSaveToLocalStorage()>Save to Local Storage</button>
 <button (click)=onLoadFromLocalStorage()>Load from Local Storage</button>
-<div id="canvasWrapper" dndDropzone
+<div id="canvasWrapper" tabIndex='0' (keydown)="manageKeyboardEvents($event)" dndDropzone
     (dndDrop)="onDrop($event)">
     <div class="canvas-container">
         <canvas id="canvas"></canvas>

@@ -1,9 +1,16 @@
+// Base Colors
+$highlightcolor-1: #d7dcdf;
+$highlightcolor-2: #2c3e50;
+$backgroundcolor-1: #F7F7F9;
+
 .customizepanel {
     width: 2em;
-    background-color: #F7F7F9;
-    height: 100%;
+    background-color: $backgroundcolor-1;
+    //height: 100%;
     position: fixed;
     right: 0px;
+    bottom: 0px;
+    top: 55px;
     z-index: 1;
 }
 
@@ -18,7 +25,9 @@
 }
 
 .showoptions {
-    width: 15em;
+    width: 17em;
+    overflow-y:auto;
+    overflow-x:hidden;
 }
 
 .hidden {
@@ -30,17 +39,58 @@
     display: block;
     padding-top: 2em;
     padding-right: 1em;
+    overflow: auto;
+}
+
+h2 {
+    height: 2em;
+    font-weight: bold;
+    font-size: 1em;
+    padding-bottom: 0.2em;
+    padding-top: 0.2em;
+}
+
+h3 {
+    font-size: 1em;
+    padding-bottom: 0.1em;
+    padding-top: 0.1em;
+}
+
+.extrapadding {
+    //padding-top: 0.5em;
+    padding-bottom: 0.8em;
 }
 
 //for buttongroups with svgs
 .arrangeoptions {
     line-height: 1em;
     border: 1px solid gray;
+    color: black;
+    cursor: pointer;
+}
+
+.btn-outline-primary:not(:disabled):not(.disabled).active, 
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.btn-outline-primary:not(:disabled):not(.disabled).hover,
+.btn-outline-primary:not(:disabled):not(.disabled):hover, 
+.show > .btn-outline-primary.dropdown-toggle {
+    color: white;
+    background-color:$highlightcolor-2;
+    border-color: $highlightcolor-2;
 }
 
 .btn > svg {
     width: 1em;
     height: 1em;
+}
+
+input:checked + svg,
+input:hover + svg {
+    fill: white;
+}
+
+.svgbutton {
+    margin-bottom: 0.3em;
 }
 
 .colorPicker {
@@ -50,6 +100,59 @@
 }
 
 .editorslider {
-    display: inline;
+    display: inline-block;
+    width: 9em;
+    -webkit-appearance: none;
+    height: 8px;
+    border-radius: 5px;
+    outline: none;
+    background: $highlightcolor-1;
+    // Range Handle in Chrome
+    &::-webkit-slider-thumb {
+        appearance: none;
+        border-radius: 50%;
+        background: $highlightcolor-2;
+        cursor: pointer;
+    }
+    // Range Handle in Firefox
+    &::-moz-range-thumb {
+        border: 0;
+        border-radius: 50%;
+        background: $highlightcolor-2;
+        cursor: pointer;
+    }
+}
+
+.sliderlabel {
+    display: inline-block;
+    position: relative;
+    width: 2.5em;
+    color: white;
+    line-height: 1em;
+    text-align: center;
+    border-radius: 6px;
+    background: $highlightcolor-2;
+    padding: 5px 10px;
+    margin-left: 8px;
+
+    &:after {
+        position: absolute;
+        top: 7px;
+        left: -7px;
+        width: 0;
+        height: 0;
+        border-top: 7px solid transparent;
+        border-right: 7px solid $highlightcolor-2;
+        border-bottom: 7px solid transparent;
+        content: '';
+      }
+}
+
+.multicolorbuttons {
     width: 80%;
 }
+
+.editortext {
+    width: 90%;
+}
+

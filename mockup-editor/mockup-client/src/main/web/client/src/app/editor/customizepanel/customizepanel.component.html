@@ -6,7 +6,7 @@
   </div>
   <ul>
     <li class="customizecontent">
-      <div>Arrange Active Elements</div>
+      <h3>Arrange Active Elements</h3>
       <div class="btn-group" role="group">
         <button data-toggle="tooltip" data-placement="bottom" title="Bring to front" type="button"
           class="btn btn-outline-primary arrangeoptions" [disabled]="!selected" (click)="bringToFront();">
@@ -34,30 +34,158 @@
           </svg>
         </button>
       </div>
-    <br />
-        <div>Background/Fill Color</div>
-        <button class="btn colorPicker" [(colorPicker)]="elementProperties.backgroundColor"
-          [style.background]="elementProperties.backgroundColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
-          [value]="elementProperties.backgroundColor" (colorPickerChange)="setBackgroundColor()">
+
+      <p></p>
+      <div *ngIf="!selected">
+        <h2>Workspace Settings</h2>
+        <h3>Background Color:</h3>
+        <button class="btn colorPicker" [(colorPicker)]="canvasProperties.backgroundColor"
+          [style.background]="canvasProperties.backgroundColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
+          [value]="canvasProperties.backgroundColor" (colorPickerChange)="setCanvasBackgroundColor()">
         </button>
-        <div *ngIf="selected">Element Settings
-        <div>Opacity:</div>
-          <input class="editorslider" type="range" min="0" max="100" step="1" [value]="elementProperties.opacity" [(ngModel)]="elementProperties.opacity" (change)="setElementOpacity()">
-          
-          <div *ngIf="selected && selected.type == 'textbox'">Text Settings</div>
+      </div>
+
+      <div *ngIf="selected">
+        <h2>Element Settings</h2>
+        <h3>Opacity:</h3>
+        <div>
+          <input class="editorslider" type="range" min="0" max="100" step="1" [value]="elementProperties.opacity"
+            [(ngModel)]="elementProperties.opacity" (change)="setElementOpacity()">
+          <label class="sliderlabel">{{elementProperties.opacity}}</label>
         </div>
-        <br />
-          <div id="drawingModeSettings" class="hidden">Drawing Mode Settings
-          <div>Line Color:</div>
-          <button class="btn colorPicker" [(colorPicker)]="drawingMode.color"
-          [style.background]="drawingMode.color" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
-          [value]="drawingMode.color" (colorPickerChange)="setDrawingModeColor()">
+        <h3>Stroke:</h3>
+        <div>
+          <input class="editorslider" type="range" min="0" max="30" step="1" [value]="elementProperties.strokeWidth"
+            [(ngModel)]="elementProperties.strokeWidth" (change)="setElementStrokeWidth()">
+          <label class="sliderlabel">{{elementProperties.strokeWidth}}</label>
+        </div>
+        <h3 *ngIf="!(selected.type == 'textbox' || selected.type == 'itext')">Background/Fill/Stroke Color:</h3>
+        <h3 *ngIf="(selected.type == 'textbox' || selected.type == 'itext')">Background/Text/Stroke Color</h3>
+        <div class="btn-group multicolorbuttons extrapadding" role="group">
+          <button class="btn colorPicker" [(colorPicker)]="elementProperties.backgroundColor"
+            [style.background]="elementProperties.backgroundColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
+            [value]="elementProperties.backgroundColor" (colorPickerChange)="setElementBackgroundColor()">
+          </button>
+          <button class="btn colorPicker" [(colorPicker)]="elementProperties.fillColor"
+            [style.background]="elementProperties.fillColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
+            [value]="elementProperties.fillColor" [cpPresetColors]="[null, '#000', '#fff']" (colorPickerChange)="setElementFillColor()">
+          </button>
+          <button class="btn colorPicker" [(colorPicker)]="elementProperties.strokeColor"
+            [style.background]="elementProperties.strokeColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
+            [value]="elementProperties.strokeColor" [cpPresetColors]="[null, '#000', '#fff']" (colorPickerChange)="setElementStrokeColor()">
+          </button>
+        </div>
+        <h3>Lock Element</h3>
+        <div class="btn-group btn-group-toggle extrapadding">
+            <label class="btn btn-light btn-outline-primary arrangeoptions" ngbButtonLabel>
+              <input type="checkbox" ngbButton [(ngModel)]="elementProperties.lockMovement" [value]="elementProperties.lockMovement" (change)="setElementMoveLock()"> Move
+            </label>
+            <label class="btn btn-outline-primary arrangeoptions" ngbButtonLabel>
+              <input type="checkbox" ngbButton [(ngModel)]="elementProperties.lockScale" [value]="elementProperties.lockScale" (change)="setElementScaleLock()"> Scale
+            </label>
+            <label class="btn btn-outline-primary arrangeoptions" ngbButtonLabel>
+              <input type="checkbox" ngbButton [(ngModel)]="elementProperties.lockRotate" [value]="elementProperties.lockRotate" (change)="setElementRotateLock()"> Rotate
+            </label>
+          </div>
+        
+          <br />
+        <div *ngIf="selected && (selected.type == 'textbox' || selected.type == 'itext')">
+          <h2>Text Settings</h2>
+          <div class="btn-group btn-group-toggle extrapadding" ngbRadioGroup name="radioTextAlign" [(ngModel)]="textProperties.textAlign" (change)="setTextAlign()">
+            <label ngbButtonLabel class="btn btn-light btn-outline-primary arrangeoptions">
+              <input ngbButton type="radio" value="left">
+              <fa-icon [icon]="faAlignLeft"></fa-icon>
+            </label>
+            <label ngbButtonLabel class="btn btn-light btn-outline-primary arrangeoptions">
+              <input ngbButton type="radio" value="center">
+              <fa-icon [icon]="faAlignCenter"></fa-icon>
+            </label>
+            <label ngbButtonLabel class="btn btn-light btn-outline-primary arrangeoptions">
+              <input ngbButton type="radio" value="right">
+              <fa-icon [icon]="faAlignRight"></fa-icon>
+            </label>
+            <label ngbButtonLabel class="btn btn-light btn-outline-primary arrangeoptions">
+              <input ngbButton type="radio" value="justify">
+              <fa-icon [icon]="faAlignJustify"></fa-icon>
+            </label>
+          </div>
+
+          <div class="btn-group btn-group-toggle extrapadding">
+            <label class="btn btn-light btn-outline-primary arrangeoptions" ngbButtonLabel>
+              <input type="checkbox" ngbButton [(ngModel)]="textProperties.fontWeight" [value]="textProperties.fontWeight" (change)="setFontWeight()">
+              <fa-icon [icon]="faBold"></fa-icon>
+            </label>
+            <label class="btn btn-outline-primary arrangeoptions" ngbButtonLabel>
+              <input type="checkbox" ngbButton [(ngModel)]="textProperties.fontStyle" [value]="textProperties.fontStyle" (change)="setFontStyle()">
+              <fa-icon [icon]="faItalic"></fa-icon>
+            </label>
+            <label class="btn btn-outline-primary arrangeoptions" ngbButtonLabel>
+              <input type="checkbox" ngbButton [(ngModel)]="textProperties.textDecoration.underline" [value]="textProperties.textDecoration.underline" (change)="setTextDecoration()">
+              <fa-icon [icon]="faUnderline"></fa-icon>
+            </label>
+            <label class="btn btn-outline-primary arrangeoptions" ngbButtonLabel>
+              <input type="checkbox" ngbButton [(ngModel)]="textProperties.textDecoration.linethrough" [value]="textProperties.textDecoration.linethrough" (change)="setTextDecoration()">
+              <svg viewBox="0 0 24 24" class="svgbutton">
+                <path d="M23,12V14H18.61C19.61,16.14 19.56,22 12.38,22C4.05,22.05 4.37,15.5 4.37,15.5L8.34,15.55C8.37,18.92 11.5,18.92 12.12,18.88C12.76,18.83 15.15,18.84 15.34,16.5C15.42,15.41 14.32,14.58 13.12,14H1V12H23M19.41,7.89L15.43,7.86C15.43,7.86 15.6,5.09 12.15,5.08C8.7,5.06 9,7.28 9,7.56C9.04,7.84 9.34,9.22 12,9.88H5.71C5.71,9.88 2.22,3.15 10.74,2C19.45,0.8 19.43,7.91 19.41,7.89Z"/>
+              </svg>
+            </label>
+          </div>
+
+          <textarea class="editortext extrapadding" [(ngModel)]="textProperties.text" [value]="textProperties.text"
+            (change)="setText()"></textarea>
+          <h3>Font:</h3>
+          <select id="font-family" class="editortext" [(ngModel)]="textProperties.fontFamily" (change)="setFontFamily()">
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman" selected>Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Courier">Courier</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
+                <option value="Impact">Impact</option>
+              </select> 
+          <h3>Size:</h3>
+        <div>
+          <input class="editorslider" type="range" min="8" max="80" step="2" [value]="textProperties.fontSize"
+            [(ngModel)]="textProperties.fontSize" (change)="setFontSize()">
+          <label class="sliderlabel">{{textProperties.fontSize}}</label>
+        </div>
+        <h3>Character Spacing:</h3>
+        <div>
+          <input class="editorslider" type="range" min="-100" max="400" step="10" [value]="textProperties.charSpacing"
+            [(ngModel)]="textProperties.charSpacing" (change)="setCharSpacing()">
+          <label class="sliderlabel">{{textProperties.charSpacing}}</label>
+        </div>
+        <h3>Line Height:</h3>
+        <div>
+          <input class="editorslider" type="range" min="0.8" max="2.5" step="0.01" [value]="textProperties.lineHeight"
+            [(ngModel)]="textProperties.lineHeight" (change)="setLineHeight()">
+          <label class="sliderlabel">{{textProperties.lineHeight}}</label>
+        </div>
+        </div>
+      </div>
+
+      <br />
+      <div id="drawingModeSettings" class="hidden">
+        <h2>Drawing Mode Settings</h2>
+        <h3>Line Color:</h3>
+        <button class="btn colorPicker" [(colorPicker)]="drawingMode.color" [style.background]="drawingMode.color"
+          [cpPosition]="'left'" [cpAlphaChannel]="'disabled'" [value]="drawingMode.color"
+          (colorPickerChange)="setDrawingModeColor()">
         </button>
-          <div>Size:</div> 
-          <input class="editorslider" type="range" min="1" max="35" step="1" [value]="drawingMode.stroke" [(ngModel)]="drawingMode.stroke" (change)="setDrawingModeStroke()">
-          <label id="drawingModeStroke">{{drawingMode.stroke}}</label><br />
-          <div>Style:</div>
+        <h3>Size:</h3>
+
+        <div>
+          <input class="editorslider" type="range" min="1" max="40" step="1" [value]="drawingMode.stroke"
+            [(ngModel)]="drawingMode.stroke" (change)="setDrawingModeStroke()">
+          <label class="sliderlabel" id="drawingModeStroke">{{drawingMode.stroke}}</label>
         </div>
+        <h3>Style:</h3>
+        <select id="font-family" class="editortext" [(ngModel)]="drawingMode.style" (change)="setDrawingModeStyle()" disabled>
+          <option value="pencil" selected>Pencil</option>
+          <option value="circle">Circle</option>
+          <option value="spray">Spray</option>
+        </select> 
+      </div>
     </li>
   </ul>
 </div>

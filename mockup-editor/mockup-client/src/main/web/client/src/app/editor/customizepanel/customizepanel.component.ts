@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, faBold, faItalic, faUnderline } from '@fortawesome/free-solid-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
+import { fabric } from '../extendedfabric';
 
 @Component({
   selector: 'app-customizepanel',
@@ -11,29 +12,50 @@ import { ManagePagesService } from '../managepages.service';
 export class CustomizepanelComponent implements OnInit {
 
   faEllipsisV = faEllipsisV;
+  faAlignCenter = faAlignCenter;
+  faAlignLeft = faAlignLeft;
+  faAlignRight = faAlignRight;
+  faAlignJustify = faAlignJustify;
+  faBold = faBold;
+  faItalic = faItalic;
+  faUnderline = faUnderline;
 
   private canvas: any;
-  private selected: any;
-  private elementProperties: any = {
+
+  /* variables directly acessed in the html need to be public */
+  public selected: any;
+  public canvasProperties: any = {
     backgroundColor: '#ffffff',
+  };
+  public elementProperties: any = {
+    backgroundColor: '#ffffff',
+    fillColor: '#ffffff',
+    strokeColor: '#000000',
+    strokeWidth: 10,
     backgroundImage: '',
-    id: null,
     opacity: 100,
-    fill: null,
+    lockMovement: false,
+    lockScale: false,
+    lockRotate: false
+  };
+  public textProperties: any = {
     fontSize: null,
-    lineHeight: null,
-    charSpacing: null,
+    fontFamily: null,
     fontWeight: null,
     fontStyle: null,
     textAlign: null,
-    fontFamily: null,
-    TextDecoration: ''
+    charSpacing: null,
+    lineHeight: null,
+    textDecoration: {
+      underline: '',
+      linethrough: ''
+    },
+    text: ''
   };
-
-  private drawingMode: any = {
+  public drawingMode: any = {
     color: '#000000',
     stroke: 10,
-    style: null,
+    style: 'pencil',
     shadow: null
   };
 
@@ -53,21 +75,68 @@ export class CustomizepanelComponent implements OnInit {
     this.canvas.on({
       'object:moving': (event) => { },
       'object:modified': (event) => { },
-      'object:selected': (event) => {
+      'selection:created': (event) => {
         const selectedObject = event.target;
-        if (this.selected) {
-          //TODO select more than one
-          this.selected.concat(selectedObject);
-        } else {
-          this.selected = selectedObject;
-        }
-        console.log(this.selected.type);
+        this.selected = null;
+        console.log("selection created: " + JSON.stringify(selectedObject));
+        this.manageSelection(selectedObject);
+      },
+      'selection:updated': (event) => {
+        const selectedObject = event.target;
+        this.selected = null;
+        console.log("selection updated: " + selectedObject);
+        this.manageSelection(selectedObject);
       },
       'selection:cleared': (event) => {
-          this.selected = null;
-        }
-      });
-      //TODO manage mouse selection area
+        this.selected = null;
+      }
+    });
+  }
+
+  manageSelection(elem) {
+    if (elem.type === 'activeSelection') {
+      // load properties of all elements if they are the same and otherwise default or only load default properties generally?
+    } else if (elem.type === 'textbox') {
+      this.loadTextProperties(elem);
+    } else if (elem.type === 'circle' || elem.type === 'rect') {
+      this.loadElementProperties(elem);
+    }
+    this.selected = elem;
+    console.log(this.selected.type);
+  }
+
+  loadTextProperties(text) {
+    this.loadElementProperties(text);
+    this.textProperties.fontSize = text.fontSize;
+    this.textProperties.fontFamily = text.fontFamily;
+    this.textProperties.fontStyle = (text.fontStyle === 'italic');
+    this.textProperties.fontWeight = (text.fontWeight === 'bold');
+    this.textProperties.textAlign = text.textAlign;
+    this.textProperties.lineHeight = text.lineHeight.toFixed(2);
+    this.textProperties.charSpacing = text.charSpacing;
+    this.textProperties.textDecoration.underline = text.underline;
+    this.textProperties.textDecoration.linethrough = text.linethrough;
+    this.textProperties.text = text.text;
+    console.log(this.textProperties);
+  }
+
+  loadElementProperties(elem) {
+    this.elementProperties.backgroundColor = elem.backgroundColor;
+    this.elementProperties.fillColor = elem.fill;
+    this.elementProperties.opacity = elem.opacity * 100;
+    this.elementProperties.strokeWidth = elem.strokeWidth;
+    this.elementProperties.strokeColor = elem.stroke;
+    this.elementProperties.lockMovement = elem.lockMovementX;
+    this.elementProperties.lockScale = elem.lockScalingX;
+    this.elementProperties.lockRotate = elem.lockRotation;
+    console.log(this.elementProperties);
+  }
+
+  setElementProperty(property, value) {
+    if (this.selected) {
+      this.selected.set(property, value);
+    }
+    this.canvas.renderAll();
   }
 
   bringToFront() {
@@ -86,25 +155,43 @@ export class CustomizepanelComponent implements OnInit {
     this.modifyService.sendBackwards(this.canvas);
   }
 
-  setBackgroundColor() {
-    console.log('color is ' + this.elementProperties.backgroundColor);
-    if (this.selected) {
-      //TODO manage group selections - possible to set background color - yes/no?
-      //this.selected.forEach((obj) => {
-      //  obj.set('fill', this.elementProperties.backgroundColor);
-      //});
-      this.selected.set('fill', this.elementProperties.backgroundColor);
-    } else {
-      this.canvas.setBackgroundColor(this.elementProperties.backgroundColor);
-    }
+  setCanvasBackgroundColor() {
+    this.canvas.setBackgroundColor(this.elementProperties.backgroundColor);
     this.canvas.renderAll();
   }
 
+  setElementBackgroundColor() {
+    this.setElementProperty('backgroundColor', this.elementProperties.backgroundColor);
+  }
+
+  setElementFillColor() {
+    this.setElementProperty('fill', this.elementProperties.fillColor);
+  }
+
+  setElementStrokeColor() {
+    this.setElementProperty('stroke', this.elementProperties.strokeColor);
+  }
+
   setElementOpacity() {
-    if (this.selected) {
-      this.selected.set('opacity', this.elementProperties.opacity / 100);
-    }
-    this.canvas.renderAll();
+    this.setElementProperty('opacity', this.elementProperties.opacity / 100);
+  }
+
+  setElementStrokeWidth() {
+    this.setElementProperty('strokeWidth', this.elementProperties.strokeWidth);
+  }
+
+  setElementMoveLock() { 
+    this.setElementProperty('lockMovementX', this.elementProperties.lockMovement);
+    this.setElementProperty('lockMovementY', this.elementProperties.lockMovement);
+  }
+
+  setElementScaleLock() {
+    this.setElementProperty('lockScalingX', this.elementProperties.lockMovement);
+    this.setElementProperty('lockScalingY', this.elementProperties.lockMovement);
+  }
+
+  setElementRotateLock() {
+    this.setElementProperty('lockRotation', this.elementProperties.lockMovement);
   }
 
   setDrawingModeColor() {
@@ -116,7 +203,57 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setDrawingModeStyle() {
+      // TODO
+  }
 
+  setFontFamily() {
+    this.setElementProperty('fontFamily', this.textProperties.fontFamily);
+  }
+
+  setFontSize() {
+    this.setElementProperty('fontSize', this.textProperties.fontSize);
+  }
+
+  setFontWeight() {
+    let fontWeight = '';
+    if (this.textProperties.fontWeight) {
+      fontWeight = 'bold';
+    }
+    this.setElementProperty('fontWeight', fontWeight);
+  }
+
+  setFontStyle() {
+    let fontStyle = '';
+    if (this.textProperties.fontStyle) {
+      fontStyle = 'italic';
+    }
+    this.setElementProperty('fontStyle', fontStyle);
+  }
+
+  setTextDecoration() {
+    this.setElementProperty('underline', this.textProperties.textDecoration.underline);
+    this.setElementProperty('linethrough', this.textProperties.textDecoration.linethrough);
+    console.log(this.textProperties.textDecoration.underline);
+    console.log(this.textProperties.textDecoration.linethrough);
+  }
+
+  setText() {
+    if (this.textProperties.text === '') {
+      this.textProperties.text = 'Text';
+    }
+    this.setElementProperty('text', this.textProperties.text);
+  }
+
+  setTextAlign() {
+    this.setElementProperty('textAlign', this.textProperties.textAlign);
+  }
+
+  setCharSpacing() {
+    this.setElementProperty('charSpacing', this.textProperties.charSpacing);
+  }
+
+  setLineHeight() {
+    this.setElementProperty('lineHeight', this.textProperties.lineHeight);
   }
 
 }

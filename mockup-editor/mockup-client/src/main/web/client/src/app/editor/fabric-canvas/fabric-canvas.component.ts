@@ -45,6 +45,41 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * manages keyboard events:
+   * - deleting selected elements on delete press
+   * - copy/paste elements on ctrl+c/ctrl+v press
+   * - cut elements on ctrl+x press
+   * - undo/redo on ctrl+z/ctrl+y press
+   * - group elements on ctrl+g press
+   * - ungroup elements on ctrl+shift+g press
+   * @param event keyboard event triggered when pressing a keyboard button
+   */
+  manageKeyboardEvents(event) {
+    const canvas = this.managePagesService.getCanvas();
+    if (event.ctrlKey) {
+      if (event.keyCode === 67) { // 'c' key
+        this.modifyService.copyElement(canvas);
+      } else if (event.keyCode === 86) { // 'v' key
+        this.modifyService.pasteElement(canvas);
+      } else if (event.keyCode === 88) { // 'x' key
+        this.modifyService.cutElement(canvas);
+      } else if (event.keyCode === 90) { // 'z' key
+        // TODO undo
+      } else if (event.keyCode === 89) { // 'y' key
+        // TODO redo
+      } else if (event.keyCode === 71 && event.shiftKey) { // 'g' key
+        this.modifyService.ungroup(canvas);
+      } else if (event.keyCode === 71) { // 'g' key
+        this.modifyService.group(canvas);
+      }
+    } else {
+      if (event.keyCode === 46) { // delete key
+        this.modifyService.removeElement(canvas);
+      }
+    }
+  }
+
+  /**
    * saves the elements in the workspace as JSON string in the local storage
    */
   onSaveToLocalStorage() {
