@@ -2,12 +2,13 @@ image: maven:3.6.0-jdk-8
 
 services:
   - postgres
+  - docker:dind
 
 variables:
   MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   MAVEN_CLI_OPTS: "-f ./mockup-editor/pom.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
-  
-  SERVER_IP: localhost
+
+  SERVER_IP: postgres
   POSTGRES_DB: test
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: test
@@ -29,22 +30,22 @@ build:
     refs:
       - master
       - devel
-      - task/36848_Change_DB_deployment
-     
+      - merge_requests
+
 frontend-unittest:
   stage: test
   image: weboaks/node-karma-protractor-chrome:alpine
   script:
     - pushd ./mockup-editor/mockup-client/src/main/web/client
-    - npm i 
+    - npm i
     - npm run-script test-headless
     - popd
   only:
     refs:
       - master
       - devel
-
-backend-test: 
+      - merge_requests
+backend-test:
   stage: test
   script:
     - mvn -DSERVER_IP=$SERVER_IP $MAVEN_CLI_OPTS test
@@ -52,5 +53,4 @@ backend-test:
     refs:
       - master
       - devel
-      - task/36848_Change_DB_deployment
-
+      - merge_requests

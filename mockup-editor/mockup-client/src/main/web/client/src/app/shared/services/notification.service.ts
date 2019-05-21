@@ -8,10 +8,14 @@ import { Injectable } from '@angular/core';
 export class NotificationService {
 
   constructor() {
-    // PNotifyButtons;
+    PNotifyButtons; // Initiates the module. Important!
     PNotify.defaults.styling = 'bootstrap4';
+    PNotify.defaults.delay = 4000;
   }
-
+  getPNotify() {
+    PNotifyButtons; // Initiate the module. Important!
+    return PNotify;
+  }
   showError(message: string, title?: string) {
     PNotify.error({
       title: title || 'Error',
@@ -28,6 +32,7 @@ export class NotificationService {
   }
 
   showSuccess(message: string, title?: string) {
+    PNotifyButtons;
     PNotify.success({
       title: title || 'Success',
       text: message,

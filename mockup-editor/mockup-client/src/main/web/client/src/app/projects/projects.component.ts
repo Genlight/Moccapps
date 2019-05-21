@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ManageUserModalComponent } from '../shared/components/manage-user-modal/manage-user-modal.component';
 import { RenameProjectModalComponent } from '../shared/components/rename-project-modal/rename-project-modal.component';
 import { DeleteProjectModalComponent } from '../shared/components/delete-project-modal/delete-project-modal.component';
+import { UserModalComponent } from '../shared/components/user-modal/user-modal.component';
 import { Project } from '../shared/models/Project';
 import { Invite } from '../shared/models/Invite';
 import { ProjectService } from '../shared/services/project.service';
@@ -34,8 +35,8 @@ export class ProjectsComponent implements OnInit {
   info: any;
 
   constructor(
-    private router: Router, 
-    private modalService: NgbModal, 
+    private router: Router,
+    private modalService: NgbModal,
     private projectService: ProjectService,
     private inviteService: InviteService,
     private tokenStorage: TokenStorageService,
@@ -89,11 +90,11 @@ export class ProjectsComponent implements OnInit {
         (response) => {
           console.log(`loadInvites: ${JSON.stringify(response)}`);
           let invites = (response as Invite[]);
-          
+
           if (!isArray(invites)) {
             invites = [];
           }
-         
+
           this.invites = invites;
         },
         (error) => {
@@ -133,7 +134,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   /**
-   * Projects 
+   * Projects
    */
   onOpenProject() {
     this.router.navigate(['editor']);
@@ -143,7 +144,7 @@ export class ProjectsComponent implements OnInit {
     // alert(JSON.stringify(project));
     const modelRef = this.modalService.open(ManageUserModalComponent);
     modelRef.componentInstance.project = project;
-    modelRef.componentInstance.confirm.subscribe(() => 
+    modelRef.componentInstance.confirm.subscribe(() =>
       this.loadProjects()
     );
   }
@@ -156,17 +157,29 @@ export class ProjectsComponent implements OnInit {
   onDeleteProject(project: Project) {
     const modelRef = this.modalService.open(DeleteProjectModalComponent);
     modelRef.componentInstance.project = project;
-    modelRef.componentInstance.confirm.subscribe(() => 
+    modelRef.componentInstance.confirm.subscribe(() =>
       this.deleteProject(project)
     );
   }
 
   onAcceptInvite(invite: Invite) {
     this.acceptInvite(invite);
-    
+
   }
 
   onDeclineInvite(invite: Invite) {
     this.declineInvite(invite);
+  }
+
+  onEditProfile() {
+    console.log('clicked oneditProfile');
+    const modelRef = this.modalService.open(UserModalComponent);
+    modelRef.result.then((result) => {
+      if ( result === 'success' ) {
+        this.info.username = this.tokenStorage.getUsername();
+      }
+    }, (reason) => {
+
+    });
   }
 }

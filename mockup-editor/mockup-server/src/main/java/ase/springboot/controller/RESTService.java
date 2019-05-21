@@ -6,6 +6,7 @@ import ase.message.request.*;
 import ase.message.request.User.LoginForm;
 import ase.message.request.User.LogoutForm;
 import ase.message.request.User.SignUpForm;
+import ase.message.request.EditUserForm;
 import ase.message.response.ResponseMessage;
 import ase.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,6 +28,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 //@RequestMapping("/api/v1")
@@ -94,9 +96,18 @@ public class RESTService {
       }
       User user = userService.getUserByEmail(editUserRequest.getEmail());
 
-      if( editUserRequest.getPassword() != null ) {
-        user.setPassword(encoder.encode(editUserRequest.getPassword()));
+      if(!encoder.matches(editUserRequest.getPassword(), user.getPassword())) {
+        return new ResponseEntity<>(new ResponseMessage("Fail -> Wrong original Password!"),
+        HttpStatus.BAD_REQUEST);
       }
+
+      if(Objects.equals(editUserRequest.getNewPassword(), null)) {
+        System.out.println("No new Password sent by user: "+ editUserRequest.getEmail() + " newpassword: " + editUserRequest.getNewPassword());
+      } else {
+        System.out.println("setting new password '"+editUserRequest.getNewPassword() + "'for user: " + user.getEmail());
+        user.setPassword(encoder.encode(editUserRequest.getNewPassword()));
+      }
+
       user.setUsername(editUserRequest.getUsername());
 
       System.out.println("Attempt to update User info: " + user.toString());
@@ -104,7 +115,7 @@ public class RESTService {
       if (userService.update(user)) {
           return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
       } else {
-          return new ResponseEntity<>(new ResponseMessage("Something else went wrong"), HttpStatus.BAD_REQUEST);
+          return new ResponseEntity<>(new ResponseMessage("Something else went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
 
