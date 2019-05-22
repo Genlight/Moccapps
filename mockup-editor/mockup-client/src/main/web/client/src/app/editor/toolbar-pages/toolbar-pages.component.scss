@@ -1,0 +1,26 @@
+.toolbarextension {
+    width: 15em;
+    background-color: #F7F7F9;
+    //border-left: 1px solid #CACACA;
+    margin-left: 1px;
+    position: fixed;
+    left: 60px;
+    bottom: 0px;
+    top: 55px;
+    z-index: 1;
+    padding: 12px;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+
+.extensionhidden {
+    display: none;
+}
+
+.elementImage {
+    width: 90%;
+}
+
+.referenceImage {
+    width: 100%;
+}
