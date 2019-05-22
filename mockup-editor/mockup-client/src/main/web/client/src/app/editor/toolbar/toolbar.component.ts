@@ -48,6 +48,8 @@ export class ToolbarComponent implements OnInit {
     this.modifyService.drawingMode(canvas);
     const button = document.getElementById('drawingModeButton');
     button.classList.toggle('btn-dark');
+    const settings = document.getElementById('drawingModeSettings');
+    settings.classList.toggle('hidden');
     if (this.drawingModeOn === false) {
       this.drawingModeOn = true;
     } else {
