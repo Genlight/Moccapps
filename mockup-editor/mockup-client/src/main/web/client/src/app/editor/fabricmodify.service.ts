@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
-
+import { ManagePagesService } from './managepages.service';
+import { Action } from './fabric-canvas/transformation.interface';
 let savedElements = null;
 
 @Injectable({
@@ -9,8 +10,11 @@ let savedElements = null;
 })
 
 export class FabricmodifyService {
+  canvas: any;
 
-  constructor() { }
+  constructor(
+    private managepagesService: ManagePagesService
+  ) { }
 
   /* groups active elements in given canvas if more than one element is selected */
   group(canvas: any) {
@@ -157,4 +161,60 @@ export class FabricmodifyService {
     this.copyElement(canvas);
     this.pasteElement(canvas);
   }
+  /**
+   * Wendet übergebene Canvas-Objekt-Transformationen auf das Canvas an.
+   * Falls keine UUID gefunden wird, wird eine Exception geworfen (Ausnahme: element:added)
+   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
+   * welches per toJSON() serialissiert/ deserialisiert wurde
+   */
+  // async applyTransformation(object: any) {
+  //   const canvas = this.managepagesService.getCanvas();
+  //   const old = this.getObjectByUUID(object.uuid);
+  //   this.disableEvents();
+  //   // if not existed, jsut add it
+  //   if (typeof old === 'undefined') {
+  //     await canvas.loadFromJSON(object, () => {
+  //       console.log(`Element added by other user: ${object.uuid}`);
+  //     }).requestRenderAll();
+  //   } else {
+  //     await canvas.remove(old).loadFromJSON(object, () => {
+  //       console.log(`Element changed by other user: ${object.uuid}`);
+  //     }).requestRenderAll();
+  //   }
+  //   this.enableEvents();
+  // }
+  //
+  // /**
+  //  * gleicher Ablauf wie applyTransformation, nur dass hier ein fabric-Objekt entfernt wird
+  //  * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
+  //  * welches per toJSON() serialissiert/ deserialisiert wurde
+  //  */
+  // applyRemoval(object: any) {
+  //   const canvas = this.managepagesService.getCanvas();
+  //   const old = this.getObjectByUUID(object.uuid);
+  //   if (typeof old !== 'undefined') {
+  //     this.disableEvents();
+  //     canvas.remove(old);
+  //     this.enableEvents();
+  //   }
+  // }
+  //
+  // getObjectByUUID(uuid: string) {
+  //   this.canvas = this.managepagesService.getCanvas();
+  //   return this.canvas.getObjects().find((o) => o.uuid === uuid);
+  // }
+  //
+  // enableEvents() {
+  //   this.managepageService.getCanvas()
+  //     .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
+  //     .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
+  //     .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
+  //     .on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
+  //     .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
+  //     .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
+  // }
+  //
+  // disableEvents() {
+  //   this.managepageService.getCanvas().removeListeners();
+  // }
 }
