@@ -4,43 +4,15 @@ import ase.DAO.DAOException;
 import ase.DAO.PageDAO;
 import ase.DTO.Page;
 import org.junit.Test;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.List;
 
-/*@ActiveProfiles("test")
-@SpringBootTest(classes = TestRdbsConfiguration.class)
-@ContextConfiguration(classes = Application.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-@SqlGroup({
-        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = {"classpath:schema.sql","classpath:insertTestData.sql"}),
-        @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:deleteData.sql")
-})*/
+import static org.junit.Assert.*;
+
 public class PageDAOTest extends AbstractDAOTest {
-
-/*    @Rule
-    public Timeout testTimeout = Timeout.seconds(3);
-
-    @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer()
-            .withDatabaseName("test")
-            .withPassword("test")
-            .withUsername("test");
-
-    @Autowired
-    private PageDAO pageDAO;
-    private static TestData testData;
-
-
-
-    @BeforeClass
-    public static void setupTestData() {
-        testData = new TestData();
-        testData.init();
-    }*/
 
     @Autowired
     private PageDAO pageDAO;
@@ -49,7 +21,7 @@ public class PageDAOTest extends AbstractDAOTest {
 
     @Test
     public void createPageWithValidDataTest() throws DAOException {
-        Page page = testData.page2;
+        Page page = testData.page3;
         assertEquals("The returned Page has to be equal to the created one", page, pageDAO.create(page));
     }
 
@@ -99,6 +71,32 @@ public class PageDAOTest extends AbstractDAOTest {
     @Test(expected = DAOException.class)
     public void findPageByIDPageWithInValidDataTest() throws DAOException {
         pageDAO.findById(-1);
+    }
+
+    @Test
+    public void findPagesByProjectId() throws DAOException {
+        Page page_ideal = testData.createdPage1;
+        page_ideal.setId(1);
+
+        Page page_real = pageDAO.findById(1);
+        assertEquals(page_ideal, page_real);
+
+        Page page1_ideal = testData.createdPage2;
+        page1_ideal.setId(2);
+
+        Page page1_real = pageDAO.findById(2);
+        assertEquals(page1_ideal, page1_real);
+
+        List<Page> pages= pageDAO.findPagesForProject(testData.createdPage1.getProject_id());
+        for(Page e: pages){
+            logger.info(e.toString());
+        }
+        if(!(pages.contains(testData.createdPage1))){
+            fail();
+        }
+        if(!(pages.contains(testData.createdPage2))){
+            fail();
+        }
     }
 
 }
