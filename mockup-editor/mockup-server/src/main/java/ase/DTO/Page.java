@@ -23,6 +23,10 @@ public class Page {
         this.page_data=page_data;
     }
 
+    public Page() {
+
+    }
+
     public int getId() {
         return id;
     }

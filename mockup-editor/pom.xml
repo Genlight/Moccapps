@@ -64,12 +64,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <systemProperties>
-                            <property>
-                                <name>SERVER_IP</name>
-                                <value>${}</value>
-                            </property>
-                        </systemProperties>
+                        <systemPropertiesFile>
+                            ${project.basedir}/dev.properties
+                        </systemPropertiesFile>
                     </configuration>
                     <dependencies>
                         <!-- let surefire run JUnit 4 but also JUnit 5 tests -->
