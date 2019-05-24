@@ -13,6 +13,11 @@
     overflow-x:hidden;
 }
 
+.list-group-item-action.active {
+    background-color: #333a40;
+    border-color: #343a40;
+}
+
 .extensionhidden {
     display: none;
 }

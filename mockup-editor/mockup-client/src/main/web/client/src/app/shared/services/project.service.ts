@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from 'src/app/api.service';
 import { Project } from '../models/Project';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { ProjectUpdateRequest } from '../api/request/project-update-request';
 import { isArray } from 'util';
 
@@ -10,7 +10,29 @@ import { isArray } from 'util';
 })
 export class ProjectService {
 
-  constructor(private apiService: ApiService) { }
+  private _activeProject: BehaviorSubject<Project>;
+
+  private dataStore: {
+    activeProject: Project
+  };
+
+  constructor(private apiService: ApiService) { 
+    this.dataStore = {
+      activeProject: null
+    };
+    this._activeProject = new BehaviorSubject(null);
+  }
+
+  get activeProject(): Observable<Project> {
+    return this._activeProject.asObservable();
+  }
+
+  setActiveProject(project: Project) {
+    if (!!project) {
+      this.dataStore.activeProject = project;
+      this._activeProject.next(Object.assign({}, this.dataStore).activeProject);
+    }
+  }
 
   getProjects<T>(): Observable<T> {
     return this.apiService.get<T>('/project');

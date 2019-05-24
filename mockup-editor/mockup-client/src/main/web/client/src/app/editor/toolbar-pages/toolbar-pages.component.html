@@ -1,17 +1,32 @@
 <div class="toolbarextension extensionhidden" id="toolbar-pages">
-  <div class="row">
-    <div class="col">
+  <div class="mb-2" style="display: flex; align-items: center; justify-content: space-between">
+    <div>
       <label><b>Pages</b></label>
     </div>
-    <div class="col">
+    <div>
       <button class="btn btn-light float-right" (click)="onCreatePage()">+</button>
     </div>
   </div>
 
   <div id="extToolbarContent" class="referenceElement">
-    <div class="list-group" *ngFor="let page of pages">
-      <!-- <li class="list-group-item active">Cras justo odio</li> -->
-      <a class="list-group-item list-group-item-action py-2">{{page.name}}</a>
+    <div class="list-group">
+      <button 
+        [class.active]="selectedIndex === i"
+        class="list-group-item list-group-item-action py-2" 
+        *ngFor="let page of pages; let i = index;"
+        (click)="onClickPage(i)"
+        style="display: flex; align-items: center; justify-content: space-between">
+        <span class="my-auto">Page {{i + 1}}</span>
+       
+        <button
+          class="
+            btn 
+            btn-link"
+          (click)="onDeletePage(page)"
+        >
+          <fa-icon [icon]="faTrashAlt"></fa-icon>
+        </button>
+      </button>
     </div>
   </div>
 </div>

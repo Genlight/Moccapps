@@ -12,6 +12,8 @@ import {DataService} from '../../../data.service';
 import {TokenStorageService} from '../../../auth/token-storage.service';
 import {AuthService} from '../../../auth/auth.service';
 import {AuthLogoutInfo} from '../../../auth/logout-info';
+import { ProjectService } from '../../services/project.service';
+import { Project } from '../../models/Project';
 
 @Component({
   selector: 'app-navbar',
@@ -44,12 +46,14 @@ export class NavbarComponent implements OnInit {
 
   // usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
   projectname = 'My project 1';
+  project: Project = null;
 
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
               private authService: AuthService,
-              private modalService: NgbModal
+              private modalService: NgbModal,
+              private projectService: ProjectService
           ) { }
 
   ngOnInit() {
@@ -58,6 +62,12 @@ export class NavbarComponent implements OnInit {
         token: this.tokenStorage.getToken(),
         username: this.tokenStorage.getUsername(),
       };
+    });
+
+    this.projectService.activeProject.subscribe((project) => {
+      if (!!project) {
+        this.project = project;
+      }
     });
   }
 
@@ -69,9 +79,6 @@ export class NavbarComponent implements OnInit {
         this.router.navigate(['']);
       }
       );
-
-
-
   }
 
   onNewProject() {

@@ -136,7 +136,8 @@ export class ProjectsComponent implements OnInit {
   /**
    * Projects
    */
-  onOpenProject() {
+  onOpenProject(project: Project) {
+    this.projectService.setActiveProject(project);
     this.router.navigate(['editor']);
   }
 
@@ -164,7 +165,6 @@ export class ProjectsComponent implements OnInit {
 
   onAcceptInvite(invite: Invite) {
     this.acceptInvite(invite);
-
   }
 
   onDeclineInvite(invite: Invite) {

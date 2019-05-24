@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Page } from 'src/app/shared/models/Page';
 import { ManagePagesService } from '../managepages.service';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-toolbar-pages',
@@ -11,21 +12,19 @@ export class ToolbarPagesComponent implements OnInit {
 
   isVisible = true;
 
-  pages: Page[] = [
-    {
-      id: 11,
-      name: 'Page1',
-      height: 600,
-      width: 300,
-      canvas: null,
-    }
-  ];
+  selectedIndex: number;
+  faTrashAlt = faTrashAlt;
+
+  pages: Page[] = [];
 
   constructor(
-    private pageService: ManagePagesService
-  ) 
-  { 
-
+    private managePagesService: ManagePagesService
+  ) {
+    this.managePagesService.pages.subscribe(
+      (pages) => {
+        this.pages = pages;
+      }
+    )
   }
 
   ngOnInit() {
@@ -33,17 +32,25 @@ export class ToolbarPagesComponent implements OnInit {
 
   onCreatePage() {
     let page = new Page();
-    page.id = 12;
-    page.name = 'Page2';
+    page.id = Math.random() * 100 ; //TOOD: TEMP SOLUTION, remove this 
+    page.name = `Page ${this.pages.length + 1}`;
     page.height = 400;
     page.width = 500;
 
-    this.pages.push(page);
+    this.managePagesService.addPage(page);
+    //this.pages.push(page);
   }
 
   onDeletePage(page: Page) {
     if (!!page) {
-      this.pages.splice(this.pages.indexOf(page), 1);
+      this.managePagesService.removePage(page);
+    }
+  }
+
+  onClickPage(index: number) {
+    //alert(index);
+    if (index !== null && index !== undefined) {
+      this.selectedIndex = +index;
     }
   }
 }
