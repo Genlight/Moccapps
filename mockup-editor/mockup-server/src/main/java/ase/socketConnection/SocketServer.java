@@ -61,7 +61,7 @@ public class SocketServer {
         String sessionId=(String) sessionDisconnectEvent.getMessage().getHeaders().get("simpSessionId");
         String clientname=sessionIdClientnameMap.get(sessionId);
         try {
-            messageQueues.get(clientname).put(new SocketMessage(clientname,"disconnect",""));
+            messageQueues.get(clientname).put(new SocketMessage("","",clientname,"disconnect",""));
         } catch (InterruptedException e) {
             logger.error("Client Socket Connection Handler Thread is already closed");
         }
