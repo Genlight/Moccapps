@@ -53,7 +53,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   connectToSocket(){
-    this.socketService.connect(this.tokenStorage.getToken());
+    this.socketService.connect("","",this.tokenStorage.getToken());
   }
 
   sendMessageToSocket(){
