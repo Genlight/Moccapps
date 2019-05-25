@@ -156,7 +156,7 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setCanvasBackgroundColor() {
-    this.canvas.setBackgroundColor(this.elementProperties.backgroundColor);
+    this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
     this.canvas.renderAll();
   }
 
