@@ -4,4 +4,5 @@ export class Page {
     height: number;
     width: number;
     canvas: any;
+    data?: string;
 }

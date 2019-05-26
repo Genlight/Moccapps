@@ -24,6 +24,24 @@ export class FabricmodifyService {
     canvas.requestRenderAll();
   }
 
+  clearAll(canvas: any) {
+    canvas.clear();
+  }
+
+  loadFromJSON(canvas: any, json: string) {
+    canvas.loadFromJSON(json, () => {
+      canvas.renderAll();
+    });
+  }
+
+  setHeight(canvas: any, height: number) {
+    canvas.setHeight(height);
+  }
+
+  setWidth(canvas: any, width: number) {
+    canvas.setWidth(width);
+  }
+
   /* ungroups elements in given canvas if a group of elements is selected */
   ungroup(canvas: any) {
     const activeGrp = canvas.getActiveObject();

@@ -34,8 +34,8 @@ export class ToolbarPagesComponent implements OnInit {
     let page = new Page();
     page.id = Math.random() * 100 ; //TOOD: TEMP SOLUTION, remove this 
     page.name = `Page ${this.pages.length + 1}`;
-    page.height = 400;
-    page.width = 500;
+    page.height = Math.floor(Math.random() * 5) * 100;
+    page.width = Math.floor(Math.random() * 5) * 100;
 
     this.managePagesService.addPage(page);
     //this.pages.push(page);
@@ -47,10 +47,11 @@ export class ToolbarPagesComponent implements OnInit {
     }
   }
 
-  onClickPage(index: number) {
+  onClickPage(index: number, page: Page) {
     //alert(index);
     if (index !== null && index !== undefined) {
       this.selectedIndex = +index;
+      this.managePagesService.setPageActive(page);
     }
   }
 }

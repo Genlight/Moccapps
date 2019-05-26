@@ -32,6 +32,15 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.canvas = this.managePagesService.getCanvas();
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
+
+    this.managePagesService.activePage.subscribe((page) => {
+      if (!!page) {
+        this.modifyService.clearAll(this.canvas);
+        this.modifyService.setHeight(this.canvas, page.height);
+        this.modifyService.setWidth(this.canvas, page.width);
+        alert(`height ${page.height} width ${page.width}`);
+      }
+    });
   }
 
   /**
@@ -99,6 +108,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       this.canvas.renderAll();
     });
   }
+
 
   /**
    * only used for tests in this component
