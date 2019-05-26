@@ -43,13 +43,13 @@ public class EditUserForm implements Serializable {
     }
 
     public String getNewPassword() {
-      if(this.newPassword == null) {
-        return null;
-      }
+      // if(this.newPassword == null) {
+      //   return null;
+      // }
       return newPassword;
     }
 
-    public void setNewPassword(String password) {
+    public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
     }
 

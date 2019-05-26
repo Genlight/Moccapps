@@ -14,6 +14,7 @@ import {AuthService} from '../../../auth/auth.service';
 import {AuthLogoutInfo} from '../../../auth/logout-info';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
+import { UndoRedoService } from '../../services/undo-redo.service';
 
 @Component({
   selector: 'app-navbar',
@@ -48,15 +49,28 @@ export class NavbarComponent implements OnInit {
   projectname = 'My project 1';
   project: Project = null;
 
+  // Button properties for Undo / Redo
+  // so that the coresp. BUtton gets disabled
+  // when no more actions are possible
+  redoDisabled;
+  undoDisabled;
+
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
               private authService: AuthService,
               private modalService: NgbModal,
-              private projectService: ProjectService
+              private projectService: ProjectService,
+              private undoRedoService: UndoRedoService
           ) { }
 
   ngOnInit() {
+    this.undoRedoService.getRedoObs().subscribe(
+      (bool) => { this.redoDisabled = bool; }
+    );
+    this.undoRedoService.getUndoObs().subscribe(
+      (bool) => { this.undoDisabled = bool; }
+    );
     this.data.currentMessage.subscribe(item => {
       this.info = {
         token: this.tokenStorage.getToken(),
@@ -75,7 +89,7 @@ export class NavbarComponent implements OnInit {
     // this.api.logout(this.currUser.email);
     this.authService.logout(new AuthLogoutInfo(this.tokenStorage.getEmail())).subscribe(
       data => {
-        this.tokenStorage.signOut();
+        // this.tokenStorage.signOut();
         this.router.navigate(['']);
       }
       );
@@ -110,11 +124,13 @@ export class NavbarComponent implements OnInit {
   }
 
   onUndo() {
-    // TODO
+    const canvas = this.managePagesService.getCanvas();
+    this.undoRedoService.undo(canvas);
   }
 
   onRedo() {
-    // TODO
+    const canvas = this.managePagesService.getCanvas();
+    this.undoRedoService.redo(canvas);
   }
 
   onCut() {
@@ -180,7 +196,7 @@ export class NavbarComponent implements OnInit {
         this.info.username = this.tokenStorage.getUsername();
       }
     }, (reason) => {
-      
+
     });
   }
 }
