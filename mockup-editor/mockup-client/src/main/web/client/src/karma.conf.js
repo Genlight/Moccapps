@@ -28,14 +28,14 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadless', 'Firefox'],
+    browsers: ['Firefox'],
     customLaunchers: {
       ChromeHeadless: {
         base: 'ChromiumHeadless',
         flags: ['--no-sandbox']
       }
     },
-    singleRun: true,
+    singleRun: false,
     restartOnFileChange: true
   });
 };

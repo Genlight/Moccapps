@@ -13,7 +13,6 @@ export class FabricmodifyService {
   canvas: any;
 
   constructor(
-    private managepagesService: ManagePagesService
   ) { }
 
   /* groups active elements in given canvas if more than one element is selected */
