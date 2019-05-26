@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ToolbarPagesComponent } from './toolbar-pages.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 describe('ToolbarPagesComponent', () => {
   let component: ToolbarPagesComponent;
@@ -8,7 +9,7 @@ describe('ToolbarPagesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToolbarPagesComponent ]
+      declarations: [ ToolbarPagesComponent, FaIconComponent ]
     })
     .compileComponents();
   }));

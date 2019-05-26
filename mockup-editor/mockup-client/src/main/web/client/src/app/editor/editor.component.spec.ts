@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { DndModule } from 'ngx-drag-drop';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { ToolbarPagesComponent } from './toolbar-pages/toolbar-pages.component';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -31,6 +32,7 @@ describe('EditorComponent', () => {
         ToolbarextensionComponent,
         CustomizepanelComponent,
         FaIconComponent,
+        ToolbarPagesComponent,
         NgbTooltip,
         UserModalComponent
       ],
