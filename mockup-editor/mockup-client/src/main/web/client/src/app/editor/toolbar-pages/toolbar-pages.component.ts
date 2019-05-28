@@ -48,8 +48,8 @@ export class ToolbarPagesComponent implements OnInit {
   }
 
   onClickPage(index: number, page: Page) {
-    //alert(index);
-    if (index !== null && index !== undefined) {
+    alert(`active page: index: ${index} ${JSON.stringify(page)}`);
+    if (+index !== null && index !== undefined) {
       this.selectedIndex = +index;
       this.managePagesService.setPageActive(page);
     }

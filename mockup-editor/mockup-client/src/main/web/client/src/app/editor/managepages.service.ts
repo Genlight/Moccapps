@@ -47,23 +47,7 @@ export class ManagePagesService {
     });
   }
 
-  loadAll() {
-    // TODO fetch pages from rest api
-    if (!!this._activeProject) {
-      this.apiService.get(`/project/${this._activeProject.id}/page`).subscribe(
-        (data) => {
-          (this.dataStore.pages as any) = data;
-          this._pages.next(Object.assign({}, this.dataStore).pages);
-        }
-      );
-    }
-    
-  }
 
-  load(id: number) {
-    //const projectId = 0;
-    //this.apiService.get(`/project/${}`)
-  }
 
   // TODO: change page size, possibly to relative values
   createPage( pagewidth: number, pageheight: number) {
@@ -86,13 +70,6 @@ export class ManagePagesService {
   // this.pageCanvas.setDimensions({width: '1000px', heigth: '1000px'}, {cssOnly: true});
   }
 
-  addPage(page: Page) {
-    if (!!page) {
-      this.dataStore.pages.push(page);
-      this._pages.next(Object.assign({}, this.dataStore).pages);
-    }
-  }
-
   /**
    * Sets a given page to active state (will be rendered).
    * 
@@ -101,18 +78,79 @@ export class ManagePagesService {
   setPageActive(page: Page) {
     if (!!page) {
       // Persist workspace of old workspace
-      let oldPage = this.dataStore.activePage;
-      
+      let oldPage = Object.assign({}, this.dataStore.activePage);
+      oldPage.page_data = this.fabricModifyService.exportToJson(this.canvas);
+      console.log(`setPageActive: saving old page: ${JSON.stringify(oldPage)}`);
+      this.updatePage(oldPage);
 
+      //Set new active page
+      console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
+    }
+  }
+
+  /**
+   * Updates the active page dimensions and saves the current canvas status to the active page
+   * @param height 
+   * @param width 
+   */
+  updateActivePageDimensions(height: number, width: number) {
+    if (!!height && !!width && height >= 0 && width >= 0) {
+      let page = Object.assign({}, this.dataStore.activePage);
+      page = this.saveCanvasDataToPage(page);
+      page.height = height;
+      page.width = width;
+      this.dataStore.activePage = page;
+      this._activePage.next(Object.assign({}, this.dataStore.activePage));
+    }
+  }
+
+  /**
+   * Saves the current state of the canvas to the given page object.
+   * @param page the page in which the canvas string should be saved to.
+   */
+  private saveCanvasDataToPage(page: Page): Page {
+    if (!!page) {
+      page.page_data = this.fabricModifyService.exportToJson(this.canvas);
+    }
+    return page;
+  }
+
+
+  /**
+   * REST
+   */
+
+  loadAll() {
+    // TODO fetch pages from rest api
+    if (!!this._activeProject) {
+      this.apiService.get(`/project/${this._activeProject.id}/pages`).subscribe(
+        (data) => {
+          (this.dataStore.pages as any) = data;
+          this._pages.next(Object.assign({}, this.dataStore).pages);
+        }
+      );
+    }
+    
+  }
+
+  load(id: number) {
+    //const projectId = 0;
+    //this.apiService.get(`/project/${}`)
+  }
+
+  addPage(page: Page) {
+    if (!!page) {
+      this.dataStore.pages.push(page);
+      this._pages.next(Object.assign({}, this.dataStore).pages);
     }
   }
 
   updatePage(page: Page) {
     if (!!page) {
       this.dataStore.pages.forEach((p, i) => {
-        if (!!p && !!i && p.id === page.id) {
+        if (p.id === page.id) {
           this.dataStore.pages[i] = page;
         }
       });

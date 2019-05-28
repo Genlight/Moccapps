@@ -38,6 +38,70 @@
       <p></p>
       <div *ngIf="!selected">
         <h2>Workspace Settings</h2>
+        <h3>Dimensions:</h3>
+
+        <div class="ml-2">
+          <form
+            #dimensionsForm="ngForm"
+          >
+            <div class="from-group">
+              <label for="inputWidth" class="control-label">Height:</label>
+              <div class="input-group">
+                <input 
+                  type="number" 
+                  id="inputWidth" 
+                  class="form-control"
+                  name="height" 
+                  [(ngModel)]="activePage.height"
+                  [ngClass]="{'is-invalid': (invalidHeightRange || input_height.invalid)}"
+                  (change) = "onDimensionChanged()"
+                  min="0"
+                  #input_height="ngModel"
+                  required
+                  value="0"
+                >
+                <div class="input-group-append">
+                  <span class="input-group-text">px</span>
+                </div>
+
+                <div class="text-danger" *ngIf="input_height.invalid">
+                    A height must be specified.
+                </div>
+                <div class="text-danger" *ngIf="invalidHeightRange">
+                  Height must be a positive value.
+                </div>
+              </div>
+            </div>
+            <div class="form-group" class="mt-2">
+              <label for="inputWidth" class="control-label">Width:</label>
+              <div class="input-group">
+                <input 
+                  type="number" 
+                  id="inputWidth"
+                  class="form-control"
+                  [ngClass]="{'is-invalid': invalidWidthRange}"
+                  name="width" 
+                  [(ngModel)]="activePage.width"
+                  (change) = "onDimensionChanged()"
+                  value="0"
+                  min = "0"
+                  #input_width="ngModel"
+                  required
+                >
+                <div class="input-group-append">
+                  <span class="input-group-text">px</span>
+                </div>
+              </div>
+              <div class="text-danger" *ngIf="input_width.invalid">
+                A width must be specified.
+              </div>
+              <div class="text-danger" *ngIf="invalidWidthRange">
+                Width must be a positive value.
+              </div>
+            </div>
+          </form>
+        </div>
+
         <h3>Background Color:</h3>
         <button class="btn colorPicker" [(colorPicker)]="canvasProperties.backgroundColor"
           [style.background]="canvasProperties.backgroundColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"

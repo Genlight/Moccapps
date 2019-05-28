@@ -37,6 +37,11 @@ export class FabricmodifyService {
     });
   }
 
+  exportToJson(canvas: any): string {
+    const json = JSON.stringify(canvas);
+    return json;
+  }
+
   setHeight(canvas: any, height: number) {
     canvas.setHeight(height);
   }

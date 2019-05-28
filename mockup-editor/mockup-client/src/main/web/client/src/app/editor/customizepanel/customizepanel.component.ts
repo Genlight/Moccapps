@@ -3,6 +3,7 @@ import { faEllipsisV, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, 
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
 import { fabric } from '../extendedfabric';
+import { Page } from 'src/app/shared/models/Page';
 
 @Component({
   selector: 'app-customizepanel',
@@ -59,10 +60,49 @@ export class CustomizepanelComponent implements OnInit {
     shadow: null
   };
 
-  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService) { }
+  private _activePage: Page;
+  get activePage() {
+    return this._activePage;
+  }
+
+  set activePage(value: Page) {
+    alert(JSON.stringify(value));
+    this._activePage = value;
+  }
+
+  invalidWidthRange: boolean = false;
+  invalidHeightRange: boolean = false;
+
+  constructor(
+    private modifyService: FabricmodifyService, 
+    private managePagesService: ManagePagesService) { 
+      this.managePagesService.activePage.subscribe(
+        (page) => {
+          this._activePage = page;
+        }
+      );
+  }
 
   ngOnInit() {
     this.setNewPage(this.managePagesService.getCanvas());
+  }
+
+  onDimensionChanged() {
+    if (this._activePage.width < 0) {
+      this.invalidWidthRange = true;
+    } else {
+      this.invalidWidthRange = false;
+    }
+
+    if (this._activePage.height < 0) {
+      this.invalidHeightRange = true;
+    } else {
+      this.invalidHeightRange = false;
+    }
+
+    if (this._activePage.width >= 0 && this._activePage.height >= 0 ) {
+      this.managePagesService.updateActivePageDimensions(this._activePage.height, this._activePage.width);
+    }
   }
 
   onToggleCustomize() {

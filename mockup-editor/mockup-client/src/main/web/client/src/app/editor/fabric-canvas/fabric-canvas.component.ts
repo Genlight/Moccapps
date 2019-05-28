@@ -45,7 +45,11 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         this.modifyService.clearAll(this.canvas);
         this.modifyService.setHeight(this.canvas, page.height);
         this.modifyService.setWidth(this.canvas, page.width);
-        alert(`height ${page.height} width ${page.width}`);
+        if (!!page.page_data) {
+          this.modifyService.loadFromJSON(this.canvas, page.page_data);
+        }
+        
+        alert(`height ${page.height} width ${page.width} page data: ${page.page_data}`);
       }
     });
   }
