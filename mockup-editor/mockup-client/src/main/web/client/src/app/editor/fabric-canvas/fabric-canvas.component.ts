@@ -7,6 +7,7 @@ import { Itransformation, Action } from './transformation.interface';
 import { fabric } from '../extendedfabric';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
+import { Page } from 'src/app/shared/models/Page';
 
 @Component({
   selector: 'app-fabric-canvas',
@@ -25,6 +26,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   // only new events will be 'observed'.
   public Transformation: Subject<Itransformation>;
 
+  activePage: Page;
+
   constructor(
     private modifyService: FabricmodifyService,
     private managePagesService: ManagePagesService,
@@ -42,16 +45,26 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
     this.managePagesService.activePage.subscribe((page) => {
       if (!!page) {
-        this.modifyService.clearAll(this.canvas);
-        this.modifyService.setHeight(this.canvas, page.height);
-        this.modifyService.setWidth(this.canvas, page.width);
-        if (!!page.page_data) {
-          this.modifyService.loadFromJSON(this.canvas, page.page_data);
-        }
-        
-        alert(`height ${page.height} width ${page.width} page data: ${page.page_data}`);
+        this.activePage = page;
+        this.loadPage(this.activePage);
       }
     });
+  }
+
+  private loadPage(page: Page) {
+    if (!!page) {
+      this.modifyService.clearAll(this.canvas);
+      this.modifyService.setHeight(this.canvas, page.height);
+      this.modifyService.setWidth(this.canvas, page.width);
+      if (!!page.page_data) {
+        this.modifyService.loadFromJSON(this.canvas, page.page_data);
+      }
+      
+      console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
+    }
+  }
+
+  onCreatePage() {
   }
 
   /**

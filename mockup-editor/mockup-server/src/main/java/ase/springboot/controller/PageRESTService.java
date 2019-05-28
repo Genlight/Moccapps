@@ -108,7 +108,8 @@ public class PageRESTService {
         try {
             String json=objectMapper.writeValueAsString(pages);
             if(pages.isEmpty()){
-                return new ResponseEntity<>(new ResponseMessage("No Pages found."), HttpStatus.OK);
+                return ResponseEntity.ok(json);
+                //return new ResponseEntity<>(new ResponseMessage("No Pages found."), HttpStatus.OK);
             }
             return ResponseEntity.ok(json);
         } catch (JsonProcessingException e) {

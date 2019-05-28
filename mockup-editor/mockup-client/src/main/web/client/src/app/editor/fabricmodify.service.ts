@@ -29,6 +29,7 @@ export class FabricmodifyService {
 
   clearAll(canvas: any) {
     canvas.clear();
+    this.setBackgroundColor(canvas, "white");
   }
 
   loadFromJSON(canvas: any, json: string) {
@@ -48,6 +49,11 @@ export class FabricmodifyService {
 
   setWidth(canvas: any, width: number) {
     canvas.setWidth(width);
+  }
+
+  setBackgroundColor(canvas: any, color: string) {
+    canvas.backgroundColor = color;
+    canvas.renderAll();  
   }
 
   /* ungroups elements in given canvas if a group of elements is selected */

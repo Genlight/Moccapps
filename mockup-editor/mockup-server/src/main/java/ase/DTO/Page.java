@@ -5,6 +5,8 @@ public class Page {
     private String page_name;
     private int page_order;
     private int project_id;
+    private int width;
+    private int height;
     private String page_data;
 
     public Page(int id, String page_name, int page_order, int project_id,String page_data) {
@@ -25,6 +27,22 @@ public class Page {
 
     public Page() {
 
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     public int getId() {

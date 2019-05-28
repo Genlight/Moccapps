@@ -125,14 +125,22 @@ public class ProjectRESTService {
             project.addUser(userId);
         }
 
+        Project result;
+
         try {
-            this.projectService.createProject(project);
+            result = this.projectService.createProject(project);
         } catch (Exception e){
             return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(new ResponseMessage("success"), HttpStatus.OK);
+        ObjectMapper mapper = new ObjectMapper();
 
+        try {
+            String json = mapper.writeValueAsString(result);
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping(value = "/project/{id}")

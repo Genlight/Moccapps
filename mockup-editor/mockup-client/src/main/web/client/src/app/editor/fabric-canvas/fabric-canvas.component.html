@@ -1,8 +1,17 @@
 <!-- <button (click)=onSaveToLocalStorage()>Save to Local Storage</button>
 <button (click)=onLoadFromLocalStorage()>Load from Local Storage</button> -->
-<div id="canvasWrapper" tabIndex='0' (keydown)="manageKeyboardEvents($event)" dndDropzone
+<div class="mt-3" id="canvasWrapper" tabIndex='0' (keydown)="manageKeyboardEvents($event)" dndDropzone
+    [hidden]="!activePage"
     (dndDrop)="onDrop($event)">
     <div class="canvas-container">
         <canvas id="canvas"></canvas>
     </div>
+</div>
+
+<div class="card mt-3" *ngIf="!activePage">
+        <div class="card-body">
+          <h5 class="card-title">No pages available for this project.</h5>
+          <p class="card-text">To start create a new page.</p>
+          <button class="btn btn-primary" (click)="onCreatePage">Create new page</button>
+        </div>
 </div>

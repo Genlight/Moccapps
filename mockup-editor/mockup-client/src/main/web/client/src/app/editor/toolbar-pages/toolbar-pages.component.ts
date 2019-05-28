@@ -33,7 +33,7 @@ export class ToolbarPagesComponent implements OnInit {
   onCreatePage() {
     let page = new Page();
     page.id = Math.random() * 100 ; //TOOD: TEMP SOLUTION, remove this 
-    page.name = `Page ${this.pages.length + 1}`;
+    page.page_name = `Page ${this.pages.length + 1}`;
     page.height = Math.floor(Math.random() * 5) * 100;
     page.width = Math.floor(Math.random() * 5) * 100;
 

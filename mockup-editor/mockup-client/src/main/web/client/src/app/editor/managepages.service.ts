@@ -51,8 +51,8 @@ export class ManagePagesService {
 
   // TODO: change page size, possibly to relative values
   createPage( pagewidth: number, pageheight: number) {
-    let page = new Page();
-    page.canvas = new fabric.Canvas('canvas',
+
+    let canvas = new fabric.Canvas('canvas',
     {
       backgroundColor: '#ffffff',
       preserveObjectStacking: true,
@@ -60,10 +60,8 @@ export class ManagePagesService {
       height: pageheight,
       cssOnly: true
     });
-    page.height = pageheight;
-    page.width = pagewidth;
 
-    this.canvas = page.canvas;
+    this.canvas = canvas;
     
     //this.pages.push(page);
   // relative values can be used with setDimensions function of fabric.js

@@ -1,8 +1,9 @@
 export class Page {
     id: number;
-    name?: string;
+    page_name?: string;
     height: number;
     width: number;
-    canvas: any;
     page_data?: string;
+    project_id?: number;
+    page_order: number;
 }
