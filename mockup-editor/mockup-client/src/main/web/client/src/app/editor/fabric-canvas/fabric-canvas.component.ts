@@ -26,6 +26,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   // only new events will be 'observed'.
   public Transformation: Subject<Itransformation>;
 
+  pages: Page[];
   activePage: Page;
 
   constructor(
@@ -43,9 +44,14 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
 
+    this.managePagesService.pages.subscribe((pages) => {
+      this.pages = pages;
+    });
+
     this.managePagesService.activePage.subscribe((page) => {
+      alert(JSON.stringify(page));
+      this.activePage = page;
       if (!!page) {
-        this.activePage = page;
         this.loadPage(this.activePage);
       }
     });
@@ -65,6 +71,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   onCreatePage() {
+    this.managePagesService.addPage("Page 1");
   }
 
   /**

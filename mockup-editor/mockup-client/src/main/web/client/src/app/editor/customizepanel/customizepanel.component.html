@@ -1,4 +1,4 @@
-<div class="customizepanel" id="customizepanel">
+<div class="customizepanel" id="customizepanel" *ngIf="activePage">
   <div class="paneltoggle">
     <button class="btn" (click)="onToggleCustomize()">
       <fa-icon [icon]="faEllipsisV"></fa-icon>

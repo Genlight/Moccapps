@@ -19,8 +19,8 @@ import java.util.List;
 @Repository
 public class PageDAOImpl extends AbstractDAO implements PageDAO {
 
-    private static final String PSTMT_CREATE = "INSERT INTO pages (page_name, page_order, page_data, project_id) VALUES (?,?,cast(? AS JSON),?)";
-    private static final String PSTMT_UPDATE = "UPDATE pages SET page_name=?, page_order=?, page_data=cast(? AS JSON), project_id=? WHERE id=?";
+    private static final String PSTMT_CREATE = "INSERT INTO pages (page_name, height, width, page_order, page_data, project_id) VALUES (?,?,?,?,cast(? AS JSON),?)";
+    private static final String PSTMT_UPDATE = "UPDATE pages SET page_name=?, height = ?, width = ?, page_order=?, page_data=cast(? AS JSON), project_id=? WHERE id=?";
     private static final String PSTMT_DELETE = "DELETE FROM pages WHERE id=?";
     private static final String PSTMT_FINDBYID = "SELECT * FROM pages WHERE id=?";
     private static final String PSTMT_FINDBYPROJECTID = "SELECT * FROM pages WHERE project_id=?";
@@ -39,9 +39,11 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_CREATE, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,page.getPage_name());
-            pstmt.setInt(2,page.getPage_order());
-            pstmt.setString(3,page.getPage_data());
-            pstmt.setInt(4,page.getProject_id());
+            pstmt.setInt(2, page.getHeight());
+            pstmt.setInt(3, page.getWidth());
+            pstmt.setInt(4,page.getPage_order());
+            pstmt.setString(5,page.getPage_data());
+            pstmt.setInt(6,page.getProject_id());
             pstmt.executeUpdate();
 
             ResultSet rs=pstmt.getGeneratedKeys();
@@ -70,10 +72,11 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_UPDATE);
             pstmt.setString(1,page.getPage_name());
-            pstmt.setInt(2,page.getPage_order());
-            pstmt.setString(3,page.getPage_data());
-            pstmt.setInt(4,page.getProject_id());
-            pstmt.setInt(5,page.getId());
+            pstmt.setInt(2, page.getHeight());
+            pstmt.setInt(3, page.getWidth());
+            pstmt.setInt(4,page.getPage_order());
+            pstmt.setString(5,page.getPage_data());
+            pstmt.setInt(6,page.getProject_id());
             pstmt.executeUpdate();
         }catch (SQLException e){
             logger.error(e.getMessage());
@@ -122,6 +125,8 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
                 page = new Page(
                         rs.getInt("id"),
                         rs.getString("page_name"),
+                        rs.getInt("height"),
+                        rs.getInt("width"),
                         rs.getInt("page_order"),
                         rs.getInt("project_id"),
                         rs.getString("page_data"));
@@ -149,6 +154,8 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
                 pages.add(new Page(
                         rs.getInt("id"),
                         rs.getString("page_name"),
+                        rs.getInt("height"),
+                        rs.getInt("width"),
                         rs.getInt("page_order"),
                         rs.getInt("project_id"),
                         rs.getString("page_data")));

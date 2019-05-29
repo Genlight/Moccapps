@@ -27,6 +27,11 @@ export class ProjectService {
     return this._activeProject.asObservable();
   }
 
+  clearActiveProject(): void {
+    this.dataStore.activeProject = null;
+    this._activeProject.next(Object.assign({}, this.dataStore).activeProject);
+  }
+
   setActiveProject(project: Project) {
     if (!!project) {
       this.dataStore.activeProject = project;

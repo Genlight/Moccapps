@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { faEllipsisV, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, faBold, faItalic, faUnderline } from '@fortawesome/free-solid-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
-import { fabric } from '../extendedfabric';
 import { Page } from 'src/app/shared/models/Page';
 
 @Component({
@@ -60,15 +59,7 @@ export class CustomizepanelComponent implements OnInit {
     shadow: null
   };
 
-  private _activePage: Page;
-  get activePage() {
-    return this._activePage;
-  }
-
-  set activePage(value: Page) {
-    alert(JSON.stringify(value));
-    this._activePage = value;
-  }
+  activePage: Page;
 
   invalidWidthRange: boolean = false;
   invalidHeightRange: boolean = false;
@@ -78,7 +69,7 @@ export class CustomizepanelComponent implements OnInit {
     private managePagesService: ManagePagesService) { 
       this.managePagesService.activePage.subscribe(
         (page) => {
-          this._activePage = page;
+          this.activePage = page;
         }
       );
   }
@@ -88,20 +79,20 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   onDimensionChanged() {
-    if (this._activePage.width < 0) {
+    if (this.activePage.width < 0) {
       this.invalidWidthRange = true;
     } else {
       this.invalidWidthRange = false;
     }
 
-    if (this._activePage.height < 0) {
+    if (this.activePage.height < 0) {
       this.invalidHeightRange = true;
     } else {
       this.invalidHeightRange = false;
     }
 
-    if (this._activePage.width >= 0 && this._activePage.height >= 0 ) {
-      this.managePagesService.updateActivePageDimensions(this._activePage.height, this._activePage.width);
+    if (this.activePage.width >= 0 && this.activePage.height >= 0 ) {
+      this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
     }
   }
 

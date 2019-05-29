@@ -49,11 +49,11 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.loadProjects();
-    this.loadUserInfo();
     this.loadInvites();
+    this.loadUserInfo();
   }
 
-  connectToSocket(){
+  connectToSocket() {
     this.socketService.connect("","",this.tokenStorage.getToken());
   }
 

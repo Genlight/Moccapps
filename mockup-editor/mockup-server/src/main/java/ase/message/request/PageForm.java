@@ -8,6 +8,8 @@ public class PageForm implements Serializable {
 
     private int id;
     private String page_name;
+    private int height;
+    private int width;
     private int page_order;
     private int project_id;
     private String page_data;
@@ -15,19 +17,39 @@ public class PageForm implements Serializable {
     public PageForm() {
     }
 
-    public PageForm(String page_name, int page_order, int project_id, String page_data) {
+    public PageForm(String page_name, int height, int width, int page_order, int project_id, String page_data) {
         this.page_name = page_name;
+        this.height = height;
+        this.width = width;
         this.page_order = page_order;
         this.project_id = project_id;
         this.page_data = page_data;
     }
 
-    public PageForm(int id, String page_name, int page_order, int project_id, String page_data) {
+    public PageForm(int id, String page_name, int height, int width, int page_order, int project_id, String page_data) {
         this.id = id;
         this.page_name = page_name;
+        this.height = height;
+        this.width = width;
         this.page_order = page_order;
         this.project_id = project_id;
         this.page_data = page_data;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     public String getPage_name() {

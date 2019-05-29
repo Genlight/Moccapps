@@ -16,34 +16,39 @@ export class ToolbarPagesComponent implements OnInit {
   faTrashAlt = faTrashAlt;
 
   pages: Page[] = [];
+  activePage: Page;
 
   constructor(
     private managePagesService: ManagePagesService
   ) {
+    this.managePagesService.activePage.subscribe(
+      (page) => {
+        this.activePage = page;
+      }
+    );
     this.managePagesService.pages.subscribe(
       (pages) => {
         this.pages = pages;
       }
-    )
+    );
   }
 
   ngOnInit() {
   }
 
   onCreatePage() {
-    let page = new Page();
-    page.id = Math.random() * 100 ; //TOOD: TEMP SOLUTION, remove this 
-    page.page_name = `Page ${this.pages.length + 1}`;
-    page.height = Math.floor(Math.random() * 5) * 100;
-    page.width = Math.floor(Math.random() * 5) * 100;
-
-    this.managePagesService.addPage(page);
-    //this.pages.push(page);
+    const page_name = `Page ${this.pages.length + 1}`;
+    this.managePagesService.addPage(page_name);
   }
 
   onDeletePage(page: Page) {
     if (!!page) {
       this.managePagesService.removePage(page);
+
+      // Set active page to null if the page to be deleted is the active page. (De-select active page)
+      if (page.id === this.activePage.id) {
+        this.managePagesService.clearActivePage();
+      }
     }
   }
 

@@ -104,6 +104,17 @@ export class ManagePagesService {
     }
   }
 
+  clearPages() {
+    this.dataStore.pages = [];
+    this._pages.next(Object.assign({}, this.dataStore).pages);
+  }
+
+  clearActivePage() {
+    alert('clearActivePage');
+    this.dataStore.activePage = null;
+    this._activePage.next(null);
+  }
+
   /**
    * Saves the current state of the canvas to the given page object.
    * @param page the page in which the canvas string should be saved to.
@@ -119,7 +130,6 @@ export class ManagePagesService {
   /**
    * REST
    */
-
   loadAll() {
     // TODO fetch pages from rest api
     if (!!this._activeProject) {
@@ -138,7 +148,12 @@ export class ManagePagesService {
     //this.apiService.get(`/project/${}`)
   }
 
-  addPage(page: Page) {
+  addPage(name: string, height: number = 600, width: number = 900) {
+    let page = new Page();
+    page.id = Math.floor(Math.random() * 100); //TOOD: TEMP SOLUTION, remove this 
+    page.page_name = name;
+    page.height = height;
+    page.width = width;
     if (!!page) {
       this.dataStore.pages.push(page);
       this._pages.next(Object.assign({}, this.dataStore).pages);
@@ -162,6 +177,10 @@ export class ManagePagesService {
       this.dataStore.pages.forEach((p, index) => {
         if (p.id === page.id) {
           this.dataStore.pages.splice(index, 1);
+
+          if (this.dataStore.pages.length <= 0) {
+            this.clearActivePage();
+          }
         }
       });
 

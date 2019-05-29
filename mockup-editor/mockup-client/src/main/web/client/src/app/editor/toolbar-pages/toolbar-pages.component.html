@@ -11,9 +11,9 @@
   <div id="extToolbarContent" class="referenceElement">
     <div class="list-group">
       <button 
-        [class.active]="selectedIndex === i"
         class="list-group-item list-group-item-action py-2" 
         *ngFor="let page of pages; let i = index;"
+        [class.active]="page.id === (activePage || {}).id"
         (click)="onClickPage(i, page)"
         style="display: flex; align-items: center; justify-content: space-between">
         <span class="my-auto">Page {{i + 1}}</span>
