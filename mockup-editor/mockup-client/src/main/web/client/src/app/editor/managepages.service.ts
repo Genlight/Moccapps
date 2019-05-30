@@ -158,7 +158,14 @@ export class ManagePagesService {
       width: width,
       project_id: this._activeProject.id
     };
-    this.apiService.post(`/page`, requestPage);
+    this.apiService.post(`/page`, requestPage).subscribe(
+      response => {
+        alert(response);
+      },
+      error => {
+        alert(error);
+      }
+    );
 
     let page = new Page();
     page.id = Math.floor(Math.random() * 100); //TOOD: TEMP SOLUTION, remove this 

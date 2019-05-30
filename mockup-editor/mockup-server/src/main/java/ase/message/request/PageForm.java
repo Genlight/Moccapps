@@ -1,9 +1,9 @@
 package ase.message.request;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
+@XmlRootElement
 public class PageForm implements Serializable {
 
     private int id;
@@ -15,6 +15,13 @@ public class PageForm implements Serializable {
     private String page_data;
 
     public PageForm() {
+    }
+
+    public PageForm(String page_name, int height, int width, int project_id) {
+        this.page_name = page_name;
+        this.height = height;
+        this.width = width;
+        this.project_id = project_id;
     }
 
     public PageForm(String page_name, int height, int width, int page_order, int project_id, String page_data) {
