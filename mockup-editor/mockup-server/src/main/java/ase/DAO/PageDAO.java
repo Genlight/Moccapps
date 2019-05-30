@@ -14,6 +14,8 @@ public interface PageDAO {
 
     Page findById(int id) throws DAOException;
 
+    Page findByProjectAndOrder(int id,int order) throws DAOException;
+
     List<Page> findPagesForProject(int id) throws DAOException;
 
 }

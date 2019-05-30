@@ -68,6 +68,14 @@ public class PageDAOTest extends AbstractDAOTest {
         assertEquals(page, page1);
     }
 
+    @Test
+    public void findPageByPIDandOrderWithValidDataTest() throws DAOException {
+        Page page = testData.createdPage1;
+        page.setId(1);
+        Page page1 = pageDAO.findByProjectAndOrder(testData.createdPage1.getProject_id(),testData.createdPage1.getPage_order());
+        assertEquals(page, page1);
+    }
+
     @Test(expected = DAOException.class)
     public void findPageByIDPageWithInValidDataTest() throws DAOException {
         pageDAO.findById(-1);

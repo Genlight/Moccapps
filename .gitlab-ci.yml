@@ -8,7 +8,6 @@ variables:
   MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   MAVEN_CLI_OPTS: "-f ./mockup-editor/pom.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
 
-  SERVER_IP: postgres
   POSTGRES_DB: test
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: test
@@ -25,7 +24,7 @@ cache:
 build:
   stage: build
   script:
-    - mvn -DSERVER_IP=$SERVER_IP $MAVEN_CLI_OPTS compile
+    - mvn $MAVEN_CLI_OPTS compile
   only:
     refs:
       - master
@@ -48,7 +47,7 @@ frontend-unittest:
 backend-test:
   stage: test
   script:
-    - mvn -DSERVER_IP=$SERVER_IP $MAVEN_CLI_OPTS test
+    - mvn $MAVEN_CLI_OPTS test
   only:
     refs:
       - master

@@ -53,6 +53,16 @@ public class PageServiceImpl implements PageService {
     }
 
     @Override
+    public Page getPageByProjectIdAndOrder(int id, int order) {
+        try {
+            return pageDAO.findByProjectAndOrder(id,order);
+        } catch (DAOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
     public Page getPageById(int id) {
         try {
             return pageDAO.findById(id);

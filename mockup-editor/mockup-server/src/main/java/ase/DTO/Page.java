@@ -32,7 +32,7 @@ public class Page {
     }
 
     public Page() {
-
+        this.id=-1;
     }
 
     public int getWidth() {

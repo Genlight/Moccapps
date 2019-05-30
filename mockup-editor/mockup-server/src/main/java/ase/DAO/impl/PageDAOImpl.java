@@ -19,10 +19,11 @@ import java.util.List;
 @Repository
 public class PageDAOImpl extends AbstractDAO implements PageDAO {
 
-    private static final String PSTMT_CREATE = "INSERT INTO pages (page_name, height, width, page_order, page_data, project_id) VALUES (?,?,?,?,cast(? AS JSON),?)";
-    private static final String PSTMT_UPDATE = "UPDATE pages SET page_name=?, height = ?, width = ?, page_order=?, page_data=cast(? AS JSON), project_id=? WHERE id=?";
+    private static final String PSTMT_CREATE = "INSERT INTO pages (page_name, page_height, page_width, page_order, page_data, project_id) VALUES (?,?,?,?,cast(? AS JSON),?)";
+    private static final String PSTMT_UPDATE = "UPDATE pages SET page_name=?, page_height = ?, page_width = ?, page_order=?, page_data=cast(? AS JSON), project_id=? WHERE id=?";
     private static final String PSTMT_DELETE = "DELETE FROM pages WHERE id=?";
     private static final String PSTMT_FINDBYID = "SELECT * FROM pages WHERE id=?";
+    private static final String PSTMT_FINDBYPROJECTANDORDER = "SELECT * FROM pages WHERE project_id=? AND page_order=?";
     private static final String PSTMT_FINDBYPROJECTID = "SELECT * FROM pages WHERE project_id=?";
     private PreparedStatement pstmt;
 
@@ -77,6 +78,7 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
             pstmt.setInt(4,page.getPage_order());
             pstmt.setString(5,page.getPage_data());
             pstmt.setInt(6,page.getProject_id());
+            pstmt.setInt(7,page.getId());
             pstmt.executeUpdate();
         }catch (SQLException e){
             logger.error(e.getMessage());
@@ -125,8 +127,8 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
                 page = new Page(
                         rs.getInt("id"),
                         rs.getString("page_name"),
-                        rs.getInt("height"),
-                        rs.getInt("width"),
+                        rs.getInt("page_height"),
+                        rs.getInt("page_width"),
                         rs.getInt("page_order"),
                         rs.getInt("project_id"),
                         rs.getString("page_data"));
@@ -138,6 +140,43 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
             logger.error(e.getMessage());
             logger.error("Error during Find by ID of Page: Couldn't connect to database");
             throw new DAOException("Error during Find by ID of Page: Couldn't connect to database");
+        }
+    }
+
+    @Override
+    public Page findByProjectAndOrder(int id, int order) throws DAOException {
+        if(id<0){
+            logger.error("Error during Find by Project and Order of Page: Invalid Project ID");
+            throw new DAOException("Error during Find by Project and Order of Page: Invalid Project ID");
+        }
+        else if(order <0){
+            logger.error("Error during Find Project and Order of Page: Invalid Order");
+            throw new DAOException("Error during Find by Project and Order of Page: Invalid Order");
+        }
+        try {
+            getConnection();
+            pstmt=connection.prepareStatement(PSTMT_FINDBYPROJECTANDORDER);
+            pstmt.setInt(1,id);
+            pstmt.setInt(2,order);
+            ResultSet rs=pstmt.executeQuery();
+            Page page = null;
+            if (rs.next()) {
+                page = new Page(
+                        rs.getInt("id"),
+                        rs.getString("page_name"),
+                        rs.getInt("page_height"),
+                        rs.getInt("page_width"),
+                        rs.getInt("page_order"),
+                        rs.getInt("project_id"),
+                        rs.getString("page_data"));
+            }
+            rs.close();
+
+            return page;
+        }catch (SQLException e){
+            logger.error(e.getMessage());
+            logger.error("Error during Find by Project and Order of Page: Couldn't connect to database");
+            throw new DAOException("Error during Find by Project and Order of Page: Couldn't connect to database");
         }
     }
 
@@ -154,8 +193,8 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
                 pages.add(new Page(
                         rs.getInt("id"),
                         rs.getString("page_name"),
-                        rs.getInt("height"),
-                        rs.getInt("width"),
+                        rs.getInt("page_height"),
+                        rs.getInt("page_width"),
                         rs.getInt("page_order"),
                         rs.getInt("project_id"),
                         rs.getString("page_data")));

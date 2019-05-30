@@ -73,6 +73,7 @@ export class ManagePagesService {
    * Before doing so, the current workspace of the old active page will be saved.
    */
   setPageActive(page: Page) {
+    console.log('setPageActive');
     if (!!page) {
       // Persist workspace of old workspace
       let oldPage = Object.assign({}, this.dataStore.activePage);
@@ -104,11 +105,13 @@ export class ManagePagesService {
   }
 
   clearPages() {
+    console.log('clearPages');
     this.dataStore.pages = [];
     this._pages.next(Object.assign({}, this.dataStore).pages);
   }
 
   clearActivePage() {
+    console.log('clearActivePage');
     alert('clearActivePage');
     this.dataStore.activePage = null;
     this._activePage.next(null);
@@ -134,6 +137,7 @@ export class ManagePagesService {
     * Loads all pages from the current project and saves them to the store if successful.
     */
   loadAll() {
+     console.log('loadAll');
     // TODO fetch pages from rest api
     if (!!this._activeProject) {
       this.apiService.get(`/project/${this._activeProject.id}/pages`).subscribe(
@@ -152,7 +156,8 @@ export class ManagePagesService {
   }
 
   addPage(name: string, height: number = 600, width: number = 900) {
-    const requestPage: Page = {
+    console.log('addPage');
+    let requestPage: Page = {
       page_name: name,
       height: height,
       width: width,
@@ -163,27 +168,22 @@ export class ManagePagesService {
     alert(JSON.stringify(requestPage));
     this.apiService.post(`/page`, requestPage).subscribe(
       response => {
-        alert(response);
+        console.log('HTTP response', response);
+        let responsePage = (response as Page);
+        requestPage = responsePage;
+        if (!!requestPage) {
+          this.dataStore.pages.push(requestPage);
+          this._pages.next(Object.assign({}, this.dataStore).pages);
+        }
       },
       error => {
         alert(error);
       }
     );
-
-    let page = new Page();
-    page.id = Math.floor(Math.random() * 100); //TOOD: TEMP SOLUTION, remove this 
-    page.page_name = name;
-    page.height = height;
-    page.width = width;
-    page.project_id = this._activeProject.id;
-
-    if (!!page) {
-      this.dataStore.pages.push(page);
-      this._pages.next(Object.assign({}, this.dataStore).pages);
-    }
   }
 
   updatePage(page: Page) {
+    console.log('updatePage');
     if (!!page) {
       this.dataStore.pages.forEach((p, i) => {
         if (p.id === page.id) {
@@ -196,6 +196,7 @@ export class ManagePagesService {
   }
 
   removePage(page: Page) {
+    console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
       this.dataStore.pages.forEach((p, index) => {
         if (p.id === page.id) {
@@ -206,8 +207,15 @@ export class ManagePagesService {
           }
         }
       });
-
       this._pages.next(Object.assign({}, this.dataStore).pages );
+      this.apiService.delete(`/page/${page.id}`).subscribe(
+        response => {
+          console.log('HTTP response', response);
+        },
+        error => {
+          alert(error);
+        }
+      );
     }
   }
 
