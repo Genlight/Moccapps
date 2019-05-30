@@ -32,12 +32,12 @@ public class TestData {
     private static final String PAGE_3_NAME="page3";
 
     private static final int PAGE_1_HEIGHT = 100;
-    private static final int PAGE_2_HEIGHT = 100;
-    private static final int PAGE_3_HEIGHT = 100;
+    private static final int PAGE_2_HEIGHT = 200;
+    private static final int PAGE_3_HEIGHT = 300;
 
     private static final int PAGE_1_WIDTH = 100;
-    private static final int PAGE_2_WIDTH = 100;
-    private static final int PAGE_3_WIDTH = 100;
+    private static final int PAGE_2_WIDTH = 200;
+    private static final int PAGE_3_WIDTH = 300;
 
     private static final int PAGE_1_ORDER=1;
     private static final int PAGE_2_ORDER=2;
