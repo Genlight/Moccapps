@@ -11,8 +11,6 @@ import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 export class ToolbarPagesComponent implements OnInit {
 
   isVisible = true;
-
-  selectedIndex: number;
   faTrashAlt = faTrashAlt;
 
   pages: Page[] = [];
@@ -54,8 +52,7 @@ export class ToolbarPagesComponent implements OnInit {
 
   onClickPage(index: number, page: Page) {
     alert(`active page: index: ${index} ${JSON.stringify(page)}`);
-    if (+index !== null && index !== undefined) {
-      this.selectedIndex = +index;
+    if (this.activePage == null || page.id !== this.activePage.id) {
       this.managePagesService.setPageActive(page);
     }
   }

@@ -26,6 +26,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Delete pages and the current active page from store,
     this.pageService.clearActivePage();
     this.pageService.clearPages();
   }

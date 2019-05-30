@@ -49,7 +49,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     });
 
     this.managePagesService.activePage.subscribe((page) => {
-      alert(JSON.stringify(page));
       this.activePage = page;
       if (!!page) {
         this.loadPage(this.activePage);

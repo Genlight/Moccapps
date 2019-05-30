@@ -48,7 +48,6 @@ export class ManagePagesService {
   }
 
 
-
   // TODO: change page size, possibly to relative values
   createPage( pagewidth: number, pageheight: number) {
 
@@ -130,6 +129,10 @@ export class ManagePagesService {
   /**
    * REST
    */
+
+   /**
+    * Loads all pages from the current project and saves them to the store if successful.
+    */
   loadAll() {
     // TODO fetch pages from rest api
     if (!!this._activeProject) {
@@ -149,11 +152,21 @@ export class ManagePagesService {
   }
 
   addPage(name: string, height: number = 600, width: number = 900) {
+    const requestPage: Page = {
+      page_name: name,
+      height: height,
+      width: width,
+      project_id: this._activeProject.id
+    };
+    this.apiService.post(`/page`, requestPage);
+
     let page = new Page();
     page.id = Math.floor(Math.random() * 100); //TOOD: TEMP SOLUTION, remove this 
     page.page_name = name;
     page.height = height;
     page.width = width;
+    page.project_id = this._activeProject.id;
+
     if (!!page) {
       this.dataStore.pages.push(page);
       this._pages.next(Object.assign({}, this.dataStore).pages);
