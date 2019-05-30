@@ -12,6 +12,8 @@ public interface PageService {
 
     List<Page> getAllPagesForProject(int projectId);
 
+    Page getPageByProjectIdAndOrder(int id, int order);
+
     Page getPageById(int id);
 
     boolean update(Page page);

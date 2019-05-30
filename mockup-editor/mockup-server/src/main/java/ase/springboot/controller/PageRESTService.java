@@ -53,6 +53,8 @@ public class PageRESTService {
         page.setPage_data(pageForm.getPage_data());
         page.setPage_name(pageForm.getPage_name());
         page.setProject_id(pageForm.getProject_id());
+        page.setHeight(pageForm.getHeight());
+        page.setWidth(pageForm.getWidth());
 
 
         page = pageService.create(page);
@@ -80,6 +82,8 @@ public class PageRESTService {
         page.setPage_data(pageForm.getPage_data());
         page.setPage_name(pageForm.getPage_name());
         page.setProject_id(pageForm.getProject_id());
+        page.setHeight(pageForm.getHeight());
+        page.setWidth(pageForm.getWidth());
 
 
         if (pageService.update(page)){
@@ -115,6 +119,27 @@ public class PageRESTService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new ResponseEntity<>(new ResponseMessage("error"),HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @GetMapping("/project/{id}/{order}")
+    public ResponseEntity<?> getProjectPages(@PathVariable("id") int id,@PathVariable("order") int order) {
+        Page page = pageService.getPageByProjectIdAndOrder(id,order);
+
+        if(page!=null){
+            ObjectMapper objectMapper=new ObjectMapper();
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            try {
+                String json=objectMapper.writeValueAsString(page);
+                return ResponseEntity.ok(json);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return new ResponseEntity<>(new ResponseMessage("error"),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        else{
+            return new ResponseEntity<>(new ResponseMessage("Page not found"), HttpStatus.BAD_REQUEST);
         }
 
     }
