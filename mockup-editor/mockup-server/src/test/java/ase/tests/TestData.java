@@ -54,14 +54,6 @@ public class TestData {
     private static final int PAGE_2_PROJECT_ID=1;
     private static final int PAGE_3_PROJECT_ID=2;
 
-    private static final int PAGE_1_HEIGHT=100;
-    private static final int PAGE_2_HEIGHT=200;
-    private static final int PAGE_3_HEIGHT=300;
-
-    private static final int PAGE_1_WIDTH=100;
-    private static final int PAGE_2_WIDTH=200;
-    private static final int PAGE_3_WIDTH=300;
-
     public User createdUser1;
     public User createdUser2;
     public User user3;
