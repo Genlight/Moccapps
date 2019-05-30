@@ -55,7 +55,7 @@ public class InvitationRESTService {
         for(Invitation invitation:invitationList){
             Project project = projectService.getProjectById(invitation.getProject_id());
             UserInvitationResponse userInvitationResponse
-                    = new UserInvitationResponse(invitation.getId(),project,user);
+                    = new UserInvitationResponse(invitation.getId(),project,userService.findUserByID(invitation.getInviter_user_id()));
             invitationResponses.add(userInvitationResponse);
         }
 
