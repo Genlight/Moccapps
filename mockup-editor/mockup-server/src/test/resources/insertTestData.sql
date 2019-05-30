@@ -11,9 +11,9 @@ INSERT INTO user_project (id, user_id, project_id) VALUES
     (2,2,1),
     (3,2,2);
 
-INSERT INTO pages(id,page_name, page_order, page_data, project_id)
-VALUES (1,'page1',1,'{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}',1),
-(2,'page2',2,'{ "customer": "James", "items": {"product": "notBeer","qty": 3}}',1);
+INSERT INTO pages(id,page_name,page_height,page_width, page_order, page_data, project_id)
+VALUES (1,'page1',100,100,1,'{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}',1),
+(2,'page2',200,200,2,'{ "customer": "James", "items": {"product": "notBeer","qty": 3}}',1);
 
 INSERT INTO invitations(id,project_id,inviter_user_id,invitee_user_id,status) VALUES ( 1,1,1,2,-1);
 

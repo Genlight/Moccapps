@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -53,6 +55,8 @@ public class PageRESTServiceTest {
     @Autowired
     private PageRESTService PageRESTService;
 
+    private static final Logger logger = LoggerFactory.getLogger(PageRESTServiceTest.class);
+
     @BeforeClass
     public static void setupTestData() {
         testData = new TestData();
@@ -78,13 +82,17 @@ public class PageRESTServiceTest {
     }
 
     @Test
-    public void updateValidInvitation() throws Exception {
+    public void updateValidPage() throws Exception {
         Page page = testData.createdPage1;
         given(pageService.getPageById(testData.createdPage1.getId())).willReturn(testData.createdPage1);
 
+        System.out.println("Page:"+page.toString());
+
         ObjectMapper objectMapper = new ObjectMapper();
-        PageForm pageForm = new PageForm(page.getId(),page.getPage_name(),page.getPage_order(),page.getProject_id(),page.getPage_data());
+        PageForm pageForm = new PageForm(page.getId(),page.getPage_name(),page.getHeight(),page.getWidth(),page.getPage_order(),page.getProject_id(),page.getPage_data());
         String json = objectMapper.writeValueAsString(pageForm);
+
+        System.out.println("PageForm:"+json);
 
         given(pageService.update(page)).willReturn(true);
 
@@ -97,17 +105,23 @@ public class PageRESTServiceTest {
     }
 
     @Test
-    public void createValidInvitation() throws Exception {
+    public void createValidPage() throws Exception {
         Page page = testData.page3;
-        page.setId(3);
         given(pageService.create(testData.page3)).willReturn(page);
 
+
         ObjectMapper objectMapper = new ObjectMapper();
-        PageForm pageForm = new PageForm(page.getPage_name(),page.getPage_order(),page.getProject_id(),page.getPage_data());
+        PageForm pageForm = new PageForm(page.getPage_name(),page.getHeight(),page.getWidth(),page.getPage_order(),page.getProject_id(),page.getPage_data());
         String json = objectMapper.writeValueAsString(pageForm);
+
+        logger.debug("PageForm:"+json);
+        System.out.println("PageForm:"+json);
 
         ObjectMapper objectMapper1 = new ObjectMapper();
         String json1 = objectMapper1.writeValueAsString(page);
+
+        logger.debug("PageJson:"+json1);
+        System.out.println("PageJson:"+json1);
 
 
 
@@ -128,6 +142,20 @@ public class PageRESTServiceTest {
         String json = objectMapper.writeValueAsString(page);
 
         mvc.perform(get("/page/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(json));
+
+    }
+
+    @Test
+    public void getValidByProjectOrderPage() throws Exception {
+        Page page = testData.createdPage1;
+        given(pageService.getPageByProjectIdAndOrder(testData.createdPage1.getId(),testData.createdPage1.getPage_order())).willReturn(testData.createdPage1);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(page);
+
+        mvc.perform(get("/project/1/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(json));
 
