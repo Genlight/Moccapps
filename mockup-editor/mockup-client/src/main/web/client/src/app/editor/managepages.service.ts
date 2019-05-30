@@ -156,8 +156,11 @@ export class ManagePagesService {
       page_name: name,
       height: height,
       width: width,
-      project_id: this._activeProject.id
+      project_id: this._activeProject.id,
+      page_data: "{}"
     };
+
+    alert(JSON.stringify(requestPage));
     this.apiService.post(`/page`, requestPage).subscribe(
       response => {
         alert(response);

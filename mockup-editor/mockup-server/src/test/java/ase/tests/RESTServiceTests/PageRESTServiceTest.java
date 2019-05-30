@@ -83,7 +83,10 @@ public class PageRESTServiceTest {
         given(pageService.getPageById(testData.createdPage1.getId())).willReturn(testData.createdPage1);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        PageForm pageForm = new PageForm(page.getId(),page.getPage_name(),page.getPage_order(),page.getProject_id(),page.getPage_data());
+        PageForm pageForm = new PageForm( page.getPage_name(),
+                page.getHeight(),
+                page.getWidth(),
+                page.getPage_order(),page.getProject_id(),page.getPage_data());
         String json = objectMapper.writeValueAsString(pageForm);
 
         given(pageService.update(page)).willReturn(true);
@@ -103,7 +106,11 @@ public class PageRESTServiceTest {
         given(pageService.create(testData.page3)).willReturn(page);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        PageForm pageForm = new PageForm(page.getPage_name(),page.getPage_order(),page.getProject_id(),page.getPage_data());
+        PageForm pageForm = new PageForm(
+                page.getPage_name(),
+                page.getHeight(),
+                page.getWidth(),
+                page.getPage_order(),page.getProject_id(),page.getPage_data());
         String json = objectMapper.writeValueAsString(pageForm);
 
         ObjectMapper objectMapper1 = new ObjectMapper();
