@@ -56,6 +56,9 @@ public class PageRESTService {
         page.setHeight(pageForm.getHeight());
         page.setWidth(pageForm.getWidth());
 
+        if(pageForm.getPage_data()==null){
+            page.setPage_data("{}");
+        }
 
         page = pageService.create(page);
         if (page!=null){
