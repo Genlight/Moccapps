@@ -198,19 +198,20 @@ export class ManagePagesService {
   removePage(page: Page) {
     console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
-      this.dataStore.pages.forEach((p, index) => {
-        if (p.id === page.id) {
-          this.dataStore.pages.splice(index, 1);
-
-          if (this.dataStore.pages.length <= 0) {
-            this.clearActivePage();
-          }
-        }
-      });
-      this._pages.next(Object.assign({}, this.dataStore).pages );
       this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
+          this.dataStore.pages.forEach((p, index) => {
+            if (p.id === page.id) {
+              this.dataStore.pages.splice(index, 1);
+    
+              if (this.dataStore.pages.length <= 0) {
+                this.clearActivePage();
+              }
+            }
+          });
+          //Remove page if server returns http ok.
+          this._pages.next(Object.assign({}, this.dataStore).pages );
         },
         error => {
           alert(error);
