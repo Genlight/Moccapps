@@ -169,10 +169,9 @@ export class ManagePagesService {
     this.apiService.post(`/page`, requestPage).subscribe(
       response => {
         console.log('HTTP response', response);
-        let responsePage = (response as Page);
-        requestPage = responsePage;
-        if (!!requestPage) {
-          this.dataStore.pages.push(requestPage);
+        let page = (response as Page);
+        if (!!page) {
+          this.dataStore.pages.push(page);
           this._pages.next(Object.assign({}, this.dataStore).pages);
         }
       },
@@ -185,13 +184,15 @@ export class ManagePagesService {
   updatePage(page: Page) {
     console.log('updatePage');
     if (!!page) {
-      this.dataStore.pages.forEach((p, i) => {
-        if (p.id === page.id) {
-          this.dataStore.pages[i] = page;
-        }
+      this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
+        // Update was successful, update element in local store.
+        this.dataStore.pages.forEach((p, i) => {
+          if (p.id === page.id) {
+            this.dataStore.pages[i] = page;
+            this._pages.next(Object.assign({}, this.dataStore).pages);
+          }
+        });
       });
-      
-      this._pages.next(Object.assign({}, this.dataStore).pages);
     }
   }
 
