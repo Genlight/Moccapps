@@ -7,6 +7,7 @@ import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { Observable } from 'rxjs';
 import { fabric } from '../extendedfabric';
 import { DndModule } from 'ngx-drag-drop';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('FabricCanvasComponent', () => {
   let component: FabricCanvasComponent;
@@ -19,7 +20,7 @@ describe('FabricCanvasComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ FabricCanvasComponent ],
       providers: [ FabricmodifyService, ManagePagesService],
-      imports: [ DndModule ],
+      imports: [ DndModule, HttpClientModule ],
     })
     .compileComponents();
   }));

@@ -29,18 +29,30 @@ public class TestData {
 
     private static final String PAGE_1_NAME="page1";
     private static final String PAGE_2_NAME="page2";
+    private static final String PAGE_3_NAME="page3";
 
+    private static final int PAGE_1_HEIGHT = 100;
+    private static final int PAGE_2_HEIGHT = 200;
+    private static final int PAGE_3_HEIGHT = 300;
+
+    private static final int PAGE_1_WIDTH = 100;
+    private static final int PAGE_2_WIDTH = 200;
+    private static final int PAGE_3_WIDTH = 300;
 
     private static final int PAGE_1_ORDER=1;
     private static final int PAGE_2_ORDER=2;
+    private static final int PAGE_3_ORDER=3;
 
     private static final String PAGE_1_PAGE_DATA
             ="{ \"customer\": \"John Doe\", \"items\": {\"product\": \"Beer\",\"qty\": 6}}";
     private static final String PAGE_2_PAGE_DATA
             ="{ \"customer\": \"James\", \"items\": {\"product\": \"notBeer\",\"qty\": 3}}";
+    private static final String PAGE_3_PAGE_DATA
+            ="{ \"customer\": \"James\", \"items\": {\"product\": \"notBeer\",\"qty\": 1}}";
 
     private static final int PAGE_1_PROJECT_ID=1;
-    private static final int PAGE_2_PROJECT_ID=2;
+    private static final int PAGE_2_PROJECT_ID=1;
+    private static final int PAGE_3_PROJECT_ID=2;
 
     public User createdUser1;
     public User createdUser2;
@@ -53,7 +65,8 @@ public class TestData {
     public Project project4;
 
     public Page createdPage1;
-    public Page page2;
+    public Page createdPage2;
+    public Page page3;
 
 
     public Invitation createdInvitation1;
@@ -79,8 +92,9 @@ public class TestData {
         project3.addUser(2);
         project4.addUser(2);
 
-        createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA);
-        page2=new Page(PAGE_2_NAME,PAGE_2_ORDER,PAGE_2_PROJECT_ID,PAGE_2_PAGE_DATA);
+        createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_HEIGHT,PAGE_1_WIDTH,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA);
+        createdPage2=new Page(2,PAGE_2_NAME,PAGE_2_HEIGHT,PAGE_2_WIDTH,PAGE_2_ORDER,PAGE_2_PROJECT_ID,PAGE_2_PAGE_DATA);
+        page3=new Page(PAGE_3_NAME,PAGE_3_HEIGHT,PAGE_3_WIDTH,PAGE_3_ORDER,PAGE_3_PROJECT_ID,PAGE_3_PAGE_DATA);
 
         createdInvitation1 = new Invitation(1,1,1,2,-1);
         invitation2 = new Invitation(2,2,1,-1);

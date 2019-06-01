@@ -55,7 +55,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
                 authorizeRequests()
-                .antMatchers("/index.html", "/", "/home", "/projects", "/login/**", "/*.css", "/*.png", "/*.ico", "/*.js", "/register/**", "/logout/**", "/assets/**/*.*").permitAll()
+                //URLS permitted regardless of authentication!
+                .antMatchers("/index.html", "/", "/home", "/login/**", "/*.css", "/*.png", "/*.ico", "/*.js", "/register/**", "/logout/**", "/assets/**/*.*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .requestCache()

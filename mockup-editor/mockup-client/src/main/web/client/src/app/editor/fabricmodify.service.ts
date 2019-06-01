@@ -13,7 +13,6 @@ export class FabricmodifyService {
   canvas: any;
 
   constructor(
-    private managepagesService: ManagePagesService
   ) { }
 
   /* groups active elements in given canvas if more than one element is selected */
@@ -26,6 +25,35 @@ export class FabricmodifyService {
     }
     canvas.getActiveObject().toGroup();
     canvas.requestRenderAll();
+  }
+
+  clearAll(canvas: any) {
+    canvas.clear();
+    this.setBackgroundColor(canvas, "white");
+  }
+
+  loadFromJSON(canvas: any, json: string) {
+    canvas.loadFromJSON(json, () => {
+      canvas.renderAll();
+    });
+  }
+
+  exportToJson(canvas: any): string {
+    const json = JSON.stringify(canvas);
+    return json;
+  }
+
+  setHeight(canvas: any, height: number) {
+    canvas.setHeight(height);
+  }
+
+  setWidth(canvas: any, width: number) {
+    canvas.setWidth(width);
+  }
+
+  setBackgroundColor(canvas: any, color: string) {
+    canvas.backgroundColor = color;
+    canvas.renderAll();  
   }
 
   /* ungroups elements in given canvas if a group of elements is selected */

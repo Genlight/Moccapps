@@ -15,7 +15,7 @@
               <button class="btn btn-light menubtn" disabled>Import SVG...</button>
               <button class="btn btn-light menubtn" disabled>Export to PNG...</button>
               <li role="separator" class="divider"></li>
-              <button class="btn btn-light menubtn" disabled>Save Version...</button>
+              <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version...</button>
               <button class="btn btn-light menubtn" disabled>Load Version...</button>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" (click)="onAllProjects()">All Projects</button>
@@ -70,7 +70,7 @@
   </div>
 
   <div class="mx-auto order-0">
-    <span class="navbar-brand">{{projectname}}</span>
+    <span class="navbar-brand">{{(project || {}).projectname}}</span>
   </div>
 
   <div class="navbar-collapse w-100 order-3 ">

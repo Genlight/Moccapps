@@ -31,12 +31,13 @@ CREATE TABLE IF NOT EXISTS user_project
 CREATE TABLE IF NOT EXISTS pages
 (
   id         INTEGER DEFAULT nextval('seq_page') PRIMARY KEY,
-  page_name  VARCHAR(100) NOT NULL UNIQUE,
+  page_name  VARCHAR(100) NOT NULL,
+  page_height     INTEGER      NOT NULL,
+  page_width      INTEGER      NOT NULL,
   page_order INTEGER      NOT NULL,
   page_data  json         NOT NULL,
   project_id INTEGER,
   FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
-
 );
 
 CREATE TABLE IF NOT EXISTS invitations

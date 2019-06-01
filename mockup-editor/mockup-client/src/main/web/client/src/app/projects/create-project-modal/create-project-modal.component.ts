@@ -69,8 +69,14 @@ export class CreateProjectModalComponent implements OnInit {
     // const project = new Project();
     // project.name = value.name;
     this.projectService.createProject(project).subscribe(
-      res => console.log('HTTP response', res),
-      err => console.log('HTTP Error', err)
+      res => {
+        console.log('HTTP response', res);
+        let responseProject = (res as Project);
+        this.projectService.setActiveProject(responseProject);
+      },
+      err => {
+        console.log('HTTP Error', err);
+      }
     );
     this.modal.close();
     this.router.navigate(['editor']);

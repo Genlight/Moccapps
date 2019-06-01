@@ -31,6 +31,7 @@ import { UserModalComponent } from './shared/components/user-modal/user-modal.co
 import { AuthInterceptor } from './auth/auth-interceptor';
 import { RequestInterceptor } from './shared/interceptor/request.interceptor';
 import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
+import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.component';
 
 
 library.add(faBars);
@@ -55,7 +56,8 @@ library.add(faEllipsisV);
     DeleteProjectModalComponent,
     RenameProjectModalComponent,
     UserModalComponent,
-    LastediteddatePipe
+    LastediteddatePipe,
+    ToolbarPagesComponent
   ],
   imports: [
     BrowserModule,

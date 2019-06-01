@@ -12,6 +12,8 @@ import {DataService} from '../../../data.service';
 import {TokenStorageService} from '../../../auth/token-storage.service';
 import {AuthService} from '../../../auth/auth.service';
 import {AuthLogoutInfo} from '../../../auth/logout-info';
+import { ProjectService } from '../../services/project.service';
+import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
 
 @Component({
@@ -45,6 +47,7 @@ export class NavbarComponent implements OnInit {
 
   // usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
   projectname = 'My project 1';
+  project: Project = null;
 
   // Button properties for Undo / Redo
   // so that the coresp. BUtton gets disabled
@@ -57,6 +60,7 @@ export class NavbarComponent implements OnInit {
               private tokenStorage: TokenStorageService,
               private authService: AuthService,
               private modalService: NgbModal,
+              private projectService: ProjectService,
               private undoRedoService: UndoRedoService
           ) { }
 
@@ -73,6 +77,12 @@ export class NavbarComponent implements OnInit {
         username: this.tokenStorage.getUsername(),
       };
     });
+
+    this.projectService.activeProject.subscribe((project) => {
+      if (!!project) {
+        this.project = project;
+      }
+    });
   }
 
   onLogout() {
@@ -83,9 +93,6 @@ export class NavbarComponent implements OnInit {
         this.router.navigate(['']);
       }
       );
-
-
-
   }
 
   onNewProject() {
@@ -106,6 +113,7 @@ export class NavbarComponent implements OnInit {
 
   onSaveVersion() {
     // TODO
+    alert(this.managePagesService.saveActivePage());
   }
 
   onLoadVersion() {

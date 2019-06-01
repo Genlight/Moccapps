@@ -1,0 +1,33 @@
+<div class="toolbarextension extensionhidden" id="toolbar-pages">
+  <div class="mb-2" style="display: flex; align-items: center; justify-content: space-between">
+    <div>
+      <label><b>Pages</b></label>
+    </div>
+    <div>
+      <button class="btn btn-light float-right" (click)="onCreatePage()">+</button>
+    </div>
+  </div>
+
+  <div id="extToolbarContent" class="referenceElement">
+    <div class="list-group">
+      <div 
+        role="button"
+        class="list-group-item list-group-item-action py-2" 
+        *ngFor="let page of pages; let i = index;"
+        [class.active]="page.id === (activePage || {}).id"
+        (click)="onClickPage(i, page)"
+        style="cursor: pointer;
+              display: flex; align-items: center; justify-content: space-between">
+        <span class="my-auto">Page {{i + 1}}</span>
+        <button
+          class="
+            btn 
+            btn-link"
+          (click)="onDeletePage($event, page)"
+        >
+          <fa-icon [icon]="faTrashAlt"></fa-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

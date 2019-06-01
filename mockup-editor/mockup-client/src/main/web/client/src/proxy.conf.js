@@ -3,6 +3,8 @@ const PROXY_CONFIG = [
       context: [
           "/login",
           "/register",
+          "/page",
+          "/pages",
           "/project",
           "/projects",
           "/users",
