@@ -212,9 +212,6 @@ export class ManagePagesService {
           this.dataStore.pages.push(page);
           this._pages.next(Object.assign({}, this.dataStore).pages);
         }
-      },
-      error => {
-        alert(error);
       }
     );
   }
@@ -246,13 +243,17 @@ export class ManagePagesService {
           this.dataStore.pages.forEach((p, index) => {
             if (p.id === page.id) {
               this.dataStore.pages.splice(index, 1);
-                  this.clearActivePage();
-            }
-
-            if (this.dataStore.pages.length <= 0) {
-              this.clearActivePage();
             }
           });
+          
+          // If deleted page is currently active, set it to inactive
+          if (this.dataStore.activePage.id === page.id) {
+            alert('clear active page');
+            this.clearActivePage();
+          } else if (this.dataStore.pages.length <= 0) {
+            alert('clear active page');
+            this.clearActivePage();
+          }
           //Remove page if server returns http ok.
           this._pages.next(Object.assign({}, this.dataStore).pages );
         },

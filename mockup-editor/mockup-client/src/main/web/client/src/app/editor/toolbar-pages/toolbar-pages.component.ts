@@ -46,12 +46,6 @@ export class ToolbarPagesComponent implements OnInit {
   onDeletePage(page: Page) {
     if (!!page) {
       this.managePagesService.removePage(page);
-      // Set active page to null if the page to be deleted is the active page. (De-select active page)
-      if(page != null && this.activePage != null){
-        if (page.id === this.activePage.id) {
-          this.managePagesService.clearActivePage();
-        }
-      }
     }
   }
 
