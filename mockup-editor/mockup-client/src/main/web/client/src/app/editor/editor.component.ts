@@ -36,7 +36,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     if (!this.activeProject) {
       this.notificationService.showError('Project state is invalid. Please try opening the project again.', 'Could not load project');
-      this.router.navigate(['/projects']);
+      this.router.navigate(['projects']);
     }
   }
 
