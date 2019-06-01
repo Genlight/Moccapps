@@ -10,7 +10,7 @@ export class Project {
     invitations: Invite[];
 
     get lastEdited(): Date {
-        alert(this._lastEdited);
+        //alert(this._lastEdited);
         return this._lastEdited || new Date();
     }
 

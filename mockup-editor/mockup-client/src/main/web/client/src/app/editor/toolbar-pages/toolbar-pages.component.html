@@ -10,23 +10,24 @@
 
   <div id="extToolbarContent" class="referenceElement">
     <div class="list-group">
-      <button 
+      <div 
+        role="button"
         class="list-group-item list-group-item-action py-2" 
         *ngFor="let page of pages; let i = index;"
         [class.active]="page.id === (activePage || {}).id"
         (click)="onClickPage(i, page)"
-        style="display: flex; align-items: center; justify-content: space-between">
+        style="cursor: pointer;
+              display: flex; align-items: center; justify-content: space-between">
         <span class="my-auto">Page {{i + 1}}</span>
-       
         <button
           class="
             btn 
             btn-link"
-          (click)="onDeletePage(page)"
+          (click)="onDeletePage($event, page)"
         >
           <fa-icon [icon]="faTrashAlt"></fa-icon>
         </button>
-      </button>
+      </div>
     </div>
   </div>
 </div>

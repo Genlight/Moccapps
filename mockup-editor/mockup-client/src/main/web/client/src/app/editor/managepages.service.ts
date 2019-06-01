@@ -248,10 +248,8 @@ export class ManagePagesService {
           
           // If deleted page is currently active, set it to inactive
           if (this.dataStore.activePage.id === page.id) {
-            alert('clear active page');
             this.clearActivePage();
           } else if (this.dataStore.pages.length <= 0) {
-            alert('clear active page');
             this.clearActivePage();
           }
           //Remove page if server returns http ok.
