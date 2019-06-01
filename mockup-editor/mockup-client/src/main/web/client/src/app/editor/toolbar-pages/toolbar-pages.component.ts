@@ -3,6 +3,10 @@ import { Page } from 'src/app/shared/models/Page';
 import { ManagePagesService } from '../managepages.service';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
+/**
+ * @author Yikai Yang
+ * Pages sidebar
+ */
 @Component({
   selector: 'app-toolbar-pages',
   templateUrl: './toolbar-pages.component.html',

@@ -113,6 +113,7 @@ export class NavbarComponent implements OnInit {
 
   onSaveVersion() {
     // TODO
+    alert(this.managePagesService.saveActivePage());
   }
 
   onLoadVersion() {

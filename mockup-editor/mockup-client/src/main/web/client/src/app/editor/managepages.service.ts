@@ -21,6 +21,8 @@ export class ManagePagesService {
   private _activePage: BehaviorSubject<Page>;
   private _activeProject: Project;
 
+  private DEFAULT_PAGE_DATA: string = "{\"version\":\"2.7.0\",\"objects\":[],\"background\":\"white\"}";
+
   private dataStore: {
     pages: Page[],
     activePage: Page
@@ -101,6 +103,22 @@ export class ManagePagesService {
       page.width = width;
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
+      //Update page in backend
+      this.updatePage(page);
+    }
+  }
+
+  /**
+   * Persists the current canvas state to the backend.
+   */
+  saveActivePage() {
+    // Persist current active page
+    if (!!this.dataStore.activePage) {
+      let page = Object.assign({}, this.dataStore.activePage);
+      page.page_data = this.fabricModifyService.exportToJson(this.canvas);
+      // Save to backend
+      this.updatePage(page);
+      console.log(`saveActivePage: Saved to backend: ${JSON.stringify(page)}`);
     }
   }
 
@@ -112,7 +130,6 @@ export class ManagePagesService {
 
   clearActivePage() {
     console.log('clearActivePage');
-    alert('clearActivePage');
     this.dataStore.activePage = null;
     this._activePage.next(null);
   }
@@ -137,8 +154,7 @@ export class ManagePagesService {
     * Loads all pages from the current project and saves them to the store if successful.
     */
   loadAll() {
-     console.log('loadAll');
-    // TODO fetch pages from rest api
+    console.log('loadAll');
     if (!!this._activeProject) {
       this.apiService.get(`/project/${this._activeProject.id}/pages`).subscribe(
         (data) => {
@@ -147,25 +163,47 @@ export class ManagePagesService {
         }
       );
     }
-    
   }
 
+  /**
+   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend.
+   */
   load(id: number) {
-    //const projectId = 0;
-    //this.apiService.get(`/project/${}`)
+    this.apiService.get<Page>(`/project/${this._activeProject.id}/page/${id}`).subscribe(
+      (page) => {
+        if (!!page) {
+          // If a local copy of the page does already exist. Update the page.
+          let pageExists: boolean = false;
+
+          this.dataStore.pages.forEach((p, i) => {
+            if (p.id === page.id) {
+              this.dataStore.pages[i] = page;
+              this._pages.next(Object.assign({}, this.dataStore).pages);
+              pageExists = true;
+            }
+          });
+        }
+      }
+    )
   }
 
+  /**
+   * Creates a new Page 
+   * @param name the name of the page
+   * @param height height in px
+   * @param width width in px
+   */
   addPage(name: string, height: number = 600, width: number = 900) {
     console.log('addPage');
-    let requestPage: Page = {
+    const requestPage: Page = {
       page_name: name,
       height: height,
       width: width,
       project_id: this._activeProject.id,
-      page_data: "{}"
+      page_data: this.DEFAULT_PAGE_DATA
     };
 
-    alert(JSON.stringify(requestPage));
+    //alert(JSON.stringify(requestPage));
     this.apiService.post(`/page`, requestPage).subscribe(
       response => {
         console.log('HTTP response', response);
@@ -196,6 +234,9 @@ export class ManagePagesService {
     }
   }
 
+  /**
+   * Removes the given page from the datastore.
+   */
   removePage(page: Page) {
     console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
@@ -205,10 +246,11 @@ export class ManagePagesService {
           this.dataStore.pages.forEach((p, index) => {
             if (p.id === page.id) {
               this.dataStore.pages.splice(index, 1);
-    
-              if (this.dataStore.pages.length <= 0) {
-                this.clearActivePage();
-              }
+                  this.clearActivePage();
+            }
+
+            if (this.dataStore.pages.length <= 0) {
+              this.clearActivePage();
             }
           });
           //Remove page if server returns http ok.
@@ -221,8 +263,7 @@ export class ManagePagesService {
     }
   }
 
-  // TODO: change parameter to page name or number and make pageCanvas an array
-  // for now only one page implemented, so only one canvas element to manage
+  // Returns a canvas
   getCanvas() {
     return this.canvas;
   }
