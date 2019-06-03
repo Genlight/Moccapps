@@ -3,6 +3,8 @@ import { faEllipsisV, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, 
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
 import { fabric } from '../extendedfabric';
+import { Action } from '../fabric-canvas/transformation.interface';
+import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
 
 @Component({
   selector: 'app-customizepanel',
@@ -59,7 +61,7 @@ export class CustomizepanelComponent implements OnInit {
     shadow: null
   };
 
-  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService) { }
+  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService, private socketService: SocketConnectionService) { }
 
   ngOnInit() {
     this.setNewPage(this.managePagesService.getCanvas());
@@ -136,9 +138,15 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setElementProperty(property, value) {
-    if (this.selected) {
-      this.selected.set(property, value);
+    let currentElem = this.selected
+    if (currentElem) {
+      currentElem.set(property, value);
     }
+    if (currentElem.sendMe) {
+      currentElem.sendMe = false; 
+      this.sendMessageToSocket(JSON.stringify(currentElem),Action.MODIFIED);
+    }
+    currentElem.sendMe = true;
     this.canvas.renderAll();
   }
 
@@ -258,5 +266,7 @@ export class CustomizepanelComponent implements OnInit {
   setLineHeight() {
     this.setElementProperty('lineHeight', this.textProperties.lineHeight);
   }
-
+  sendMessageToSocket(content: string, command: string){
+    this.socketService.send(content,command);
+  }
 }

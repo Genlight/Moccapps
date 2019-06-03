@@ -25,6 +25,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   // AsyncSubject is used, because we don't want to get notified, if we update
   // the canvas with Transformation from other users. AsyncSubject works so, that
   // only new events will be 'observed'.
+  // NOTE: not used in the current version
   public Transformation: Subject<Itransformation>;
 
   constructor(
@@ -46,9 +47,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.Transformation = new Subject<Itransformation>();
   }
 
-  /**
-   * for switching event-listener on and off
-   */
+  
   enableEvents() {
     this.canvas
       .on('before:transform', (event) => { 
@@ -175,47 +174,18 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    */
   onTransformation(evt, action: Action) {
     let transObject = evt.target;
-    /*const next = ((element) => {
-      if (typeof this.Transformation === 'undefined') {
-        this.Transformation = new Subject<any>();
-      }
-      this.Transformation.next({ element, action });
-      console.log(`${action} : ${element.uuid}`);
-    });*/
     console.log(`${action} : ${transObject.uuid} , sendMe: ${transObject.sendMe}`);
-    /*if (transObject.type === 'activeSelection') {
-      this.canvas.getActiveObject().forEachObject(next);
-      return;
-    }
-    if (Array.isArray(transObject)) {
-      transObject.forEach(next);
-    } else {
-      next(transObject);
-    }*/
     if (transObject.sendMe) {
-      //this includes the "do not propagate this change" already on the send level, so no checks are necessary on the recieving side
-      //this doesn't work atm because due to the JSON problems, as a new object is created on the receiving side, overwriting this
+      //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false; 
       this.sendMessageToSocket(JSON.stringify(transObject),action);
       
     }
-      //the object needs to be available again regardless of whether or not it was a remote access
+      //the object needs to be available again regardless of whether or not it was a remote access.
+      //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
       transObject.sendMe = true;
   }
 
-  /**
-   * gleicher Ablauf wie applyTransformation, nur dass hier ein fabric-Objekt entfernt wird
-   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
-   * welches per toJSON() serialissiert/ deserialisiert wurde
-   */
-  applyRemoval(object: any) {
-    const old = this.getObjectByUUID(object.uuid);
-    if (typeof old !== 'undefined') {
-      this.canvas.removeListeners();
-      this.canvas.remove(old);
-      this.enableEvents();
-    }
-  }
 
   getObjectByUUID(uuid: string) {
     return this.canvas.getObjects().find((o) => o.uuid === uuid);
