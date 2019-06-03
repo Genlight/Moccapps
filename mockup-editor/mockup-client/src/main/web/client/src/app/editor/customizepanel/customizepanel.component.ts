@@ -73,8 +73,11 @@ export class CustomizepanelComponent implements OnInit {
   setNewPage(canvas: any) {
     this.canvas = canvas;
     this.canvas.on({
+      
+      'object:added': (event) => {
+        //this.sendMessageToSocket(JSON.stringify(event.transform.target),'added');
+      },
       'object:moving': (event) => { },
-      'object:modified': (event) => { },
       'selection:created': (event) => {
         const selectedObject = event.target;
         this.selected = null;

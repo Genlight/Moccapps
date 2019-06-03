@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
 import { ManagePagesService } from './managepages.service';
 import { Action } from './fabric-canvas/transformation.interface';
+import { socketMessage } from '../socketConnection/socketMessage';
 let savedElements = null;
 
 @Injectable({
@@ -161,6 +162,53 @@ export class FabricmodifyService {
     this.copyElement(canvas);
     this.pasteElement(canvas);
   }
+  
+  applyTransformation(message:socketMessage) {
+    let transObj = JSON.parse(message.content)
+
+    const old = this.getObjectByUUID(transObj.uuid);
+    //console.log('test: applyTransformation'+', transObj: '+transObj+', sendMe: '+ transObj.sendMe+', transObjuuid: ' + transObj.uuid + ', retrievedObj: ' + old +', JSONmessage:'+JSON.stringify(message));
+    //TODO: "just adding" does not work yet, needs to be fixed 
+      var _this = this;
+      console.log('pre enlivenment: '+JSON.stringify(transObj));
+
+      fabric.util.enlivenObjects([transObj], function(objects) {
+        objects.forEach(function(o) {
+            console.log('after enlivenment: '+JSON.stringify(o));
+            o.sendMe = false;
+            o.uuid = transObj.uuid;
+            if(typeof old !== 'undefined') {
+              old.sendMe = false;
+              _this.canvas.remove(old);
+            }
+            _this.canvas.add(o);
+        });
+        _this.canvas.renderAll();
+    });
+      console.log('after parse.')
+    
+
+
+    
+    /*if(typeof old === 'undefined') {
+      // create stuff
+      let typ = transObj.type
+      switch(typ) {
+        case 'circle': {
+          this.addCircle(this.canvas,true);
+          break;
+        }
+        case 'rectangle': {
+          break;
+        }
+        case 'textbox': {
+          break;
+        }
+      }
+    }*/
+    
+  }
+  
   /**
    * Wendet übergebene Canvas-Objekt-Transformationen auf das Canvas an.
    * Falls keine UUID gefunden wird, wird eine Exception geworfen (Ausnahme: element:added)
@@ -199,10 +247,10 @@ export class FabricmodifyService {
   //   }
   // }
   //
-  // getObjectByUUID(uuid: string) {
-  //   this.canvas = this.managepagesService.getCanvas();
-  //   return this.canvas.getObjects().find((o) => o.uuid === uuid);
-  // }
+  getObjectByUUID(uuid: string) {
+    this.canvas = this.managepagesService.getCanvas();
+    return this.canvas.getObjects().find((o) => o.uuid === uuid);
+  }
   //
   // enableEvents() {
   //   this.managepageService.getCanvas()

@@ -5,6 +5,8 @@ import { DndDropEvent } from 'ngx-drag-drop';
 import { Subject } from 'rxjs';
 import { Itransformation, Action } from './transformation.interface';
 import { fabric } from '../extendedfabric';
+import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
+import { TokenStorageService } from '../../auth/token-storage.service';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 
@@ -28,6 +30,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   constructor(
     private modifyService: FabricmodifyService,
     private managePagesService: ManagePagesService,
+    private socketService: SocketConnectionService,
+    private tokenStorage: TokenStorageService,
     private undoRedoService: UndoRedoService) { }
 
   // TODO: manage canvas for different pages and not just one
@@ -38,6 +42,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     // saving initial state of canvas
     this.undoRedoService.save(this.canvas, Action.PAGECREATED);
     this.enableEvents();
+    this.connectToSocket();
     this.Transformation = new Subject<Itransformation>();
   }
 
@@ -46,6 +51,10 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    */
   enableEvents() {
     this.canvas
+      .on('before:transform', (event) => { 
+        this.sendMessageToSocket(JSON.stringify(event.transform.target.uuid),"lock");
+        
+      },)
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
@@ -165,15 +174,16 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    * which will be transmitted s. transformation.interface
    */
   onTransformation(evt, action: Action) {
-    const transObject = evt.target;
-    const next = ((element) => {
+    let transObject = evt.target;
+    /*const next = ((element) => {
       if (typeof this.Transformation === 'undefined') {
         this.Transformation = new Subject<any>();
       }
       this.Transformation.next({ element, action });
       console.log(`${action} : ${element.uuid}`);
-    });
-    if (transObject.type === 'activeSelection') {
+    });*/
+    console.log(`${action} : ${transObject.uuid} , sendMe: ${transObject.sendMe}`);
+    /*if (transObject.type === 'activeSelection') {
       this.canvas.getActiveObject().forEachObject(next);
       return;
     }
@@ -181,23 +191,18 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       transObject.forEach(next);
     } else {
       next(transObject);
+    }*/
+    if (transObject.sendMe) {
+      //this includes the "do not propagate this change" already on the send level, so no checks are necessary on the recieving side
+      //this doesn't work atm because due to the JSON problems, as a new object is created on the receiving side, overwriting this
+      transObject.sendMe = false; 
+      this.sendMessageToSocket(JSON.stringify(transObject),action);
+      
     }
+      //the object needs to be available again regardless of whether or not it was a remote access
+      transObject.sendMe = true;
   }
-  async applyTransformation(object: any) {
-    const old = this.getObjectByUUID(object.uuid);
-    this.canvas.removeListeners();
-    // if not existed, jsut add it
-    if (typeof old === 'undefined') {
-      await this.canvas.loadFromJSON(object, () => {
-        console.log(`Element added by other user: ${object.uuid}`);
-      }).requestRenderAll();
-    } else {
-      await this.canvas.remove(old).loadFromJSON(object, () => {
-        console.log(`Element changed by other user: ${object.uuid}`);
-      }).requestRenderAll();
-    }
-    this.enableEvents();
-  }
+
   /**
    * gleicher Ablauf wie applyTransformation, nur dass hier ein fabric-Objekt entfernt wird
    * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
@@ -225,5 +230,20 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   onSaveState(evt: any, action: Action) {
     this.undoRedoService.save(this.canvas, action);
   }
+
+  
+  //Socket methods
+
+  connectToSocket(){
+    this.socketService.connect("","",this.tokenStorage.getToken());
+  }
+  sendMessageToSocket(content: string, command: string){
+    this.socketService.send(content,command);
+  }
+
+  disconnectSocket(){
+    this.socketService.disconnect();
+  }
+
 }
 //
