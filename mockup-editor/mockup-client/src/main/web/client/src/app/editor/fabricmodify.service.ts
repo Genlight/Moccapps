@@ -174,15 +174,27 @@ export class FabricmodifyService {
 
       fabric.util.enlivenObjects([transObj], function(objects) {
         objects.forEach(function(o) {
+          
             console.log('after enlivenment: '+JSON.stringify(o));
-            o.sendMe = false;
             o.uuid = transObj.uuid;
-            if(typeof old !== 'undefined') {
+            
+            if(message.command === Action.ADDED){
+              o.sendMe = false;
+              _this.canvas.add(o);
+              }
+            else if(message.command === Action.MODIFIED) {
+              let keys = Object.keys(o);
+              console.log('new keys: '+keys);
+              console.log('old keys: '+Object.keys(old));
+              keys.forEach(function(key) {
+                console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
+                old[key] = o[key];
+                _this.canvas.renderAll();
+              });
+            } 
+            else if(message.command === Action.REMOVED) {
               old.sendMe = false;
               _this.canvas.remove(old);
-            } 
-            if(message.command !== Action.REMOVED){
-            _this.canvas.add(o);
             }
         });
         _this.canvas.renderAll();

@@ -146,6 +146,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       fabric.loadSVGFromURL(url, function(objects, options) {
         const loadedObjects = fabric.util.groupSVGElements(objects, options);
         loadedObjects.scaleToWidth(300);
+
         canvas.add(loadedObjects);
       });
     } else {
@@ -174,11 +175,27 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    */
   onTransformation(evt, action: Action) {
     let transObject = evt.target;
-    console.log(`${action} : ${transObject.uuid} , sendMe: ${transObject.sendMe}`);
+    console.log(`${action} : ${transObject.uuid}`);
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
-      transObject.sendMe = false; 
-      this.sendMessageToSocket(JSON.stringify(transObject),action);
+      //transObject.sendMe = false; 
+      //this.sendMessageToSocket(JSON.stringify(transObject),action);
+      
+
+      
+      let typ = transObject.type
+      //let objectsToSend = [transObject];
+      //console.log('type: '+typ+', transObj: '+JSON.stringify(transObject));
+   
+      if(typ==='activeSelection'||typ==='group') {
+        transObject.forEachObject(function(current) {
+          //this.sendMessageToSocket(JSON.stringify(current),action);
+          //console.log('current: '+JSON.stringify(current));
+
+        },this);
+      } else {      
+        this.sendMessageToSocket(JSON.stringify(transObject),action);
+      }
       
     }
       //the object needs to be available again regardless of whether or not it was a remote access.
