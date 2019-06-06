@@ -40,20 +40,18 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.managePagesService.createPage(900, 600);
     this.canvas = this.managePagesService.getCanvas();
 
-    // saving initial state of canvas
-    this.undoRedoService.save(this.canvas, Action.PAGECREATED);
+    // saving initial State
+    this.undoRedoService.saveInitialState();
     this.enableEvents();
     this.connectToSocket();
     this.Transformation = new Subject<Itransformation>();
   }
 
-  
   enableEvents() {
     this.canvas
-      .on('before:transform', (event) => { 
-        this.sendMessageToSocket(JSON.stringify(event.transform.target.uuid),"lock");
-        
-      },)
+      .on('before:transform', (event) => {
+        this.sendMessageToSocket(JSON.stringify(event.transform.target.uuid), 'lock');
+      }, )
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
@@ -61,7 +59,15 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
   }
-
+  disableEvents() {
+    this.canvas
+      .off('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
+      .off('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
+      .off('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
+      .off('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
+      .off('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
+      .off('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
+  }
   /**
    * manages keyboard events:
    * - deleting selected elements on delete press
@@ -178,38 +184,56 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     console.log(`${action} : ${transObject.uuid}`);
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
-      //transObject.sendMe = false; 
+      //transObject.sendMe = false;
       //this.sendMessageToSocket(JSON.stringify(transObject),action);
-      
 
-      
+
+
       let typ = transObject.type
       //let objectsToSend = [transObject];
       //console.log('type: '+typ+', transObj: '+JSON.stringify(transObject));
-   
+
+
       if(typ==='activeSelection') {
         //Elements in groups/selections are orientated relative to the group and not to the canvas => recalculation is necessary
         console.log('selection: '+JSON.stringify(transObject))
         let selectionLeft = transObject.left
         let selectionTop = transObject.top
+        let selectionWidth = transObject.width
+        let selectionHeight = transObject.height
         //TODO TODO TODO had to stop mid working, calculate proper positions then send objects
 
-        transObject.forEachObject(function(current) {
-          //this.sendMessageToSocket(JSON.stringify(current),action);
-          console.log('current: '+JSON.stringify(current)+', action' + action);
+        transObject.forEachObject((current) => {
+          current.clone( (obj) => {
+            obj.top = selectionTop + (selectionHeight/2 + obj.top);
+            obj.left = selectionLeft + (selectionWidth/2 + obj.left);
+            obj.uuid = current.uuid;
+            this.sendMessageToSocket(JSON.stringify(obj), action);
+            console.log('current: ' + JSON.stringify(obj) + ', action: ' + action);
+          });
 
-        },this);
-      }else if(typ==='group') {
-        
-      } 
-      else {      
+        });
+      } else {
         this.sendMessageToSocket(JSON.stringify(transObject),action);
       }
-      
+
     }
       //the object needs to be available again regardless of whether or not it was a remote access.
       //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
       transObject.sendMe = true;
+  }
+  forEachTransformedObj(evt, next) {
+    const transObject = evt.target;
+    if (transObject.type === 'activeSelection') {
+      evt.transform.target.objects.forEach(next);
+      // this.canvas.getActiveObject().forEachObject(next);
+      return;
+    }
+    if (Array.isArray(transObject)) {
+      transObject.forEach(next);
+    } else {
+      next(transObject);
+    }
   }
 
 
@@ -224,10 +248,19 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    * @{author}: Alexander Genser
    */
   onSaveState(evt: any, action: Action) {
-    this.undoRedoService.save(this.canvas, action);
+    const saveObject = evt.target;
+    const objects = [];
+    if (saveObject.type === 'activeSelection') {
+        saveObject.forEachObject( (obj) => {
+          objects.push(obj);
+        });
+    } else {
+      objects.push(saveObject);
+    }
+    this.undoRedoService.save(objects, action);
   }
 
-  
+
   //Socket methods
 
   connectToSocket(){

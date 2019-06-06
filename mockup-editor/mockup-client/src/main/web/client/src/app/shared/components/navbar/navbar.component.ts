@@ -62,10 +62,10 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.undoRedoService.getRedoObs().subscribe(
-      (bool) => { this.redoDisabled = bool; }
+      (bool) => { this.redoDisabled = !bool; }
     );
     this.undoRedoService.getUndoObs().subscribe(
-      (bool) => { this.undoDisabled = bool; }
+      (bool) => { this.undoDisabled = !bool; }
     );
     this.data.currentMessage.subscribe(item => {
       this.info = {
@@ -117,13 +117,11 @@ export class NavbarComponent implements OnInit {
   }
 
   onUndo() {
-    const canvas = this.managePagesService.getCanvas();
-    this.undoRedoService.undo(canvas);
+    this.undoRedoService.undo();
   }
 
   onRedo() {
-    const canvas = this.managePagesService.getCanvas();
-    this.undoRedoService.redo(canvas);
+    this.undoRedoService.redo();
   }
 
   onCut() {
