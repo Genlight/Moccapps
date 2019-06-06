@@ -183,19 +183,30 @@ export class FabricmodifyService {
               _this.canvas.add(o);
               }
             else if(message.command === Action.MODIFIED) {
+              
+            //fallback to add if no such element exists, can be removed and replaced by error message if desired
+            if(old === undefined) {
+              o.sendMe = false;
+              _this.canvas.add(o);
+            } else {
               let keys = Object.keys(o);
               console.log('new keys: '+keys);
               console.log('old keys: '+Object.keys(old));
               keys.forEach(function(key) {
                 console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
                 old[key] = o[key];
-                _this.canvas.renderAll();
               });
+              //this is necessary to reliably render all changes of the object
+              old.setCoords();
             } 
+          }
             else if(message.command === Action.REMOVED) {
+              //if no such element exists we are done here
+              if(old !== undefined) {
               old.sendMe = false;
               _this.canvas.remove(old);
             }
+          }
         });
         _this.canvas.renderAll();
     });

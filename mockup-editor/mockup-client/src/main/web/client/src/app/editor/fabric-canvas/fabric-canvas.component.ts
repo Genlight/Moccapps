@@ -187,13 +187,22 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       //let objectsToSend = [transObject];
       //console.log('type: '+typ+', transObj: '+JSON.stringify(transObject));
    
-      if(typ==='activeSelection'||typ==='group') {
+      if(typ==='activeSelection') {
+        //Elements in groups/selections are orientated relative to the group and not to the canvas => recalculation is necessary
+        console.log('selection: '+JSON.stringify(transObject))
+        let selectionLeft = transObject.left
+        let selectionTop = transObject.top
+        //TODO TODO TODO had to stop mid working, calculate proper positions then send objects
+
         transObject.forEachObject(function(current) {
           //this.sendMessageToSocket(JSON.stringify(current),action);
-          //console.log('current: '+JSON.stringify(current));
+          console.log('current: '+JSON.stringify(current)+', action' + action);
 
         },this);
-      } else {      
+      }else if(typ==='group') {
+        
+      } 
+      else {      
         this.sendMessageToSocket(JSON.stringify(transObject),action);
       }
       
