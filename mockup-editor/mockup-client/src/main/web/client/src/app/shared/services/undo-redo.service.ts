@@ -70,8 +70,8 @@ export class UndoRedoService {
     const prevList = [];
     if ( typeof this.state.canvas !== 'undefined') {
       this.forEachObject(objects, (obj) => {
-        console.log('testlog\nobjId: '+obj.uuid+'\nthis: ' +JSON.stringify(this.state.canvas));
-        const prev = this.getObjectByUUID(obj.uuid, (this.state.canvas));
+        console.log('testlog\nobjId: '+obj.uuid+'\nthis: ' +JSON.stringify(canvas));
+        const prev = this.getObjectByUUID(obj.uuid, (canvas));
 
         prev.clone( (o) => { prevList.push(o); } );
       });
@@ -146,19 +146,19 @@ export class UndoRedoService {
       })
     }
     else if(replayState.action === Action.MODIFIED) {
-    replayState.current.forEach((obj) => {
-      let current = _this.getObjectByUUID(obj.uuid,canvas);
-      let keys = Object.keys(obj);
-              keys.forEach(function(key) {
-                current[key] = obj[key];
-              });
-              //this is necessary to reliably render all changes of the object
-              current.setCoords()
-    })
-  }
+      replayState.previous.forEach((obj) => {
+        let current = _this.getObjectByUUID(obj.uuid,canvas);
+        let keys = Object.keys(obj);
+        keys.forEach(function(key) {
+          current[key] = obj[key];
+        });
+        //this is necessary to reliably render all changes of the object
+        current.setCoords()
+      })
+    }
     else if(replayState.action === Action.REMOVED) {
       console.log('add previously removed elements');
-      replayState.current.forEach((obj) => {
+      replayState.previous.forEach((obj) => {
         //let old = _this.getObjectByUUID(obj.uuid,canvas);
         canvas.add(obj);
       })

@@ -194,7 +194,7 @@ export class FabricmodifyService {
               console.log('\ncontain result: '+activeSelection.indexOf(o));
               let keys = Object.keys(o);
               keys.forEach(function(key) {
-                console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
+                //console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
                 old[key] = o[key];
               });
               //this is necessary to reliably render all changes of the object

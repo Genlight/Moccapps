@@ -55,10 +55,10 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-      .on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
+      /*.on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
-  }
+      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });*/;
+    }
   disableEvents() {
     this.canvas
       .off('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
@@ -186,7 +186,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       //transObject.sendMe = false;
       //this.sendMessageToSocket(JSON.stringify(transObject),action);
-
+      this.onSaveState(evt, action);
 
 
       let typ = transObject.type
