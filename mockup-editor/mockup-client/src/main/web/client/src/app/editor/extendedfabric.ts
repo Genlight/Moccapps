@@ -30,7 +30,7 @@ fabric.Object.prototype.initialize = function(options) {
       if (options) {
         this.setOptions(options);
       }
-      this.uuid = UUID.UUID();
+      if(!this.uuid) this.uuid = UUID.UUID();
       this.sendMe = true;
 };
 
@@ -110,5 +110,7 @@ fabric.Object.prototype.resizeToScale = function() {
     }
   };
 
+  //overriding clone function to properly copy the custom uuid?
+//fabric.Canvas.prototype.clone = function
 // export wrapped fabric-object
 export { fabric };

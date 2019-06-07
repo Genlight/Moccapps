@@ -189,9 +189,10 @@ export class FabricmodifyService {
               o.sendMe = false;
               _this.canvas.add(o);
             } else {
+              let activeSelection = _this.canvas.getActiveObjects();
+              console.log('contains test\nselection: '+JSON.stringify(activeSelection)+'\nobject: '+o.uuid);              
+              console.log('\ncontain result: '+activeSelection.indexOf(o));
               let keys = Object.keys(o);
-              console.log('new keys: '+keys);
-              console.log('old keys: '+Object.keys(old));
               keys.forEach(function(key) {
                 console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
                 old[key] = o[key];

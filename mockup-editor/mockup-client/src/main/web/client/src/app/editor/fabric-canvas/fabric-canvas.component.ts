@@ -201,7 +201,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         let selectionTop = transObject.top
         let selectionWidth = transObject.width
         let selectionHeight = transObject.height
-        //TODO TODO TODO had to stop mid working, calculate proper positions then send objects
 
         transObject.forEachObject((current) => {
           current.clone( (obj) => {
@@ -256,6 +255,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         });
     } else {
       objects.push(saveObject);
+      console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
     }
     this.undoRedoService.save(objects, action);
   }

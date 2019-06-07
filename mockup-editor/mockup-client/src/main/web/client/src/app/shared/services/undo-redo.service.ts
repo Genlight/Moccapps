@@ -44,7 +44,8 @@ export class UndoRedoService {
   saveInitialState() {
     this.state = {
       canvas: this.managepageService.getCanvas().clone((o) => {
-          console.log('saved State: ' + JSON.stringify(o.toObject));
+          console.log('saved State: ' + JSON.stringify(o)); 
+
           return o;
         }
       ),
@@ -58,7 +59,7 @@ export class UndoRedoService {
    * @return        [description]
    */
   save(objects: any, action: Action): void {
-    // during replay, there should'nt be any saves
+    // during replay, there should'nt be any saves 
     if (this.isReplaying) {
       return;
     }
@@ -69,6 +70,7 @@ export class UndoRedoService {
     const prevList = [];
     if ( typeof this.state.canvas !== 'undefined') {
       this.forEachObject(objects, (obj) => {
+        console.log('testlog\nobjId: '+obj.uuid+'\nthis: ' +JSON.stringify(this.state.canvas));
         const prev = this.getObjectByUUID(obj.uuid, (this.state.canvas));
 
         prev.clone( (o) => { prevList.push(o); } );
@@ -76,7 +78,10 @@ export class UndoRedoService {
     }
     const currentList = [];
     this.forEachObject(objects, (obj) => {
-       obj.clone( (o) => { currentList.push(o); } );
+       obj.clone( (o) => {
+         o.uuid = obj.uuid;
+         currentList.push(o);
+        } );
     });
     // push to undoStack
     this.undoStack.push({
@@ -84,10 +89,13 @@ export class UndoRedoService {
       current: currentList,
       action
     });
+    
+    console.log('Imminent clone check: '+currentList[0].uuid);
     canvas.clone((o) => {
       console.log('saved State: ' + JSON.stringify(o));
       this.state = { canvas: o, action };
     });
+    
 
     // set redoStack to null
     this.redoStack = [];
@@ -123,19 +131,48 @@ export class UndoRedoService {
       action: this.invertAction(replayState.action)
     });
     // removing old objects
-    console.log(`Removing replayState.current: ${replayState.current}`);
-    fabric.util.enlivenObjects([JSON.parse(replayState.current)], (obj) => {
+    console.log(`Removing replayState.current: ${JSON.stringify(replayState.current)}`);
+    /*fabric.util.enlivenObjects([JSON.parse(replayState.current)], (obj) => {
       const old = this.getObjectByUUID(obj.uuid, canvas);
       canvas.remove(old);
-    });
+    });*/
+    
+    let _this = this;
+    if(replayState.action === Action.ADDED ) {
+      console.log('remove previously added elements: ' +JSON.stringify(replayState.current) );
+      replayState.current.forEach((obj) => {
+        let old = _this.getObjectByUUID(obj.uuid,canvas);
+        canvas.remove(old);
+      })
+    }
+    else if(replayState.action === Action.MODIFIED) {
+    replayState.current.forEach((obj) => {
+      let current = _this.getObjectByUUID(obj.uuid,canvas);
+      let keys = Object.keys(obj);
+              keys.forEach(function(key) {
+                current[key] = obj[key];
+              });
+              //this is necessary to reliably render all changes of the object
+              current.setCoords()
+    })
+  }
+    else if(replayState.action === Action.REMOVED) {
+      console.log('add previously removed elements');
+      replayState.current.forEach((obj) => {
+        //let old = _this.getObjectByUUID(obj.uuid,canvas);
+        canvas.add(obj);
+      })
+
+    }
+    canvas.renderAll();
     // add previous objects / State
-    fabric.util.enlivenObjects([JSON.parse(replayState.previous)], ((obj) => {
+    /*fabric.util.enlivenObjects([JSON.parse(replayState.previous)], ((obj) => {
         console.log(`Applying replayState.previous, object: ${JSON.stringify(obj)}`);
         canvas.add(obj);
         canvas.addWithUpdate();
         canvas.requestRenderAll();
       })
-    );
+    );*/
     // set new state, needed fo save()
     this.state.canvas = fabric.util.object.clone(canvas);
     this.isReplaying  = false;
