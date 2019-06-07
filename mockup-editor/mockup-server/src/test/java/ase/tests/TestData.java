@@ -1,9 +1,6 @@
 package ase.tests;
 
-import ase.DTO.Invitation;
-import ase.DTO.Page;
-import ase.DTO.Project;
-import ase.DTO.User;
+import ase.DTO.*;
 
 public class TestData {
 
@@ -54,6 +51,9 @@ public class TestData {
     private static final int PAGE_2_PROJECT_ID=1;
     private static final int PAGE_3_PROJECT_ID=2;
 
+    private static final String PROJECTVERSION_1_TAG="testTag1";
+    private static final String PROJECTVERSION_2_TAG="testTag2";
+
     public User createdUser1;
     public User createdUser2;
     public User user3;
@@ -63,6 +63,9 @@ public class TestData {
     public Project createdProject2;
     public Project project3;
     public Project project4;
+
+    public ProjectVersion projectVersion2;
+    public ProjectVersion createdProjectVersion1;
 
     public Page createdPage1;
     public Page createdPage2;
@@ -98,6 +101,9 @@ public class TestData {
 
         createdInvitation1 = new Invitation(1,1,1,2,-1);
         invitation2 = new Invitation(2,2,1,-1);
+
+        projectVersion2 = new ProjectVersion(PROJECTVERSION_2_TAG,createdProject2.getId());
+        createdProjectVersion1 = new ProjectVersion(1,PROJECTVERSION_1_TAG,createdProject1.getId());
 
     }
 }
