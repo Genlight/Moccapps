@@ -54,6 +54,22 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         this.loadPage(this.activePage);
       }
     });
+
+    this.loadRuler();
+  }
+
+  private loadRuler() {
+    //@ts-ignore
+     var myRuler = new ruler({
+      container: document.querySelector('.canvas-container'),// reference to DOM element to apply rulers on
+      rulerHeight: 15, // thickness of ruler
+      fontFamily: 'arial',// font for points
+      fontSize: '7px', 
+      strokeStyle: 'black',
+      lineWidth: 1,
+      enableMouseTracking: true,
+      enableToolTip: true
+    });
   }
 
   private loadPage(page: Page) {
@@ -70,7 +86,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   onCreatePage() {
-    this.pagesService.addPage("Page 1");
+    this.pagesService.createInitialPage();
   }
 
   /**
