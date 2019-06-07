@@ -13,6 +13,7 @@ import { FabricmodifyService } from '../../editor/fabricmodify.service';
 import { UndoRedoState, ReplayAction, CanvasState } from '../models/UndoRedoState';
 import { fabric } from '../../editor/extendedfabric';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,8 @@ export class UndoRedoService {
 
   constructor(
     private managepageService: ManagePagesService,
-    private modifyService: FabricmodifyService
+    private modifyService: FabricmodifyService,
+    private socketService: SocketConnectionService
   ) {
     this.redoObs = new BehaviorSubject<boolean>(false);
     this.undoObs = new BehaviorSubject<boolean>(false);
@@ -42,6 +44,7 @@ export class UndoRedoService {
     this.undoObs.next(false);
   }
   saveInitialState() {
+    // TODO: this needs to be accordingly modified when persisted elements are loaded
     this.state = {
       canvas: this.managepageService.getCanvas().clone((o) => {
           console.log('saved State: ' + JSON.stringify(o)); 
@@ -66,23 +69,28 @@ export class UndoRedoService {
     const canvas = this.managepageService.getCanvas();
 
 
+   
     // previous state
+    let _this = this;
     const prevList = [];
-    if ( typeof this.state.canvas !== 'undefined') {
+    if(action!==Action.ADDED) {
+      //add doesn't have a previous state
+      if(this.state){
       this.forEachObject(objects, (obj) => {
-        console.log('testlog\nobjId: '+obj.uuid+'\nthis: ' +JSON.stringify(canvas));
-        const prev = this.getObjectByUUID(obj.uuid, (canvas));
+        const prev = this.getObjectByUUID(obj.uuid, (_this.state.canvas));
 
         prev.clone( (o) => { prevList.push(o); } );
-      });
+      })};
     }
     const currentList = [];
+    if(action!==Action.REMOVED) {
+      //removed doesn't have a current
     this.forEachObject(objects, (obj) => {
        obj.clone( (o) => {
          o.uuid = obj.uuid;
          currentList.push(o);
         } );
-    });
+    })};
     // push to undoStack
     this.undoStack.push({
       previous: prevList,
@@ -90,17 +98,14 @@ export class UndoRedoService {
       action
     });
     
-    console.log('Imminent clone check: '+currentList[0].uuid);
-    canvas.clone((o) => {
-      console.log('saved State: ' + JSON.stringify(o));
-      this.state = { canvas: o, action };
-    });
-    
+    this.setState(canvas, action);
 
     // set redoStack to null
     this.redoStack = [];
     this.redoObs.next(false);
 
+
+    //console.log('show me the stack: '+JSON.stringify(this.undoStack));
     // initial call won't have a state
     if ( this.state.action === Action.PAGECREATED )  {
       console.log('undo disabled because Page was just created');
@@ -154,7 +159,12 @@ export class UndoRedoService {
         });
         //this is necessary to reliably render all changes of the object
         current.setCoords()
-      })
+        
+      // TODO: this should be changed, for a cleaner seperation of concerns
+      //move socket connection (maybe) to manage pages, reduce single dependencies and 
+      // "all over the place" sends.
+        _this.sendMessageToSocket(JSON.stringify(current), Action.MODIFIED);
+      });
     }
     else if(replayState.action === Action.REMOVED) {
       console.log('add previously removed elements');
@@ -164,6 +174,7 @@ export class UndoRedoService {
       })
 
     }
+    this.setState(canvas,this.invertAction(replayState.action));
     canvas.renderAll();
     // add previous objects / State
     /*fabric.util.enlivenObjects([JSON.parse(replayState.previous)], ((obj) => {
@@ -174,7 +185,7 @@ export class UndoRedoService {
       })
     );*/
     // set new state, needed fo save()
-    this.state.canvas = fabric.util.object.clone(canvas);
+    //this.state.canvas = fabric.util.object.clone(canvas);
     this.isReplaying  = false;
     stacker.next(true);
 
@@ -231,6 +242,27 @@ export class UndoRedoService {
   }
   getObjectByUUID(uuid: string, canvas: fabric.Object) {
     return canvas.getObjects().find((o) => o.uuid === uuid);
+  }
+
+  /**
+   * This was moved out of the actual undo/redo functionality: whether or not a change is 
+   * undoable by me, the state needs always to be accurate.
+   * @param canvas The actual canvas
+   * @param action the action that took place
+   */
+  setState(canvas:any,action:Action) {
+    canvas.clone((o) => {
+      console.log('saved State: ' + JSON.stringify(o));
+      this.state = { canvas: o, action };
+    });
+  }
+/**
+ * Replace this with a cleaner call to a service that bundles all the send calls
+ * @param content object to be sent
+ * @param command action that was taken
+ */
+  sendMessageToSocket(content: string, command: string){
+    this.socketService.send(content,command);
   }
 
   /**

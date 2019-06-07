@@ -168,7 +168,7 @@ export class FabricmodifyService {
 
     const old = this.getObjectByUUID(transObj.uuid);
     //console.log('test: applyTransformation'+', transObj: '+transObj+', sendMe: '+ transObj.sendMe+', transObjuuid: ' + transObj.uuid + ', retrievedObj: ' + old +', JSONmessage:'+JSON.stringify(message));
-    //TODO: "just adding" does not work yet, needs to be fixed 
+    
       var _this = this;
       console.log('pre enlivenment: '+JSON.stringify(transObj));
 

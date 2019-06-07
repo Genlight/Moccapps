@@ -5,6 +5,7 @@ import { ManagePagesService } from '../managepages.service';
 import { fabric } from '../extendedfabric';
 import { Action } from '../fabric-canvas/transformation.interface';
 import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
+import { UndoRedoService } from '../../shared/services/undo-redo.service';
 
 @Component({
   selector: 'app-customizepanel',
@@ -61,7 +62,7 @@ export class CustomizepanelComponent implements OnInit {
     shadow: null
   };
 
-  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService, private socketService: SocketConnectionService) { }
+  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService, private socketService: SocketConnectionService, private undoRedoService:UndoRedoService) { }
 
   ngOnInit() {
     this.setNewPage(this.managePagesService.getCanvas());
@@ -141,6 +142,7 @@ export class CustomizepanelComponent implements OnInit {
     let currentElem = this.selected
     if (currentElem) {
       currentElem.set(property, value);
+      this.undoRedoService.save(currentElem,Action.MODIFIED);
     }
     if (currentElem.sendMe) {
       currentElem.sendMe = false; 

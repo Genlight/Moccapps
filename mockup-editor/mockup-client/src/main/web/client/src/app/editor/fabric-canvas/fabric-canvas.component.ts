@@ -217,6 +217,10 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       }
 
     }
+
+    //this needs to happen externally if the change was made from somebody else; the state of the canvas needs to be accuratly reflected
+    else this.undoRedoService.setState(this.canvas, action);
+
       //the object needs to be available again regardless of whether or not it was a remote access.
       //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
       transObject.sendMe = true;
