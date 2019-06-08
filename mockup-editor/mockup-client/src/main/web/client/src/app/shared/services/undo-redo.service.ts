@@ -13,7 +13,6 @@ import { FabricmodifyService } from '../../editor/fabricmodify.service';
 import { UndoRedoState, ReplayAction, CanvasState } from '../models/UndoRedoState';
 import { fabric } from '../../editor/extendedfabric';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +32,6 @@ export class UndoRedoService {
   constructor(
     private managepageService: ManagePagesService,
     private modifyService: FabricmodifyService,
-    private socketService: SocketConnectionService
   ) {
     this.redoObs = new BehaviorSubject<boolean>(false);
     this.undoObs = new BehaviorSubject<boolean>(false);
@@ -163,7 +161,7 @@ export class UndoRedoService {
       // TODO: this should be changed, for a cleaner seperation of concerns
       //move socket connection (maybe) to manage pages, reduce single dependencies and 
       // "all over the place" sends.
-        _this.sendMessageToSocket(JSON.stringify(current), Action.MODIFIED);
+        _this.managepageService.sendMessageToSocket(current, Action.MODIFIED);
       });
     }
     else if(replayState.action === Action.REMOVED) {
@@ -256,14 +254,7 @@ export class UndoRedoService {
       this.state = { canvas: o, action };
     });
   }
-/**
- * Replace this with a cleaner call to a service that bundles all the send calls
- * @param content object to be sent
- * @param command action that was taken
- */
-  sendMessageToSocket(content: string, command: string){
-    this.socketService.send(content,command);
-  }
+
 
   /**
    * handling the three cases, in which an object can be (null, single, Array)

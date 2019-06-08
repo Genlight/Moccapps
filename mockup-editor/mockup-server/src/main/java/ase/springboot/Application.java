@@ -25,7 +25,6 @@ public class Application extends SpringBootServletInitializer {
 	@Value("${spring.datasource.url.test}")
 	public String testDataUrl;
 
-
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class,args);
 	}
@@ -55,12 +54,20 @@ public class Application extends SpringBootServletInitializer {
 	@Profile(value="test")
 	@Bean
 	public DataSource dataSource() {
+		String finalJdbc = testDataUrl;
+		if(System.getenv("SERVER_IP")!=null){
+			finalJdbc = testDataUrl.replace("localhost",System.getenv("SERVER_IP")); //Gitlab CI
+		}
+		else{
+			finalJdbc = testDataUrl.replace("localhost",System.getProperty("SERVER_IP"));
+		}
+
 		return DataSourceBuilder
 				.create()
 				.username("postgres")
 				.password("test")
-				//.url("jdbc:postgresql://${SERVER_IP}:5432/test")
-				.url(testDataUrl)
+				//.url("jdbc:postgresql://localhost:5432/test")
+				.url(finalJdbc)
 				.driverClassName("org.postgresql.Driver")
 				.build();
 	}

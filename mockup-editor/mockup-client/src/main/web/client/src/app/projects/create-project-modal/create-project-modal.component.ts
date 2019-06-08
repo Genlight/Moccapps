@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ProjectService } from 'src/app/shared/services/project.service';
 import { Project } from 'src/app/shared/models/Project';
 import { NotificationService } from 'src/app/shared/services/notification.service';
+import { ManagePagesService } from 'src/app/editor/managepages.service';
 
 @Component({
   selector: 'app-create-project-modal',
@@ -22,6 +23,7 @@ export class CreateProjectModalComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private projectService: ProjectService,
+    private pagesService: ManagePagesService,
     private router: Router,
     private notificationService: NotificationService) { 
   }
@@ -49,6 +51,10 @@ export class CreateProjectModalComponent implements OnInit {
     );
   }
 
+  /**
+   * Creates a new Project, initial page and sets the created project to active set.
+   * @param value the 
+   */
   onCreateProject(value: any): void {
     // alert(JSON.stringify(value));
 
@@ -64,13 +70,19 @@ export class CreateProjectModalComponent implements OnInit {
       this.notificationService.showError('Project canvas size must be larger than 0px.', 'Error');
       return;
     }
-
-    // TODO: Pass height/width to editor page
-    // const project = new Project();
-    // project.name = value.name;
     this.projectService.createProject(project).subscribe(
-      res => console.log('HTTP response', res),
-      err => console.log('HTTP Error', err)
+      res => {
+        console.log('HTTP response', res);
+        let responseProject = (res as Project);
+        if (!!responseProject) {
+          this.projectService.setActiveProject(responseProject);
+          // Create intitial page of project.
+          this.pagesService.createInitialPage(this.project.height, this.project.width);
+        }
+      },
+      err => {
+        console.log('HTTP Error', err);
+      }
     );
     this.modal.close();
     this.router.navigate(['editor']);

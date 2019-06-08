@@ -14,7 +14,7 @@ export class FabricmodifyService {
   canvas: any;
 
   constructor(
-    private managepagesService: ManagePagesService
+    //private managePagesService:ManagePagesService
   ) { }
 
   /* groups active elements in given canvas if more than one element is selected */
@@ -27,6 +27,35 @@ export class FabricmodifyService {
     }
     canvas.getActiveObject().toGroup();
     canvas.requestRenderAll();
+  }
+
+  clearAll(canvas: any) {
+    canvas.clear();
+    this.setBackgroundColor(canvas, "white");
+  }
+
+  loadFromJSON(canvas: any, json: string) {
+    canvas.loadFromJSON(json, () => {
+      canvas.renderAll();
+    });
+  }
+
+  exportToJson(canvas: any): string {
+    const json = JSON.stringify(canvas);
+    return json;
+  }
+
+  setHeight(canvas: any, height: number) {
+    canvas.setHeight(height);
+  }
+
+  setWidth(canvas: any, width: number) {
+    canvas.setWidth(width);
+  }
+
+  setBackgroundColor(canvas: any, color: string) {
+    canvas.backgroundColor = color;
+    canvas.renderAll();  
   }
 
   /* ungroups elements in given canvas if a group of elements is selected */
@@ -163,11 +192,11 @@ export class FabricmodifyService {
     this.pasteElement(canvas);
   }
   
-  applyTransformation(message:socketMessage) {
+  applyTransformation(message:socketMessage, canvas:any) {
     let transObj = JSON.parse(message.content)
 
-    const old = this.getObjectByUUID(transObj.uuid);
-    //console.log('test: applyTransformation'+', transObj: '+transObj+', sendMe: '+ transObj.sendMe+', transObjuuid: ' + transObj.uuid + ', retrievedObj: ' + old +', JSONmessage:'+JSON.stringify(message));
+    const old = this.getObjectByUUID(transObj.uuid, canvas);
+    console.log('test: applyTransformation'+', transObj: '+transObj+', sendMe: '+ transObj.sendMe+', transObjuuid: ' + transObj.uuid + ', retrievedObj: ' + old +', JSONmessage:'+JSON.stringify(message));
     
       var _this = this;
       console.log('pre enlivenment: '+JSON.stringify(transObj));
@@ -180,16 +209,16 @@ export class FabricmodifyService {
             
             if(message.command === Action.ADDED){
               o.sendMe = false;
-              _this.canvas.add(o);
+              canvas.add(o);
               }
             else if(message.command === Action.MODIFIED) {
               
             //fallback to add if no such element exists, can be removed and replaced by error message if desired
             if(old === undefined) {
               o.sendMe = false;
-              _this.canvas.add(o);
+              canvas.add(o);
             } else {
-              let activeSelection = _this.canvas.getActiveObjects();
+              let activeSelection = canvas.getActiveObjects();
               console.log('contains test\nselection: '+JSON.stringify(activeSelection)+'\nobject: '+o.uuid);              
               console.log('\ncontain result: '+activeSelection.indexOf(o));
               let keys = Object.keys(o);
@@ -205,18 +234,18 @@ export class FabricmodifyService {
               //if no such element exists we are done here
               if(old !== undefined) {
               old.sendMe = false;
-              _this.canvas.remove(old);
+              canvas.remove(old);
             }
           }
         });
-        _this.canvas.renderAll();
+        canvas.renderAll();
     });
       console.log('after parse.');   
   }
   
  
-  getObjectByUUID(uuid: string) {
-    this.canvas = this.managepagesService.getCanvas();
-    return this.canvas.getObjects().find((o) => o.uuid === uuid);
+  getObjectByUUID(uuid: string, canvas:any) {
+    //this.canvas = this.managePagesService.getCanvas(); //commented as managePageService was removed, needs testing
+    return canvas.getObjects().find((o) => o.uuid === uuid);
   }
 }

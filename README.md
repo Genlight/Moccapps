@@ -56,7 +56,7 @@ After start, please run createTestDB.ps1 a single time. this is needed for a loc
 ## Build locally
 `cd /<YOUR_DIR>/mockup-editor` 
 
-`mvn -DSERVER_IP=localhost clean install` 
+`mvn clean install` 
 
 For the first time, use clean,
 

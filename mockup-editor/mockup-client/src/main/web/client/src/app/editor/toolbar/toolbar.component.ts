@@ -87,7 +87,7 @@ export class ToolbarComponent implements OnInit {
   /* toggles extension panel if group button is currently toggled,
   otherwise switches the group button to toggled and the elements button to untoggled */
   onGroupToggle() {
-    const panel = document.getElementById('toolbarextension');
+    const panel = document.getElementById('toolbar-pages');
     const elementsbutton = document.getElementById('navElementsButton');
     if (panel.classList.contains('extensionhidden')) {
       panel.classList.toggle('extensionhidden');
@@ -96,14 +96,14 @@ export class ToolbarComponent implements OnInit {
     } else {
       panel.classList.toggle('extensionhidden');
     }
-    const title = document.getElementById('extToolbarTitle');
+   /*  const title = document.getElementById('extToolbarTitle');
     title.innerHTML = 'Group Overview';
     const content = document.getElementById('extToolbarContent');
     if (!content.classList.contains('extensionhidden')) {
       content.classList.add('extensionhidden');
-    }
+    }*/
     const groupbutton = document.getElementById('navGroupsButton');
-    groupbutton.classList.toggle('btn-dark');
+    groupbutton.classList.toggle('btn-dark'); 
   }
 
 }

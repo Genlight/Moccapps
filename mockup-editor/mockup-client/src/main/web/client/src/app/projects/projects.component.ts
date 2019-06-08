@@ -49,12 +49,12 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.loadProjects();
-    this.loadUserInfo();
     this.loadInvites();
+    this.loadUserInfo();
   }
-
-  connectToSocket(){
-    this.socketService.connect("","",this.tokenStorage.getToken());
+//TODO:remove all socket methods
+  connectToSocket() {
+    //this.socketService.connect("","",this.tokenStorage.getToken());
   }
 
   sendMessageToSocket(){
@@ -150,7 +150,8 @@ export class ProjectsComponent implements OnInit {
   /**
    * Projects
    */
-  onOpenProject() {
+  onOpenProject(project: Project) {
+    this.projectService.setActiveProject(project);
     this.router.navigate(['editor']);
   }
 
@@ -178,7 +179,6 @@ export class ProjectsComponent implements OnInit {
 
   onAcceptInvite(invite: Invite) {
     this.acceptInvite(invite);
-
   }
 
   onDeclineInvite(invite: Invite) {

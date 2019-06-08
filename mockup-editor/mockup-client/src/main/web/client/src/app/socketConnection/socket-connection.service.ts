@@ -16,7 +16,8 @@ export class SocketConnectionService {
 
   constructor(private modifyService:FabricmodifyService) { }
 
-  connect(projectId: string, pageId: string, userId: string) {
+  connect(projectId: string, pageId: string, userId: string, callback:(message:socketMessage)=>void,that:any) {
+    console.log('connection test\ncallback: '+JSON.stringify(callback)+"\ncallee:");
     this.userId = userId;
     this.projectId = projectId;
     this.pageId = pageId;
@@ -25,7 +26,7 @@ export class SocketConnectionService {
     const _this = this;
     this.stompClient.connect({}, function (frame) {
       _this.stompClient.subscribe('/user/' + userId + '/queue/send', function (message) {
-        _this.modifyService.applyTransformation(JSON.parse(message.body,/*_this.logMessage*/));
+        callback.bind(that)(JSON.parse(message.body,/*_this.logMessage*/));
       });
       console.log('Connected: ' + frame);
     });
@@ -38,7 +39,7 @@ export class SocketConnectionService {
   }
 
   disconnect() {
-    this.stompClient.disconnect();
+    if(this.stompClient) this.stompClient.disconnect();
   }
 
   logMessage(message: String) {

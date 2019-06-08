@@ -1,25 +1,23 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ToolbarComponent } from './toolbar.component';
+import { ToolbarPagesComponent } from './toolbar-pages.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { AppModule } from 'src/app/app.module';
 import { HttpClientModule } from '@angular/common/http';
 
-describe('ToolbarComponent', () => {
-  let component: ToolbarComponent;
-  let fixture: ComponentFixture<ToolbarComponent>;
+describe('ToolbarPagesComponent', () => {
+  let component: ToolbarPagesComponent;
+  let fixture: ComponentFixture<ToolbarPagesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToolbarComponent, FaIconComponent],
-      imports: [  HttpClientModule ],
-      providers: [AppModule]
+      declarations: [ ToolbarPagesComponent, FaIconComponent ],
+      imports: [ HttpClientModule ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ToolbarComponent);
+    fixture = TestBed.createComponent(ToolbarPagesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -6,9 +6,9 @@ import { Subject } from 'rxjs';
 import { Itransformation, Action } from './transformation.interface';
 import { fabric } from '../extendedfabric';
 import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
-import { TokenStorageService } from '../../auth/token-storage.service';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
+import { Page } from 'src/app/shared/models/Page';
 
 @Component({
   selector: 'app-fabric-canvas',
@@ -28,29 +28,57 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   // NOTE: not used in the current version
   public Transformation: Subject<Itransformation>;
 
+  pages: Page[];
+  activePage: Page;
+
   constructor(
     private modifyService: FabricmodifyService,
-    private managePagesService: ManagePagesService,
-    private socketService: SocketConnectionService,
-    private tokenStorage: TokenStorageService,
+    private pagesService: ManagePagesService,
     private undoRedoService: UndoRedoService) { }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
-    this.managePagesService.createPage(900, 600);
-    this.canvas = this.managePagesService.getCanvas();
+    this.pagesService.createPage(900, 600);
+    this.canvas = this.pagesService.getCanvas();
 
     // saving initial State
     this.undoRedoService.saveInitialState();
     this.enableEvents();
-    this.connectToSocket();
     this.Transformation = new Subject<Itransformation>();
+
+    this.pagesService.pages.subscribe((pages) => {
+      this.pages = pages;
+    });
+
+    this.pagesService.activePage.subscribe((page) => {
+      this.activePage = page;
+      if (!!page) {
+        this.loadPage(this.activePage);
+      }
+    });
+  }
+
+  private loadPage(page: Page) {
+    if (!!page) {
+      this.modifyService.clearAll(this.canvas);
+      this.modifyService.setHeight(this.canvas, page.height);
+      this.modifyService.setWidth(this.canvas, page.width);
+      if (!!page.page_data) {
+        this.modifyService.loadFromJSON(this.canvas, page.page_data);
+      }
+      
+      console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
+    }
+  }
+
+  onCreatePage() {
+    this.pagesService.addPage("Page 1");
   }
 
   enableEvents() {
     this.canvas
       .on('before:transform', (event) => {
-        this.sendMessageToSocket(JSON.stringify(event.transform.target.uuid), 'lock');
+        this.pagesService.sendMessageToSocket(event.transform.target.uuid, 'lock');
       }, )
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
@@ -79,7 +107,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    * @param event keyboard event triggered when pressing a keyboard button
    */
   manageKeyboardEvents(event) {
-    const canvas = this.managePagesService.getCanvas();
+    const canvas = this.pagesService.getCanvas();
     if (event.ctrlKey) {
       if (event.keyCode === 67) { // 'c' key
         this.modifyService.copyElement(canvas);
@@ -124,6 +152,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     });
   }
 
+
   /**
    * only used for tests in this component
    */
@@ -146,7 +175,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   onDrop(event: DndDropEvent) {
     event.event.preventDefault();
     event.event.stopPropagation();
-    const canvas = this.managePagesService.getCanvas();
+    const canvas = this.pagesService.getCanvas();
     const url = event.data;
     if (url.includes('.svg') === true) {
       fabric.loadSVGFromURL(url, function(objects, options) {
@@ -207,13 +236,13 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
             obj.top = selectionTop + (selectionHeight/2 + obj.top);
             obj.left = selectionLeft + (selectionWidth/2 + obj.left);
             obj.uuid = current.uuid;
-            this.sendMessageToSocket(JSON.stringify(obj), action);
+            this.pagesService.sendMessageToSocket(obj, action);
             console.log('current: ' + JSON.stringify(obj) + ', action: ' + action);
           });
 
         });
       } else {
-        this.sendMessageToSocket(JSON.stringify(transObject),action);
+        this.pagesService.sendMessageToSocket(transObject,action);
       }
 
     }
@@ -244,6 +273,12 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     return this.canvas.getObjects().find((o) => o.uuid === uuid);
   }
   ngOnDestroy() {
+    // Save the loaded page before leaving.
+    this.pagesService.saveActivePage();
+
+    // Delete pages and the current active page from store. (Unselect current project)
+    this.pagesService.clearActivePage();
+    this.pagesService.clearPages();
     this.canvas.dispose();
   }
   /**
@@ -264,19 +299,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.undoRedoService.save(objects, action);
   }
 
-
-  //Socket methods
-
-  connectToSocket(){
-    this.socketService.connect("","",this.tokenStorage.getToken());
-  }
-  sendMessageToSocket(content: string, command: string){
-    this.socketService.send(content,command);
-  }
-
-  disconnectSocket(){
-    this.socketService.disconnect();
-  }
 
 }
 //

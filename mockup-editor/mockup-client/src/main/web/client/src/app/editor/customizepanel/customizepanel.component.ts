@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { faEllipsisV, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, faBold, faItalic, faUnderline } from '@fortawesome/free-solid-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
-import { fabric } from '../extendedfabric';
 import { Action } from '../fabric-canvas/transformation.interface';
-import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
+import { Page } from 'src/app/shared/models/Page';
 
 @Component({
   selector: 'app-customizepanel',
@@ -62,10 +61,42 @@ export class CustomizepanelComponent implements OnInit {
     shadow: null
   };
 
-  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService, private socketService: SocketConnectionService, private undoRedoService:UndoRedoService) { }
+  activePage: Page;
+
+  invalidWidthRange: boolean = false;
+  invalidHeightRange: boolean = false;
+
+  constructor(
+    private modifyService: FabricmodifyService, 
+    private undoRedoService: UndoRedoService,
+    private managePagesService: ManagePagesService) { 
+      this.managePagesService.activePage.subscribe(
+        (page) => {
+          this.activePage = page;
+        }
+      );
+  }
 
   ngOnInit() {
     this.setNewPage(this.managePagesService.getCanvas());
+  }
+
+  onDimensionChanged() {
+    if (this.activePage.width < 0) {
+      this.invalidWidthRange = true;
+    } else {
+      this.invalidWidthRange = false;
+    }
+
+    if (this.activePage.height < 0) {
+      this.invalidHeightRange = true;
+    } else {
+      this.invalidHeightRange = false;
+    }
+
+    if (this.activePage.width >= 0 && this.activePage.height >= 0 ) {
+      this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
+    }
   }
 
   onToggleCustomize() {
@@ -146,7 +177,7 @@ export class CustomizepanelComponent implements OnInit {
     }
     if (currentElem.sendMe) {
       currentElem.sendMe = false; 
-      this.sendMessageToSocket(JSON.stringify(currentElem),Action.MODIFIED);
+      this.managePagesService.sendMessageToSocket(currentElem,Action.MODIFIED);
     }
     currentElem.sendMe = true;
     this.canvas.renderAll();
@@ -267,8 +298,5 @@ export class CustomizepanelComponent implements OnInit {
 
   setLineHeight() {
     this.setElementProperty('lineHeight', this.textProperties.lineHeight);
-  }
-  sendMessageToSocket(content: string, command: string){
-    this.socketService.send(content,command);
   }
 }
