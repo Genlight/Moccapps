@@ -8,7 +8,7 @@ import { fabric } from '../extendedfabric';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
-
+import * as Rulez from '../../../../node_modules/rulez.js/dist/js/rulez.min.js';
 @Component({
   selector: 'app-fabric-canvas',
   templateUrl: './fabric-canvas.component.html',
@@ -59,17 +59,26 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   private loadRuler() {
-    //@ts-ignore
-     var myRuler = new ruler({
-      container: document.querySelector('.canvas-container'),// reference to DOM element to apply rulers on
-      rulerHeight: 15, // thickness of ruler
-      fontFamily: 'arial',// font for points
-      fontSize: '7px', 
-      strokeStyle: 'black',
-      lineWidth: 1,
-      enableMouseTracking: true,
-      enableToolTip: true
+    var rulerHorizontal = new Rulez({
+      element: document.getElementById('svgH'),
+      layout: 'horizontal',
+      alignment: 'top',
     });
+    rulerHorizontal.render();
+
+    var rulerVertical = new Rulez({
+      element: document.getElementById('svgV'),
+      layout: 'vertical',
+      alignment: 'left',
+      textDefaults: {
+        rotation: -90,
+        centerText: {
+            by: 'height',
+            operation: 'sum' //'sum' or 'sub'
+        }
+      },
+    });
+    rulerVertical.render();
   }
 
   private loadPage(page: Page) {
