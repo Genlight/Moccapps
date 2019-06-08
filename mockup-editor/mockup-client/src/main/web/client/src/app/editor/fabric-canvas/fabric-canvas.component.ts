@@ -8,7 +8,6 @@ import { fabric } from '../extendedfabric';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
-import * as Rulez from '../../../../node_modules/rulez.js/dist/js/rulez.min.js';
 @Component({
   selector: 'app-fabric-canvas',
   templateUrl: './fabric-canvas.component.html',
@@ -55,9 +54,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.loadRuler();
   }
-
+/*
   private loadRuler() {
     var rulerHorizontal = new Rulez({
       element: document.getElementById('svgH'),
@@ -80,7 +78,54 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     });
     rulerVertical.render();
   }
+*/
 
+private loadGrid(page: Page) {
+  //const canv = fabric._createCanvasElement();
+  //fabric.util.addClass(canv,"gridCanvas");
+  const c = new fabric.StaticCanvas('canvasGrid',{
+    evented: false, 
+    height:	page.height, 
+    width:page.width,
+    backgroundColor: '#ffffff'
+   });
+  const options = {
+      distance: 10,
+      width: c.width,
+      height: c.height,
+      param: {
+        stroke: '#ebebeb',
+        strokeWidth: 1,
+        selectable: false,
+        evented: false,
+        opacity: 0.5
+      }
+   };
+  const gridLen = options.width / options.distance;
+  const gridGroup = new fabric.Group([], {left: 0, top: 0});
+
+  for (var i = 0; i < gridLen; i++) {
+    const distance = i * options.distance;
+    const horizontal = new fabric.Line([ distance, 0, distance, options.width], options.param);
+    const vertical   = new fabric.Line([ 0, distance, options.width, distance], options.param);
+    if( i % 5 === 0) {
+      horizontal.set({stroke: '#cccccc'});
+      vertical.set({stroke: '#cccccc'});
+    }
+    gridGroup.add(horizontal);
+    gridGroup.add(vertical);
+  };
+  c.add(gridGroup);
+  this.canvas.lowerCanvasEl.parentNode.appendChild(c.lowerCanvasEl);
+  this.canvas.backgroundColor = null;
+  this.canvas.renderAll();
+  console.log("PARENT AND CHILD NODES");
+  //console.log(this.canvas.lowerCanvasEl.parentNode);
+  //console.log(this.canvas.lowerCanvasEl.parentNode.children);
+  const json = JSON.stringify(this.canvas);
+  console.log(json);
+
+}
   private loadPage(page: Page) {
     if (!!page) {
       this.modifyService.clearAll(this.canvas);
@@ -92,6 +137,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
+    this.loadGrid(this.activePage);
   }
 
   onCreatePage() {
