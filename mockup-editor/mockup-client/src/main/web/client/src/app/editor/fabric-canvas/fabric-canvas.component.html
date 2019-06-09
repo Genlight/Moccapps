@@ -2,18 +2,18 @@
 <button (click)=onLoadFromLocalStorage()>Load from Local Storage</button> -->
 
 <div class="workspace mt-5">
-    <div class="ruler-horizontal">
-        <svg id="svgH" width="800" height="30" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="ruler-horizontal" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
+        <svg id="svgH" width="1200" height="30" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
-    <div class="ruler-vertical">
-        <svg id="svgV" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="ruler-vertical" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
+        <svg id="svgV" width="30" height="1200" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
 
     <div id="canvasWrapper" tabIndex='0' (keydown)="manageKeyboardEvents($event)" dndDropzone
             [hidden]="!activePage || !pages || pages.length === 0" (dndDrop)="onDrop($event)">
             <div class="canvas-container">
                 <canvas id="canvas"></canvas>
-				<canvas id="canvasGrid" style="z-index:1;"></canvas>
+				<!-- <canvas id="canvasGrid" style="z-index:1;"></canvas> Not working -->
             </div>
     </div>
 
