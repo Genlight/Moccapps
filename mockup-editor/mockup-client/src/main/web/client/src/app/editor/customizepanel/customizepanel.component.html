@@ -251,7 +251,7 @@
         </select> 
       </div>
 
-      <div id="multipleElementsSettings" class="hidden">
+      <div *ngIf="selected && (selected.type == 'activeSelection' || selected.type == 'group')" id="multipleElementsSettings">
           <h2>Multiple Elements</h2>
           <h3>Customizing multiple elements at once is currently not supported.</h3>
         </div>

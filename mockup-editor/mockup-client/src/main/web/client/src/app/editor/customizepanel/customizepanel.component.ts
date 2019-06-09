@@ -141,13 +141,10 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   manageSelection(elem) {
-    const settings = document.getElementById('multipleElementsSettings');
-    if (elem.type === 'activeSelection'|| elem.type == 'group') {
+    if (elem.type === 'activeSelection'|| elem.type === 'group') {
       // load properties of all elements if they are the same and otherwise default or only load default properties generally?
       
-    settings.classList.remove('hidden');
     } else {
-      settings.classList.add('hidden');
       if (elem.type === 'textbox') {
         this.loadTextProperties(elem);
       } else if (elem.type === 'circle' || elem.type === 'rect') {
@@ -155,7 +152,6 @@ export class CustomizepanelComponent implements OnInit {
       }
     }
     this.selected = elem;
-    console.log(this.selected.type);
   }
 
   loadTextProperties(text) {
@@ -260,12 +256,12 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setElementScaleLock() {
-    this.setElementProperty('lockScalingX', this.elementProperties.lockMovement);
-    this.setElementProperty('lockScalingY', this.elementProperties.lockMovement);
+    this.setElementProperty('lockScalingX', this.elementProperties.lockScale);
+    this.setElementProperty('lockScalingY', this.elementProperties.lockScale);
   }
 
   setElementRotateLock() {
-    this.setElementProperty('lockRotation', this.elementProperties.lockMovement);
+    this.setElementProperty('lockRotation', this.elementProperties.lockRotate);
   }
 
   setDrawingModeColor() {
