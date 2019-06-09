@@ -158,7 +158,11 @@ export class ManagePagesService {
     if (!!this._activeProject) {
       this.apiService.get(`/project/${this._activeProject.id}/pages`).subscribe(
         (data) => {
-          (this.dataStore.pages as any) = data;
+          let pages = (data as Page[]);
+          
+          //Ensure page order by sorting ids ascending
+          pages.sort((a,b) => (a.id - b.id));
+          (this.dataStore.pages) = (data as Page[]);
           this._pages.next(Object.assign({}, this.dataStore).pages);
         }
       );
@@ -185,6 +189,18 @@ export class ManagePagesService {
         }
       }
     )
+  }
+
+  /**
+   * Creates the initial page of a project. To be called after a project has been created.
+   * This method does the following steps:
+   * 1) Adds page
+   * 2) Set this page as active.
+   * @param height the height of the initial page
+   * @param width the width of the initial page
+   */
+  createInitialPage(height?: number, width?: number) {
+    this.addPage("Page 1", height, width);
   }
 
   /**
