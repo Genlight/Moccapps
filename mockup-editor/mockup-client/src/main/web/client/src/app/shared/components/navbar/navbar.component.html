@@ -13,7 +13,14 @@
               <button class="btn btn-light menubtn" disabled>New Page</button>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" disabled>Import SVG...</button>
-              <button class="btn btn-light menubtn" disabled>Export to PNG...</button>
+              <li class="dropdown-submenu">
+                <button class="dropdown-item dropdown-toggle menucursor">Export</button>
+                <ul class="dropdown-menu">
+                  <button class="btn btn-light menubtn" (click)="onExportToJPEG($event)">Export to JPEG</button>
+                  <a class="btn btn-light menubtn" (click)="onExportToPNG($event)">Export to PNG</a>
+                  <button class="btn btn-light menubtn" (click)="onExportToPDF($event)">Export to PDF</button>
+                </ul>
+              </li>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version...</button>
               <button class="btn btn-light menubtn" disabled>Load Version...</button>

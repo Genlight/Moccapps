@@ -15,6 +15,10 @@ import {AuthLogoutInfo} from '../../../auth/logout-info';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
+import { WorkspaceService } from 'src/app/editor/workspace.service';
+import { save } from 'save-file';
+import { Page } from '../../models/Page';
+import * as jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-navbar',
@@ -38,9 +42,6 @@ export class NavbarComponent implements OnInit {
   ];
   info: any;
 
-
-
-
   /**
    * users.map(x => `${user.split(' ')[0][0]}${user.split(' ')[1][0]}`);
    */
@@ -55,13 +56,19 @@ export class NavbarComponent implements OnInit {
   redoDisabled;
   undoDisabled;
 
+  // Activates / Deactivates show ruler button
+  showRuler: boolean = false;
+
+  activePage: Page = null;
+
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
               private authService: AuthService,
               private modalService: NgbModal,
               private projectService: ProjectService,
-              private undoRedoService: UndoRedoService
+              private undoRedoService: UndoRedoService,
+              private workspaceService: WorkspaceService
           ) { }
 
   ngOnInit() {
@@ -83,6 +90,16 @@ export class NavbarComponent implements OnInit {
         this.project = project;
       }
     });
+
+    // Handle active page changes
+    this.managePagesService.activePage.subscribe((page) => {
+      this.activePage = page;
+    });
+
+    // Handle show Ruler state changes
+    this.workspaceService.showsRuler.subscribe((value) => {
+      this.showRuler = value;
+    });
   }
 
   onLogout() {
@@ -93,6 +110,46 @@ export class NavbarComponent implements OnInit {
         this.router.navigate(['']);
       }
       );
+  }
+
+  async onExportToJPEG(event) {
+    const canvas = this.managePagesService.getCanvas();
+    if (!!canvas) {
+      const imageData = canvas.toDataURL({
+        format: "jpeg"
+      });
+      await save(imageData, `${this.activePage.page_name}.jpeg`);
+    }
+  }
+
+  async onExportToPNG(event) {
+    const canvas = this.managePagesService.getCanvas();
+    if (!!canvas) {
+      const imageData = canvas.toDataURL({
+        format: "png"
+      });
+      await save(imageData, `${this.activePage.page_name}.png`);
+    }
+  }
+
+  onExportToPDF() {
+    const canvas = this.managePagesService.getCanvas();
+    if (!!canvas) {
+      const imageData = canvas.toDataURL({
+        format: "jpeg"
+      });
+      let pdf = new jsPDF();
+      pdf.addImage(imageData, 'JPEG', 0, 0);
+      pdf.save(`${this.activePage.page_name}.pdf`);
+    }
+  }
+
+  onShowRuler() {
+    this.workspaceService.showRuler();
+  }
+
+  onHideRuler() {
+    this.workspaceService.hideRuler();
   }
 
   onNewProject() {
