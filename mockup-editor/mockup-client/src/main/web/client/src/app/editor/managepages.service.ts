@@ -9,6 +9,7 @@ import { FabricmodifyService } from './fabricmodify.service';
 import { SocketConnectionService } from '../socketConnection/socket-connection.service';
 import { TokenStorageService } from '../auth/token-storage.service';
 import { socketMessage } from '../socketConnection/socketMessage';
+import { Action,CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -112,7 +113,7 @@ export class ManagePagesService {
       page.width = width;
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
-      //Update page in backend
+      //Update page in backend,this is at the moment done by every party that receives the change
       this.updatePage(page);
     }
   }
@@ -298,7 +299,16 @@ export class ManagePagesService {
 
   //TODO: this screams "refactor me properly please"
   relayChange(message:socketMessage) {
-    this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
+    // this should actually not be here, but pages might need to be updated in this service directly
+    if(message.command===Action.CANVASMODIFIED) {
+      console.log("received canvasmodify");
+    let parsedObj = JSON.parse(message.content);
+    let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
+    let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
+    this.updateActivePageDimensions(height,width)
+    } else {
+      this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
+    }
   }
 
   //Socket methods

@@ -196,7 +196,7 @@ export class FabricmodifyService {
     let transObj = message.content
     let parsedObj = JSON.parse(transObj);
 
-    if (message.command === Action.CANVASMODIFIED) {
+    if (message.command === Action.PAGEMODIFIED) {
       let keys = Object.keys(parsedObj);
       console.log(JSON.stringify(canvas));
 
@@ -216,10 +216,11 @@ export class FabricmodifyService {
         if(key==='background') {
           let newKey = 'backgroundColor';
           canvas[newKey] = parsedObj[key];
-          console.log(`setting BackroundColour: assigning ${parsedObj[key]} to ${newKey}, old value: ${canvas.back}`)
-        }
+          console.log(`setting BackroundColour: assigning ${parsedObj[key]} to ${newKey}, old value: ${canvas.backgroundColor}`)
+        }else {
         console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
         canvas[key] = parsedObj[key];
+        }
       })
       
     }
