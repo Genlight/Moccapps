@@ -12,7 +12,10 @@
             <button class="btn btn-light menubtn" disabled>New Project</button>
               <button class="btn btn-light menubtn" disabled>New Page</button>
               <li role="separator" class="divider"></li>
-              <button class="btn btn-light menubtn" disabled>Import SVG...</button>
+              <label for="file-upload" class="btn btn-light menubtn">
+                Import Image/SVG...
+              </label>
+              <input id="file-upload" type="file" (change)="onImportSVG($event)" accept=".png,.jpg,.jpeg,.bmp,.svg,image/png,image/gif,image/jpeg,image/bmp,/image/svg"/>
               <button class="btn btn-light menubtn" disabled>Export to PNG...</button>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version...</button>

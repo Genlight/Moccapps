@@ -177,29 +177,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     event.event.stopPropagation();
     const canvas = this.pagesService.getCanvas();
     const url = event.data;
-    if (url.includes('.svg') === true) {
-      fabric.loadSVGFromURL(url, function(objects, options) {
-        const loadedObjects = fabric.util.groupSVGElements(objects, options);
-        loadedObjects.scaleToWidth(300);
-
-        canvas.add(loadedObjects);
-      });
-    } else {
-      fabric.Image.fromURL(url, (image) => {
-        image.set({
-          left: 10,
-          top: 10,
-          angle: 0,
-          padding: 10,
-          cornersize: 10,
-          hasRotatingPoint: true,
-        });
-        image.scaleToWidth(700);
-        this.canvas.add(image);
-      });
-    }
-    canvas.renderAll();
-    console.log('dropped', JSON.stringify(event, null, 2));
+    this.modifyService.loadImageFromURL(canvas, url);
   }
 
   /**

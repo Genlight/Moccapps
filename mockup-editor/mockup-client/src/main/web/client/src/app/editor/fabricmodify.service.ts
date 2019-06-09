@@ -192,6 +192,30 @@ export class FabricmodifyService {
     this.pasteElement(canvas);
   }
 
+  loadImageFromURL(canvas: any, url: any) {
+    if (url.includes('.svg') === true) {
+      fabric.loadSVGFromURL(url, function(objects, options) {
+        const loadedObjects = fabric.util.groupSVGElements(objects, options);
+        loadedObjects.scaleToWidth(300);
+        canvas.add(loadedObjects);
+      });
+    } else {
+      fabric.Image.fromURL(url, (image) => {
+        image.set({
+          left: 10,
+          top: 10,
+          angle: 0,
+          padding: 10,
+          cornersize: 10,
+          hasRotatingPoint: true,
+        });
+        image.scaleToWidth(700);
+        canvas.add(image);
+      });
+    }
+    canvas.renderAll();
+  }
+
   applyTransformation(message: socketMessage, canvas: any) {
     let transObj = message.content
     let parsedObj = JSON.parse(transObj);

@@ -132,12 +132,18 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   manageSelection(elem) {
-    if (elem.type === 'activeSelection') {
+    const settings = document.getElementById('multipleElementsSettings');
+    if (elem.type === 'activeSelection'|| elem.type == 'group') {
       // load properties of all elements if they are the same and otherwise default or only load default properties generally?
-    } else if (elem.type === 'textbox') {
-      this.loadTextProperties(elem);
-    } else if (elem.type === 'circle' || elem.type === 'rect') {
+      
+    settings.classList.remove('hidden');
+    } else {
+      settings.classList.add('hidden');
+      if (elem.type === 'textbox') {
+        this.loadTextProperties(elem);
+      } else if (elem.type === 'circle' || elem.type === 'rect') {
       this.loadElementProperties(elem);
+      }
     }
     this.selected = elem;
     console.log(this.selected.type);
