@@ -61,7 +61,6 @@ library.add(faEllipsisV);
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     NgbModule,
     FormsModule,
     FontAwesomeModule,

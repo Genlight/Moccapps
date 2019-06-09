@@ -8,7 +8,8 @@ import { fabric } from '../extendedfabric';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
-
+import * as Rulez from '../../../../node_modules/rulez.js/dist/js/rulez.min.js';
+import { WorkspaceService } from '../workspace.service';
 @Component({
   selector: 'app-fabric-canvas',
   templateUrl: './fabric-canvas.component.html',
@@ -29,10 +30,16 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   pages: Page[];
   activePage: Page;
 
+  // Rulers
+  rulerHorizontal: any;
+  rulerVertical: any;
+  showRulers: boolean = false;
+
   constructor(
     private modifyService: FabricmodifyService,
     private pagesService: ManagePagesService,
-    private undoRedoService: UndoRedoService) { }
+    private undoRedoService: UndoRedoService,
+    private workSpaceService: WorkspaceService) { }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
@@ -52,10 +59,106 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       this.activePage = page;
       if (!!page) {
         this.loadPage(this.activePage);
+        this.setRulerDimensions(page.height, page.width);
       }
     });
+
+    // React to changes when user clicks on hide/show ruler 
+    this.workSpaceService.showsRuler.subscribe((value) => {
+      this.showRulers = value;
+      //Rerender rulers with current dimensions.
+      if (!!this.activePage && !!this.activePage.height && !!this.activePage.width) {
+        this.setRulerDimensions(this.activePage.height, this.activePage.width);
+      }
+    });
+
+    this.loadRuler();
   }
 
+  /**
+   * Sets dimensions of rulers (height, number);
+   */
+  private setRulerDimensions(height: number, width: number) {
+    if (height >= 0 && width >= 0) {
+      document.getElementById('svgH').setAttribute("width", `${width}`);
+      document.getElementById('svgV').setAttribute("height", `${height}`);
+      this.rulerHorizontal.resize();
+      this.rulerVertical.resize();
+    }
+  }
+
+  /**
+   * Renders rulers initially.
+   */
+  private loadRuler() {
+    this.rulerHorizontal = new Rulez({
+      element: document.getElementById('svgH'),
+      layout: 'horizontal',
+      alignment: 'top',
+    });
+    this.rulerHorizontal.render();
+
+    this.rulerVertical = new Rulez({
+      element: document.getElementById('svgV'),
+      layout: 'vertical',
+      alignment: 'left',
+      textDefaults: {
+        rotation: -90,
+        centerText: {
+            by: 'height',
+            operation: 'sum' //'sum' or 'sub'
+        }
+      },
+    });
+    this.rulerVertical.render();
+  }
+
+private loadGrid(page: Page) {
+  //const canv = fabric._createCanvasElement();
+  //fabric.util.addClass(canv,"gridCanvas");
+  const c = new fabric.StaticCanvas('canvasGrid',{
+    evented: false, 
+    height:	page.height, 
+    width:page.width,
+    backgroundColor: '#ffffff'
+   });
+  const options = {
+      distance: 10,
+      width: c.width,
+      height: c.height,
+      param: {
+        stroke: '#ebebeb',
+        strokeWidth: 1,
+        selectable: false,
+        evented: false,
+        opacity: 0.5
+      }
+   };
+  const gridLen = options.width / options.distance;
+  const gridGroup = new fabric.Group([], {left: 0, top: 0});
+
+  for (var i = 0; i < gridLen; i++) {
+    const distance = i * options.distance;
+    const horizontal = new fabric.Line([ distance, 0, distance, options.width], options.param);
+    const vertical   = new fabric.Line([ 0, distance, options.width, distance], options.param);
+    if( i % 5 === 0) {
+      horizontal.set({stroke: '#cccccc'});
+      vertical.set({stroke: '#cccccc'});
+    }
+    gridGroup.add(horizontal);
+    gridGroup.add(vertical);
+  };
+  c.add(gridGroup);
+  this.canvas.lowerCanvasEl.parentNode.appendChild(c.lowerCanvasEl);
+  this.canvas.backgroundColor = null;
+  this.canvas.renderAll();
+  console.log("PARENT AND CHILD NODES");
+  //console.log(this.canvas.lowerCanvasEl.parentNode);
+  //console.log(this.canvas.lowerCanvasEl.parentNode.children);
+  const json = JSON.stringify(this.canvas);
+  console.log(json);
+
+}
   private loadPage(page: Page) {
     if (!!page) {
       this.modifyService.clearAll(this.canvas);
@@ -67,10 +170,11 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
+    //this.loadGrid(this.activePage);
   }
 
   onCreatePage() {
-    this.pagesService.addPage("Page 1");
+    this.pagesService.createInitialPage();
   }
 
   /**

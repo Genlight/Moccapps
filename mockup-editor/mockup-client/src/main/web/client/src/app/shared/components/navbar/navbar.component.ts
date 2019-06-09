@@ -15,6 +15,7 @@ import {AuthLogoutInfo} from '../../../auth/logout-info';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
+import { WorkspaceService } from 'src/app/editor/workspace.service';
 
 @Component({
   selector: 'app-navbar',
@@ -55,13 +56,17 @@ export class NavbarComponent implements OnInit {
   redoDisabled;
   undoDisabled;
 
+  // Activates / Deactivates show ruler button
+  showRuler: boolean = false;
+
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
               private authService: AuthService,
               private modalService: NgbModal,
               private projectService: ProjectService,
-              private undoRedoService: UndoRedoService
+              private undoRedoService: UndoRedoService,
+              private workSpaceService: WorkspaceService
           ) { }
 
   ngOnInit() {
@@ -83,6 +88,10 @@ export class NavbarComponent implements OnInit {
         this.project = project;
       }
     });
+
+    this.workSpaceService.showsRuler.subscribe((value) => {
+      this.showRuler = value;
+    });
   }
 
   onLogout() {
@@ -93,6 +102,14 @@ export class NavbarComponent implements OnInit {
         this.router.navigate(['']);
       }
       );
+  }
+
+  onShowRuler() {
+    this.workSpaceService.showRuler();
+  }
+
+  onHideRuler() {
+    this.workSpaceService.hideRuler();
   }
 
   onNewProject() {
