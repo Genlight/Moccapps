@@ -5,6 +5,7 @@ import { ManagePagesService } from '../managepages.service';
 import { Action } from '../fabric-canvas/transformation.interface';
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
+import { fabric } from '../extendedfabric';
 
 @Component({
   selector: 'app-customizepanel',
@@ -170,7 +171,15 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setElementProperty(property, value) {
-    let currentElem = this.selected
+    let currentElem = this.selected;
+    console.log('setproperty:current element '+JSON.stringify(currentElem));
+    // we need a clone here so we don't actually change the value locally
+    // all properties changed this way are sent to the server first and then applied
+    // this way inconsistencies can be avoided
+
+    // TODO: disabled for now, as the server doesn't send changes back to the original user yet
+    //currentElem=fabric.util.object.clone(currentElem);
+
     if (currentElem) {
       currentElem.set(property, value);
       this.undoRedoService.save(currentElem,Action.MODIFIED);
@@ -180,6 +189,7 @@ export class CustomizepanelComponent implements OnInit {
       this.managePagesService.sendMessageToSocket(currentElem,Action.MODIFIED);
     }
     currentElem.sendMe = true;
+    // TODO: disable once server sends messages also to the origin, will be rendered by applyTransformation
     this.canvas.renderAll();
   }
 
@@ -201,6 +211,15 @@ export class CustomizepanelComponent implements OnInit {
 
   setCanvasBackgroundColor() {
     this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
+    
+    //sending change
+    let _canvas = this.canvas;
+    let _pageService = this.managePagesService;
+
+    _canvas.cloneWithoutData((o)=> {
+      o.backgroundColor=_canvas.backgroundColor
+      _pageService.sendMessageToSocket(o,Action.CANVASMODIFIED);
+    });
     this.canvas.renderAll();
   }
 

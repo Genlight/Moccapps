@@ -9,4 +9,5 @@ export enum Action {
   PAGECREATED = 'page:created',
   GROUP = 'group:grouped',
   UNGROUP = 'group:ungrouped',
+  CANVASMODIFIED = 'canvas:modified'  
 }

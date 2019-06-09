@@ -55,7 +55,7 @@ export class FabricmodifyService {
 
   setBackgroundColor(canvas: any, color: string) {
     canvas.backgroundColor = color;
-    canvas.renderAll();  
+    canvas.renderAll();
   }
 
   /* ungroups elements in given canvas if a group of elements is selected */
@@ -145,7 +145,7 @@ export class FabricmodifyService {
   /* copies active elments in the given canvas and temporarily saves them in a variable */
   copyElement(canvas: any) {
     if (canvas.getActiveObject()) {
-      canvas.getActiveObject().clone(function(cloned) {
+      canvas.getActiveObject().clone(function (cloned) {
         savedElements = cloned;
       });
     }
@@ -157,7 +157,7 @@ export class FabricmodifyService {
     if (savedElements == null) {
       return;
     }
-    savedElements.clone(function(clonedObj) {
+    savedElements.clone(function (clonedObj) {
       canvas.discardActiveObject();
       clonedObj.set({
         left: clonedObj.left + 10,
@@ -167,7 +167,7 @@ export class FabricmodifyService {
       if (clonedObj.type === 'activeSelection') {
         // active selection needs a reference to the canvas.
         clonedObj.canvas = canvas;
-        clonedObj.forEachObject(function(obj) {
+        clonedObj.forEachObject(function (obj) {
           canvas.add(obj);
         });
         // this should solve the unselectability
@@ -191,59 +191,92 @@ export class FabricmodifyService {
     this.copyElement(canvas);
     this.pasteElement(canvas);
   }
-  
-  applyTransformation(message:socketMessage, canvas:any) {
-    let transObj = JSON.parse(message.content)
 
-    const old = this.getObjectByUUID(transObj.uuid, canvas);
-    console.log('test: applyTransformation'+', transObj: '+transObj+', sendMe: '+ transObj.sendMe+', transObjuuid: ' + transObj.uuid + ', retrievedObj: ' + old +', JSONmessage:'+JSON.stringify(message));
-    
-      console.log('pre enlivenment: '+JSON.stringify(transObj));
+  applyTransformation(message: socketMessage, canvas: any) {
+    let transObj = message.content
+    let parsedObj = JSON.parse(transObj);
 
-      fabric.util.enlivenObjects([transObj], function(objects) {
-        objects.forEach(function(o) {
-          
-            console.log('after enlivenment: '+JSON.stringify(o));
-            o.uuid = transObj.uuid;
-            
-            if(message.command === Action.ADDED){
-              o.sendMe = false;
-              canvas.add(o);
-              }
-            else if(message.command === Action.MODIFIED) {
-              
+    if (message.command === Action.CANVASMODIFIED) {
+      let keys = Object.keys(parsedObj);
+      console.log(JSON.stringify(canvas));
+
+      let receivedCanvas = new fabric.Canvas('canvas');
+      receivedCanvas.loadFromJSON(transObj, () => {
+        //empty callback needed
+      });
+      console.log(JSON.stringify(Object.keys(receivedCanvas)))
+
+      //TODO: properly apply canvas changes
+
+      keys.forEach(function(key) {
+        // we don't want to set objects completly new
+        if(key==='objects') return;
+
+        //JSON represenation doesn't match the actual property value in this case, ingenious...
+        if(key==='background') {
+          let newKey = 'backgroundColor';
+          canvas[newKey] = parsedObj[key];
+          console.log(`setting BackroundColour: assigning ${parsedObj[key]} to ${newKey}, old value: ${canvas.back}`)
+        }
+        console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
+        canvas[key] = parsedObj[key];
+      })
+      
+    }
+    else {
+      
+
+      const old = this.getObjectByUUID(parsedObj.uuid, canvas);
+    console.log('test: applyTransformation' + ', parsedObj: ' + parsedObj + ', sendMe: ' + parsedObj.sendMe + ', parsedObjuuid: ' + parsedObj.uuid + ', retrievedObj: ' + old + ', JSONmessage:' + JSON.stringify(message));
+
+    console.log('pre enlivenment: ' + JSON.stringify(parsedObj));
+    fabric.util.enlivenObjects([parsedObj], function (objects) {
+      objects.forEach(function (o) {
+
+        console.log('after enlivenment: ' + JSON.stringify(o));
+          o.uuid = parsedObj.uuid;
+
+          if (message.command === Action.ADDED) {
+            o.sendMe = false;
+            canvas.add(o);
+          }
+          else if (message.command === Action.MODIFIED) {
+
             //fallback to add if no such element exists, can be removed and replaced by error message if desired
-            if(old === undefined) {
+            if (old === undefined) {
               o.sendMe = false;
               canvas.add(o);
             } else {
               let activeSelection = canvas.getActiveObjects();
-              console.log('contains test\nselection: '+JSON.stringify(activeSelection)+'\nobject: '+o.uuid);              
-              console.log('\ncontain result: '+activeSelection.indexOf(o));
+              console.log('contains test\nselection: ' + JSON.stringify(activeSelection) + '\nobject: ' + o.uuid);
+              console.log('\ncontain result: ' + activeSelection.indexOf(o));
               let keys = Object.keys(o);
-              keys.forEach(function(key) {
+              keys.forEach(function (key) {
                 //console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
                 old[key] = o[key];
               });
               //this is necessary to reliably render all changes of the object
               old.setCoords();
-            } 
+            }
           }
-            else if(message.command === Action.REMOVED) {
-              //if no such element exists we are done here
-              if(old !== undefined) {
+          else if (message.command === Action.REMOVED) {
+            //if no such element exists we are done here
+            if (old !== undefined) {
               old.sendMe = false;
               canvas.remove(old);
             }
           }
-        });
-        canvas.renderAll();
+        
+      });
+
     });
-      console.log('after parse.');   
+    console.log('after parse.');
   }
-  
- 
-  getObjectByUUID(uuid: string, canvas:any) {
+  canvas.renderAll();
+}
+
+
+  getObjectByUUID(uuid: string, canvas: any) {
     //this.canvas = this.managePagesService.getCanvas(); //commented as managePageService was removed, needs testing
     return canvas.getObjects().find((o) => o.uuid === uuid);
   }
