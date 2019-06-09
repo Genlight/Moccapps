@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faEllipsisV, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, faBold, faItalic, faUnderline } from '@fortawesome/free-solid-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
-import { Action } from '../fabric-canvas/transformation.interface';
+import { Action, CanvasTransmissionProperty } from '../fabric-canvas/transformation.interface';
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
 import { fabric } from '../extendedfabric';
@@ -24,6 +24,8 @@ export class CustomizepanelComponent implements OnInit {
   faUnderline = faUnderline;
 
   private canvas: any;
+  //this is used for the transmission of canvas height and width, as those do not easily survive transmission in the regular way
+  private DEFAULT_CANVAS: string = "{\"version\":\"2.7.0\",\"objects\":[],\"background\":\"white\"}";
 
   /* variables directly acessed in the html need to be public */
   public selected: any;
@@ -97,6 +99,13 @@ export class CustomizepanelComponent implements OnInit {
 
     if (this.activePage.width >= 0 && this.activePage.height >= 0 ) {
       this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
+
+      let defaultCanvas = JSON.parse(this.DEFAULT_CANVAS);
+      defaultCanvas[CanvasTransmissionProperty.CHANGEHEIGHT] = this.activePage.height;
+      defaultCanvas[CanvasTransmissionProperty.CHANGEWIDTH] = this.activePage.width;
+
+      //TODO: the send works fine but the application of the change is broken due to REST persisting
+      //this.managePagesService.sendMessageToSocket(defaultCanvas,Action.CANVASMODIFIED);
     }
   }
 
@@ -219,13 +228,9 @@ export class CustomizepanelComponent implements OnInit {
     this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
     
     //sending change
-    let _canvas = this.canvas;
-    let _pageService = this.managePagesService;
-
-    _canvas.cloneWithoutData((o)=> {
-      o.backgroundColor=_canvas.backgroundColor
-      _pageService.sendMessageToSocket(o,Action.CANVASMODIFIED);
-    });
+    //let test = CanvasTransmissionProperty.BACKGROUNDCOLOR
+    let changeObject = {[CanvasTransmissionProperty.BACKGROUNDCOLOR]:this.canvasProperties.backgroundColor};
+    this.sendCanvas(changeObject,Action.PAGEMODIFIED);
     this.canvas.renderAll();
   }
 
@@ -323,5 +328,24 @@ export class CustomizepanelComponent implements OnInit {
 
   setLineHeight() {
     this.setElementProperty('lineHeight', this.textProperties.lineHeight);
+  }
+
+  /**
+   * creates an empty canvas and appends any property contained in the parameter that should be transmitted, and therefore changed
+   * @param propertyObject this object contains all the properties that should be set on the empty canvas
+   */
+  private sendCanvas(propertyObject:Object,action:Action) {
+    let _canvas = this.canvas;
+    let _pageService = this.managePagesService;
+
+    _canvas.cloneWithoutData((o)=> {
+      let keys = Object.keys(propertyObject);
+      keys.forEach(function(key) {
+        o[key]=propertyObject[key]
+        console.log('assigning '+propertyObject[key] + ' to ' + key);
+      });
+      console.log('canvasToSend: ' + JSON.stringify(o))
+      _pageService.sendMessageToSocket(o,action);
+    });
   }
 }

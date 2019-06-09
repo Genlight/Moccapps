@@ -191,7 +191,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     console.log(`${action} : ${transObject.uuid}`);
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
-      //transObject.sendMe = false;
+      transObject.sendMe = false;
       //this.sendMessageToSocket(JSON.stringify(transObject),action);
       this.onSaveState(evt, action);
 
