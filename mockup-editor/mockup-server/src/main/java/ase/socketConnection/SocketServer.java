@@ -22,10 +22,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @Controller
 public class SocketServer {
-
+    //UserId , Queue to answer
     private Map<String, LinkedBlockingQueue<SocketMessage>> messageQueues;
-    private Map<String, String> sessionIdClientnameMap;
-
+    //SessionID, Clientname
+    private Map<String, String> sessionIdUserIdMap;
+    //PageID, pageHandler of current active pages
+    private Map<String, PageHandler> pageHandlerMap;
+    //UserID,PageID
+    private Map<String,String> userPageMap;
     private ExecutorService executorService;
     private SocketConnectionHandler connectionHandler;
 
@@ -37,7 +41,9 @@ public class SocketServer {
     public SocketServer(){
         messageQueues=Collections.synchronizedMap(new HashMap<>());
         executorService= Executors.newCachedThreadPool();
-        sessionIdClientnameMap=Collections.synchronizedMap(new HashMap<>());
+        sessionIdUserIdMap =Collections.synchronizedMap(new HashMap<>());
+        pageHandlerMap =new HashMap<>();
+        userPageMap=new HashMap<>();
     }
 
     @EventListener
@@ -52,16 +58,22 @@ public class SocketServer {
         destination=destination.split("/")[2];
         connectionHandler=new SocketConnectionHandler(queue,destination,messagingTemplate);
         messageQueues.put(destination,queue);
-        sessionIdClientnameMap.put(sessionId,destination);
+        sessionIdUserIdMap.put(sessionId,destination);
         executorService.submit(connectionHandler);
     }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent sessionDisconnectEvent){
         String sessionId=(String) sessionDisconnectEvent.getMessage().getHeaders().get("simpSessionId");
-        String clientname=sessionIdClientnameMap.get(sessionId);
+        String userId= sessionIdUserIdMap.get(sessionId);
+        sessionIdUserIdMap.remove(sessionId);
+        if(!pageHandlerMap.get(userPageMap.get(userId)).removeUser(userId)){
+            pageHandlerMap.remove(userPageMap.get(userId));
+        }
+        userPageMap.remove(userId);
         try {
-            messageQueues.get(clientname).put(new SocketMessage("","",clientname,"disconnect",""));
+            messageQueues.get(userId).put(new SocketMessage("","",userId,"disconnect",""));
+            messageQueues.remove(userId);
         } catch (InterruptedException e) {
             logger.error("Client Socket Connection Handler Thread is already closed");
         }
@@ -69,13 +81,19 @@ public class SocketServer {
 
     @MessageMapping("/send")
     public void onReceive(@Payload SocketMessage message) throws IOException {
-        for(String clientname:messageQueues.keySet()){
-            if(!message.getUser().equals(clientname)){
-                try {
-                    messageQueues.get(clientname).put(message);
-                } catch (InterruptedException e) {
-                    logger.error("Can not communicate with Client Socket Connection Handler Thread");
-                }
+        logger.info("MESSAGE: "+message.toString());
+        if(!pageHandlerMap.keySet().contains(message.getPageId())){
+            pageHandlerMap.put(message.getPageId(),new PageHandler(Integer.parseInt(message.getPageId())));
+            userPageMap.put(message.getUser(),message.getPageId());
+        }
+        pageHandlerMap.get(message.getPageId()).addUser(message.getUser());
+        pageHandlerMap.get(message.getPageId()).handleMessage(message);
+
+        for(String userId:pageHandlerMap.get(message.getPageId()).getUser()){
+            try {
+                messageQueues.get(userId).put(message);
+            } catch (InterruptedException e) {
+                logger.error("Can not communicate with Client Socket Connection Handler Thread");
             }
         }
 
