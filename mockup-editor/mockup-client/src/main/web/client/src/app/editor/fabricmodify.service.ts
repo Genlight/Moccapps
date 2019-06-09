@@ -198,7 +198,6 @@ export class FabricmodifyService {
     const old = this.getObjectByUUID(transObj.uuid, canvas);
     console.log('test: applyTransformation'+', transObj: '+transObj+', sendMe: '+ transObj.sendMe+', transObjuuid: ' + transObj.uuid + ', retrievedObj: ' + old +', JSONmessage:'+JSON.stringify(message));
     
-      var _this = this;
       console.log('pre enlivenment: '+JSON.stringify(transObj));
 
       fabric.util.enlivenObjects([transObj], function(objects) {

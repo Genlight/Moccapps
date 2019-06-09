@@ -34,8 +34,11 @@ export class SocketConnectionService {
 
   send(content: string, command: string) {
     let message: socketMessage = { projectId: this.projectId, pageId: this.pageId, user: this.userId, command: command, content: content };
-    this.stompClient.send('/app/send', {}, JSON.stringify(message));
-    console.log('send: ' + JSON.stringify(message));
+    //this if is a temporary fix, can technically be removed once the persitence works but doesn't hurt either
+    if(this.stompClient) {
+      this.stompClient.send('/app/send', {}, JSON.stringify(message));
+      console.log('send: ' + JSON.stringify(message));
+    }
   }
 
   disconnect() {
