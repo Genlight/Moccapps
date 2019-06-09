@@ -14,6 +14,30 @@ public class PageVersion {
     private int projectVersions_id;
     private String page_data;
 
+    public PageVersion(int id, String page_name, int page_height, int page_width, int page_order, int projectVersions_id, String page_data) {
+
+        this.id = id;
+        this.page_name=page_name;
+        this.page_data=page_data;
+        this.page_height=page_height;
+        this.page_order=page_order;
+        this.page_width=page_width;
+        this.projectVersions_id=projectVersions_id;
+    }
+
+    public PageVersion() {
+
+    }
+
+    public PageVersion(String page_name, int page_width, int page_height, int page_order, @NotBlank int projectVersions_id, String page_data) {
+        this.page_name = page_name;
+        this.page_width = page_width;
+        this.page_height = page_height;
+        this.page_order = page_order;
+        this.projectVersions_id = projectVersions_id;
+        this.page_data = page_data;
+    }
+
     public int getId() {
         return id;
     }

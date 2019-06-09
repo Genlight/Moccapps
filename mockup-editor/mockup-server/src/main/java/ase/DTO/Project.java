@@ -9,7 +9,7 @@ public class Project {
     private int id;
     private String projectname;
     private List<Integer> usersId;
-    private List pages;
+    private List<Page> pages;
 
     public Project(){
         usersId =new ArrayList<>();
@@ -54,7 +54,7 @@ public class Project {
         this.usersId.add(user);
     }
 
-    public List getPages() {
+    public List<Page> getPages() {
         return pages;
     }
 

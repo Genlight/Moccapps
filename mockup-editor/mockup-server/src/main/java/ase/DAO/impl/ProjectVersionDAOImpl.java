@@ -1,9 +1,8 @@
 package ase.DAO.impl;
 
-import ase.DAO.AbstractDAO;
-import ase.DAO.DAOException;
-import ase.DAO.ProjectVersionDAO;
-import ase.DAO.UserDAO;
+import ase.DAO.*;
+import ase.DTO.Page;
+import ase.DTO.PageVersion;
 import ase.DTO.Project;
 import ase.DTO.ProjectVersion;
 import org.slf4j.Logger;
@@ -11,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +31,12 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
     @Autowired
     UserDAO userDAO;
 
+    @Autowired
+    PageVersionDAO pageVersionDAO;
+
+    @Autowired
+    PageDAO pageDAO;
+
     @Override
     public ProjectVersion create(Project project,String versionName) throws DAOException {
         try {
@@ -54,6 +56,11 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
             projectVersion.setVersion_name(rs.getString(2));
             projectVersion.setProject_id(rs.getInt(3));
             rs.close();
+
+            List<Page> pages = pageDAO.findPagesForProject(project.getId());
+            for(Page p:pages){
+                pageVersionDAO.create(p,projectVersion.getId());
+            }
 
             return projectVersion;
         }catch (SQLException e){

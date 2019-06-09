@@ -67,6 +67,9 @@ public class TestData {
     public ProjectVersion projectVersion2;
     public ProjectVersion createdProjectVersion1;
 
+    public PageVersion createdPageVersion1;
+    public PageVersion pageVersion2;
+
     public Page createdPage1;
     public Page createdPage2;
     public Page page3;
@@ -104,6 +107,9 @@ public class TestData {
 
         projectVersion2 = new ProjectVersion(PROJECTVERSION_2_TAG,createdProject2.getId());
         createdProjectVersion1 = new ProjectVersion(1,PROJECTVERSION_1_TAG,createdProject1.getId());
+
+        createdPageVersion1 = new PageVersion(1,createdPage1.getPage_name(),createdPage1.getHeight(),createdPage1.getWidth(),createdPage1.getPage_order(),createdProjectVersion1.getId(),createdPage1.getPage_data());
+        pageVersion2 = new PageVersion(createdPage2.getPage_name(),createdPage2.getHeight(),createdPage2.getWidth(),createdPage2.getPage_order(),createdProjectVersion1.getId(),createdPage2.getPage_data());
 
     }
 }
