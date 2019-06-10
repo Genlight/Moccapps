@@ -3,7 +3,7 @@ import { fabric } from './extendedfabric';
 import { Page } from '../shared/models/Page';
 import { FabricmodifyService } from './fabricmodify.service';
 import { ApiService } from '../api.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, from } from 'rxjs';
 import { ProjectService } from '../shared/services/project.service';
 import { Project } from '../shared/models/Project';
 
@@ -13,6 +13,7 @@ import { Project } from '../shared/models/Project';
 export class ManagePagesService {
 
   private canvas: any;
+  private gridCanvas: fabric.Canvas = null;
 
   pages: Observable<Page[]>;
   activePage: Observable<Page>;
@@ -63,10 +64,23 @@ export class ManagePagesService {
     });
 
     this.canvas = canvas;
-    
-    //this.pages.push(page);
-  // relative values can be used with setDimensions function of fabric.js
-  // this.pageCanvas.setDimensions({width: '1000px', heigth: '1000px'}, {cssOnly: true});
+  }
+
+  /**
+   * creates a canvas in the workspace behind the canvas the user works on, to use as a base for a grid of
+   * lines to help object alignment, and sets the background color of the user-canvas to transparent, 
+   * so a grid in the backgound-canvas can be seen if active
+   */
+  createGridCanvas() {
+    this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
+      evented: false, 
+      height:	this.dataStore.activePage.height, 
+      width: this.dataStore.activePage.width,
+      backgroundColor: '#ffffff'
+     });
+    this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
+    this.canvas.backgroundColor = null;
+    this.canvas.renderAll();
   }
 
   /**
@@ -281,6 +295,16 @@ export class ManagePagesService {
   // Returns a canvas
   getCanvas() {
     return this.canvas;
+  }
+
+  /**
+   * returns the canvas in the background with the grid-lines or creates a new one if none exists
+   */
+  getGridCanvas() {
+    if (this.gridCanvas === null) {
+      this.createGridCanvas();
+    }
+    return this.gridCanvas;
   }
 
 }
