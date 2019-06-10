@@ -16,6 +16,9 @@ import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
 import { WorkspaceService } from 'src/app/editor/workspace.service';
+import save from 'save-file';
+import { Page } from '../../models/Page';
+import * as jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-navbar',
@@ -39,15 +42,7 @@ export class NavbarComponent implements OnInit {
   ];
   info: any;
 
-
-
-
-  /**
-   * users.map(x => `${user.split(' ')[0][0]}${user.split(' ')[1][0]}`);
-   */
-
-  // usersInitials = this.users.map(user => `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`);
-  projectname = 'My project 1';
+  projectname = 'Unknown project';
   project: Project = null;
 
   // Button properties for Undo / Redo
@@ -59,6 +54,8 @@ export class NavbarComponent implements OnInit {
   // Activates / Deactivates show ruler button
   showRuler: boolean = false;
 
+  activePage: Page = null;
+
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
@@ -66,7 +63,7 @@ export class NavbarComponent implements OnInit {
               private modalService: NgbModal,
               private projectService: ProjectService,
               private undoRedoService: UndoRedoService,
-              private workSpaceService: WorkspaceService
+              private workspaceService: WorkspaceService
           ) { }
 
   ngOnInit() {
@@ -89,13 +86,18 @@ export class NavbarComponent implements OnInit {
       }
     });
 
-    this.workSpaceService.showsRuler.subscribe((value) => {
+    // Handle active page changes
+    this.managePagesService.activePage.subscribe((page) => {
+      this.activePage = page;
+    });
+
+    // Handle show Ruler state changes
+    this.workspaceService.showsRuler.subscribe((value) => {
       this.showRuler = value;
     });
   }
 
   onLogout() {
-    // this.api.logout(this.currUser.email);
     this.authService.logout(new AuthLogoutInfo(this.tokenStorage.getEmail())).subscribe(
       data => {
         // this.tokenStorage.signOut();
@@ -104,12 +106,53 @@ export class NavbarComponent implements OnInit {
       );
   }
 
+  /**
+   * Exports and saves the active page as jpeg.
+   */
+  async onExportToJPEG() {
+    const canvas = this.managePagesService.getCanvas();
+    if (!!canvas) {
+      const imageData = canvas.toDataURL({
+        format: "jpeg"
+      });
+      await save(imageData, `${this.activePage.page_name}.jpeg`);
+    }
+  }
+  
+  /**
+   * Exports and saves the active page as png.
+   */
+  async onExportToPNG() {
+    const canvas = this.managePagesService.getCanvas();
+    if (!!canvas) {
+      const imageData = canvas.toDataURL({
+        format: "png"
+      });
+      await save(imageData, `${this.activePage.page_name}.png`);
+    }
+  }
+
+  /**
+   * Exports and saves the active page as pdf.
+   */
+  onExportToPDF() {
+    const canvas = this.managePagesService.getCanvas();
+    if (!!canvas) {
+      const imageData = canvas.toDataURL({
+        format: "jpeg"
+      });
+      const pdf = new jsPDF();
+      pdf.addImage(imageData, 'JPEG', 0, 0);
+      pdf.save(`${this.activePage.page_name}.pdf`);
+    }
+  }
+
   onShowRuler() {
-    this.workSpaceService.showRuler();
+    this.workspaceService.showRuler();
   }
 
   onHideRuler() {
-    this.workSpaceService.hideRuler();
+    this.workspaceService.hideRuler();
   }
 
   onNewProject() {
