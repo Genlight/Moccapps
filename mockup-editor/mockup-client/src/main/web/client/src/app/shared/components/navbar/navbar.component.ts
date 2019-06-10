@@ -15,6 +15,7 @@ import {AuthLogoutInfo} from '../../../auth/logout-info';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
+import { CreateVersionModalComponent } from '../create-version-modal/create-version-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -112,8 +113,11 @@ export class NavbarComponent implements OnInit {
   }
 
   onSaveVersion() {
-    // TODO
-    alert(this.managePagesService.saveActivePage());
+    //alert(this.managePagesService.saveActivePage());
+    if (!!this.project) {
+      const modelRef = this.modalService.open(CreateVersionModalComponent);
+      modelRef.componentInstance.project = this.project;
+    }
   }
 
   onLoadVersion() {
