@@ -8,7 +8,8 @@ import { fabric } from '../extendedfabric';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
-
+import * as Rulez from '../../../../node_modules/rulez.js/dist/js/rulez.min.js';
+import { WorkspaceService } from '../workspace.service';
 @Component({
   selector: 'app-fabric-canvas',
   templateUrl: './fabric-canvas.component.html',
@@ -29,10 +30,16 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   pages: Page[];
   activePage: Page;
 
+  // Rulers
+  rulerHorizontal: any;
+  rulerVertical: any;
+  showRulers: boolean = false;
+
   constructor(
     private modifyService: FabricmodifyService,
     private pagesService: ManagePagesService,
-    private undoRedoService: UndoRedoService) { }
+    private undoRedoService: UndoRedoService,
+    private workSpaceService: WorkspaceService) { }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
@@ -52,27 +59,66 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       this.activePage = page;
       if (!!page) {
         this.loadPage(this.activePage);
+        this.setRulerDimensions(page.height, page.width);
+      }
+    });
+
+    // React to changes when user clicks on hide/show ruler 
+    this.workSpaceService.showsRuler.subscribe((value) => {
+      this.showRulers = value;
+      //Rerender rulers with current dimensions.
+      if (!!this.activePage && !!this.activePage.height && !!this.activePage.width) {
+        this.setRulerDimensions(this.activePage.height, this.activePage.width);
       }
     });
 
     //this.loadGrid(2000,2000);
+    this.loadRuler();
   }
-/*
-  private loadRuler() {
-    //@ts-ignore
-     var myRuler = new ruler({
-      container: document.getElementById('canvasWrapper'),// reference to DOM element to apply rulers on
-      rulerHeight: 15, // thickness of ruler
-      fontFamily: 'arial',// font for points
-      fontSize: '7px', 
-      strokeStyle: 'black',
-      lineWidth: 1,
-      enableMouseTracking: true,
-      enableToolTip: true
-    });
-  }
-*/
 
+  /**
+   * Sets dimensions of rulers (height, number);
+   */
+  private setRulerDimensions(height: number, width: number) {
+    if (height >= 0 && width >= 0) {
+      document.getElementById('svgH').setAttribute("width", `${width}`);
+      document.getElementById('svgV').setAttribute("height", `${height}`);
+      this.rulerHorizontal.resize();
+      this.rulerVertical.resize();
+    }
+  }
+
+  /**
+   * Renders rulers initially.
+   */
+  private loadRuler() {
+    this.rulerHorizontal = new Rulez({
+      element: document.getElementById('svgH'),
+      layout: 'horizontal',
+      alignment: 'top',
+    });
+    this.rulerHorizontal.render();
+
+    this.rulerVertical = new Rulez({
+      element: document.getElementById('svgV'),
+      layout: 'vertical',
+      alignment: 'left',
+      textDefaults: {
+        rotation: -90,
+        centerText: {
+            by: 'height',
+            operation: 'sum' //'sum' or 'sub'
+        }
+      },
+    });
+    this.rulerVertical.render();
+  }
+
+  /**
+   * creates the grid on the grid-canvas with a distance of 10px between lines
+   * @param maxWidth the width of the lines created
+   * @param maxHeight the height of the lines created
+   */
 private loadGrid(maxWidth: number, maxHeight: number) {
   const c = this.pagesService.getGridCanvas();
   const options = {
@@ -135,8 +181,12 @@ private updateGrid() {
       
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
+<<<<<<< HEAD
     this.loadGrid(2000,2000);
     this.updateGrid();
+=======
+    //this.loadGrid(this.activePage);
+>>>>>>> devel
   }
 
   onCreatePage() {

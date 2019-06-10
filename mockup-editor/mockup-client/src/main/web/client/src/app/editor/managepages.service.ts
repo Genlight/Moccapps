@@ -6,6 +6,7 @@ import { ApiService } from '../api.service';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { ProjectService } from '../shared/services/project.service';
 import { Project } from '../shared/models/Project';
+import { isArray } from 'util';
 
 @Injectable({
   providedIn: 'root'
@@ -44,9 +45,12 @@ export class ManagePagesService {
     this.pages = this._pages.asObservable();
     this.activePage = this._activePage.asObservable();
 
+    // Handle change of project status
     this.projectService.activeProject.subscribe((project) => {
-      this._activeProject = project;
-      this.loadAll();
+      if (!!project) {
+        this._activeProject = project;
+        this.loadAll();
+      }
     });
   }
 
@@ -174,10 +178,16 @@ export class ManagePagesService {
         (data) => {
           let pages = (data as Page[]);
           
-          //Ensure page order by sorting ids ascending
+          // Ensure page order by sorting ids ascending
           pages.sort((a,b) => (a.id - b.id));
           (this.dataStore.pages) = (data as Page[]);
           this._pages.next(Object.assign({}, this.dataStore).pages);
+
+          // If exists, set the first page as active
+          if (!!this.dataStore.pages && isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
+            const firstPage = this.dataStore.pages[0];
+            this.setPageActive(firstPage);
+          }
         }
       );
     }
