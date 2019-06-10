@@ -19,6 +19,8 @@ import { WorkspaceService } from 'src/app/editor/workspace.service';
 import save from 'save-file';
 import { Page } from '../../models/Page';
 import * as jsPDF from 'jspdf';
+import { RenameProjectModalComponent } from '../rename-project-modal/rename-project-modal.component';
+import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -104,6 +106,23 @@ export class NavbarComponent implements OnInit {
         this.router.navigate(['']);
       }
       );
+  }
+
+  onRenameProjectName() {
+    if (!!this.project) {
+      const modelRef = this.modalService.open(RenameProjectModalComponent);
+      modelRef.componentInstance.project = this.project;
+    } else {
+      console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
+    }
+  }
+
+  onManageUser() {
+    const modelRef = this.modalService.open(ManageUserModalComponent);
+    modelRef.componentInstance.project = this.project;
+    modelRef.componentInstance.confirm.subscribe(() =>
+      {}
+    );
   }
 
   /**
