@@ -72,7 +72,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       }
     });
 
-    //this.loadGrid(2000,2000);
     this.loadRuler();
   }
 
@@ -114,62 +113,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.rulerVertical.render();
   }
 
-  /**
-   * creates the grid on the grid-canvas with a distance of 10px between lines
-   * @param maxWidth the width of the lines created
-   * @param maxHeight the height of the lines created
-   */
-private loadGrid(maxWidth: number, maxHeight: number) {
-  const c = this.pagesService.getGridCanvas();
-  const options = {
-      distance: 10,
-      width: maxWidth,
-      height: maxHeight,
-      param: {
-        stroke: '#ebebeb',
-        strokeWidth: 1,
-        selectable: false,
-        evented: false,
-        opacity: 0.6
-      }
-   };
-  const gridLen = options.width / options.distance;
-
-  for (var i = 0; i < gridLen; i++) {
-    const distance = i * options.distance;
-    const horizontal = new fabric.Line([ distance, 0, distance, options.width], options.param);
-    const vertical   = new fabric.Line([ 0, distance, options.width, distance], options.param);
-    if( i % 5 === 0) {
-      horizontal.set({stroke: '#cccccc'});
-      vertical.set({stroke: '#cccccc'});
-    }
-    c.add(horizontal);
-    c.add(vertical);
-  };
-  
-  //this.canvas.backgroundColor = null;
-  this.canvas.renderAll();
-  console.log("PARENT AND CHILD NODES");
-  console.log(this.canvas.lowerCanvasEl.parentNode);
-  console.log(this.canvas.lowerCanvasEl.parentNode.children);
-  const json = JSON.stringify(this.canvas);
-  console.log(json);
-}
-
-private updateGrid() {
-  const gridCanvas = this.pagesService.getGridCanvas();
-  gridCanvas.setWidth(this.canvas.width);
-  gridCanvas.setHeight(this.canvas.height);
-  console.log("changed grid canvas size: ");
-  console.log(this.canvas.width + "  "+ this.canvas.height);
-  if (this.canvas.height < 2000 && this.canvas.width < 2000) {
-    //this.canvas.backgroundColor = null;
-    //this.canvas.renderAll();
-  } else {
-    this.loadGrid(this.canvas.width,this.canvas.height);
-  }
-}
-
   private loadPage(page: Page) {
     if (!!page) {
       this.modifyService.clearAll(this.canvas);
@@ -181,8 +124,8 @@ private updateGrid() {
       
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
-    this.loadGrid(2000,2000);
-    this.updateGrid();
+    //this.pagesService.loadGrid(2000,2000);
+    this.pagesService.updateGrid();
   }
 
   onCreatePage() {

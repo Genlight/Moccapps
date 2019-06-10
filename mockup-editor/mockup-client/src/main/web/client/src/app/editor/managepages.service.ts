@@ -187,6 +187,7 @@ export class ManagePagesService {
           if (!!this.dataStore.pages && isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
             const firstPage = this.dataStore.pages[0];
             this.setPageActive(firstPage);
+            this.loadGrid(2000,2000);
           }
         }
       );
@@ -299,6 +300,60 @@ export class ManagePagesService {
           alert(error);
         }
       );
+    }
+  }
+
+  /**
+  * creates the grid on the grid-canvas with a distance of 10px between lines
+  * @param maxWidth the width of the lines created
+  * @param maxHeight the height of the lines created
+  */
+  loadGrid(maxWidth: number, maxHeight: number) {
+    const c = this.getGridCanvas();
+    const options = {
+        distance: 10,
+        width: maxWidth,
+        height: maxHeight,
+        param: {
+          stroke: '#ebebeb',
+          strokeWidth: 1,
+          selectable: false,
+          evented: false,
+          opacity: 0.6
+        }
+    };
+    const gridLen = options.width / options.distance;
+
+    for (var i = 0; i < gridLen; i++) {
+      const distance = i * options.distance;
+      const horizontal = new fabric.Line([ distance, 0, distance, options.width], options.param);
+      const vertical   = new fabric.Line([ 0, distance, options.width, distance], options.param);
+      if( i % 5 === 0) {
+        horizontal.set({stroke: '#cccccc'});
+        vertical.set({stroke: '#cccccc'});
+      }
+      c.add(horizontal);
+      c.add(vertical);
+    };
+    
+    //this.canvas.backgroundColor = null;
+    this.canvas.renderAll();
+  }
+
+  /**
+   * updates the size of the underlying grid to fit the user-canvas
+   * if the initial grid (2000x2000) is too small a new one is created
+   */
+  updateGrid() {
+    const gridCanvas = this.getGridCanvas();
+    gridCanvas.setWidth(this.canvas.width);
+    gridCanvas.setHeight(this.canvas.height);
+    if (this.canvas.height < 2000 && this.canvas.width < 2000) {
+      //this.canvas.backgroundColor = null;
+      //this.canvas.renderAll();
+    } else {
+      console.log("creating new grid");
+      this.loadGrid(this.canvas.width,this.canvas.height);
     }
   }
 
