@@ -78,7 +78,7 @@
   </div>
 
   <div class="mx-auto order-0">
-    <span class="navbar-brand">{{(project || {}).projectname}}</span>
+    <span class="navbar-brand project-title" (dblclick)="onRenameProjectName()" ngbTooltip="Double click to rename">{{(project || {}).projectname}}</span>
   </div>
 
   <div class="navbar-collapse w-100 order-3 ">
