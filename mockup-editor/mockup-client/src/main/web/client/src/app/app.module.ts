@@ -33,6 +33,7 @@ import { RequestInterceptor } from './shared/interceptor/request.interceptor';
 import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.component';
 import { CreateVersionModalComponent } from './shared/components/create-version-modal/create-version-modal.component';
+import { LoadVersionModalComponent } from './shared/components/load-version-modal/load-version-modal.component';
 
 
 library.add(faBars);
@@ -59,7 +60,8 @@ library.add(faEllipsisV);
     UserModalComponent,
     LastediteddatePipe,
     ToolbarPagesComponent,
-    CreateVersionModalComponent
+    CreateVersionModalComponent,
+    LoadVersionModalComponent
   ],
   imports: [
     BrowserModule,
@@ -77,6 +79,7 @@ library.add(faEllipsisV);
     RenameProjectModalComponent,
     DeleteProjectModalComponent,
     CreateVersionModalComponent,
+    LoadVersionModalComponent,
     UserModalComponent
   ],
   providers: [FabricmodifyService, ManagePagesService, {

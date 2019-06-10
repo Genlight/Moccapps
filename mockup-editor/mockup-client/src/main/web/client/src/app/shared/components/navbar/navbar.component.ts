@@ -16,6 +16,7 @@ import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
 import { CreateVersionModalComponent } from '../create-version-modal/create-version-modal.component';
+import { LoadVersionModalComponent } from '../load-version-modal/load-version-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -113,7 +114,6 @@ export class NavbarComponent implements OnInit {
   }
 
   onSaveVersion() {
-    //alert(this.managePagesService.saveActivePage());
     if (!!this.project) {
       const modelRef = this.modalService.open(CreateVersionModalComponent);
       modelRef.componentInstance.project = this.project;
@@ -121,7 +121,10 @@ export class NavbarComponent implements OnInit {
   }
 
   onLoadVersion() {
-    // TODO
+    if (!!this.project) {
+      const modelRef = this.modalService.open(LoadVersionModalComponent);
+      modelRef.componentInstance.project = this.project;
+    }
   }
 
   onAllProjects() {

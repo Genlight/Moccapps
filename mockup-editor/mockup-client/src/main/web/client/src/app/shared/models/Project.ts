@@ -6,11 +6,9 @@ export class Project {
     projectname: string;
     private _lastEdited?: Date;
     users?: User[];
-    //invitedUsers?: User[];
     invitations: Invite[];
 
     get lastEdited(): Date {
-        //alert(this._lastEdited);
         return this._lastEdited || new Date();
     }
 
