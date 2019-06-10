@@ -50,8 +50,10 @@
           <button class="dropdown-item dropdown-toggle menucursor">Workspace</button>
           <ul class="dropdown-menu">
               <button class="btn btn-light menubtn" disabled>View Rulers</button>
-              <button class="btn btn-light menubtn" disabled>View Grid</button>
-              <button class="btn btn-light menubtn" disabled>Snap to Grid</button>
+              <button class="btn btn-light menubtn" (click)="onViewGrid()">
+                  <fa-icon [icon]="faCheck" *ngIf="grid"></fa-icon> View Grid</button>
+              <button class="btn btn-light menubtn" [disabled]="!grid" (click)="onSnapToGrid()">
+                  <fa-icon [icon]="faCheck" *ngIf="snapToGrid"></fa-icon> Snap to Grid</button>
             </ul>
           </li>
         <button ngbDropdownItem disabled>Help</button>

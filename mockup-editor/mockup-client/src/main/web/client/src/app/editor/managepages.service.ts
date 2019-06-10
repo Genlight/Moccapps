@@ -12,7 +12,7 @@ import { Project } from '../shared/models/Project';
 })
 export class ManagePagesService {
 
-  private canvas: any;
+  private canvas: fabric.Canvas;
   private gridCanvas: fabric.Canvas = null;
 
   pages: Observable<Page[]>;
@@ -79,7 +79,7 @@ export class ManagePagesService {
       backgroundColor: '#ffffff'
      });
     this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
-    this.canvas.backgroundColor = null;
+    //this.canvas.backgroundColor = null;
     this.canvas.renderAll();
   }
 
@@ -293,7 +293,7 @@ export class ManagePagesService {
   }
 
   // Returns a canvas
-  getCanvas() {
+  getCanvas(): fabric.Canvas {
     return this.canvas;
   }
 

@@ -187,7 +187,8 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setCanvasBackgroundColor() {
-    this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
+    this.managePagesService.getGridCanvas().backgroundColor = this.canvasProperties.backgroundColor;
+    this.managePagesService.getGridCanvas().renderAll();
     this.canvas.renderAll();
   }
 

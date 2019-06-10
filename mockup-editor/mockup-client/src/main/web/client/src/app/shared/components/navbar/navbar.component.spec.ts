@@ -11,6 +11,7 @@ import { UserinfoService } from '../../services/userinfo.service';
 
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../../auth/auth.service';
+import { fabric } from '../../../editor/extendedfabric';
 
 
 describe('NavbarComponent', () => {
@@ -26,7 +27,8 @@ describe('NavbarComponent', () => {
       ],
       imports: [
         RouterTestingModule,
-        HttpClientModule
+        HttpClientModule,
+        fabric
       ],
       providers: [
         AuthService

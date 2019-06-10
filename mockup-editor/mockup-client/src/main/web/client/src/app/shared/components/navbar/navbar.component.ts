@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faUndo, faRedo} from '@fortawesome/free-solid-svg-icons';
+import { faBars, faUndo, faRedo, faCheck} from '@fortawesome/free-solid-svg-icons';
 import { faCommentAlt } from '@fortawesome/free-regular-svg-icons';
 import { Router } from '@angular/router';
 import { FabricmodifyService } from '../../../editor/fabricmodify.service';
 import { ManagePagesService } from '../../../editor/managepages.service';
+import { fabric } from '../../../editor/extendedfabric';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UserModalComponent } from '../user-modal/user-modal.component';
@@ -27,6 +28,7 @@ export class NavbarComponent implements OnInit {
   faUndo = faUndo;
   faRedo = faRedo;
   faCommentAlt = faCommentAlt;
+  faCheck = faCheck;
 
   users = [
     { name: 'Alexander Genser', initials: 'AG' },
@@ -38,8 +40,8 @@ export class NavbarComponent implements OnInit {
   ];
   info: any;
 
-
-
+  grid: boolean = false;
+  snapToGrid: boolean = false;
 
   /**
    * users.map(x => `${user.split(' ')[0][0]}${user.split(' ')[1][0]}`);
@@ -199,5 +201,40 @@ export class NavbarComponent implements OnInit {
     }, (reason) => {
 
     });
+  }
+
+  onViewGrid() {
+    this.grid = !this.grid;
+    const canvas = this.managePagesService.getCanvas();
+    const gridCanvas = this.managePagesService.getGridCanvas();
+    if (this.grid) {
+      canvas.backgroundColor = null;
+    } else {
+      canvas.backgroundColor = gridCanvas.backgroundColor;
+    }
+    canvas.renderAll();
+  }
+
+  onSnapToGrid() {
+    this.snapToGrid = !this.snapToGrid;
+    const canvas = this.managePagesService.getCanvas();
+    const gridSize = 10;
+    if (this.snapToGrid) {
+      canvas.on({
+        'object:moving': (event) => {
+          //if (Math.round(event.target.left / gridSize * 4) % 4 === 0 &&
+          //Math.round(event.target.top / gridSize * 4) % 4 === 0) {
+          event.target.set({
+            left: Math.round(event.target.left / gridSize) * gridSize,
+            top: Math.round(event.target.top / gridSize) * gridSize
+            }).setCoords();
+        // }
+        }
+      });
+    } else {
+      canvas.on({
+        'object:moving': (event) => {}});
+    }
+    canvas.renderAll();
   }
 }

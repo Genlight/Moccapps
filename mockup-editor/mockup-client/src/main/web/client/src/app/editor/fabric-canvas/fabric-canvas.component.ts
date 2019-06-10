@@ -101,7 +101,7 @@ private loadGrid(maxWidth: number, maxHeight: number) {
     c.add(vertical);
   };
   
-  this.canvas.backgroundColor = null;
+  //this.canvas.backgroundColor = null;
   this.canvas.renderAll();
   console.log("PARENT AND CHILD NODES");
   console.log(this.canvas.lowerCanvasEl.parentNode);
@@ -117,8 +117,8 @@ private updateGrid() {
   console.log("changed grid canvas size: ");
   console.log(this.canvas.width + "  "+ this.canvas.height);
   if (this.canvas.height < 2000 && this.canvas.width < 2000) {
-    this.canvas.backgroundColor = null;
-    this.canvas.renderAll();
+    //this.canvas.backgroundColor = null;
+    //this.canvas.renderAll();
   } else {
     this.loadGrid(this.canvas.width,this.canvas.height);
   }
