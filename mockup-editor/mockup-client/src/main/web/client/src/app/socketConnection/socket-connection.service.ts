@@ -3,6 +3,7 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { socketMessage } from './socketMessage';
 import { FabricmodifyService } from '../editor/fabricmodify.service';
+import { ManagePagesService } from '../editor/managepages.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,9 @@ export class SocketConnectionService {
   private pageId: string;
   private userId: string;
 
-  constructor(private modifyService:FabricmodifyService) { }
+  constructor(
+    private modifyService:FabricmodifyService,
+  ) { }
 
   connect(projectId: string, pageId: string, userId: string, callback:(message:socketMessage)=>void,that:any) {
     console.log('connection test\ncallback: '+JSON.stringify(callback)+"\ncallee:");

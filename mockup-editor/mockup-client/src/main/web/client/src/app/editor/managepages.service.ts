@@ -132,7 +132,7 @@ export class ManagePagesService {
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
       //Update page in backend,this is at the moment done by every party that receives the change
-      this.updatePage(page);
+      //this.updatePage(page);
     }
   }
 
