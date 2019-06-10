@@ -1,5 +1,25 @@
+.workspace {
+    z-index: 1;
+}
+
 .canvas-container {
     border-style: solid;
     border-color: #CACACA;
     border-width: 2px;
+}
+
+.ruler-horizontal {
+    background: white;
+    height: 30px; 
+    position:absolute; 
+    padding-left: 30px;
+    margin-left: -30px;
+    margin-top: -30px;
+}
+
+.ruler-vertical {
+    background: white; 
+    width: 30px; 
+    position:absolute; 
+    margin-left: -30px; 
 }

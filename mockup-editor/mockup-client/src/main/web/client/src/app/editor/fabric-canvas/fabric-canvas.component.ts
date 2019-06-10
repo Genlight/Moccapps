@@ -9,7 +9,8 @@ import { SocketConnectionService } from '../../socketConnection/socket-connectio
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
-
+import * as Rulez from '../../../../node_modules/rulez.js/dist/js/rulez.min.js';
+import { WorkspaceService } from '../workspace.service';
 @Component({
   selector: 'app-fabric-canvas',
   templateUrl: './fabric-canvas.component.html',
@@ -31,10 +32,16 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   pages: Page[];
   activePage: Page;
 
+  // Rulers
+  rulerHorizontal: any;
+  rulerVertical: any;
+  showRulers: boolean = false;
+
   constructor(
     private modifyService: FabricmodifyService,
     private pagesService: ManagePagesService,
-    private undoRedoService: UndoRedoService) { }
+    private undoRedoService: UndoRedoService,
+    private workSpaceService: WorkspaceService) { }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
@@ -54,9 +61,116 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       this.activePage = page;
       if (!!page) {
         this.loadPage(this.activePage);
+        this.setRulerDimensions(page.height, page.width);
       }
     });
+
+    // React to changes when user clicks on hide/show ruler 
+    this.workSpaceService.showsRuler.subscribe((value) => {
+      this.showRulers = value;
+      //Rerender rulers with current dimensions.
+      if (!!this.activePage && !!this.activePage.height && !!this.activePage.width) {
+        this.setRulerDimensions(this.activePage.height, this.activePage.width);
+      }
+    });
+
+    //this.loadGrid(2000,2000);
+    this.loadRuler();
   }
+
+  /**
+   * Sets dimensions of rulers (height, number);
+   */
+  private setRulerDimensions(height: number, width: number) {
+    if (height >= 0 && width >= 0) {
+      document.getElementById('svgH').setAttribute("width", `${width}`);
+      document.getElementById('svgV').setAttribute("height", `${height}`);
+      this.rulerHorizontal.resize();
+      this.rulerVertical.resize();
+    }
+  }
+
+  /**
+   * Renders rulers initially.
+   */
+  private loadRuler() {
+    this.rulerHorizontal = new Rulez({
+      element: document.getElementById('svgH'),
+      layout: 'horizontal',
+      alignment: 'top',
+    });
+    this.rulerHorizontal.render();
+
+    this.rulerVertical = new Rulez({
+      element: document.getElementById('svgV'),
+      layout: 'vertical',
+      alignment: 'left',
+      textDefaults: {
+        rotation: -90,
+        centerText: {
+            by: 'height',
+            operation: 'sum' //'sum' or 'sub'
+        }
+      },
+    });
+    this.rulerVertical.render();
+  }
+
+  /**
+   * creates the grid on the grid-canvas with a distance of 10px between lines
+   * @param maxWidth the width of the lines created
+   * @param maxHeight the height of the lines created
+   */
+private loadGrid(maxWidth: number, maxHeight: number) {
+  const c = this.pagesService.getGridCanvas();
+  const options = {
+      distance: 10,
+      width: maxWidth,
+      height: maxHeight,
+      param: {
+        stroke: '#ebebeb',
+        strokeWidth: 1,
+        selectable: false,
+        evented: false,
+        opacity: 0.6
+      }
+   };
+  const gridLen = options.width / options.distance;
+
+  for (var i = 0; i < gridLen; i++) {
+    const distance = i * options.distance;
+    const horizontal = new fabric.Line([ distance, 0, distance, options.width], options.param);
+    const vertical   = new fabric.Line([ 0, distance, options.width, distance], options.param);
+    if( i % 5 === 0) {
+      horizontal.set({stroke: '#cccccc'});
+      vertical.set({stroke: '#cccccc'});
+    }
+    c.add(horizontal);
+    c.add(vertical);
+  };
+  
+  //this.canvas.backgroundColor = null;
+  this.canvas.renderAll();
+  console.log("PARENT AND CHILD NODES");
+  console.log(this.canvas.lowerCanvasEl.parentNode);
+  console.log(this.canvas.lowerCanvasEl.parentNode.children);
+  const json = JSON.stringify(this.canvas);
+  console.log(json);
+}
+
+private updateGrid() {
+  const gridCanvas = this.pagesService.getGridCanvas();
+  gridCanvas.setWidth(this.canvas.width);
+  gridCanvas.setHeight(this.canvas.height);
+  console.log("changed grid canvas size: ");
+  console.log(this.canvas.width + "  "+ this.canvas.height);
+  if (this.canvas.height < 2000 && this.canvas.width < 2000) {
+    //this.canvas.backgroundColor = null;
+    //this.canvas.renderAll();
+  } else {
+    this.loadGrid(this.canvas.width,this.canvas.height);
+  }
+}
 
   private loadPage(page: Page) {
     if (!!page) {
@@ -69,10 +183,12 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
+    this.loadGrid(2000,2000);
+    this.updateGrid();
   }
 
   onCreatePage() {
-    this.pagesService.addPage("Page 1");
+    this.pagesService.createInitialPage();
   }
 
   enableEvents() {

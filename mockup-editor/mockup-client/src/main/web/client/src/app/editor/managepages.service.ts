@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { fabric } from './extendedfabric';
 import { Page } from '../shared/models/Page';
+import { FabricmodifyService } from './fabricmodify.service';
 import { ApiService } from '../api.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, from } from 'rxjs';
 import { ProjectService } from '../shared/services/project.service';
 import { Project } from '../shared/models/Project';
 import { FabricmodifyService } from './fabricmodify.service';
@@ -10,13 +11,15 @@ import { SocketConnectionService } from '../socketConnection/socket-connection.s
 import { TokenStorageService } from '../auth/token-storage.service';
 import { socketMessage } from '../socketConnection/socketMessage';
 import { Action,CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
+import { isArray } from 'util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ManagePagesService {
 
-  private canvas: any;
+  private canvas: fabric.Canvas;
+  private gridCanvas: fabric.Canvas = null;
 
   pages: Observable<Page[]>;
   activePage: Observable<Page>;
@@ -49,9 +52,12 @@ export class ManagePagesService {
     this.pages = this._pages.asObservable();
     this.activePage = this._activePage.asObservable();
 
+    // Handle change of project status
     this.projectService.activeProject.subscribe((project) => {
-      this._activeProject = project;
-      this.loadAll();
+      if (!!project) {
+        this._activeProject = project;
+        this.loadAll();
+      }
     });
   } 
 
@@ -69,10 +75,23 @@ export class ManagePagesService {
     });
 
     this.canvas = canvas;
-    
-    //this.pages.push(page);
-  // relative values can be used with setDimensions function of fabric.js
-  // this.pageCanvas.setDimensions({width: '1000px', heigth: '1000px'}, {cssOnly: true});
+  }
+
+  /**
+   * creates a canvas in the workspace behind the canvas the user works on, to use as a base for a grid of
+   * lines to help object alignment, and sets the background color of the user-canvas to transparent, 
+   * so a grid in the backgound-canvas can be seen if active
+   */
+  createGridCanvas() {
+    this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
+      evented: false, 
+      height:	this.dataStore.activePage.height, 
+      width: this.dataStore.activePage.width,
+      backgroundColor: '#ffffff'
+     });
+    this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
+    //this.canvas.backgroundColor = null;
+    this.canvas.renderAll();
   }
 
   /**
@@ -170,10 +189,16 @@ export class ManagePagesService {
         (data) => {          
           let pages = (data as Page[]);
           
-          //Ensure page order by sorting ids ascending
+          // Ensure page order by sorting ids ascending
           pages.sort((a,b) => (a.id - b.id));
           (this.dataStore.pages) = (data as Page[]);          
           this._pages.next(Object.assign({}, this.dataStore).pages);
+
+          // If exists, set the first page as active
+          if (!!this.dataStore.pages && isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
+            const firstPage = this.dataStore.pages[0];
+            this.setPageActive(firstPage);
+          }
         }
       );
     }
@@ -289,7 +314,7 @@ export class ManagePagesService {
   }
 
   // Returns a canvas
-  getCanvas() {
+  getCanvas(): fabric.Canvas {
     return this.canvas;
   }
   
@@ -323,6 +348,16 @@ export class ManagePagesService {
 
   disconnectSocket(){
     this.socketService.disconnect();
+  }
+
+  /**
+   * returns the canvas in the background with the grid-lines or creates a new one if none exists
+   */
+  getGridCanvas() {
+    if (this.gridCanvas === null) {
+      this.createGridCanvas();
+    }
+    return this.gridCanvas;
   }
 
 }

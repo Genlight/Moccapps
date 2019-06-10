@@ -16,7 +16,14 @@
                 Import Image/SVG...
               </label>
               <input id="file-upload" type="file" (change)="onImportSVG($event)" accept=".png,.jpg,.jpeg,.bmp,.svg,image/png,image/gif,image/jpeg,image/bmp,/image/svg"/>
-              <button class="btn btn-light menubtn" disabled>Export to PNG...</button>
+                <li class="dropdown-submenu">
+                <button class="btn btn-light menubtn">Export</button>
+                <ul class="dropdown-menu">
+                  <button class="btn btn-light menubtn" (click)="onExportToJPEG()" [disabled]="!activePage">Export to JPEG</button>
+                  <button class="btn btn-light menubtn" (click)="onExportToPNG()" [disabled]="!activePage">Export to PNG</button>
+                  <button class="btn btn-light menubtn" (click)="onExportToPDF()" [disabled]="!activePage">Export to PDF</button>
+                </ul>
+              </li>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version...</button>
               <button class="btn btn-light menubtn" disabled>Load Version...</button>
@@ -52,9 +59,15 @@
         <li class="dropdown-submenu">
           <button class="dropdown-item dropdown-toggle menucursor">Workspace</button>
           <ul class="dropdown-menu">
-              <button class="btn btn-light menubtn" disabled>View Rulers</button>
-              <button class="btn btn-light menubtn" disabled>View Grid</button>
-              <button class="btn btn-light menubtn" disabled>Snap to Grid</button>
+              <button class="btn btn-light menubtn" *ngIf="!showRuler; else hideRulers" (click)="onShowRuler()">View Rulers</button>
+              <ng-template #hideRulers>
+                <button class="btn btn-light menubtn" (click)="onHideRuler()">Hide Rulers</button>
+              </ng-template>
+              <button class="btn btn-light menubtn" (click)="onViewGrid()">
+                  <fa-icon [icon]="faCheck" *ngIf="grid"></fa-icon> View Grid</button>
+              <button class="btn btn-light menubtn" [disabled]="!grid" (click)="onSnapToGrid()">
+                  <fa-icon [icon]="faCheck" *ngIf="snapToGrid"></fa-icon> Snap to Grid</button>
+            
             </ul>
           </li>
         <button ngbDropdownItem disabled>Help</button>
@@ -73,20 +86,20 @@
   </div>
 
   <div class="mx-auto order-0">
-    <span class="navbar-brand">{{(project || {}).projectname}}</span>
+    <span class="navbar-brand project-title" (click)="onRenameProjectName()" ngbTooltip="Click to rename">{{(project || {}).projectname}}</span>
   </div>
 
   <div class="navbar-collapse w-100 order-3 ">
     <ul class="navbar-nav ml-auto">
-        <span class="my-auto user-circle ml-1 inv-circle" placement="bottom" ngbTooltip="invite user">+</span>
+        <span class="my-auto user-circle ml-1 inv-circle" placement="bottom" ngbTooltip="Invite user" (click)="onManageUser()">+</span>
       <li class="navbar-item my-auto">
-        <span *ngFor="let user of users">
-          <span class="user-circle ml-1" placement="bottom" ngbTooltip="{{user.name}}">{{user.initials}}</span>
+        <span *ngFor="let user of (project ? project : {}).users">
+          <span class="user-circle ml-1" placement="bottom" ngbTooltip="{{user.username}}">{{user | usercircle}}</span>
         </span>
       </li>
 
-      <li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>
-      <span class="my-auto">|</span>
+      <!--<li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>
+      <span class="my-auto">|</span>-->
       <li class="navbar-item ml-3 my-auto" ngbDropdown>
         <button class="btn btn-light navbar-username dropdown-toggle" ngbDropdownToggle>{{info.username}}</button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
