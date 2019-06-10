@@ -17,6 +17,7 @@ export class ToolbarComponent implements OnInit {
   faCircle = faCircle;
   faFont = faFont;
   faLayerGroup = faSitemap;
+  faGroup = faObjectGroup
   faElements = faShapes;
   faPaintBrush = faPaintBrush;
   faTrash = faTrash;
@@ -96,14 +97,30 @@ export class ToolbarComponent implements OnInit {
     } else {
       panel.classList.toggle('extensionhidden');
     }
+
    /*  const title = document.getElementById('extToolbarTitle');
-    title.innerHTML = 'Group Overview';
+    title.innerHTML = 'Group.ts Overview';
     const content = document.getElementById('extToolbarContent');
     if (!content.classList.contains('extensionhidden')) {
       content.classList.add('extensionhidden');
     }*/
     const groupbutton = document.getElementById('navGroupsButton');
     groupbutton.classList.toggle('btn-dark'); 
+  }
+
+  onGroup1Toggle() {
+    const panel = document.getElementById('toolbar-groups');
+    const elementsbutton = document.getElementById('navElementsButton');
+    if (panel.classList.contains('extensionhidden')) {
+      panel.classList.toggle('extensionhidden');
+    } else if (elementsbutton.classList.contains('btn-dark')) {
+      elementsbutton.classList.toggle('btn-dark');
+    } else {
+      panel.classList.toggle('extensionhidden');
+
+      const groupbutton = document.getElementById('navGroupsButton1');
+      groupbutton.classList.toggle('btn-dark');
+    }
   }
 
 }

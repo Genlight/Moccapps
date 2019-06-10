@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
-import { ManagePagesService } from './managepages.service';
+import { Group } from 'fabric';
+import { ManageGroupsService } from './managegroups.service';
 import { Action } from './fabric-canvas/transformation.interface';
+import {ManagePagesService} from "./managepages.service";
 let savedElements = null;
 
 @Injectable({
@@ -12,7 +14,7 @@ let savedElements = null;
 export class FabricmodifyService {
   canvas: any;
 
-  constructor(
+  constructor(private groupService: ManageGroupsService
   ) { }
 
   /* groups active elements in given canvas if more than one element is selected */
@@ -23,8 +25,10 @@ export class FabricmodifyService {
     if (canvas.getActiveObject().type !== 'activeSelection') {
       return;
     }
-    canvas.getActiveObject().toGroup();
-    canvas.requestRenderAll();
+    let temp = canvas.getActiveObject().toGroup();
+    temp.set('dirty',true);
+    temp = (temp as Group);
+    this.groupService.add(temp);
   }
 
   clearAll(canvas: any) {
@@ -65,8 +69,11 @@ export class FabricmodifyService {
     if (activeGrp.type !== 'group') {
       return;
     }
+    let temp = (activeGrp as Group);
+    this.groupService.remove(temp);
     activeGrp.toActiveSelection();
     canvas.requestRenderAll();
+
   }
 
   /* adds a text label to the given canvas */

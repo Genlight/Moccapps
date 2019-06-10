@@ -1,0 +1,39 @@
+<div class="toolbarextension extensionhidden" id="toolbar-groups">
+  <div class="mb-2" style="display: flex; align-items: center; justify-content: space-between">
+    <div>
+      <label><b>Groups</b></label>
+    </div>
+  </div>
+
+  <div id="extToolbarContent" class="referenceElement">
+<!--    <div class="list-group">
+      <div
+        role="button"
+        class="list-group-item list-group-item-action py-2"
+       *ngFor="let group of groups; let i = index;"
+        (click)="onClickGroupElement(i, group)"
+        style="cursor: pointer;
+              display: flex; align-items: center; justify-content: space-between">
+        <span class="my-auto">Page {{i + 1}}</span>
+          <fa-icon [icon]="faTrashAlt"></fa-icon>
+      </div>
+    </div>-->
+    <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+      <div *ngFor="let group of groupsForPage;let i = index;">
+        <ngb-panel title="Group {{i + 1}}">
+          <ng-template ngbPanelContent>
+            <div
+              role="button"
+              class="list-group-item list-group-item-action py-2"
+              *ngFor="let item of group.group.getObjects(); let j = index;"
+              (click)="onClickGroupElement(j, item)"
+              style="cursor: pointer;
+              display: flex; align-items: center; justify-content: space-between">
+              <span class="my-auto">{{item.type}} {{j + 1}}</span>
+            </div>
+          </ng-template>
+        </ngb-panel>
+      </div>
+    </ngb-accordion>
+  </div>
+</div>

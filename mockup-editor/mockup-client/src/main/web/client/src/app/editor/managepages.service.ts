@@ -283,4 +283,9 @@ export class ManagePagesService {
     return this.canvas;
   }
 
+  setActive(obj: any) {
+    this.canvas.setActiveObject(obj);
+    this.canvas.requestRenderAll();
+  }
+
 }

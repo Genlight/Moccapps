@@ -32,6 +32,7 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { RequestInterceptor } from './shared/interceptor/request.interceptor';
 import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.component';
+import { ToolbarGroupsComponent } from './editor/toolbar-groups/toolbar-groups.component';
 
 
 library.add(faBars);
@@ -57,7 +58,8 @@ library.add(faEllipsisV);
     RenameProjectModalComponent,
     UserModalComponent,
     LastediteddatePipe,
-    ToolbarPagesComponent
+    ToolbarPagesComponent,
+    ToolbarGroupsComponent
   ],
   imports: [
     BrowserModule,
