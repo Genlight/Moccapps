@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 export class WorkspaceService {
 
   showsRuler: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  toolbarPanelState: BehaviorSubject<ToolbarPanelState> = new BehaviorSubject(ToolbarPanelState.None);
 
   constructor() { }
 
@@ -17,4 +18,12 @@ export class WorkspaceService {
   hideRuler(): void {
     this.showsRuler.next(false);
   }
+
+  
+}
+
+export enum ToolbarPanelState {
+  None,
+  Library,
+  Pages
 }
