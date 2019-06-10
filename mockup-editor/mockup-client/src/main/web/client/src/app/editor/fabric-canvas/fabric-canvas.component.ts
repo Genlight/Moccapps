@@ -183,8 +183,8 @@ private updateGrid() {
       
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
-    this.loadGrid(2000,2000);
-    this.updateGrid();
+    //this.loadGrid(2000,2000);
+    //this.updateGrid();
   }
 
   onCreatePage() {

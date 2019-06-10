@@ -83,7 +83,9 @@ public class SocketServer {
     public void onReceive(@Payload SocketMessage message) throws IOException {
         logger.info("MESSAGE: "+message.toString());
         if(!pageHandlerMap.keySet().contains(message.getPageId())){
-            pageHandlerMap.put(message.getPageId(),new PageHandler(Integer.parseInt(message.getPageId())));
+            String pageId = message.getPageId();
+            PageHandler pageHandler = new PageHandler(Integer.parseInt(message.getPageId()));
+            pageHandlerMap.put(pageId, pageHandler);
             userPageMap.put(message.getUser(),message.getPageId());
         }
         pageHandlerMap.get(message.getPageId()).addUser(message.getUser());

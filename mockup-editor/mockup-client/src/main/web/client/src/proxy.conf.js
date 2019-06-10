@@ -14,7 +14,8 @@ const PROXY_CONFIG = [
           "/logout"
       ],
       target: "http://localhost:8090",
-      secure: false
+      secure: false,
+      ws: true
   }
 ]
 

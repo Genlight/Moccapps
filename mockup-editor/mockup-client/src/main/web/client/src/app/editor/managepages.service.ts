@@ -6,7 +6,6 @@ import { ApiService } from '../api.service';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { ProjectService } from '../shared/services/project.service';
 import { Project } from '../shared/models/Project';
-import { FabricmodifyService } from './fabricmodify.service';
 import { SocketConnectionService } from '../socketConnection/socket-connection.service';
 import { TokenStorageService } from '../auth/token-storage.service';
 import { socketMessage } from '../socketConnection/socketMessage';
