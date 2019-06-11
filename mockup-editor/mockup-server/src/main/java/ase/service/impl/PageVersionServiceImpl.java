@@ -1,9 +1,11 @@
 package ase.service.impl;
 
 import ase.DAO.DAOException;
-import ase.DAO.PageDAO;
+import ase.DAO.PageVersionDAO;
 import ase.DTO.Page;
+import ase.DTO.PageVersion;
 import ase.service.PageService;
+import ase.service.PageVersionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,39 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class PageServiceImpl implements PageService {
+public class PageVersionServiceImpl implements PageVersionService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PageServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(PageVersionServiceImpl.class);
 
     @Autowired
-    PageDAO pageDAO;
+    PageVersionDAO pageVersionDAO;
+
+    @Autowired
+    PageService pageService;
 
     @Override
-    public Page create(Page page) {
+    public List<PageVersion> getAllPagesForProject(int projectId) {
         try {
-           return pageDAO.create(page);
-        } catch (DAOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
-
-    @Override
-    public boolean delete(Page page) {
-        try {
-            pageDAO.delete(page);
-        } catch (DAOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public List<Page> getAllPagesForProject(int projectId) {
-        try {
-            return pageDAO.findPagesForProject(projectId);
+            return pageVersionDAO.findPagesForProject(projectId);
         } catch (DAOException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -53,34 +36,20 @@ public class PageServiceImpl implements PageService {
     }
 
     @Override
-    public Page getPageByProjectIdAndOrder(int id, int order) {
-        try {
-            return pageDAO.findByProjectAndOrder(id,order);
-        } catch (DAOException e) {
-            e.printStackTrace();
-            return null;
+    public List<Page> restorePages(List<PageVersion> pageVersions, int projectId){
+        List<Page> pages = new ArrayList<>();
+        for(PageVersion p:pageVersions){
+            Page page = new Page();
+            page.setProject_id(projectId);
+            page.setPage_data(p.getPage_data());
+            page.setWidth(p.getPage_width());
+            page.setHeight(p.getPage_height());
+            page.setPage_name(p.getPage_name());
+            page.setPage_order(p.getPage_order());
+            page = pageService.create(page);
+            pages.add(page);
         }
+        return pages;
     }
 
-    @Override
-    public Page getPageById(int id) {
-        try {
-            return pageDAO.findById(id);
-        } catch (DAOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public boolean update(Page page) {
-        try {
-            if(pageDAO.update(page)!=null){
-                return true;
-            }
-        } catch (DAOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 }

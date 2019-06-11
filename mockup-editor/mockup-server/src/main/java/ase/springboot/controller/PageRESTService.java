@@ -77,7 +77,7 @@ public class PageRESTService {
         if (page!=null){
 
  /*           SocketMessage socketMessage = new SocketMessage();
-            socketMessage.setProjectId(String.valueOf(page.getProject_id()));
+            socketMessage.setProjectId(String.valueOf(page.getProjectId()));
             socketMessage.setPageId(String.valueOf(page.getId()));
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

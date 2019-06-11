@@ -20,7 +20,7 @@ public interface ProjectVersionService {
 
     ProjectVersion getProjectVersionByTag(String tag);
 
-    ProjectVersion getProjectVersionByProjectId(int projectId);
+    List<ProjectVersion> getProjectVersionByProjectId(int projectId);
 
 
 }

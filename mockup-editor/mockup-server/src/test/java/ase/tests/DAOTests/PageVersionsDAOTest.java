@@ -77,7 +77,7 @@ public class PageVersionsDAOTest extends AbstractDAOTest {
     public void findPageVersionByPIDandOrderWithValidDataTest() throws DAOException {
         PageVersion page = testData.createdPageVersion1;
         page.setId(1);
-        PageVersion page1 = pageVersionDAO.findByProjectAndOrder(testData.createdProjectVersion1.getProject_id(),testData.createdPageVersion1.getPage_order());
+        PageVersion page1 = pageVersionDAO.findByProjectAndOrder(testData.createdProjectVersion1.getProjectId(),testData.createdPageVersion1.getPage_order());
         assertEquals(page, page1);
     }
 

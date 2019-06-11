@@ -18,7 +18,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let project of projectVersions">
-          <td>{{project.projectname}}</td>
+          <td>{{project.versionName}}</td>
           <td>
             <span class="float-right">
               <button class="btn btn-outline-dark" (click)="onRestoreProject(project)">Restore</button>

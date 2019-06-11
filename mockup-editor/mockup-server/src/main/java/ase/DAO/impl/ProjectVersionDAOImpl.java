@@ -2,7 +2,6 @@ package ase.DAO.impl;
 
 import ase.DAO.*;
 import ase.DTO.Page;
-import ase.DTO.PageVersion;
 import ase.DTO.Project;
 import ase.DTO.ProjectVersion;
 import org.slf4j.Logger;
@@ -53,8 +52,8 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
             ResultSet rs=pstmt.getGeneratedKeys();
             rs.next();
             projectVersion.setId(rs.getInt(1));
-            projectVersion.setVersion_name(rs.getString(2));
-            projectVersion.setProject_id(rs.getInt(3));
+            projectVersion.setVersionName(rs.getString(2));
+            projectVersion.setProjectId(rs.getInt(3));
             rs.close();
 
             List<Page> pages = pageDAO.findPagesForProject(project.getId());
@@ -128,32 +127,31 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
     }
 
     @Override
-    public ProjectVersion findByProjectId(int project_id) throws DAOException {
+    public List<ProjectVersion> findByProjectId(int project_id) throws DAOException {
         try{
+            List<ProjectVersion> projectVersions=new ArrayList<>();
             getConnection();
-            ProjectVersion projectVersion;
             pstmt=connection.prepareStatement(PSTMT_FINDBYPROJECTID);
             pstmt.setInt(1,project_id);
-
             ResultSet rs=pstmt.executeQuery();
-            if(!rs.next()){
-                return null;
+            while(rs.next()){
+                projectVersions.add(new ProjectVersion(
+                        rs.getInt("id"),
+                        rs.getString("version_name"),
+                        rs.getInt("project_id")
+                ));
             }
-            projectVersion = new ProjectVersion(
-                    rs.getInt("id"),
-                    rs.getString("version_name"),
-                    rs.getInt("project_id")
-            );
             rs.close();
+            pstmt.close();
 
-            return projectVersion;
-
+            return projectVersions;
 
         }catch (SQLException e){
             logger.error(e.getMessage());
-            logger.error("Error during Find by ID of Project: Couldn't connect to database");
-            throw new DAOException("Error during Find by ID of Project: Couldn't connect to database");
+            logger.error("Error during Find all Projects: Couldn't connect to database");
+            throw new DAOException("Error during Find all Projects: Couldn't connect to database");
         }
+
     }
 
     @Override

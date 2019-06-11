@@ -1,20 +1,12 @@
 package ase.service;
 
 import ase.DTO.Page;
+import ase.DTO.PageVersion;
 
 import java.util.List;
 
-public interface PageService {
+public interface PageVersionService {
+    List<PageVersion> getAllPagesForProject(int projectId);
 
-    Page create(Page page);
-
-    boolean delete (Page page);
-
-    List<Page> getAllPagesForProject(int projectId);
-
-    Page getPageByProjectIdAndOrder(int id, int order);
-
-    Page getPageById(int id);
-
-    boolean update(Page page);
+    List<Page> restorePages(List<PageVersion> pageVersions, int projectId);
 }

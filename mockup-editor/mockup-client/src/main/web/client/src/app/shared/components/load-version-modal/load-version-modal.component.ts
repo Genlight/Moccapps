@@ -3,6 +3,7 @@ import { Project } from '../../models/Project';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ManagePagesService } from 'src/app/editor/managepages.service';
 import { ProjectService } from '../../services/project.service';
+import {Version} from "../../models/Version";
 
 @Component({
   selector: 'app-load-version-modal',
@@ -11,12 +12,18 @@ import { ProjectService } from '../../services/project.service';
 })
 export class LoadVersionModalComponent implements OnInit {
 
-  projectVersions: Project[] = [];
+  projectVersions: Version[] = [];
+
+  activeProject: Project;
  
   constructor(
     public activeModal: NgbActiveModal,
     public projectService: ProjectService
-  ) { }
+  ) {this.projectService.activeProject.subscribe(
+    (project) => {
+      this.activeProject = project;
+    }
+  ); }
 
   ngOnInit() {
     this.loadVersionsOfProject();
@@ -25,8 +32,13 @@ export class LoadVersionModalComponent implements OnInit {
   /**
    * TODO: Restore project.
    */
-  onRestoreProject(project: Project) {
-    
+  onRestoreProject(version: Version) {
+    this.projectService.restoreProject(version).subscribe((
+      (response) => {
+        console.log(response);
+        this.setProjectActive(response);
+      }
+    ));
   }
 
   /**
@@ -44,12 +56,13 @@ export class LoadVersionModalComponent implements OnInit {
    * TODO: Replace fake projectVersions with elements retrieved from rest call.
    */
   loadVersionsOfProject() {
-    this.projectVersions = [{
-      projectname: "Version1",
-      id: 12,
-      invitations: [],
-      lastEdited: new Date()
-    }];
+    this.projectService.getProjectVersions<Version[]>(this.activeProject)
+      .subscribe(
+        (response) => {
+          console.log(response);
+          this.projectVersions = response;
+        }
+      );
   }
 
 }

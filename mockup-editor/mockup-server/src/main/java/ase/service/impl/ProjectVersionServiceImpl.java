@@ -1,7 +1,6 @@
 package ase.service.impl;
 
 import ase.DAO.DAOException;
-import ase.DAO.ProjectDAO;
 import ase.DAO.ProjectVersionDAO;
 import ase.DTO.Project;
 import ase.DTO.ProjectVersion;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +42,7 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
     @Override
     public ProjectVersion createProjectVersion(ProjectVersion projectVersion) {
         try {
-            return projectVersionDAO.create(projectService.getProjectById(projectVersion.getProject_id()),projectVersion.getVersion_name());
+            return projectVersionDAO.create(projectService.getProjectById(projectVersion.getProjectId()),projectVersion.getVersionName());
         } catch (DAOException e) {
             e.printStackTrace();
         }
@@ -74,7 +72,7 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
     @Override
     public ProjectVersion getProjectVersionById(int id) {
         try {
-            projectVersionDAO.findById(id);
+            return projectVersionDAO.findById(id);
         } catch (DAOException e) {
             e.printStackTrace();
         }
@@ -84,7 +82,7 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
     @Override
     public ProjectVersion getProjectVersionByTag(String tag) {
         try {
-            projectVersionDAO.findByVersionTag(tag);
+            return projectVersionDAO.findByVersionTag(tag);
         } catch (DAOException e) {
             e.printStackTrace();
         }
@@ -92,9 +90,9 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
     }
 
     @Override
-    public ProjectVersion getProjectVersionByProjectId(int projectId) {
+    public List<ProjectVersion> getProjectVersionByProjectId(int projectId) {
         try {
-            projectVersionDAO.findByProjectId(projectId);
+            return projectVersionDAO.findByProjectId(projectId);
         } catch (DAOException e) {
             e.printStackTrace();
         }

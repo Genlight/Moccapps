@@ -1,33 +1,32 @@
 package ase.DTO;
 
 import javax.validation.constraints.NotBlank;
-import java.util.List;
 
 public class ProjectVersion {
 
     @NotBlank
     private int id;
-    private String version_name;
+    private String versionName;
     @NotBlank
-    private int project_id;
+    private int projectId;
 
     public ProjectVersion() {
     }
 
-    public ProjectVersion(@NotBlank int project_id,String version_name) {
-        this.version_name = version_name;
-        this.project_id = project_id;
+    public ProjectVersion(@NotBlank int projectId, String versionName) {
+        this.versionName = versionName;
+        this.projectId = projectId;
     }
 
-    public ProjectVersion(@NotBlank int id, String version_name, @NotBlank int project_id) {
+    public ProjectVersion(@NotBlank int id, String versionName, @NotBlank int projectId) {
         this.id = id;
-        this.version_name = version_name;
-        this.project_id = project_id;
+        this.versionName = versionName;
+        this.projectId = projectId;
     }
 
-    public ProjectVersion(String version_name, @NotBlank int project_id) {
-        this.version_name = version_name;
-        this.project_id = project_id;
+    public ProjectVersion(String versionName, @NotBlank int projectId) {
+        this.versionName = versionName;
+        this.projectId = projectId;
     }
 
     public int getId() {
@@ -38,20 +37,20 @@ public class ProjectVersion {
         this.id = id;
     }
 
-    public String getVersion_name() {
-        return version_name;
+    public String getVersionName() {
+        return versionName;
     }
 
-    public void setVersion_name(String version_name) {
-        this.version_name = version_name;
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
     }
 
-    public int getProject_id() {
-        return project_id;
+    public int getProjectId() {
+        return projectId;
     }
 
-    public void setProject_id(int project_id) {
-        this.project_id = project_id;
+    public void setProjectId(int projectId) {
+        this.projectId = projectId;
     }
 
     @Override
@@ -62,15 +61,15 @@ public class ProjectVersion {
         ProjectVersion that = (ProjectVersion) o;
 
         if (id != that.id) return false;
-        if (project_id != that.project_id) return false;
-        return version_name != null ? version_name.equals(that.version_name) : that.version_name == null;
+        if (projectId != that.projectId) return false;
+        return versionName != null ? versionName.equals(that.versionName) : that.versionName == null;
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (version_name != null ? version_name.hashCode() : 0);
-        result = 31 * result + project_id;
+        result = 31 * result + (versionName != null ? versionName.hashCode() : 0);
+        result = 31 * result + projectId;
         return result;
     }
 
@@ -78,8 +77,8 @@ public class ProjectVersion {
     public String toString() {
         return "ProjectVersion{" +
                 "id=" + id +
-                ", version_name='" + version_name + '\'' +
-                ", project_id=" + project_id +
+                ", versionName='" + versionName + '\'' +
+                ", projectId=" + projectId +
                 '}';
     }
 }

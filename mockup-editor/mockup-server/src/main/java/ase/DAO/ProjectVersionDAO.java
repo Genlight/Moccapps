@@ -50,7 +50,7 @@ public interface ProjectVersionDAO {
      * @return projectDTO with the given id
      * @throws DAOException if an error occurs during the execution a exception with a corresponding message is thrown
      */
-    ProjectVersion findByProjectId(int project_id) throws DAOException;
+    List<ProjectVersion> findByProjectId(int project_id) throws DAOException;
 
     /**
      * Find a Project by the given tag
