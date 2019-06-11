@@ -324,12 +324,12 @@ export class ManagePagesService {
   //TODO: this screams "refactor me properly please"
   relayChange(message:socketMessage) {
     // this should actually not be here, but pages might need to be updated in this service directly
-    if(message.command===Action.CANVASMODIFIED) {
-      console.log("received canvasmodify");
-    let parsedObj = JSON.parse(message.content);
-    let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
-    let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
-    this.updateActivePageDimensions(height,width)
+      if(message.command===Action.CANVASMODIFIED) {
+        console.log("received canvasmodify");
+      let parsedObj = JSON.parse(message.content);
+      let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
+      let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
+      this.updateActivePageDimensions(height,width);
     } else {
       this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
     }
