@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+/* import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FabricCanvasComponent } from './fabric-canvas.component';
 import { FabricmodifyService } from '../fabricmodify.service';
@@ -46,3 +46,4 @@ describe('FabricCanvasComponent', () => {
     expect(rect.uuid).toBeDefined();
   });
 });
+ */
