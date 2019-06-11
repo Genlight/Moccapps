@@ -5,6 +5,7 @@ import ase.DTO.User;
 import ase.message.socket.SocketMessage;
 import ase.service.PageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +14,12 @@ public class PageHandler {
 
     private List<String> currentUser;
     private Page page;
-
-    @Autowired
     private PageService pageService;
 
-    public PageHandler(int pageId){
+
+    public PageHandler(int pageId, PageService pageService){
         currentUser=new ArrayList<>();
+        this.pageService = pageService;
         page=pageService.getPageById(pageId);
     }
 

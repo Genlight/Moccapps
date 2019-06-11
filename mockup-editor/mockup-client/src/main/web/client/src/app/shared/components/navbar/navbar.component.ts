@@ -80,10 +80,10 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.undoRedoService.getRedoObs().subscribe(
-      (bool) => { this.redoDisabled = bool; }
+      (bool) => { this.redoDisabled = !bool; }
     );
     this.undoRedoService.getUndoObs().subscribe(
-      (bool) => { this.undoDisabled = bool; }
+      (bool) => { this.undoDisabled = !bool; }
     );
     this.data.currentMessage.subscribe(item => {
       this.info = {
@@ -192,8 +192,30 @@ export class NavbarComponent implements OnInit {
     // TODO
   }
 
-  onImportSVG() {
-    // TODO
+  /**
+   * handles the import of images or svgs into the page
+   * if the selected file is of an supported type (png,jpeg,bmp,svg) a temporary url for the file is generated
+   * and used to import the file into the active page's canvas through the fabricModifyService
+   * the url is then explicitely revoked again
+   * when successfully executed the selected image is loaded directly into the canvas
+   * @param event event generated when selecting and opening an image from the import dialog
+   */
+  onImportSVG(event: Event) {
+    let inputElem = <HTMLInputElement>event.target;
+    let file:File;
+    if (inputElem.files && inputElem.files[0]) {
+      file = inputElem.files[0];
+    } else {
+      return;
+    }
+
+    if (file.type.match('image/png') || file.type.match('image/jpeg') || file.type.match('image/bmp') || file.type.match('image/svg')) {
+      const canvas = this.managePagesService.getCanvas();
+      const url = window.URL.createObjectURL(file);
+      this.modifyService.loadImageFromURL(canvas,url);
+      window.URL.revokeObjectURL(url);
+    }
+    
   }
 
   onExportPNG() {
@@ -214,13 +236,11 @@ export class NavbarComponent implements OnInit {
   }
 
   onUndo() {
-    const canvas = this.managePagesService.getCanvas();
-    this.undoRedoService.undo(canvas);
+    this.undoRedoService.undo();
   }
 
   onRedo() {
-    const canvas = this.managePagesService.getCanvas();
-    this.undoRedoService.redo(canvas);
+    this.undoRedoService.redo();
   }
 
   onCut() {

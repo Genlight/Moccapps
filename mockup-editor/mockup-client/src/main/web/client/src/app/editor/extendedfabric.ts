@@ -8,23 +8,30 @@ import { UUID } from 'angular2-uuid';
 // ff. snippet dazu gefunden unter https://stackoverflow.com/questions/34347336/the-toobject-function-in-fabric-js
 /**
  * overriding the toObject function from fabric.js to include the uuid correctly in the object
+ * also adding a sendMe field to distinguish between changes "to be sent" and "already sent/applied" 
  */
 fabric.Object.prototype.toObject = (function(toObject) {
     return function(propertiesToInclude) {
-        propertiesToInclude = (propertiesToInclude || []).concat(
+        propertiesToInclude = (propertiesToInclude || [])
+        .concat(
           ['uuid']
+        )
+        .concat(
+            ['sendMe']
         );
         return toObject.apply(this, [propertiesToInclude]);
     };
 })(fabric.Object.prototype.toObject);
 
 // copied original initialize function, added UUID, works for all objects on new-call
+// also added sendMe flag
 // see http://fabricjs.com/docs/fabric.js.html#line13062
 fabric.Object.prototype.initialize = function(options) {
       if (options) {
         this.setOptions(options);
       }
-      this.uuid = UUID.UUID();
+      if(!this.uuid) this.uuid = UUID.UUID();
+      this.sendMe = true;
 };
 
 
@@ -103,5 +110,7 @@ fabric.Object.prototype.resizeToScale = function() {
     }
   };
 
+  //overriding clone function to properly copy the custom uuid?
+//fabric.Canvas.prototype.clone = function
 // export wrapped fabric-object
 export { fabric };

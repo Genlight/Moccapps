@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
 import { ManagePagesService } from './managepages.service';
 import { Action } from './fabric-canvas/transformation.interface';
+import { socketMessage } from '../socketConnection/socketMessage';
 let savedElements = null;
 
 @Injectable({
@@ -13,6 +14,7 @@ export class FabricmodifyService {
   canvas: any;
 
   constructor(
+    //private managePagesService:ManagePagesService
   ) { }
 
   /* groups active elements in given canvas if more than one element is selected */
@@ -53,7 +55,7 @@ export class FabricmodifyService {
 
   setBackgroundColor(canvas: any, color: string) {
     canvas.backgroundColor = color;
-    canvas.renderAll();  
+    canvas.renderAll();
   }
 
   /* ungroups elements in given canvas if a group of elements is selected */
@@ -143,7 +145,7 @@ export class FabricmodifyService {
   /* copies active elments in the given canvas and temporarily saves them in a variable */
   copyElement(canvas: any) {
     if (canvas.getActiveObject()) {
-      canvas.getActiveObject().clone(function(cloned) {
+      canvas.getActiveObject().clone(function (cloned) {
         savedElements = cloned;
       });
     }
@@ -155,7 +157,7 @@ export class FabricmodifyService {
     if (savedElements == null) {
       return;
     }
-    savedElements.clone(function(clonedObj) {
+    savedElements.clone(function (clonedObj) {
       canvas.discardActiveObject();
       clonedObj.set({
         left: clonedObj.left + 10,
@@ -165,7 +167,7 @@ export class FabricmodifyService {
       if (clonedObj.type === 'activeSelection') {
         // active selection needs a reference to the canvas.
         clonedObj.canvas = canvas;
-        clonedObj.forEachObject(function(obj) {
+        clonedObj.forEachObject(function (obj) {
           canvas.add(obj);
         });
         // this should solve the unselectability
@@ -189,60 +191,118 @@ export class FabricmodifyService {
     this.copyElement(canvas);
     this.pasteElement(canvas);
   }
-  /**
-   * Wendet übergebene Canvas-Objekt-Transformationen auf das Canvas an.
-   * Falls keine UUID gefunden wird, wird eine Exception geworfen (Ausnahme: element:added)
-   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
-   * welches per toJSON() serialissiert/ deserialisiert wurde
-   */
-  // async applyTransformation(object: any) {
-  //   const canvas = this.managepagesService.getCanvas();
-  //   const old = this.getObjectByUUID(object.uuid);
-  //   this.disableEvents();
-  //   // if not existed, jsut add it
-  //   if (typeof old === 'undefined') {
-  //     await canvas.loadFromJSON(object, () => {
-  //       console.log(`Element added by other user: ${object.uuid}`);
-  //     }).requestRenderAll();
-  //   } else {
-  //     await canvas.remove(old).loadFromJSON(object, () => {
-  //       console.log(`Element changed by other user: ${object.uuid}`);
-  //     }).requestRenderAll();
-  //   }
-  //   this.enableEvents();
-  // }
-  //
-  // /**
-  //  * gleicher Ablauf wie applyTransformation, nur dass hier ein fabric-Objekt entfernt wird
-  //  * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
-  //  * welches per toJSON() serialissiert/ deserialisiert wurde
-  //  */
-  // applyRemoval(object: any) {
-  //   const canvas = this.managepagesService.getCanvas();
-  //   const old = this.getObjectByUUID(object.uuid);
-  //   if (typeof old !== 'undefined') {
-  //     this.disableEvents();
-  //     canvas.remove(old);
-  //     this.enableEvents();
-  //   }
-  // }
-  //
-  // getObjectByUUID(uuid: string) {
-  //   this.canvas = this.managepagesService.getCanvas();
-  //   return this.canvas.getObjects().find((o) => o.uuid === uuid);
-  // }
-  //
-  // enableEvents() {
-  //   this.managepageService.getCanvas()
-  //     .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
-  //     .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
-  //     .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-  //     .on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
-  //     .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-  //     .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
-  // }
-  //
-  // disableEvents() {
-  //   this.managepageService.getCanvas().removeListeners();
-  // }
+
+  loadImageFromURL(canvas: any, url: any) {
+    if (url.includes('.svg') === true) {
+      fabric.loadSVGFromURL(url, function(objects, options) {
+        const loadedObjects = fabric.util.groupSVGElements(objects, options);
+        loadedObjects.scaleToWidth(300);
+        canvas.add(loadedObjects);
+      });
+    } else {
+      fabric.Image.fromURL(url, (image) => {
+        image.set({
+          left: 10,
+          top: 10,
+          angle: 0,
+          padding: 10,
+          cornersize: 10,
+          hasRotatingPoint: true,
+        });
+        image.scaleToWidth(700);
+        canvas.add(image);
+      });
+    }
+    canvas.renderAll();
+  }
+
+  applyTransformation(message: socketMessage, canvas: any) {
+    let transObj = message.content
+    let parsedObj = JSON.parse(transObj);
+
+    if (message.command === Action.PAGEMODIFIED) {
+      let keys = Object.keys(parsedObj);
+      console.log(JSON.stringify(canvas));
+
+      let receivedCanvas = new fabric.Canvas('canvas');
+      receivedCanvas.loadFromJSON(transObj, () => {
+        //empty callback needed
+      });
+      console.log(JSON.stringify(Object.keys(receivedCanvas)))
+
+      //TODO: properly apply canvas changes
+
+      keys.forEach(function(key) {
+        // we don't want to set objects completly new
+        if(key==='objects') return;
+
+        //JSON represenation doesn't match the actual property value in this case, ingenious...
+        if(key==='background') {
+          let newKey = 'backgroundColor';
+          canvas[newKey] = parsedObj[key];
+          console.log(`setting BackroundColour: assigning ${parsedObj[key]} to ${newKey}, old value: ${canvas.backgroundColor}`)
+        }else {
+        console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
+        canvas[key] = parsedObj[key];
+        }
+      })
+      
+    }
+    else {
+      
+
+      const old = this.getObjectByUUID(parsedObj.uuid, canvas);
+    console.log('test: applyTransformation' + ', parsedObj: ' + parsedObj + ', sendMe: ' + parsedObj.sendMe + ', parsedObjuuid: ' + parsedObj.uuid + ', retrievedObj: ' + old + ', JSONmessage:' + JSON.stringify(message));
+
+    console.log('pre enlivenment: ' + JSON.stringify(parsedObj));
+    fabric.util.enlivenObjects([parsedObj], function (objects) {
+      objects.forEach(function (o) {
+
+        console.log('after enlivenment: ' + JSON.stringify(o));
+          o.uuid = parsedObj.uuid;
+
+          if (message.command === Action.ADDED) {
+            o.sendMe = false;
+            canvas.add(o);
+          }
+          else if (message.command === Action.MODIFIED) {
+
+            //fallback to add if no such element exists, can be removed and replaced by error message if desired
+            if (old === undefined) {
+              o.sendMe = false;
+              canvas.add(o);
+            } else {
+              let activeSelection = canvas.getActiveObjects();
+              console.log('contains test\nselection: ' + JSON.stringify(activeSelection) + '\nobject: ' + o.uuid);
+              console.log('\ncontain result: ' + activeSelection.indexOf(o));
+              let keys = Object.keys(o);
+              keys.forEach(function (key) {
+                //console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
+                old[key] = o[key];
+              });
+              //this is necessary to reliably render all changes of the object
+              old.setCoords();
+            }
+          }
+          else if (message.command === Action.REMOVED) {
+            //if no such element exists we are done here
+            if (old !== undefined) {
+              old.sendMe = false;
+              canvas.remove(old);
+            }
+          }
+        
+      });
+
+    });
+    console.log('after parse.');
+  }
+  canvas.renderAll();
+}
+
+
+  getObjectByUUID(uuid: string, canvas: any) {
+    //this.canvas = this.managePagesService.getCanvas(); //commented as managePageService was removed, needs testing
+    return canvas.getObjects().find((o) => o.uuid === uuid);
+  }
 }

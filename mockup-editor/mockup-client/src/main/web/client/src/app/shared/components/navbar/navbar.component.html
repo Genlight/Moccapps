@@ -12,8 +12,11 @@
             <button class="btn btn-light menubtn" disabled>New Project</button>
               <button class="btn btn-light menubtn" disabled>New Page</button>
               <li role="separator" class="divider"></li>
-              <button class="btn btn-light menubtn" disabled>Import SVG...</button>
-              <li class="dropdown-submenu">
+              <label for="file-upload" class="btn btn-light menubtn">
+                Import Image/SVG...
+              </label>
+              <input id="file-upload" type="file" (change)="onImportSVG($event)" accept=".png,.jpg,.jpeg,.bmp,.svg,image/png,image/gif,image/jpeg,image/bmp,/image/svg"/>
+                <li class="dropdown-submenu">
                 <button class="btn btn-light menubtn">Export</button>
                 <ul class="dropdown-menu">
                   <button class="btn btn-light menubtn" (click)="onExportToJPEG()" [disabled]="!activePage">Export to JPEG</button>

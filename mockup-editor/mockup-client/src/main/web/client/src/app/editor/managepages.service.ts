@@ -6,6 +6,10 @@ import { ApiService } from '../api.service';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { ProjectService } from '../shared/services/project.service';
 import { Project } from '../shared/models/Project';
+import { SocketConnectionService } from '../socketConnection/socket-connection.service';
+import { TokenStorageService } from '../auth/token-storage.service';
+import { socketMessage } from '../socketConnection/socketMessage';
+import { Action,CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 import { isArray } from 'util';
 
 @Injectable({
@@ -31,9 +35,11 @@ export class ManagePagesService {
   };
 
   constructor(
-    private fabricModifyService: FabricmodifyService,
     private apiService: ApiService,
-    private projectService: ProjectService
+    private modifyService: FabricmodifyService,
+    private projectService: ProjectService,
+    private socketService: SocketConnectionService,
+    private tokenStorage: TokenStorageService
   ) {
     this._pages = new BehaviorSubject<Page[]>([]);
     this._activePage = new BehaviorSubject<Page>(null);
@@ -52,7 +58,7 @@ export class ManagePagesService {
         this.loadAll();
       }
     });
-  }
+  } 
 
 
   // TODO: change page size, possibly to relative values
@@ -97,7 +103,7 @@ export class ManagePagesService {
     if (!!page) {
       // Persist workspace of old workspace
       let oldPage = Object.assign({}, this.dataStore.activePage);
-      oldPage.page_data = this.fabricModifyService.exportToJson(this.canvas);
+      oldPage.page_data = this.exportToJson(this.canvas);
       console.log(`setPageActive: saving old page: ${JSON.stringify(oldPage)}`);
       this.updatePage(oldPage);
 
@@ -105,6 +111,10 @@ export class ManagePagesService {
       console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
+
+      //this is pretty ugly, but would need rework of multiple components otherwise
+      this.disconnectSocket();
+      this.connectToSocket(this._activeProject.id,this._activePage.getValue().id);
     }
   }
 
@@ -121,8 +131,8 @@ export class ManagePagesService {
       page.width = width;
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
-      //Update page in backend
-      this.updatePage(page);
+      //Update page in backend,this is at the moment done by every party that receives the change
+      //this.updatePage(page);
     }
   }
 
@@ -133,7 +143,7 @@ export class ManagePagesService {
     // Persist current active page
     if (!!this.dataStore.activePage) {
       let page = Object.assign({}, this.dataStore.activePage);
-      page.page_data = this.fabricModifyService.exportToJson(this.canvas);
+      page.page_data = this.exportToJson(this.canvas);
       // Save to backend
       this.updatePage(page);
       console.log(`saveActivePage: Saved to backend: ${JSON.stringify(page)}`);
@@ -158,7 +168,7 @@ export class ManagePagesService {
    */
   private saveCanvasDataToPage(page: Page): Page {
     if (!!page) {
-      page.page_data = this.fabricModifyService.exportToJson(this.canvas);
+      page.page_data = this.exportToJson(this.canvas);
     }
     return page;
   }
@@ -175,12 +185,12 @@ export class ManagePagesService {
     console.log('loadAll');
     if (!!this._activeProject) {
       this.apiService.get(`/project/${this._activeProject.id}/pages`).subscribe(
-        (data) => {
+        (data) => {          
           let pages = (data as Page[]);
           
           // Ensure page order by sorting ids ascending
           pages.sort((a,b) => (a.id - b.id));
-          (this.dataStore.pages) = (data as Page[]);
+          (this.dataStore.pages) = (data as Page[]);          
           this._pages.next(Object.assign({}, this.dataStore).pages);
 
           // If exists, set the first page as active
@@ -360,6 +370,38 @@ export class ManagePagesService {
   // Returns a canvas
   getCanvas(): fabric.Canvas {
     return this.canvas;
+  }
+  
+  exportToJson(canvas:any):string{
+    return JSON.stringify(canvas);
+  }
+
+  //TODO: this screams "refactor me properly please"
+  relayChange(message:socketMessage) {
+    // this should actually not be here, but pages might need to be updated in this service directly
+      if(message.command===Action.CANVASMODIFIED) {
+        console.log("received canvasmodify");
+      let parsedObj = JSON.parse(message.content);
+      let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
+      let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
+      this.updateActivePageDimensions(height,width);
+    } else {
+      this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
+    }
+  }
+
+  //Socket methods
+
+  connectToSocket(projectId:number,pageId:number){
+    //TODO: type mismatch, why?
+    this.socketService.connect(projectId.toString(),pageId.toString(),this.tokenStorage.getToken(),this.relayChange,this);
+  }
+  sendMessageToSocket(object: any, command: string){
+    this.socketService.send(JSON.stringify(object),command);
+  }
+
+  disconnectSocket(){
+    this.socketService.disconnect();
   }
 
   /**

@@ -112,3 +112,7 @@
 .menucursor {
     cursor: default;
 }
+
+input[type="file"] {
+    display: none;
+}

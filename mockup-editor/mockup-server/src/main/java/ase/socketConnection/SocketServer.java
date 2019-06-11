@@ -1,6 +1,8 @@
 package ase.socketConnection;
 
+import ase.DTO.Page;
 import ase.message.socket.SocketMessage;
+import ase.service.PageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class SocketServer {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private PageService pageService;
 
     public SocketServer(){
         messageQueues=Collections.synchronizedMap(new HashMap<>());
@@ -81,9 +86,12 @@ public class SocketServer {
 
     @MessageMapping("/send")
     public void onReceive(@Payload SocketMessage message) throws IOException {
-        logger.info("MESSAGE: "+message.toString());
+        logger.info("MESSAGE: " + message.toString());
         if(!pageHandlerMap.keySet().contains(message.getPageId())){
-            pageHandlerMap.put(message.getPageId(),new PageHandler(Integer.parseInt(message.getPageId())));
+            String pageIdString = message.getPageId();
+            int pageId = Integer.parseInt(pageIdString);
+            PageHandler pageHandler = new PageHandler(pageId, pageService);
+            pageHandlerMap.put(pageIdString, pageHandler);
             userPageMap.put(message.getUser(),message.getPageId());
         }
         pageHandlerMap.get(message.getPageId()).addUser(message.getUser());
