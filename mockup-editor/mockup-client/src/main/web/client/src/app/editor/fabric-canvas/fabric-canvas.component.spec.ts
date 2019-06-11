@@ -45,27 +45,4 @@ describe('FabricCanvasComponent', () => {
   it(': object should have a UUID', () => {
     expect(rect.uuid).toBeDefined();
   });
-  it('Subject<Itransformation> should be defined', () => {
-    expect(component.Transformation).toBeDefined();
-  });
-  it('Transformations should be observable', () => {
-    component.onAddText();
-    expect(transformed).toBe(true);
-    // expect(component.Transformation).toBeDefined();
-    expect(count).toBe(1);
-  });
-
-  it('should not emit Transformations on applytransformations', () => {
-    component.applyTransformation(rect);
-    expect(transformed).toBe(false);
-    expect(count).toBe(0);
-  });
-
-  it('should not emit Transformations on applyRemoval', () => {
-    component.applyTransformation(rect);
-    component.applyRemoval(rect);
-
-    expect(transformed).toBe(false);
-    expect(component.Transformation).toBeDefined();
-  });
 });
