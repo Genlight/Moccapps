@@ -252,7 +252,7 @@ export class FabricmodifyService {
       
 
       const old = this.getObjectByUUID(parsedObj.uuid, canvas);
-    console.log('test: applyTransformation' + ', parsedObj: ' + parsedObj + ', sendMe: ' + parsedObj.sendMe + ', parsedObjuuid: ' + parsedObj.uuid + ', retrievedObj: ' + old + ', JSONmessage:' + JSON.stringify(message));
+    //console.log('test: applyTransformation' + ', parsedObj: ' + parsedObj + ', sendMe: ' + parsedObj.sendMe + ', parsedObjuuid: ' + parsedObj.uuid + ', retrievedObj: ' + old + ', JSONmessage:' + JSON.stringify(message));
 
     console.log('pre enlivenment: ' + JSON.stringify(parsedObj));
     fabric.util.enlivenObjects([parsedObj], function (objects) {
@@ -262,8 +262,12 @@ export class FabricmodifyService {
           o.uuid = parsedObj.uuid;
 
           if (message.command === Action.ADDED) {
+            //old exists if I created the object myself. clean solution: make add button send change but not add in the first place
+            //for 99.9% of the cases, this will suffice (0.1%: in case of uuid collision this becomes inconsistent)
+            if(!old) {
             o.sendMe = false;
             canvas.add(o);
+            }
           }
           else if (message.command === Action.MODIFIED) {
 
