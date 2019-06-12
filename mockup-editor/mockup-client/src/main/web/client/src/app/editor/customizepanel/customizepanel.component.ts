@@ -105,7 +105,7 @@ export class CustomizepanelComponent implements OnInit {
       defaultCanvas[CanvasTransmissionProperty.CHANGEWIDTH] = this.activePage.width;
 
       //TODO: the send works fine but the application of the change is broken due to REST persisting
-      this.managePagesService.sendMessageToSocket(defaultCanvas,Action.CANVASMODIFIED);
+      this.managePagesService.sendMessageToSocket(defaultCanvas,Action.PAGEDIMENSIONCHANGE);
     }
   }
 
