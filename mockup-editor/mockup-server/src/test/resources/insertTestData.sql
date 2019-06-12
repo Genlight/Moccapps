@@ -2,9 +2,10 @@ INSERT INTO users(id,username,email,password) VALUES
     (1,'user1','email1','password1'),
     (2,'user2','email2','password2');
 
-INSERT INTO projects(id,project_name) VALUES
-    (1,'project1'),
-    (2,'project2');
+INSERT INTO projects(id,project_name,last_modified) VALUES
+    (1,'project1','2010-01-31'),
+    (2,'project2','2010-01-31');
+
 
 INSERT INTO projectVersions(id,version_name,project_id) VALUES (1,'testTag1',1);
 

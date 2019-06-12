@@ -68,7 +68,7 @@
           <td>{{ project.users | collaborator }}</td>
           <td>
             <div style="display: flex; align-items: center; justify-content: space-between">
-              <span>{{ project.lastEdited | lastediteddate | date }}</span>
+              <span>{{ project.lastModified | lastediteddate | date }}</span>
               <span ngbDropdown>
                 <button class="btn" ngbDropdownToggle>
                   <fa-icon [icon]="faEllipsisV"></fa-icon>

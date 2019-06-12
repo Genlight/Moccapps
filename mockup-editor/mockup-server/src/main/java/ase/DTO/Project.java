@@ -1,5 +1,6 @@
 package ase.DTO;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +9,7 @@ public class Project {
 
     private int id;
     private String projectname;
+    private Date lastModified;
     private List<Integer> usersId;
     private List<Page> pages;
 
@@ -15,15 +17,17 @@ public class Project {
         usersId =new ArrayList<>();
     }
 
-    public Project(String username) {
+    public Project(String username,Date lastModified) {
         this.projectname = username;
         usersId =new ArrayList<>();
+        this.lastModified=lastModified;
     }
 
-    public Project(int id, String username) {
+    public Project(int id, String username,Date lastModified) {
         this.id=id;
         this.projectname = username;
         usersId =new ArrayList<>();
+        this.lastModified=lastModified;
     }
 
     public int getId() {
@@ -62,12 +66,21 @@ public class Project {
         this.pages = pages;
     }
 
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
     @Override
     public String toString() {
         return "Project{" +
                 "id=" + id +
                 ", projectname='" + projectname + '\'' +
-                ", users=" + usersId +
+                ", lastModified=" + lastModified +
+                ", usersId=" + usersId +
                 ", pages=" + pages +
                 '}';
     }

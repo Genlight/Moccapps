@@ -2,6 +2,8 @@ package ase.tests;
 
 import ase.DTO.*;
 
+import java.sql.Date;
+
 public class TestData {
 
     private static final String USER_1_EMAIL="email1";
@@ -84,10 +86,10 @@ public class TestData {
         user3=new User(USER_3_USERNAME,USER_3_EMAIL,USER_3_PASSWORD);
         user4=new User(USER_4_USERNAME,USER_4_EMAIL,USER_4_PASSWORD);
 
-        createdProject1=new Project(1,PROJECT_1_NAME);
-        createdProject2=new Project(2,PROJECT_2_NAME);
-        project3=new Project(PROJECT_3_NAME);
-        project4=new Project(PROJECT_4_NAME);
+        createdProject1=new Project(1,PROJECT_1_NAME,java.sql.Date.valueOf( "2010-01-31" ));
+        createdProject2=new Project(2,PROJECT_2_NAME,java.sql.Date.valueOf( "2010-01-31" ));
+        project3=new Project(PROJECT_3_NAME,java.sql.Date.valueOf( "2010-01-31" ));
+        project4=new Project(PROJECT_4_NAME,java.sql.Date.valueOf( "2010-01-31" ));
 
         createdProject1.addUser(1);
         createdProject1.addUser(2);

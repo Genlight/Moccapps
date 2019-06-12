@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS projects
 (
   id           INTEGER DEFAULT nextval('seq_project') PRIMARY KEY,
-  project_name VARCHAR(100) NOT NULL
+  project_name VARCHAR(100) NOT NULL,
+  last_modified DATE
 );
 
 CREATE TABLE IF NOT EXISTS user_project

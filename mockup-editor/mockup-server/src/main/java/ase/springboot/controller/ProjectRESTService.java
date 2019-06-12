@@ -65,6 +65,7 @@ public class ProjectRESTService {
             ProjectFormResponse projectForm = new ProjectFormResponse();
             projectForm.setId(project.getId());
             projectForm.setProjectname(project.getProjectname());
+            projectForm.setLastModified(project.getLastModified());
             for (int userId : project.getUsers()) {
                 User user = userService.findUserByID(userId);
                 if (user == null) {
