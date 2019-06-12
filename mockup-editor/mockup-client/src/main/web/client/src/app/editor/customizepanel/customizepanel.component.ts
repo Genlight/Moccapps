@@ -221,18 +221,17 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setCanvasBackgroundColor() { 
-    this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
-    
     //sending change
     //let test = CanvasTransmissionProperty.BACKGROUNDCOLOR
     let changeObject = {[CanvasTransmissionProperty.BACKGROUNDCOLOR]:this.canvasProperties.backgroundColor};
     this.sendCanvas(changeObject,Action.PAGEMODIFIED);
-
-    // GRID RELATED
+ 
     this.managePagesService.getGridCanvas().backgroundColor = this.canvasProperties.backgroundColor;
     this.managePagesService.getGridCanvas().renderAll();
- 
-    this.canvas.renderAll();
+    if (this.canvas.backgroundColor !== null) {
+      this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
+      this.canvas.renderAll();
+    }
   }
 
   setElementBackgroundColor() {

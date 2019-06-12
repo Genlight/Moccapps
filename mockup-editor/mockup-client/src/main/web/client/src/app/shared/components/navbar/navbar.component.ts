@@ -321,8 +321,15 @@ export class NavbarComponent implements OnInit {
     const gridCanvas = this.managePagesService.getGridCanvas();
     if (this.grid) {
       canvas.backgroundColor = null;
+      if (this.snapToGrid) {
+        this.enableSnapToGrid(10);
+      }
     } else {
       canvas.backgroundColor = gridCanvas.backgroundColor;
+      if (this.snapToGrid) {
+        this.disableSnapToGrid();
+      }
+
     }
     canvas.renderAll();
   }
@@ -335,24 +342,136 @@ export class NavbarComponent implements OnInit {
    */
   onSnapToGrid() {
     this.snapToGrid = !this.snapToGrid;
-    const canvas = this.managePagesService.getCanvas();
-    const gridSize = 10;
     if (this.snapToGrid) {
-      canvas.on({
-        'object:moving': (event) => {
-          //if (Math.round(event.target.left / gridSize * 4) % 4 === 0 &&
-          //Math.round(event.target.top / gridSize * 4) % 4 === 0) {
-          event.target.set({
-            left: Math.round(event.target.left / gridSize) * gridSize,
-            top: Math.round(event.target.top / gridSize) * gridSize
-            }).setCoords();
-        // }
-        }
-      });
+     this.enableSnapToGrid(10);
     } else {
-      canvas.on({
-        'object:moving': (event) => {}});
+      this.disableSnapToGrid();
     }
-    canvas.renderAll();
+  }
+
+  /**
+   * adds event listens to the canvas for moving and scaling objects
+   * when movig the coordinates of the base point (default: to left) are rounded to points on the grid
+   * when scaling the calculations have to be made according to all 8 different possible scaling positions
+   * for the top and bottom middle scaling positions only horizontal lines have to be taken into account
+   * for the left and right middle positions only vertical lines have to be taken into account
+   * for the 4 cornern snapping to either a horizontal or a vertical grid line is possible, depending on which one is closer
+   * (scale basen on https://stackoverflow.com/questions/44147762/fabricjs-snap-to-grid-on-resize)
+   * @param gridSize size of the grid to snap to
+   */
+  enableSnapToGrid(gridSize: number) {
+    const canvas = this.managePagesService.getCanvas();
+    canvas.on({
+      'object:moving': (event) => {
+        //if (Math.round(event.target.left / gridSize * 5) % 5 === 0 &&
+        //Math.round(event.target.top / gridSize * 5) % 5 === 0) {
+        event.target.set({
+          left: Math.round(event.target.left / gridSize) * gridSize,
+          top: Math.round(event.target.top / gridSize) * gridSize
+          }).setCoords();
+      // }
+      },
+      'object:scaling': (event) => {
+        const target = event.target;
+        const w = target.width * target.scaleX;
+        const h = target.height * target.scaleY;
+        const snap = { // round to losest snapping points
+          top: Math.round(target.top / gridSize) * gridSize,
+          left: Math.round(target.left / gridSize) * gridSize,
+          bottom: Math.round((target.top + h) / gridSize) * gridSize,
+          right: Math.round((target.left + w) / gridSize) * gridSize
+        };
+        const threshold = gridSize;
+        const dist = { // distance from snapping points
+          top: Math.abs(snap.top - target.top),
+          left: Math.abs(snap.left - target.left),
+          bottom: Math.abs(snap.bottom - target.top - h),
+          right: Math.abs(snap.right - target.left - w)
+        };
+        const attrs = {
+          scaleX: target.scaleX,
+          scaleY: target.scaleY,
+          top: target.top,
+          left: target.left
+        };
+        switch (target.__corner) { // different snap depending on which corner is used to scale
+          case 'tl': // top left
+             if (dist.left < dist.top && dist.left < threshold) {
+                attrs.scaleX = (w - (snap.left - target.left)) / target.width;
+                attrs.scaleY = (attrs.scaleX / target.scaleX) * target.scaleY;
+                attrs.top = target.top + (h - target.height * attrs.scaleY);
+                attrs.left = snap.left;
+             } else if (dist.top < threshold) {
+                attrs.scaleY = (h - (snap.top - target.top)) / target.height;
+                attrs.scaleX = (attrs.scaleY / target.scaleY) * target.scaleX;
+                attrs.left = attrs.left + (w - target.width * attrs.scaleX);
+                attrs.top = snap.top;
+             }
+             break;
+          case 'mt': // middle top
+             if (dist.top < threshold) {
+                attrs.scaleY = (h - (snap.top - target.top)) / target.height;
+                attrs.top = snap.top;
+             }
+             break;
+          case 'tr': // top right
+             if (dist.right < dist.top && dist.right < threshold) {
+                attrs.scaleX = (snap.right - target.left) / target.width;
+                attrs.scaleY = (attrs.scaleX / target.scaleX) * target.scaleY;
+                attrs.top = target.top + (h - target.height * attrs.scaleY);
+             } else if (dist.top < threshold) {
+                attrs.scaleY = (h - (snap.top - target.top)) / target.height;
+                attrs.scaleX = (attrs.scaleY / target.scaleY) * target.scaleX;
+                attrs.top = snap.top;
+             }
+             break;
+          case 'ml': // middle left
+             if (dist.left < threshold) {
+                attrs.scaleX = (w - (snap.left - target.left)) / target.width;
+                attrs.left = snap.left;
+             }
+             break;
+          case 'mr': // middle right
+             if (dist.right < threshold) {
+               attrs.scaleX = (snap.right - target.left) / target.width;
+             }
+             break;
+          case 'bl': // bottom left
+             if (dist.left < dist.bottom && dist.left < threshold) {
+                attrs.scaleX = (w - (snap.left - target.left)) / target.width;
+                attrs.scaleY = (attrs.scaleX / target.scaleX) * target.scaleY;
+                attrs.left = snap.left;
+             } else if (dist.bottom < threshold) {
+                attrs.scaleY = (snap.bottom - target.top) / target.height;
+                attrs.scaleX = (attrs.scaleY / target.scaleY) * target.scaleX;
+                attrs.left = attrs.left + (w - target.width * attrs.scaleX);
+             }
+             break;
+          case 'mb': // middle bottom
+             if (dist.bottom < threshold) {
+               attrs.scaleY = (snap.bottom - target.top) / target.height;
+             }
+             break;
+          case 'br': // bottom right
+             if (dist.right < dist.bottom && dist.right < threshold) {
+                attrs.scaleX = (snap.right - target.left) / target.width;
+                attrs.scaleY = (attrs.scaleX / target.scaleX) * target.scaleY;
+             } else if (dist.bottom < threshold) {
+                attrs.scaleY = (snap.bottom - target.top) / target.height;
+                attrs.scaleX = (attrs.scaleY / target.scaleY) * target.scaleX;
+             }
+             break;
+          }
+        target.set(attrs);
+      }
+    });
+  }
+
+  disableSnapToGrid() {
+    const canvas = this.managePagesService.getCanvas();
+    canvas.on({
+      'object:moving': (event) => {},
+      'object: scaling': (event) => {}
+    });
   }
 }
