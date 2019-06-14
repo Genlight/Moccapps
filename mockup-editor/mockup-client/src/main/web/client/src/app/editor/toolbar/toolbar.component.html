@@ -38,12 +38,19 @@
     </li>
     <ul class="navbar-nav sidebar toolbar-bottom">
       <li class="navbar-item toolbar-item">
-        <button class="btn btn-light btn-toolbar" id="navElementsButton">
+        <button 
+          class="btn btn-light btn-toolbar" 
+          [ngClass]="{'btn-dark': toolbarState === ToolbarPanelState.Library }"
+          id="navElementsButton">
           <fa-icon [icon]="faElements" (click)="onElementsToggle()"></fa-icon>
         </button>
       </li>
       <li class="navbar-item toolbar-item">
-        <button class="btn btn-light btn-toolbar" id="navGroupsButton">
+        <button 
+          class="btn btn-light btn-toolbar" 
+          id="navGroupsButton"
+          [ngClass]="{'btn-dark': toolbarState === ToolbarPanelState.Pages }"
+        >
           <fa-icon [icon]="faLayerGroup" (click)="onGroupToggle()"></fa-icon>
         </button>
       </li>

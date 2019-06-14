@@ -11,6 +11,7 @@ import { TokenStorageService } from '../auth/token-storage.service';
 import { socketMessage } from '../socketConnection/socketMessage';
 import { Action,CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 import { isArray } from 'util';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,7 @@ export class ManagePagesService {
     private apiService: ApiService,
     private modifyService: FabricmodifyService,
     private projectService: ProjectService,
+    private notificationService: NotificationService,
     private socketService: SocketConnectionService,
     private tokenStorage: TokenStorageService
   ) {
@@ -259,12 +261,21 @@ export class ManagePagesService {
       response => {
         console.log('HTTP response', response);
         let page = (response as Page);
-        if (!!page) {
-          this.dataStore.pages.push(page);
-          this._pages.next(Object.assign({}, this.dataStore).pages);
-        }
+        this.addPageToStore(page);
+
+        // Send message to other clients
+        this.sendMessageToSocket(
+          page
+          , Action.PAGECREATED);
       }
     );
+  }
+
+  private addPageToStore(page: Page) {
+    if (!!page) {
+      this.dataStore.pages.push(page);
+      this._pages.next(Object.assign({}, this.dataStore).pages);
+    }
   }
 
   updatePage(page: Page) {
@@ -291,26 +302,31 @@ export class ManagePagesService {
       this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
-          this.dataStore.pages.forEach((p, index) => {
-            if (p.id === page.id) {
-              this.dataStore.pages.splice(index, 1);
-            }
-          });
-          
-          // If deleted page is currently active, set it to inactive
-          if (this.dataStore.activePage.id === page.id) {
-            this.clearActivePage();
-          } else if (this.dataStore.pages.length <= 0) {
-            this.clearActivePage();
-          }
-          //Remove page if server returns http ok.
-          this._pages.next(Object.assign({}, this.dataStore).pages );
+          this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
+          this.removePageFromStore(page.id);
         },
         error => {
           alert(error);
         }
       );
     }
+  }
+
+  private removePageFromStore(pageId: number) {
+    this.dataStore.pages.forEach((p, index) => {
+      if (p.id === pageId) {
+        this.dataStore.pages.splice(index, 1);
+      }
+    });
+    // If deleted page is currently active, set it to inactive
+    if (this.dataStore.activePage.id === pageId) {
+      this.clearActivePage();
+    }
+    else if (this.dataStore.pages.length <= 0) {
+      this.clearActivePage();
+    }
+    // Remove page if server returns http ok.
+    this._pages.next(Object.assign({}, this.dataStore).pages);
   }
 
   /**
@@ -378,20 +394,55 @@ export class ManagePagesService {
 
   //TODO: this screams "refactor me properly please"
   relayChange(message:socketMessage) {
-    // this should actually not be here, but pages might need to be updated in this service directly
-    let parsedObj = JSON.parse(message.content);
-    if(message.command===Action.PAGEDIMENSIONCHANGE) {
-        console.log("received canvasmodify");
-      let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
-      let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
-      this.updateActivePageDimensions(height,width);
-    } else if (message.command === Action.PAGEMODIFIED) {
-      console.log("backgroundcolor changed to " + parsedObj.background);
-      this.gridCanvas.backgroundColor = parsedObj.background;
-      if (this.canvas.backgroundColor !== null) {
-        this.canvas.backgroundColor = parsedObj.background;
+    this.handleChange(message);
+  }
+
+  handleChange(message: socketMessage) {
+    if (!!message) {
+      let parsedObj = JSON.parse(message.content);
+      switch (message.command) {
+        case Action.PAGEDIMENSIONCHANGE:
+          console.log("received canvasmodify");
+          let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
+          let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
+          this.updateActivePageDimensions(height, width);
+          break;
+        case Action.PAGEMODIFIED:
+          console.log("backgroundcolor changed to " + parsedObj.background);
+          this.gridCanvas.backgroundColor = parsedObj.background;
+          if (this.canvas.backgroundColor !== null) {
+            this.canvas.backgroundColor = parsedObj.background;
+          }
+          break;
+        case Action.PAGECREATED:
+          const page = (parsedObj as Page);
+          let pageExists = false;
+          // Check if the page already exists to exclude caller from creating multiple pages.
+          this.dataStore.pages.filter((p) => {
+            if (p.id === page.id) {
+              // Page with the same id already exists. Receiver is probably the same as caller. 
+              pageExists = true;
+            }
+          });
+
+          if (!pageExists) {
+            // Receiver is not caller. Add page
+            this.addPageToStore(page);
+          }
+          break;
+        case Action.PAGEREMOVED:
+          if (!!parsedObj && !!parsedObj.id) {
+            const pageId = parsedObj.id;
+            if (parsedObj.confirm === "true") {
+              //Remove page
+              this.removePageFromStore(pageId);
+            } else {
+              this.notificationService.showError("Another user is working on the page.", "Could not remove page");
+            }
+          }
+          break;
       }
-    } else {
+
       this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
     }
   }
