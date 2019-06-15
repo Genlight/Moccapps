@@ -230,8 +230,6 @@ export class FabricmodifyService {
       });
       console.log(JSON.stringify(Object.keys(receivedCanvas)))
 
-      //TODO: properly apply canvas changes
-
       keys.forEach(function (key) {
         // we don't want to set objects completly new
         if (key === 'objects') return;
@@ -250,34 +248,16 @@ export class FabricmodifyService {
     } else {
       const old = this.getObjectByUUID(parsedObj.uuid, canvas);
 
-      /** 
-       * The commented code below was quite heavily modified/replaced on 15.06.2019
-       * It can be removed, but it is there for now to make reconstructing a bit easier if the current code 
-       * proves to be not stable. Please leave any explanatory comments, they still belong here.
-      */
-      //console.log('test: applyTransformation' + ', parsedObj: ' + parsedObj + ', sendMe: ' + parsedObj.sendMe + ', parsedObjuuid: ' + parsedObj.uuid + ', retrievedObj: ' + old + ', JSONmessage:' + JSON.stringify(message));
-
-      //console.log('pre enlivenment: ' + JSON.stringify(parsedObj));
-      //fabric.util.enlivenObjects([parsedObj], function (objects) {
-      //objects.forEach(function (o) {
-
-      //console.log('after enlivenment: ' + JSON.stringify(o));
-      //o.uuid = parsedObj.uuid;
-
       if (message.command === Action.ADDED) {
         //old exists if I created the object myself. clean solution: make add button send change but not add in the first place
         //for 99.9% of the cases, this will suffice (0.1%: in case of uuid collision this becomes inconsistent)
         if (!old) {
-          //o.sendMe = false;
-          //canvas.add(o);
           this.addRemoteObject(parsedObj, canvas);
         }
       } else if (message.command === Action.MODIFIED) {
 
         //fallback to add if no such element exists, can be removed and replaced by error message if desired
         if (old === undefined) {
-          //o.sendMe = false;
-          //canvas.add(o);
           this.addRemoteObject(parsedObj, canvas);
         } else {
           let selectionChange: boolean = false;
@@ -294,7 +274,6 @@ export class FabricmodifyService {
 
               selectionChange = true;
               FabricmodifyService.calcExtractFromGroup(old, activeSelection);
-              //canvas.renderOnAddRemove = false;
             }
           }
 
@@ -305,8 +284,6 @@ export class FabricmodifyService {
           });
           old.sendMe = true;
           if (selectionChange) {
-            //activeSelection.insertAt(old, positionInCurrentSelection);
-            //canvas.renderOnAddRemove = true;
             FabricmodifyService.calcInsertIntoGroup(old, activeSelection);
           }
 
@@ -321,10 +298,6 @@ export class FabricmodifyService {
           canvas.remove(old);
         }
       }
-
-      //});
-
-      //});
       console.log('after parse.');
     }
     canvas.renderAll();
@@ -332,7 +305,6 @@ export class FabricmodifyService {
 
 
   getObjectByUUID(uuid: string, canvas: any) {
-    //this.canvas = this.managePagesService.getCanvas(); //commented as managePageService was removed, needs testing
     return canvas.getObjects().find((o) => o.uuid === uuid);
   }
 
