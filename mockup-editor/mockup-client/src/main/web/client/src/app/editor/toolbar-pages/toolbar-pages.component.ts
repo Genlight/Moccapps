@@ -59,14 +59,12 @@ export class ToolbarPagesComponent implements OnInit {
   }
 
   onDeletePage(event, page: Page) {
-    event.stopPropagation();
     if (!!page) {
       this.managePagesService.removePage(page);
     }
   }
 
   onClickPage(index: number, page: Page) {
-    //alert(`active page: index: ${index} ${JSON.stringify(page)}`);
     if (this.activePage == null || page.id !== this.activePage.id) {
       this.managePagesService.setPageActive(page);
     }
