@@ -15,7 +15,10 @@
         *ngFor="let page of pages; let i = index;"
         (itemClicked) = "onClickPage(i, page)"
         [class.active]="page.id === (activePage || {}).id"
-        [page]="page">
+        [page]="page"
+        (pageNameChanged) = "onPageNameChanged($event, page)"
+        (deleteClicked) = "onDeletePage($event)"
+        >
       </div>
       <!-- <div 
         role="button"

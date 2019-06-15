@@ -293,6 +293,27 @@ export class ManagePagesService {
     }
   }
 
+  renamePage(page: Page) {
+    console.log(`renamePage: ${JSON.stringify(page)}`);
+    if (!!page) {
+      this.sendMessageToSocket({
+        pageId: page.id,
+        pageName: page.page_name
+      }, Action.PAGERENAMED);
+    }
+  }
+
+  renamePageStore(pageId: number, pageName: string) {
+    this.dataStore.pages.forEach((p, i) => {
+      if (p.id === pageId) {
+        let page = this.dataStore.pages[i];
+        page.page_name = pageName;
+        this.dataStore.pages[i] = page;
+        this._pages.next(Object.assign({}, this.dataStore).pages);
+      }
+    });
+  }
+
   /**
    * Removes the given page from the datastore.
    */
@@ -395,6 +416,7 @@ export class ManagePagesService {
   //TODO: this screams "refactor me properly please"
   relayChange(message:socketMessage) {
     this.handleChange(message);
+    this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
   }
 
   handleChange(message: socketMessage) {
@@ -441,9 +463,13 @@ export class ManagePagesService {
             }
           }
           break;
+        case Action.PAGERENAMED:
+          alert('page renamed');
+          if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageName) {
+            this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
+          }
+          break;
       }
-
-      this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
     }
   }
 

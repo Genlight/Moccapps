@@ -58,9 +58,17 @@ export class ToolbarPagesComponent implements OnInit {
     this.managePagesService.addPage(page_name);
   }
 
-  onDeletePage(event, page: Page) {
+  onDeletePage(page: Page) {
     if (!!page) {
       this.managePagesService.removePage(page);
+    }
+  }
+
+  onPageNameChanged(value: string, page: Page) {
+    if (!!value) {
+      page.page_name = value;
+      this.managePagesService.renamePage(page);
+      //alert(value);
     }
   }
 

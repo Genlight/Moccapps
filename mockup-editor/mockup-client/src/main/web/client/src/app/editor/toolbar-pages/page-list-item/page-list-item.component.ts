@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Page } from 'src/app/shared/models/Page';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
@@ -17,8 +17,11 @@ export class PageListItemComponent implements OnInit {
 
   editMode: boolean = false;
 
+  @ViewChild("editInput")
+  inputElement: ElementRef;
+
   @Output()
-  deletePressed = new EventEmitter<Page>();
+  deleteClicked = new EventEmitter<Page>();
 
   @Output()
   pageNameChanged = new EventEmitter<String>();
@@ -35,12 +38,23 @@ export class PageListItemComponent implements OnInit {
 
   onEnterEditMode() {
     this.editMode = true;
+    if (!!this.inputElement) {
+      // Use timeout of 100ms to wait for angular to detect inputElement.
+      setTimeout(() => {
+        this.inputElement.nativeElement.focus();
+      }, 100);
+    }
   }
 
   onLeaveEditMode(value: string) {
     //alert('leave edit mode');
-    alert(value);
     this.editMode = false;
+    if (!!value) {
+      value = value.trim();
+      if (value.length > 0) {
+        this.pageNameChanged.emit(value);
+      }
+    }
   }
 
   onItemClick() {
@@ -49,6 +63,6 @@ export class PageListItemComponent implements OnInit {
 
   onDeleteClick(event, page: Page) {
     event.stopPropagation();
-    this.deletePressed.emit(page);
+    this.deleteClicked.emit(page);
   }
 }

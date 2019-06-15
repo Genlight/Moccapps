@@ -3,19 +3,17 @@
   (dblclick)="onEnterEditMode()"
   style="cursor: pointer;
         display: flex; align-items: center; justify-content: space-between">
-  <span class="my-auto" *ngIf="!editMode; else edit">{{page.page_name}}</span>
-  <ng-template #edit>
-    <span class="my-auto">
-        <input
-          #edit_input
+  <span class="my-auto" *ngIf="!editMode">{{page.page_name}}</span>
+  <span class="my-auto" [hidden]="!editMode">
+      <input
+        id="page_name_edit_input"
+          #editInput
           type="text"
           required
-          autofocus
           style="width: 120px"
-          (focusout)="onLeaveEditMode(edit_input.value)"
+          (focusout)="onLeaveEditMode(editInput.value)"
           [value]="page.page_name">
-    </span>
-  </ng-template>
+  </span>
   <button
     class=
     "btn btn-link"
@@ -24,23 +22,3 @@
     <fa-icon [icon]="faTrashAlt"></fa-icon>
   </button>
 </div>
-<!--
-<div 
-  role="button"
-  class="list-group-item list-group-item-action py-2" 
-  *ngFor="let page of pages; let i = index;"
-  [class.active]="page.id === (activePage || {}).id"
-  (click)="onClickPage(i, page)"
-  style="cursor: pointer;
-        display: flex; align-items: center; justify-content: space-between">
-  <span class="my-auto">{{page.page_name}}</span>
-  <button
-    class="
-      btn 
-      btn-link"
-    (click)="onDeletePage($event, page)"
-  >
-    <fa-icon [icon]="faTrashAlt"></fa-icon>
-  </button>
-</div>
--->
