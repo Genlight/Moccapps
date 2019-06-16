@@ -10,7 +10,7 @@
           <button class="dropdown-item dropdown-toggle menucursor">File</button>
           <ul class="dropdown-menu">
             <button class="btn btn-light menubtn" disabled>New Project</button>
-              <button class="btn btn-light menubtn" disabled>New Page</button>
+              <button class="btn btn-light menubtn" (click)="onNewPage()">New Page</button>
               <li role="separator" class="divider"></li>
               <label for="file-upload" class="btn btn-light menubtn">
                 Import Image/SVG...
@@ -91,15 +91,19 @@
 
   <div class="navbar-collapse w-100 order-3 ">
     <ul class="navbar-nav ml-auto">
-        <span class="my-auto user-circle ml-1 inv-circle" placement="bottom" ngbTooltip="Invite user" (click)="onManageUser()">+</span>
+<!--         <span class="my-auto user-circle ml-1 inv-circle" placement="bottom" ngbTooltip="Invite user" (click)="onManageUser()">+</span>
       <li class="navbar-item my-auto">
         <span *ngFor="let user of (project ? project : {}).users">
           <span class="user-circle ml-1" placement="bottom" ngbTooltip="{{user.username}}">{{user | usercircle}}</span>
         </span>
       </li>
+ -->
+      <li>
+        <button class="btn btn-light mr-3" (click)="onManageUser()">Invite users</button>
+      </li>
 
-      <!--<li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>
-      <span class="my-auto">|</span>-->
+      <!--<li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>-->
+      <span class="my-auto">|</span>
       <li class="navbar-item ml-3 my-auto" ngbDropdown>
         <button class="btn btn-light navbar-username dropdown-toggle" ngbDropdownToggle>{{info.username}}</button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faFolder,faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { ElementsService } from '../elements.service';
+import { WorkspaceService, ToolbarPanelState } from '../workspace.service';
 
 @Component({
   selector: 'app-toolbarextension',
@@ -46,7 +47,23 @@ export class ToolbarextensionComponent implements OnInit {
    */
   elementMap = new Map();
 
-  constructor(private elementsService: ElementsService) { }
+  
+  showComponent = false;
+
+  constructor(
+    private elementsService: ElementsService,
+    private workspaceService: WorkspaceService
+  ) { 
+    this.workspaceService.toolbarPanelState.subscribe(
+      (state) => {
+        if (state === ToolbarPanelState.Library) {
+          this.showComponent = true;
+        } else {
+          this.showComponent = false;
+        }
+      }
+    )
+  }
 
   ngOnInit() {
     console.log("loading categories and elements....");

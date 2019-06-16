@@ -131,7 +131,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   onCreatePage() {
-    this.pagesService.createInitialPage();
+    this.pagesService.addPage(null);
   }
 
   enableEvents() {
@@ -251,7 +251,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
-      //this.sendMessageToSocket(JSON.stringify(transObject),action);
+      
       this.onSaveState(evt, action);
 
 
@@ -261,23 +261,28 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
 
       if(typ==='activeSelection') {
-        //Elements in groups/selections are orientated relative to the group and not to the canvas => recalculation is necessary
+        //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
         console.log('selection: '+JSON.stringify(transObject))
-        let selectionLeft = transObject.left
-        let selectionTop = transObject.top
-        let selectionWidth = transObject.width
-        let selectionHeight = transObject.height
-
+        let oldRenderAddReomve = this.canvas.renderOnAddRemove;
+        this.canvas.renderOnAddRemove = false;
+        this.canvas.discardActiveObject();
+        let sendArray = [];
         transObject.forEachObject((current) => {
-          current.clone( (obj) => {
-            obj.top = selectionTop + (selectionHeight/2 + obj.top);
-            obj.left = selectionLeft + (selectionWidth/2 + obj.left);
-            obj.uuid = current.uuid;
+          let newObj = this.getObjectByUUID(current.uuid);
+          sendArray.push(newObj);
+          newObj.clone((obj) => {
+            obj.uuid = newObj.uuid;
             this.pagesService.sendMessageToSocket(obj, action);
-            console.log('current: ' + JSON.stringify(obj) + ', action: ' + action);
-          });
-
+            console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
+          })
         });
+        //fancy canvas magic to ensure the selection behaves properly
+        let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
+
+        this.canvas.setActiveObject(newSelection);
+        console.log('new Selection: '+ JSON.stringify(newSelection));
+        this.canvas.renderOnAddRemove = oldRenderAddReomve;
+        
       } else {
         this.pagesService.sendMessageToSocket(transObject,action);
       }
