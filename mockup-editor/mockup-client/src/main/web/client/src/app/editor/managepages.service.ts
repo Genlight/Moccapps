@@ -443,13 +443,14 @@ export class ManagePagesService {
   //TODO: this screams "refactor me properly please"
   relayChange(message:socketMessage) {
     this.handleChange(message);
-    this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
   }
 
   handleChange(message: socketMessage) {
     if (!!message) {
       let parsedObj = JSON.parse(message.content);
+
       switch (message.command) {
+
         case Action.PAGELOAD:
           console.log('page load');
           if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageData) {
@@ -460,19 +461,29 @@ export class ManagePagesService {
             this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
           }
           break;
+          
         case Action.PAGEDIMENSIONCHANGE:
           console.log("received canvasmodify");
           let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
           let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
           this.updateActivePageDimensions(height, width);
           break;
+
         case Action.PAGEMODIFIED:
-          console.log("backgroundcolor changed to " + parsedObj.background);
-          this.gridCanvas.backgroundColor = parsedObj.background;
+          if(parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]) {
+          console.log("backgroundcolor changed to " + parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]);
+          //always set the grid canvas color
+          this.gridCanvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
+          //only set the "actual" color if it is enabled
           if (this.canvas.backgroundColor !== null) {
-            this.canvas.backgroundColor = parsedObj.background;
+            this.canvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
+            this.canvas.renderAll();
           }
+        } else if (parsedObj[CanvasTransmissionProperty.INDEX]) {    
+            this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
+        }
           break;
+
         case Action.PAGECREATED:
           const page = (parsedObj as Page);
           let pageExists = false;
@@ -489,6 +500,7 @@ export class ManagePagesService {
             this.addPageToStore(page);
           }
           break;
+
         case Action.PAGEREMOVED:
           if (!!parsedObj && !!parsedObj.id) {
             const pageId = parsedObj.id;
@@ -500,13 +512,18 @@ export class ManagePagesService {
             }
           }
           break;
+
         case Action.PAGERENAMED:
           alert('page renamed');
           if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageName) {
             this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
           }
           break;
-      }
+        //if nothing matched, the call is further delegated to actually apply transformations
+        default:      
+          this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
+          break;
+      } 
     }
   }
 

@@ -18,5 +18,6 @@ export enum Action {
 export enum CanvasTransmissionProperty {
   BACKGROUNDCOLOR = 'backgroundColor',
   CHANGEWIDTH = 'changewidth',
-  CHANGEHEIGHT = 'changeheight'
+  CHANGEHEIGHT = 'changeheight',
+  INDEX = 'index'
 }
