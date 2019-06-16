@@ -484,7 +484,7 @@ export class ManagePagesService {
           }
           break;
         case Action.PAGERENAMED:
-          alert('page renamed');
+          //alert('page renamed');
           if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageName) {
             this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
           }
