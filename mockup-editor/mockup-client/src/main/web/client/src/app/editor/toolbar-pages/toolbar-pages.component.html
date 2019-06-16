@@ -1,4 +1,4 @@
-<div class="toolbarextension extensionhidden" id="toolbar-pages">
+<div class="toolbarextension" id="toolbar-pages" *ngIf="showComponent">
   <div class="mb-2" style="display: flex; align-items: center; justify-content: space-between">
     <div>
       <label><b>Pages</b></label>
@@ -10,7 +10,17 @@
 
   <div id="extToolbarContent" class="referenceElement">
     <div class="list-group">
-      <div 
+      <div page-list-item
+        class="list-group-item list-group-item-action py-2"
+        *ngFor="let page of pages; let i = index;"
+        (itemClicked) = "onClickPage(i, page)"
+        [class.active]="page.id === (activePage || {}).id"
+        [page]="page"
+        (pageNameChanged) = "onPageNameChanged($event, page)"
+        (deleteClicked) = "onDeletePage($event)"
+        >
+      </div>
+      <!-- <div 
         role="button"
         class="list-group-item list-group-item-action py-2" 
         *ngFor="let page of pages; let i = index;"
@@ -19,6 +29,8 @@
         style="cursor: pointer;
               display: flex; align-items: center; justify-content: space-between">
         <span class="my-auto">{{page.page_name}}</span>
+        <span class="my-auto">
+        </span>
         <button
           class="
             btn 
@@ -26,8 +38,8 @@
           (click)="onDeletePage($event, page)"
         >
           <fa-icon [icon]="faTrashAlt"></fa-icon>
-        </button>
-      </div>
+        </button> 
+      </div>-->
     </div>
   </div>
 </div>

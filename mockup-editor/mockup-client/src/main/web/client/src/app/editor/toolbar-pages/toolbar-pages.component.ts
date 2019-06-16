@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Page } from 'src/app/shared/models/Page';
 import { ManagePagesService } from '../managepages.service';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { WorkspaceService, ToolbarPanelState } from '../workspace.service';
 
 /**
  * @author Yikai Yang
@@ -17,11 +18,14 @@ export class ToolbarPagesComponent implements OnInit {
   isVisible = true;
   faTrashAlt = faTrashAlt;
 
+  showComponent = false;
+
   pages: Page[] = [];
   activePage: Page;
 
   constructor(
-    private managePagesService: ManagePagesService
+    private managePagesService: ManagePagesService,
+    private workspaceService: WorkspaceService
   ) {
     this.managePagesService.activePage.subscribe(
       (page) => {
@@ -33,9 +37,20 @@ export class ToolbarPagesComponent implements OnInit {
         this.pages = pages;
       }
     );
+
+    this.workspaceService.toolbarPanelState.subscribe(
+      (state) => {
+        if (state === ToolbarPanelState.Pages) {
+          this.showComponent = true;
+        } else {
+          this.showComponent = false;
+        }
+      }
+    )
   }
 
   ngOnInit() {
+    
   }
 
   onCreatePage() {
@@ -43,15 +58,21 @@ export class ToolbarPagesComponent implements OnInit {
     this.managePagesService.addPage(page_name);
   }
 
-  onDeletePage(event, page: Page) {
-    event.stopPropagation();
+  onDeletePage(page: Page) {
     if (!!page) {
       this.managePagesService.removePage(page);
     }
   }
 
+  onPageNameChanged(value: string, page: Page) {
+    if (!!value) {
+      page.page_name = value;
+      this.managePagesService.renamePage(page);
+      //alert(value);
+    }
+  }
+
   onClickPage(index: number, page: Page) {
-    //alert(`active page: index: ${index} ${JSON.stringify(page)}`);
     if (this.activePage == null || page.id !== this.activePage.id) {
       this.managePagesService.setPageActive(page);
     }

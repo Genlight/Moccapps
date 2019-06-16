@@ -3,6 +3,7 @@ import { faMousePointer, faFont, faLayerGroup, faSitemap, faThLarge, faPaintBrus
 import { faHandPaper, faSquare, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
+import { WorkspaceService, ToolbarPanelState } from '../workspace.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -24,7 +25,21 @@ export class ToolbarComponent implements OnInit {
 
   drawingModeOn = false;
 
-  constructor(private modifyService: FabricmodifyService, private managePagesService: ManagePagesService) { }
+
+  ToolbarPanelState = ToolbarPanelState;
+  toolbarState = ToolbarPanelState.None;
+
+  constructor(
+    private modifyService: FabricmodifyService, 
+    private managePagesService: ManagePagesService,
+    private workspaceService: WorkspaceService
+  ) { 
+    this.workspaceService.toolbarPanelState.subscribe(
+      (state) => {
+        this.toolbarState = state;
+      }
+    )
+  }
 
   ngOnInit() {
   }
@@ -66,46 +81,13 @@ export class ToolbarComponent implements OnInit {
   /* toggles extension panel if elements button is currently toggled,
   otherwise switches the elements button to toggled and the group button to untoggled */ 
   onElementsToggle() {
-    const panel = document.getElementById('toolbarextension');
-    const groupbutton = document.getElementById('navGroupsButton');
-    if (panel.classList.contains('extensionhidden')) {
-      panel.classList.toggle('extensionhidden');
-    } else if (groupbutton.classList.contains('btn-dark')) {
-      groupbutton.classList.toggle('btn-dark');
-    } else {
-      panel.classList.toggle('extensionhidden');
-    }
-    const title = document.getElementById('extToolbarTitle');
-    title.innerHTML = 'Available Elements';
-    const content = document.getElementById('extToolbarContent');
-    if (content.classList.contains('extensionhidden')) {
-      content.classList.remove('extensionhidden');
-    }
-    const elementsbutton = document.getElementById('navElementsButton');
-    elementsbutton.classList.toggle('btn-dark');
+    this.workspaceService.toggleLibrary();
   }
 
   /* toggles extension panel if group button is currently toggled,
   otherwise switches the group button to toggled and the elements button to untoggled */
   onGroupToggle() {
-    const panel = document.getElementById('toolbar-pages');
-    const elementsbutton = document.getElementById('navElementsButton');
-    if (panel.classList.contains('extensionhidden')) {
-      panel.classList.toggle('extensionhidden');
-    } else if (elementsbutton.classList.contains('btn-dark')) {
-      elementsbutton.classList.toggle('btn-dark');
-    } else {
-      panel.classList.toggle('extensionhidden');
-    }
-
-   /*  const title = document.getElementById('extToolbarTitle');
-    title.innerHTML = 'Group.ts Overview';
-    const content = document.getElementById('extToolbarContent');
-    if (!content.classList.contains('extensionhidden')) {
-      content.classList.add('extensionhidden');
-    }*/
-    const groupbutton = document.getElementById('navGroupsButton');
-    groupbutton.classList.toggle('btn-dark'); 
+    this.workspaceService.togglePages();
   }
 
   onGroup1Toggle() {

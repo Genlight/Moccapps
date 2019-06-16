@@ -11,6 +11,7 @@ import { TokenStorageService } from '../auth/token-storage.service';
 import { socketMessage } from '../socketConnection/socketMessage';
 import { Action,CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 import { isArray } from 'util';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,7 @@ export class ManagePagesService {
     private apiService: ApiService,
     private modifyService: FabricmodifyService,
     private projectService: ProjectService,
+    private notificationService: NotificationService,
     private socketService: SocketConnectionService,
     private tokenStorage: TokenStorageService
   ) {
@@ -115,6 +117,11 @@ export class ManagePagesService {
       //this is pretty ugly, but would need rework of multiple components otherwise
       this.disconnectSocket();
       this.connectToSocket(this._activeProject.id,this._activePage.getValue().id);
+
+      //Load page by socket
+      setTimeout(() => {
+        this.loadPageBySocket(page.id);
+      }, 1000);
     }
   }
 
@@ -205,7 +212,7 @@ export class ManagePagesService {
   }
 
   /**
-   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend.
+   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via REST)
    */
   load(id: number) {
     this.apiService.get<Page>(`/project/${this._activeProject.id}/page/${id}`).subscribe(
@@ -227,15 +234,28 @@ export class ManagePagesService {
   }
 
   /**
-   * Creates the initial page of a project. To be called after a project has been created.
-   * This method does the following steps:
-   * 1) Adds page
-   * 2) Set this page as active.
-   * @param height the height of the initial page
-   * @param width the width of the initial page
+   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via socket)
+   * @param id 
    */
-  createInitialPage(height?: number, width?: number) {
-    this.addPage("Page 1", height, width);
+  loadPageBySocket(id: number) {
+    if (!!id) {
+      this.sendMessageToSocket( { pageId: id} , Action.PAGELOAD);
+    }
+  }
+
+  loadPageDataStore(id: number, pageData: string) {
+    if (!!id && !!pageData) {
+      if (!!this.dataStore.activePage && !!this.dataStore.activePage.id) {
+        if (id === this.dataStore.activePage.id) {
+          let currentPage = this.dataStore.activePage;
+          currentPage.page_data = pageData;
+          this.dataStore.activePage = currentPage;
+          this._activePage.next(Object.assign({}, currentPage));
+        }
+      }
+    } else {
+      this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
+    }
   }
 
   /**
@@ -244,10 +264,15 @@ export class ManagePagesService {
    * @param height height in px
    * @param width width in px
    */
-  addPage(name: string, height: number = 600, width: number = 900) {
+  addPage(name?: string, height: number = 600, width: number = 900) {
     console.log('addPage');
+    let pageName = name;
+    if (!name) {
+      pageName = `Page ${this.dataStore.pages.length}`;
+    }
+
     const requestPage: Page = {
-      page_name: name,
+      page_name: pageName,
       height: height,
       width: width,
       project_id: this._activeProject.id,
@@ -259,12 +284,21 @@ export class ManagePagesService {
       response => {
         console.log('HTTP response', response);
         let page = (response as Page);
-        if (!!page) {
-          this.dataStore.pages.push(page);
-          this._pages.next(Object.assign({}, this.dataStore).pages);
-        }
+        this.addPageToStore(page);
+
+        // Send message to other clients
+        this.sendMessageToSocket(
+          page
+          , Action.PAGECREATED);
       }
     );
+  }
+
+  private addPageToStore(page: Page) {
+    if (!!page) {
+      this.dataStore.pages.push(page);
+      this._pages.next(Object.assign({}, this.dataStore).pages);
+    }
   }
 
   updatePage(page: Page) {
@@ -272,14 +306,39 @@ export class ManagePagesService {
     if (!!page) {
       this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
         // Update was successful, update element in local store.
-        this.dataStore.pages.forEach((p, i) => {
-          if (p.id === page.id) {
-            this.dataStore.pages[i] = page;
-            this._pages.next(Object.assign({}, this.dataStore).pages);
-          }
-        });
+        this.updatePageStore(page);
       });
     }
+  }
+
+  private updatePageStore(page: Page) {
+    this.dataStore.pages.forEach((p, i) => {
+      if (p.id === page.id) {
+        this.dataStore.pages[i] = page;
+        this._pages.next(Object.assign({}, this.dataStore).pages);
+      }
+    });
+  }
+
+  renamePage(page: Page) {
+    console.log(`renamePage: ${JSON.stringify(page)}`);
+    if (!!page) {
+      this.sendMessageToSocket({
+        pageId: page.id,
+        pageName: page.page_name
+      }, Action.PAGERENAMED);
+    }
+  }
+
+  renamePageStore(pageId: number, pageName: string) {
+    this.dataStore.pages.forEach((p, i) => {
+      if (p.id === pageId) {
+        let page = this.dataStore.pages[i];
+        page.page_name = pageName;
+        this.dataStore.pages[i] = page;
+        this._pages.next(Object.assign({}, this.dataStore).pages);
+      }
+    });
   }
 
   /**
@@ -291,26 +350,31 @@ export class ManagePagesService {
       this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
-          this.dataStore.pages.forEach((p, index) => {
-            if (p.id === page.id) {
-              this.dataStore.pages.splice(index, 1);
-            }
-          });
-          
-          // If deleted page is currently active, set it to inactive
-          if (this.dataStore.activePage.id === page.id) {
-            this.clearActivePage();
-          } else if (this.dataStore.pages.length <= 0) {
-            this.clearActivePage();
-          }
-          //Remove page if server returns http ok.
-          this._pages.next(Object.assign({}, this.dataStore).pages );
+          this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
+          this.removePageFromStore(page.id);
         },
         error => {
           alert(error);
         }
       );
     }
+  }
+
+  private removePageFromStore(pageId: number) {
+    this.dataStore.pages.forEach((p, index) => {
+      if (p.id === pageId) {
+        this.dataStore.pages.splice(index, 1);
+      }
+    });
+    // If deleted page is currently active, set it to inactive
+    if (this.dataStore.activePage.id === pageId) {
+      this.clearActivePage();
+    }
+    else if (this.dataStore.pages.length <= 0) {
+      this.clearActivePage();
+    }
+    // Remove page if server returns http ok.
+    this._pages.next(Object.assign({}, this.dataStore).pages);
   }
 
   /**
@@ -378,21 +442,71 @@ export class ManagePagesService {
 
   //TODO: this screams "refactor me properly please"
   relayChange(message:socketMessage) {
-    // this should actually not be here, but pages might need to be updated in this service directly
-    let parsedObj = JSON.parse(message.content);
-    if(message.command===Action.PAGEDIMENSIONCHANGE) {
-        console.log("received canvasmodify");
-      let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
-      let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
-      this.updateActivePageDimensions(height,width);
-    } else if (message.command === Action.PAGEMODIFIED) {
-      console.log("backgroundcolor changed to " + parsedObj.background);
-      this.gridCanvas.backgroundColor = parsedObj.background;
-      if (this.canvas.backgroundColor !== null) {
-        this.canvas.backgroundColor = parsedObj.background;
+    this.handleChange(message);
+    this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
+  }
+
+  handleChange(message: socketMessage) {
+    if (!!message) {
+      let parsedObj = JSON.parse(message.content);
+      switch (message.command) {
+        case Action.PAGELOAD:
+          console.log('page load');
+          if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageData) {
+            let pageData = parsedObj.pageData;
+            this.loadPageDataStore(parsedObj.id, pageData);
+          } else {
+            console.error('page load: received invalid data over socket connection');
+            this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
+          }
+          break;
+        case Action.PAGEDIMENSIONCHANGE:
+          console.log("received canvasmodify");
+          let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
+          let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
+          this.updateActivePageDimensions(height, width);
+          break;
+        case Action.PAGEMODIFIED:
+          console.log("backgroundcolor changed to " + parsedObj.background);
+          this.gridCanvas.backgroundColor = parsedObj.background;
+          if (this.canvas.backgroundColor !== null) {
+            this.canvas.backgroundColor = parsedObj.background;
+          }
+          break;
+        case Action.PAGECREATED:
+          const page = (parsedObj as Page);
+          let pageExists = false;
+          // Check if the page already exists to exclude caller from creating multiple pages.
+          this.dataStore.pages.filter((p) => {
+            if (p.id === page.id) {
+              // Page with the same id already exists. Receiver is probably the same as caller. 
+              pageExists = true;
+            }
+          });
+
+          if (!pageExists) {
+            // Receiver is not caller. Add page
+            this.addPageToStore(page);
+          }
+          break;
+        case Action.PAGEREMOVED:
+          if (!!parsedObj && !!parsedObj.id) {
+            const pageId = parsedObj.id;
+            if (parsedObj.confirm === "true") {
+              //Remove page
+              this.removePageFromStore(pageId);
+            } else {
+              this.notificationService.showError("Another user is working on the page.", "Could not remove page");
+            }
+          }
+          break;
+        case Action.PAGERENAMED:
+          alert('page renamed');
+          if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageName) {
+            this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
+          }
+          break;
       }
-    } else {
-      this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
     }
   }
 
