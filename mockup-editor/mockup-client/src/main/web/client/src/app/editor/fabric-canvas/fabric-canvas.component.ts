@@ -131,7 +131,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   onCreatePage() {
-    this.pagesService.createInitialPage();
+    this.pagesService.addPage(null);
   }
 
   enableEvents() {
