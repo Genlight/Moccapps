@@ -105,19 +105,19 @@ public class SocketServer {
         }
         pageHandlerMap.get(message.getPageId()).addUser(message.getUser());
         UserHandler user= currentUser.get(message.getUser());
-        switch (message.getContent()){
+        switch (message.getCommand()){
             case "page:load":
                 try {
                     user.getResponderQueue().put(new SocketMessage(
                             message.getProjectId(),
                             message.getPageId(),
                             "server",
-                            "page:content",
+                            "page:load",
                             pageHandlerMap.get(message.getPageId()).getPageData()));
                 } catch (InterruptedException e) {
                     logger.error("Can not communicate with Client Socket Connection Handler Thread during Pageload");
                 }
-                break;
+                return;
             case "page:created":
                 break;
             default:
