@@ -10,9 +10,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="65mm"
+   height="90mm"
+   viewBox="0 0 65 90"
    version="1.1"
    id="svg4541"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
@@ -27,7 +27,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.35"
-     inkscape:cx="-85.714286"
+     inkscape:cx="-571.42857"
      inkscape:cy="560"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -52,12 +52,13 @@
   <g
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-207)">
     <g
        style="stroke:#7e89a3"
        id="IPAD"
        sketch:type="MSLayerGroup"
-       transform="matrix(0.26458333,0,0,0.26458333,74.355836,94.790658)">
+       transform="matrix(0.26458333,0,0,0.26458333,4.0522646,209.69542)">
       <path
          style="fill:#fdfdfd;stroke-width:2"
          inkscape:connector-curvature="0"

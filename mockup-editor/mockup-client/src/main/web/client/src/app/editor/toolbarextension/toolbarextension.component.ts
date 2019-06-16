@@ -17,7 +17,10 @@ export class ToolbarextensionComponent implements OnInit {
    * links to source file and link to thumbnail
    * effectsAllowed is neccessary for the drop to work
    */
-  draggableElements = [{ 
+  draggableElements = [];
+  /**
+   * example structure form draggable elements
+   *  [{ 
     name: 'Browser Window',
     data: 'assets/img/Systems/browser_window.jpg',
     effectAllowed: 'all',
@@ -28,9 +31,20 @@ export class ToolbarextensionComponent implements OnInit {
       effectAllowed: 'all',
       previewimage: 'assets/img/Logos/collups.svg'
     }];
+    */
 
-  categories = ["buttons","icons","systems"];
+  /**
+   * list of categories 
+   */  
+  categories = [];
+  /**
+   * name of the currently active category
+   */
   activeCategory = null;
+  /**
+   * map of all categories and all corresponding elements
+   */
+  elementMap = new Map();
 
   constructor(private elementsService: ElementsService) { }
 
@@ -38,54 +52,63 @@ export class ToolbarextensionComponent implements OnInit {
     console.log("loading categories and elements....");
     this.loadCategoriesFromServer();
   }
+  
 
+  /**
+   * requests a message with all available categories and the corresponding elements from the server
+   * parses the messages and saves the categories in a category array, the browser window is updated accordingly
+   * for each category the data of the elements is saved in an array and the element-arrays are then stored
+   * in a map with the categories as keys
+   */
   loadCategoriesFromServer() {
     this.elementsService.getElements()
       .subscribe(
         (response) => {
           console.log(`loadElements: ${JSON.stringify(response)}`);
-          
+          const stringified = JSON.parse(JSON.stringify(response));
+          const parsedResponse = JSON.parse(stringified['message']);
+          console.log(parsedResponse);
+
+          for (const cat in parsedResponse) {
+            if (!this.categories.includes(cat)) {
+              this.categories.push(cat);
+
+              let elements = [];
+              const elementarray = parsedResponse[cat];
+              for (const elem in elementarray) {
+                const newelem = { 
+                  name: elementarray[elem],
+                  data: 'assets/img/'+cat+'/'+elementarray[elem],
+                  effectAllowed: 'all',
+                  previewimage: 'assets/img/'+cat+'/'+elementarray[elem]
+                }
+                elements.push(newelem);
+              }
+              this.elementMap.set(cat,elements);
+            }
+          }
         },
         (error) => {
           console.log("error when loading categories");
         }
     );
-    /*
-    // get list of folders from server
-    const elementUrl = '/elements';
-    const img = new Request(elementUrl, {
-      method: 'get'
-    });
-    
-
-    function onComplete(re) {
-      console.log("returned: "+re);
-      return re;
-    }
-    console.log(img);
-    */
   }
 
+  /**
+   * loads the data of available elements of the given category in the draggableElements array 
+   * and updates the browser window accordingly
+   * @param category category to load
+   */
   loadCategory(category) {
-    this.loadCategoriesFromServer();
     if (this.activeCategory !== category) {
       this.activeCategory = category;
-      this.draggableElements = [{ 
-        name: 'Collups Logo',
-        data: 'assets/img/Logos/collups.svg',
-        effectAllowed: 'all',
-        previewimage: 'assets/img/Logos/collups.svg'
-      },{ 
-        name: 'Browser Window',
-        data: 'assets/img/Systems/browser_window.jpg',
-        effectAllowed: 'all',
-        previewimage: 'assets/img/Systems/browser_window.jpg'
-      }];
+      this.draggableElements = this.elementMap.get(category);
     } else {
       this.activeCategory = null;
       this.draggableElements = [];
     }
   }
+
 
   /**
    * logs in the console that a draggable item is being dragged

@@ -10,6 +10,6 @@ export class ElementsService {
   constructor(private apiService: ApiService) { }
 
   getElements<T>(): Observable<T> {
-    return this.apiService.get<T>('/editor/elements');
+    return this.apiService.get<T>('/elements');
   }
 }

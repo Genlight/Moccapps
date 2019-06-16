@@ -56,7 +56,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().
                 authorizeRequests()
                 //URLS permitted regardless of authentication!
-                .antMatchers("/index.html", "/", "/home", "/login/**", "/*.css", "/*.png", "/*.ico", "/*.js", "/register/**", "/logout/**", "/assets/**/*.*").permitAll()
+                .antMatchers("/index.html", "/", "/home", "/login/**", "/*.css", "/*.png", "/*.ico", "/*.js", "/register/**", "/logout/**", "/elements", "/assets/**/*.*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .requestCache()

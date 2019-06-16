@@ -10,9 +10,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="19cm"
+   height="12cm"
+   viewBox="0 0 190 120"
    version="1.1"
    id="svg4541"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
@@ -36,7 +36,8 @@
      inkscape:window-height="1138"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     units="cm" />
   <metadata
      id="metadata4538">
     <rdf:RDF>
@@ -52,12 +53,13 @@
   <g
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-177)">
     <g
        style="stroke:#8492a5"
        id="Laptop"
        sketch:type="MSLayerGroup"
-       transform="matrix(0.26458333,0,0,0.26458333,15.78578,89.225166)">
+       transform="matrix(0.26458333,0,0,0.26458333,4.446494,185.98706)">
       <path
          style="fill:#fefefe;stroke-width:2"
          inkscape:connector-curvature="0"
