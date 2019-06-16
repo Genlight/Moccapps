@@ -24,6 +24,7 @@ export class ManagePagesService {
   pages: Observable<Page[]>;
   activePage: Observable<Page>;
 
+  isLoadingPage: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private _pages: BehaviorSubject<Page[]>;
   private _activePage: BehaviorSubject<Page>;
   private _activeProject: Project;
@@ -118,6 +119,7 @@ export class ManagePagesService {
       this.disconnectSocket();
       this.connectToSocket(this._activeProject.id,this._activePage.getValue().id);
 
+      this.isLoadingPage.next(true);
       //Load page by socket
       setTimeout(() => {
         this.loadPageBySocket(page.id);
@@ -218,6 +220,7 @@ export class ManagePagesService {
   loadPageBySocket(id: number) {
     if (!!id) {
       this.sendMessageToSocket( { pageId: id} , Action.PAGELOAD);
+      
     }
   }
 
@@ -438,6 +441,7 @@ export class ManagePagesService {
             console.error('page load: received invalid data over socket connection');
             this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
           }
+          this.isLoadingPage.next(false);
           break;
         case Action.PAGEDIMENSIONCHANGE:
           console.log("received canvasmodify");

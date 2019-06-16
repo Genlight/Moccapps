@@ -36,12 +36,19 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   rulerHorizontal: any;
   rulerVertical: any;
   showRulers: boolean = false;
+  isLoading: boolean = true;
 
   constructor(
     private modifyService: FabricmodifyService,
     private pagesService: ManagePagesService,
     private undoRedoService: UndoRedoService,
-    private workSpaceService: WorkspaceService) { }
+    private workSpaceService: WorkspaceService) {
+
+      this.pagesService.isLoadingPage.subscribe((isLoading) => {
+        //alert(isLoading);
+        this.isLoading = isLoading;
+      });
+    }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
@@ -281,7 +288,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
         this.canvas.setActiveObject(newSelection);
-        console.log('new Selection: '+ JSON.stringify(newSelection));
+        console.log('new Selection: ' + JSON.stringify(newSelection));
         this.canvas.renderOnAddRemove = oldRenderAddReomve;
         
       } else {
