@@ -223,6 +223,26 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.modifyService.ungroup(this.canvas);
   }
 
+  onMouseEnter(e) {
+    //alert('enter');
+/*     let x = e.clientX;
+    let y = e.clientY;
+    console.log(`x: ${x} y: ${y}`); */
+  }
+
+  onMouseLeave(e) {
+    //alert('leave');
+  }
+
+  onMouseMove(e, canvasWrapper: HTMLElement, horizontalHandler: HTMLElement, verticalHandler: HTMLElement) {
+    let bounds = canvasWrapper.getBoundingClientRect();
+    let x = e.clientX - bounds.left;
+    let y = e.clientY - bounds.top;
+    horizontalHandler.style.marginLeft = `${x}px`;
+    verticalHandler.style.marginTop = `${y}px`;
+    console.log(`x: ${x} y: ${y}`);
+  }
+
   /**
    * receives a link to an image in the event data, creates a new fabric image
    * from the given source and adds this image to the workspace
