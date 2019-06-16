@@ -2,8 +2,15 @@ import { fabric } from '../../editor/extendedfabric';
 import { Action } from './Transformation';
 
 export class UndoRedoState {
-  objects: any;
+  previous?: any;
+  current?: any;
   action?: Action;
+}
+
+// entspricht dem State, der gerade angezeigt wird
+export class CanvasState {
+  canvas: any;
+  action: Action;
 }
 
 export enum ReplayAction {

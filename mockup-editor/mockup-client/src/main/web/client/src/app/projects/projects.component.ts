@@ -52,9 +52,9 @@ export class ProjectsComponent implements OnInit {
     this.loadInvites();
     this.loadUserInfo();
   }
-
+//TODO:remove all socket methods
   connectToSocket() {
-    this.socketService.connect("","",this.tokenStorage.getToken());
+    //this.socketService.connect("","",this.tokenStorage.getToken());
   }
 
   sendMessageToSocket(){

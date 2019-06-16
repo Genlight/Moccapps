@@ -7,6 +7,13 @@ export enum Action {
   REMOVED = 'element:removed',
   MODIFIED = 'element:modified',
   PAGECREATED = 'page:created',
+  PAGEMODIFIED = 'page:modified',
   GROUP = 'group:grouped',
   UNGROUP = 'group:ungrouped',
+  PAGEDIMENSIONCHANGE = 'page:dimensionchange'  
+}
+export enum CanvasTransmissionProperty {
+  BACKGROUNDCOLOR = 'backgroundColor',
+  CHANGEWIDTH = 'changewidth',
+  CHANGEHEIGHT = 'changeheight'
 }

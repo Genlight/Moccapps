@@ -52,6 +52,10 @@
     cursor: pointer;
 }
 
+.project-title {
+    cursor: pointer;
+}
+
 /**
  *  navbar with left-center-right split
  *  https://stackoverflow.com/questions/33867603/center-an-element-in-bootstrap-4-navbar
@@ -107,4 +111,8 @@
 
 .menucursor {
     cursor: default;
+}
+
+input[type="file"] {
+    display: none;
 }

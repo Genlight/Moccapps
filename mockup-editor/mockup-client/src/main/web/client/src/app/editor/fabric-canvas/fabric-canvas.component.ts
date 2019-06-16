@@ -5,6 +5,7 @@ import { DndDropEvent } from 'ngx-drag-drop';
 import { Subject } from 'rxjs';
 import { Itransformation, Action } from './transformation.interface';
 import { fabric } from '../extendedfabric';
+import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
@@ -25,6 +26,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   // AsyncSubject is used, because we don't want to get notified, if we update
   // the canvas with Transformation from other users. AsyncSubject works so, that
   // only new events will be 'observed'.
+  // NOTE: not used in the current version
   public Transformation: Subject<Itransformation>;
 
   pages: Page[];
@@ -46,8 +48,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.pagesService.createPage(900, 600);
     this.canvas = this.pagesService.getCanvas();
 
-    // saving initial state of canvas
-    this.undoRedoService.save(this.canvas, Action.PAGECREATED);
+    // saving initial State
+    this.undoRedoService.saveInitialState();
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
 
@@ -113,52 +115,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.rulerVertical.render();
   }
 
-private loadGrid(page: Page) {
-  //const canv = fabric._createCanvasElement();
-  //fabric.util.addClass(canv,"gridCanvas");
-  const c = new fabric.StaticCanvas('canvasGrid',{
-    evented: false, 
-    height:	page.height, 
-    width:page.width,
-    backgroundColor: '#ffffff'
-   });
-  const options = {
-      distance: 10,
-      width: c.width,
-      height: c.height,
-      param: {
-        stroke: '#ebebeb',
-        strokeWidth: 1,
-        selectable: false,
-        evented: false,
-        opacity: 0.5
-      }
-   };
-  const gridLen = options.width / options.distance;
-  const gridGroup = new fabric.Group([], {left: 0, top: 0});
-
-  for (var i = 0; i < gridLen; i++) {
-    const distance = i * options.distance;
-    const horizontal = new fabric.Line([ distance, 0, distance, options.width], options.param);
-    const vertical   = new fabric.Line([ 0, distance, options.width, distance], options.param);
-    if( i % 5 === 0) {
-      horizontal.set({stroke: '#cccccc'});
-      vertical.set({stroke: '#cccccc'});
-    }
-    gridGroup.add(horizontal);
-    gridGroup.add(vertical);
-  };
-  c.add(gridGroup);
-  this.canvas.lowerCanvasEl.parentNode.appendChild(c.lowerCanvasEl);
-  this.canvas.backgroundColor = null;
-  this.canvas.renderAll();
-  console.log("PARENT AND CHILD NODES");
-  //console.log(this.canvas.lowerCanvasEl.parentNode);
-  //console.log(this.canvas.lowerCanvasEl.parentNode.children);
-  const json = JSON.stringify(this.canvas);
-  console.log(json);
-
-}
   private loadPage(page: Page) {
     if (!!page) {
       this.modifyService.clearAll(this.canvas);
@@ -170,26 +126,35 @@ private loadGrid(page: Page) {
       
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
-    //this.loadGrid(this.activePage);
+    //this.pagesService.loadGrid(2000,2000);
+    this.pagesService.updateGrid();
   }
 
   onCreatePage() {
     this.pagesService.createInitialPage();
   }
 
-  /**
-   * for switching event-listener on and off
-   */
   enableEvents() {
     this.canvas
+      .on('before:transform', (event) => {
+        this.pagesService.sendMessageToSocket(event.transform.target.uuid, 'lock');
+      }, )
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-      .on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
+      /*.on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
+      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });*/;
+    }
+  disableEvents() {
+    this.canvas
+      .off('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
+      .off('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
+      .off('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
+      .off('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
+      .off('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
+      .off('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
   }
-
   /**
    * manages keyboard events:
    * - deleting selected elements on delete press
@@ -271,28 +236,7 @@ private loadGrid(page: Page) {
     event.event.stopPropagation();
     const canvas = this.pagesService.getCanvas();
     const url = event.data;
-    if (url.includes('.svg') === true) {
-      fabric.loadSVGFromURL(url, function(objects, options) {
-        const loadedObjects = fabric.util.groupSVGElements(objects, options);
-        loadedObjects.scaleToWidth(300);
-        canvas.add(loadedObjects);
-      });
-    } else {
-      fabric.Image.fromURL(url, (image) => {
-        image.set({
-          left: 10,
-          top: 10,
-          angle: 0,
-          padding: 10,
-          cornersize: 10,
-          hasRotatingPoint: true,
-        });
-        image.scaleToWidth(700);
-        this.canvas.add(image);
-      });
-    }
-    canvas.renderAll();
-    console.log('dropped', JSON.stringify(event, null, 2));
+    this.modifyService.loadImageFromURL(canvas, url);
   }
 
   /**
@@ -302,16 +246,61 @@ private loadGrid(page: Page) {
    * which will be transmitted s. transformation.interface
    */
   onTransformation(evt, action: Action) {
-    const transObject = evt.target;
-    const next = ((element) => {
-      if (typeof this.Transformation === 'undefined') {
-        this.Transformation = new Subject<any>();
+    let transObject = evt.target;
+    console.log(`${action} : ${transObject.uuid}`);
+    if (transObject.sendMe) {
+      //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
+      transObject.sendMe = false;
+      
+      this.onSaveState(evt, action);
+
+
+      let typ = transObject.type
+      //let objectsToSend = [transObject];
+      //console.log('type: '+typ+', transObj: '+JSON.stringify(transObject));
+
+
+      if(typ==='activeSelection') {
+        //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
+        console.log('selection: '+JSON.stringify(transObject))
+        let oldRenderAddReomve = this.canvas.renderOnAddRemove;
+        this.canvas.renderOnAddRemove = false;
+        this.canvas.discardActiveObject();
+        let sendArray = [];
+        transObject.forEachObject((current) => {
+          let newObj = this.getObjectByUUID(current.uuid);
+          sendArray.push(newObj);
+          newObj.clone((obj) => {
+            obj.uuid = newObj.uuid;
+            this.pagesService.sendMessageToSocket(obj, action);
+            console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
+          })
+        });
+        //fancy canvas magic to ensure the selection behaves properly
+        let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
+
+        this.canvas.setActiveObject(newSelection);
+        console.log('new Selection: '+ JSON.stringify(newSelection));
+        this.canvas.renderOnAddRemove = oldRenderAddReomve;
+        
+      } else {
+        this.pagesService.sendMessageToSocket(transObject,action);
       }
-      this.Transformation.next({ element, action });
-      console.log(`${action} : ${element.uuid}`);
-    });
+
+    }
+
+    //this needs to happen externally if the change was made from somebody else; the state of the canvas needs to be accuratly reflected
+    else this.undoRedoService.setState(this.canvas, action);
+
+      //the object needs to be available again regardless of whether or not it was a remote access.
+      //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
+      transObject.sendMe = true;
+  }
+  forEachTransformedObj(evt, next) {
+    const transObject = evt.target;
     if (transObject.type === 'activeSelection') {
-      this.canvas.getActiveObject().forEachObject(next);
+      evt.transform.target.objects.forEach(next);
+      // this.canvas.getActiveObject().forEachObject(next);
       return;
     }
     if (Array.isArray(transObject)) {
@@ -320,34 +309,7 @@ private loadGrid(page: Page) {
       next(transObject);
     }
   }
-  async applyTransformation(object: any) {
-    const old = this.getObjectByUUID(object.uuid);
-    this.canvas.removeListeners();
-    // if not existed, jsut add it
-    if (typeof old === 'undefined') {
-      await this.canvas.loadFromJSON(object, () => {
-        console.log(`Element added by other user: ${object.uuid}`);
-      }).requestRenderAll();
-    } else {
-      await this.canvas.remove(old).loadFromJSON(object, () => {
-        console.log(`Element changed by other user: ${object.uuid}`);
-      }).requestRenderAll();
-    }
-    this.enableEvents();
-  }
-  /**
-   * gleicher Ablauf wie applyTransformation, nur dass hier ein fabric-Objekt entfernt wird
-   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
-   * welches per toJSON() serialissiert/ deserialisiert wurde
-   */
-  applyRemoval(object: any) {
-    const old = this.getObjectByUUID(object.uuid);
-    if (typeof old !== 'undefined') {
-      this.canvas.removeListeners();
-      this.canvas.remove(old);
-      this.enableEvents();
-    }
-  }
+
 
   getObjectByUUID(uuid: string) {
     return this.canvas.getObjects().find((o) => o.uuid === uuid);
@@ -366,7 +328,19 @@ private loadGrid(page: Page) {
    * @{author}: Alexander Genser
    */
   onSaveState(evt: any, action: Action) {
-    this.undoRedoService.save(this.canvas, action);
+    const saveObject = evt.target;
+    const objects = [];
+    if (saveObject.type === 'activeSelection') {
+        saveObject.forEachObject( (obj) => {
+          objects.push(obj);
+        });
+    } else {
+      objects.push(saveObject);
+      console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
+    }
+    this.undoRedoService.save(objects, action);
   }
+
+
 }
 //
