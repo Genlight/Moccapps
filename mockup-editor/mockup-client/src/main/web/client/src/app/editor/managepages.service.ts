@@ -303,13 +303,13 @@ export class ManagePagesService {
   }
 
   updatePage(page: Page) {
-    console.log('updatePage');
+/*     console.log('updatePage');
     if (!!page) {
       this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
         // Update was successful, update element in local store.
         this.updatePageStore(page);
       });
-    }
+    } */
   }
 
   private updatePageStore(page: Page) {
@@ -348,7 +348,8 @@ export class ManagePagesService {
   removePage(page: Page) {
     console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
-      this.apiService.delete(`/page/${page.id}`).subscribe(
+      this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
+     /*  this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
           this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
@@ -357,7 +358,7 @@ export class ManagePagesService {
         error => {
           alert(error);
         }
-      );
+      ); */
     }
   }
 
