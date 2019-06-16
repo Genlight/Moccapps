@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { WorkspaceService, ToolbarPanelState } from '../workspace.service';
 
 @Component({
   selector: 'app-toolbarextension',
@@ -24,7 +25,22 @@ export class ToolbarextensionComponent implements OnInit {
       image: 'assets/img/collups.svg'
     }];
 
-  constructor() { }
+  
+  showComponent = false;
+
+  constructor(
+    private workspaceService: WorkspaceService
+  ) { 
+    this.workspaceService.toolbarPanelState.subscribe(
+      (state) => {
+        if (state === ToolbarPanelState.Library) {
+          this.showComponent = true;
+        } else {
+          this.showComponent = false;
+        }
+      }
+    )
+  }
 
   ngOnInit() {
   }

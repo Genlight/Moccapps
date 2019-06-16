@@ -33,6 +33,7 @@ import { RequestInterceptor } from './shared/interceptor/request.interceptor';
 import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.component';
 import { UsercirclePipe } from './shared/pipes/usercircle.pipe';
+import { PageListItemComponent } from './editor/toolbar-pages/page-list-item/page-list-item.component';
 
 
 library.add(faBars);
@@ -59,7 +60,8 @@ library.add(faEllipsisV);
     UserModalComponent,
     LastediteddatePipe,
     ToolbarPagesComponent,
-    UsercirclePipe
+    UsercirclePipe,
+    PageListItemComponent
   ],
   imports: [
     BrowserModule,
