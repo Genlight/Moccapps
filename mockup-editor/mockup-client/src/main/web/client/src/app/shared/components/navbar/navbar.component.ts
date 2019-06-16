@@ -135,6 +135,13 @@ export class NavbarComponent implements OnInit {
     );
   }
 
+  onExportToJSON() {
+    const canvas = this.managePagesService.getCanvas();
+    const json = this.modifyService.exportToJson(canvas);
+    alert(JSON.stringify(json));
+    console.log('CANVAS JSON: ' + json);
+  }
+
   /**
    * Exports and saves the active page as jpeg.
    */
