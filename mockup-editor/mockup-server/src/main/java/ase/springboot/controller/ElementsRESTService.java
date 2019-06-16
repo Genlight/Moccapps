@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import org.apache.tomcat.util.codec.binary.Base64;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +42,7 @@ public class ElementsRESTService {
 
     /**
      * GET for element libraries to send list of element categories and elements to client
+     * @return a response entity which contains the list of all elements on success and an error message on failure
      */
     @GetMapping("/elements")
     public ResponseEntity<?> getElements() {
@@ -82,14 +81,28 @@ public class ElementsRESTService {
         }
     }
 
+    /**
+     * when client sends a base64 encoded image to the server the server saves the image in the folder of the user
+     * sending the image and returns the path to the image in the response
+     * @param encodedImageString string with imagename and base64-encoded image
+     * @return a response message which contains the path of the uploaded image on success or an error message on failure
+     */
     @PostMapping("/elements")
-    public ResponseEntity<?> importImage(@RequestParam("encodedImage") String encodedImage, @RequestParam("imagename") String name) {
+    public ResponseEntity<?> importImage(@RequestBody String encodedImageString) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         if (userDetails == null) {
             return new ResponseEntity<>(new ResponseMessage("not authorized"), HttpStatus.UNAUTHORIZED);
         }
         User user = userService.getUserByEmail(userDetails.getUsername());
+
+        JSONObject encodedImageJSON = new JSONObject(encodedImageString);
+
+        // get image data and name
+        String encodedImageComplete = encodedImageJSON.get("encodedImage").toString(); // with type data
+        String encodedImage = encodedImageComplete.substring(encodedImageComplete.indexOf(',')+1); // just base64 part
+        String name = encodedImageJSON.get("name").toString();
+
 
         // directoryname for user is base64 encoded email
         String userdirectory = Base64.getEncoder().encodeToString(user.getEmail().getBytes());
@@ -103,11 +116,14 @@ public class ElementsRESTService {
         if (!directory.exists()) {
             directory.mkdir();
         }
+
+        // check if image already exists
         File image = new File(imgPath);
         if (image.exists()) {
             logger.error("Error when trying to import an image with a name that already exists");
             return new ResponseEntity<>(new ResponseMessage("Image with the same name already exists"),HttpStatus.CONFLICT);
         } else {
+            // write image data
             FileOutputStream fileOutputStream = null;
             try {
                 fileOutputStream = new FileOutputStream(image);
