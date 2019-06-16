@@ -105,13 +105,15 @@ export class ManagePagesService {
     console.log('setPageActive');
     if (!!page) {
       // Persist workspace of old workspace
-      let oldPage = Object.assign({}, this.dataStore.activePage);
+ /*      let oldPage = Object.assign({}, this.dataStore.activePage);
       oldPage.page_data = this.exportToJson(this.canvas);
       console.log(`setPageActive: saving old page: ${JSON.stringify(oldPage)}`);
-      this.updatePage(oldPage);
+      this.updatePage(oldPage); */
 
       //Set new active page
       console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
+      // Set page data from rest api to null
+      page.page_data = null;
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
 
@@ -220,7 +222,6 @@ export class ManagePagesService {
   loadPageBySocket(id: number) {
     if (!!id) {
       this.sendMessageToSocket( { pageId: id} , Action.PAGELOAD);
-      
     }
   }
 
@@ -333,7 +334,6 @@ export class ManagePagesService {
       this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
-          this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
           this.removePageFromStore(page.id);
         },
         error => {
