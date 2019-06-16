@@ -1,7 +1,6 @@
 package ase.socketConnection;
 
 import ase.DTO.Page;
-import ase.DTO.User;
 import ase.message.socket.SocketMessage;
 import ase.service.PageService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,15 +9,12 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import springfox.documentation.spring.web.json.Json;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
 
 public class PageHandler {
 
@@ -26,21 +22,23 @@ public class PageHandler {
     private Page page;
     private PageService pageService;
     private ObjectMapper objectMapper;
+    private String projectId;
 
     private static final Logger logger= LoggerFactory.getLogger(PageHandler.class);
 
 
-    public PageHandler(int pageId, PageService pageService){
+    public PageHandler(String projectId,int pageId, PageService pageService){
         currentUser=new ArrayList<>();
         objectMapper=new ObjectMapper();
         this.pageService = pageService;
         page=pageService.getPageById(pageId);
+        this.projectId=projectId;
     }
 
     public boolean handleMessage(SocketMessage message){
         JsonNode pageData;
-        logger.info("Command: " + message.getCommand());
-        logger.info("Content: " + message.getContent());
+        logger.debug("Command: " + message.getCommand());
+        logger.debug("Content: " + message.getContent());
         try {
             pageData = objectMapper.readTree(page.getPage_data());
         } catch (IOException e) {
@@ -103,6 +101,48 @@ public class PageHandler {
                     logger.error("coudln't parse content in element:removed");
                     return false;
                 }
+            case "page:modified":{
+                try {
+                    ObjectNode content = objectMapper.readValue(message.getContent(),ObjectNode.class);
+                    Iterator contentIt=content.fieldNames();
+
+                    ObjectNode pageDataOn=pageData.deepCopy();
+                    while( contentIt.hasNext()){
+                        String fieldName =(String) contentIt.next();
+                        if(fieldName.equals("objects")){
+                            continue;
+                        }
+                        String value = content.get(fieldName).asText();
+                        pageDataOn.put(fieldName,content.get(fieldName).asText());
+                    }
+                    page.setPage_data(pageDataOn.toString());
+                } catch (IOException e) {
+                    logger.error("coudln't parse content in page:modified");
+                    return false;
+                }
+                return true;
+            }
+            case "page:dimensionchange":{
+                try {
+                    ObjectNode content = objectMapper.readValue(message.getContent(),ObjectNode.class);
+                    page.setHeight(content.get("changeheight").asInt());
+                    page.setWidth(content.get("changewidth").asInt());
+                    return true;
+                } catch (IOException e) {
+                    logger.error("coudln't parse content in page:dimensionchange");
+                    return false;
+                }
+            }
+            case "page:renamed":{
+                try {
+                    ObjectNode content = objectMapper.readValue(message.getContent(),ObjectNode.class);
+                    page.setPage_name(content.get("pageName").asText());
+                    return true;
+                } catch (IOException e) {
+                    logger.error("coudln't parse content in page:renamed");
+                    return false;
+                }
+            }
         }
         return true;
     }
@@ -131,9 +171,17 @@ public class PageHandler {
         return currentUser;
     }
 
+    public String getPageData(){
+        return page.getPage_data();
+    }
+
     private void shutdown(){
         pageService.update(page);
         logger.debug("page: " + page.getId() + " persisted");
+    }
+
+    public String getProjectId() {
+        return projectId;
     }
 
 }
