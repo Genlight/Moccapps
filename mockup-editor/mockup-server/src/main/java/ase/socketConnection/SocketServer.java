@@ -26,12 +26,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class SocketServer {
     //UserId , Queue to answer
     private Map<String, LinkedBlockingQueue<SocketMessage>> messageQueues;
-    //SessionID, Clientname
+    //SessionID, UserId
     private Map<String, String> sessionIdUserIdMap;
     //PageID, pageHandler of current active pages
     private Map<String, PageHandler> pageHandlerMap;
     //UserID,PageID
     private Map<String,String> userPageMap;
+    //UserID,ProjectID
+    private Map<String,String> userProjectMap;
     private ExecutorService executorService;
     private SocketConnectionHandler connectionHandler;
 
@@ -49,6 +51,7 @@ public class SocketServer {
         sessionIdUserIdMap =Collections.synchronizedMap(new HashMap<>());
         pageHandlerMap =new HashMap<>();
         userPageMap=new HashMap<>();
+        userProjectMap=new HashMap<>();
     }
 
     @EventListener
@@ -76,6 +79,7 @@ public class SocketServer {
             pageHandlerMap.remove(userPageMap.get(userId));
         }
         userPageMap.remove(userId);
+        userProjectMap.remove(userId);
         try {
             messageQueues.get(userId).put(new SocketMessage("","",userId,"disconnect",""));
             messageQueues.remove(userId);
@@ -93,6 +97,7 @@ public class SocketServer {
             PageHandler pageHandler = new PageHandler(pageId, pageService);
             pageHandlerMap.put(pageIdString, pageHandler);
             userPageMap.put(message.getUser(),message.getPageId());
+            userProjectMap.put(message.getUser(),message.getProjectId());
         }
         pageHandlerMap.get(message.getPageId()).addUser(message.getUser());
         pageHandlerMap.get(message.getPageId()).handleMessage(message);
@@ -104,6 +109,5 @@ public class SocketServer {
                 logger.error("Can not communicate with Client Socket Connection Handler Thread");
             }
         }
-
     }
 }
