@@ -3,6 +3,9 @@ package ase.socketConnection;
 import ase.DTO.Page;
 import ase.message.socket.SocketMessage;
 import ase.service.PageService;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -23,6 +26,7 @@ public class PageHandler {
     private PageService pageService;
     private ObjectMapper objectMapper;
     private String projectId;
+    private JsonStringEncoder stringEncoder=JsonStringEncoder.getInstance();
 
     private static final Logger logger= LoggerFactory.getLogger(PageHandler.class);
 
@@ -57,6 +61,7 @@ public class PageHandler {
                 }
                 return true;
             case "element:modified":
+                logger.error(page.getPage_data());
                 try {
                     ArrayNode objects = ((ArrayNode)pageData.get("objects"));
                     ObjectNode content = objectMapper.readValue(message.getContent(),ObjectNode.class);
@@ -70,7 +75,7 @@ public class PageHandler {
                         ObjectNode singlePageObjectON=singlePageObject.deepCopy();
                         while( contentIt.hasNext()){
                             String fieldName =(String) contentIt.next();
-                            singlePageObjectON.put(fieldName,content.get(fieldName).asText());
+                            singlePageObjectON.put(fieldName,content.get(fieldName));
                         }
                         objects.remove(i);
                         objects.insert(i,singlePageObjectON);
