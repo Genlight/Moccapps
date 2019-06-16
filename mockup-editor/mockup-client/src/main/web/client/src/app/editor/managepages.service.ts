@@ -117,6 +117,11 @@ export class ManagePagesService {
       //this is pretty ugly, but would need rework of multiple components otherwise
       this.disconnectSocket();
       this.connectToSocket(this._activeProject.id,this._activePage.getValue().id);
+
+      //Load page by socket
+      setTimeout(() => {
+        this.loadPageBySocket(page.id);
+      }, 1000);
     }
   }
 
@@ -207,7 +212,7 @@ export class ManagePagesService {
   }
 
   /**
-   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend.
+   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via REST)
    */
   load(id: number) {
     this.apiService.get<Page>(`/project/${this._activeProject.id}/page/${id}`).subscribe(
@@ -229,15 +234,28 @@ export class ManagePagesService {
   }
 
   /**
-   * Creates the initial page of a project. To be called after a project has been created.
-   * This method does the following steps:
-   * 1) Adds page
-   * 2) Set this page as active.
-   * @param height the height of the initial page
-   * @param width the width of the initial page
+   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via socket)
+   * @param id 
    */
-  createInitialPage(height?: number, width?: number) {
-    this.addPage("Page 1", height, width);
+  loadPageBySocket(id: number) {
+    if (!!id) {
+      this.sendMessageToSocket( { pageId: id} , Action.PAGELOAD);
+    }
+  }
+
+  loadPageDataStore(id: number, pageData: string) {
+    if (!!id && !!pageData) {
+      if (!!this.dataStore.activePage && !!this.dataStore.activePage.id) {
+        if (id === this.dataStore.activePage.id) {
+          let currentPage = this.dataStore.activePage;
+          currentPage.page_data = pageData;
+          this.dataStore.activePage = currentPage;
+          this._activePage.next(Object.assign({}, currentPage));
+        }
+      }
+    } else {
+      this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
+    }
   }
 
   /**
@@ -246,10 +264,15 @@ export class ManagePagesService {
    * @param height height in px
    * @param width width in px
    */
-  addPage(name: string, height: number = 600, width: number = 900) {
+  addPage(name?: string, height: number = 600, width: number = 900) {
     console.log('addPage');
+    let pageName = name;
+    if (!name) {
+      pageName = `Page ${this.dataStore.pages.length}`;
+    }
+
     const requestPage: Page = {
-      page_name: name,
+      page_name: pageName,
       height: height,
       width: width,
       project_id: this._activeProject.id,
@@ -283,14 +306,18 @@ export class ManagePagesService {
     if (!!page) {
       this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
         // Update was successful, update element in local store.
-        this.dataStore.pages.forEach((p, i) => {
-          if (p.id === page.id) {
-            this.dataStore.pages[i] = page;
-            this._pages.next(Object.assign({}, this.dataStore).pages);
-          }
-        });
+        this.updatePageStore(page);
       });
     }
+  }
+
+  private updatePageStore(page: Page) {
+    this.dataStore.pages.forEach((p, i) => {
+      if (p.id === page.id) {
+        this.dataStore.pages[i] = page;
+        this._pages.next(Object.assign({}, this.dataStore).pages);
+      }
+    });
   }
 
   renamePage(page: Page) {
@@ -423,6 +450,16 @@ export class ManagePagesService {
     if (!!message) {
       let parsedObj = JSON.parse(message.content);
       switch (message.command) {
+        case Action.PAGELOAD:
+          console.log('page load');
+          if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageData) {
+            let pageData = parsedObj.pageData;
+            this.loadPageDataStore(parsedObj.id, pageData);
+          } else {
+            console.error('page load: received invalid data over socket connection');
+            this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
+          }
+          break;
         case Action.PAGEDIMENSIONCHANGE:
           console.log("received canvasmodify");
           let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];

@@ -77,7 +77,7 @@ export class CreateProjectModalComponent implements OnInit {
         if (!!responseProject) {
           this.projectService.setActiveProject(responseProject);
           // Create intitial page of project.
-          this.pagesService.createInitialPage(this.project.height, this.project.width);
+          this.pagesService.addPage(null, this.project.height, this.project.width);
         }
       },
       err => {

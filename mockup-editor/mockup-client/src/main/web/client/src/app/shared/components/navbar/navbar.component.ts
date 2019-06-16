@@ -189,7 +189,7 @@ export class NavbarComponent implements OnInit {
   }
 
   onNewPage() {
-    // TODO
+    this.managePagesService.addPage();
   }
 
   /**
