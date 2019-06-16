@@ -248,6 +248,7 @@ export class ManagePagesService {
       if (!!this.dataStore.activePage && !!this.dataStore.activePage.id) {
         if (id === this.dataStore.activePage.id) {
           let currentPage = this.dataStore.activePage;
+          //alert(JSON.stringify(pageData));
           currentPage.page_data = pageData;
           this.dataStore.activePage = currentPage;
           this._activePage.next(Object.assign({}, currentPage));
@@ -451,10 +452,9 @@ export class ManagePagesService {
       let parsedObj = JSON.parse(message.content);
       switch (message.command) {
         case Action.PAGELOAD:
-          console.log('page load');
-          if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageData) {
-            let pageData = parsedObj.pageData;
-            this.loadPageDataStore(parsedObj.id, pageData);
+          console.log(`pageload. ${JSON.stringify(parsedObj)}`);
+          if (!!parsedObj) {
+               this.loadPageDataStore(this.dataStore.activePage.id, parsedObj);
           } else {
             console.error('page load: received invalid data over socket connection');
             this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
