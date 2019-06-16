@@ -121,7 +121,7 @@ export class ManagePagesService {
       //Load page by socket
       setTimeout(() => {
         this.loadPageBySocket(page.id);
-      }, 1000);
+      }, 3000);
     }
   }
 
@@ -209,28 +209,6 @@ export class ManagePagesService {
         }
       );
     }
-  }
-
-  /**
-   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via REST)
-   */
-  load(id: number) {
-    this.apiService.get<Page>(`/project/${this._activeProject.id}/page/${id}`).subscribe(
-      (page) => {
-        if (!!page) {
-          // If a local copy of the page does already exist. Update the page.
-          let pageExists: boolean = false;
-
-          this.dataStore.pages.forEach((p, i) => {
-            if (p.id === page.id) {
-              this.dataStore.pages[i] = page;
-              this._pages.next(Object.assign({}, this.dataStore).pages);
-              pageExists = true;
-            }
-          });
-        }
-      }
-    )
   }
 
   /**
@@ -349,7 +327,7 @@ export class ManagePagesService {
     console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
       this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
-     /*  this.apiService.delete(`/page/${page.id}`).subscribe(
+      this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
           this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
@@ -358,7 +336,7 @@ export class ManagePagesService {
         error => {
           alert(error);
         }
-      ); */
+      ); 
     }
   }
 
@@ -455,7 +433,7 @@ export class ManagePagesService {
         case Action.PAGELOAD:
           console.log(`pageload. ${JSON.stringify(parsedObj)}`);
           if (!!parsedObj) {
-               this.loadPageDataStore(this.dataStore.activePage.id, parsedObj);
+               this.loadPageDataStore(this.dataStore.activePage.id, JSON.stringify(parsedObj));
           } else {
             console.error('page load: received invalid data over socket connection');
             this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
