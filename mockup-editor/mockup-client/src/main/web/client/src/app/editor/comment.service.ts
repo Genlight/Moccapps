@@ -134,7 +134,7 @@ export class CommentService {
     const command = 'comment:modified';
     console.log(`${command} : ${content.comment }`);
     this.socketService.send(JSON.stringify(content), command);
-    this.commentSubject.next(this.comments);
+    // this.commentSubject.next(this.comments);
   }
 
   deleteComment(comment: Comment) {
