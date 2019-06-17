@@ -35,7 +35,7 @@ export class CommentService {
     //       this.commentSubject.next(page.comments); }
     //     }
     // );
-    this.addingComment.next(false);
+    this.addingComment = new BehaviorSubject<boolean>(false);
     console.log('CommentService init');
   }
   /**
