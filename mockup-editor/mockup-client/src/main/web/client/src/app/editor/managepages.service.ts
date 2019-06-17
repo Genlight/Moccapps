@@ -560,6 +560,10 @@ export class ManagePagesService {
     return this.gridCanvas;
   }
 
+  setActive(obj: any) {
+    this.canvas.setActiveObject(obj);
+    this.canvas.requestRenderAll();
+  }
   /**
    * author: alexander Genser
    * returns activePage, needed for CommentService

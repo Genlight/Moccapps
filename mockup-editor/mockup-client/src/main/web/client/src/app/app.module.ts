@@ -32,6 +32,7 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { RequestInterceptor } from './shared/interceptor/request.interceptor';
 import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.component';
+import { ToolbarGroupsComponent } from './editor/toolbar-groups/toolbar-groups.component';
 import { CreateVersionModalComponent } from './shared/components/create-version-modal/create-version-modal.component';
 import { LoadVersionModalComponent } from './shared/components/load-version-modal/load-version-modal.component';
 import { UsercirclePipe } from './shared/pipes/usercircle.pipe';
@@ -67,6 +68,7 @@ library.add(faEllipsisV);
     CreateVersionModalComponent,
     LoadVersionModalComponent,
     ToolbarPagesComponent,
+    ToolbarGroupsComponent,
     UsercirclePipe,
     PageListItemComponent,
     CommentComponent,

@@ -379,7 +379,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
       if(typ==='activeSelection') {
         //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
-        console.log('selection: '+JSON.stringify(transObject))
+        //console.log('selection: '+JSON.stringify(transObject))
         let oldRenderAddReomve = this.canvas.renderOnAddRemove;
         this.canvas.renderOnAddRemove = false;
         this.canvas.discardActiveObject();
@@ -390,14 +390,14 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
           newObj.clone((obj) => {
             obj.uuid = newObj.uuid;
             this.pagesService.sendMessageToSocket(obj, action);
-            console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
+            //console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
           })
         });
         //fancy canvas magic to ensure the selection behaves properly
         let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
         this.canvas.setActiveObject(newSelection);
-        console.log('new Selection: '+ JSON.stringify(newSelection));
+        //console.log('new Selection: '+ JSON.stringify(newSelection));
         this.canvas.renderOnAddRemove = oldRenderAddReomve;
 
       } else {
