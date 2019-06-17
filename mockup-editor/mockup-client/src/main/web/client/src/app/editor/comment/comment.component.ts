@@ -76,7 +76,7 @@ export class CommentComponent implements OnInit {
   onChangeSubmit(entry) {
     entry.isEditing = false;
     entry.message = this.entryMessages;
-    this.commentService.updateComment(this.comment);
+    this.commentService.updateCommentEntry(this.comment, entry);
   }
   /**
    * delete a comment and remove comment from html

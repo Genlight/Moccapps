@@ -16,6 +16,8 @@ import { UUID } from 'angular2-uuid';
   providedIn: 'root'
 })
 export class CommentService {
+  // test
+  testcount;
   // actual active Page, get Comments from there
   activePage: Observable<Page>;
   commentSubject: BehaviorSubject<Comment[]>;
@@ -27,6 +29,7 @@ export class CommentService {
     private pageService: ManagePagesService,
     private socketService: SocketConnectionService
   ) {
+    this.testcount = false;
     this.commentSubject = new BehaviorSubject<Comment[]>([]);
     this.activePage = this.pageService.getActivePage();
     // this.activePage.subscribe(
@@ -39,18 +42,14 @@ export class CommentService {
     console.log('CommentService init');
   }
   /**
-   * transformation from the activePage Observable to comment Observable
-   * @param  comment Comment
+   * for testing comments, will be deleted after persistening of comments
+   * @return [description]
    */
-  private commentSubscription(comment: Comment[]) {
-      this.commentSubject.next(comment);
-  }
-
   getComments(): Observable<Comment[]> {
     const com = {
-      objectUuid: ['asdf'],
+      objectUuid: ['hjlk'],
       isCleared: false,
-      uuid: 'uuidcomment',
+      uuid: 'uuidcom',
       entries: [
         {
           author: {
@@ -62,28 +61,40 @@ export class CommentService {
           id: 0,
           date: new Date(),
           isEditing: false
+        }]};
+    const com2 = {
+      objectUuid: ['asdf'],
+      isCleared: false,
+      uuid: 'uuidcomment',
+      entries: [
+        {
+          author: {
+            name: 'jonny',
+            username: 'jonny trave',
+            email: 'tothinkabout@as.com'
+          },
+          message: 'hello there',
+          id: 0,
+          date: new Date(),
+          isEditing: false
         },
         {
           author: {
-            name: 'benny',
-            username: 'benny travago',
-            email: 'tothinkaout@as.com'
+            name: 'jonny',
+            username: 'jonny trave',
+            email: 'tothinkabout@as.com'
           },
-          message: 'no it did not',
-          id: 1,
+          message: 'sa something',
+          id: 0,
           date: new Date(),
           isEditing: false
-        },
-        {
-          author: this.storageService.getUserInfo(),
-          message: 'no it did not',
-          id: 2,
-          date: new Date(),
-          isEditing: false
-        }
-      ]
-    };
-    this.commentSubject.next([com]);
+        }]};
+    this.testcount = !this.testcount;
+    if (this.testcount) {
+      this.commentSubject.next([com]);
+    } else {
+      this.commentSubject.next([com2]);
+    }
     return this.commentSubject.asObservable();
   }
 
@@ -141,6 +152,30 @@ export class CommentService {
     // this.commentSubject.next(this.comments);
   }
 
+  updateCommentEntry(comment: Comment, entry: CommentEntry) {
+    const content = {comment, entry};
+    const command = 'commententry:modified';
+    console.log(`${command} : ${content.comment }: ID: ${entry.id}, Entrymessage: '${entry.message}'`);
+    this.socketService.send(JSON.stringify(content), command);
+    // this.commentSubject.next(this.comments);
+  }
+  /**
+   * deleting an existing CommentEntry
+   * @param  comment Comment
+   * @param  entry   CommentEntry
+   * @return         void
+   */
+  deleteCommentEntry(comment: Comment, entry: CommentEntry) {
+    const content = {comment};
+    const command = 'commententry:deleted';
+    console.log(`${command}`);
+    this.socketService.send(JSON.stringify(content), command);
+  }
+  /**
+   * not in use, only resolving / clearing a comment is currently supported
+   * @param  comment Commment
+   * @return         void
+   */
   deleteComment(comment: Comment) {
     const content = {comment};
     const command = 'comment:deleted';
@@ -149,13 +184,10 @@ export class CommentService {
     this.socketService.send(JSON.stringify(content), command);
   }
 
-  deleteCommentEntry(comment: Comment, entry: CommentEntry) {
-    const content = {comment};
-    const command = 'commententry:deleted';
-    console.log(`${command}`);
-    this.socketService.send(JSON.stringify(content), command);
-  }
-
+  /**
+   * needed for buttons and showing comment tab
+   * @return Observable<boolean>
+   */
   getAddCommentObs(): Observable<boolean> {
     return this.addingComment.asObservable();
   }
@@ -168,8 +200,16 @@ export class CommentService {
     return this.comments.find( (o) => o.uuid === comment.uuid  );
   }
 
+  // removing an existing comment from the comment array
   removeComment(comment: Comment) {
     const del = this.comments.findIndex(obj => obj.uuid === comment.uuid);
     this.comments.splice(del, 1);
+  }
+
+  /**
+   * testbutton action, to check whether getcomment works
+   */
+  testgetComments() {
+    this.getComments();
   }
 }

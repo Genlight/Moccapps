@@ -46,4 +46,11 @@ export class CommentBarComponent implements OnInit {
     this.newComment = '';
     this.addingNewComment = false;
   }
+  /**
+   * test
+   * @return void
+   */
+  onTestButton() {
+    this.commentService.testgetComments();
+  }
 }
