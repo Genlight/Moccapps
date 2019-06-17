@@ -22,6 +22,7 @@ import { Page } from '../../models/Page';
 import * as jsPDF from 'jspdf';
 import { RenameProjectModalComponent } from '../rename-project-modal/rename-project-modal.component';
 import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal.component';
+import { ElementsService } from 'src/app/editor/elements.service';
 
 @Component({
   selector: 'app-navbar',
@@ -75,7 +76,8 @@ export class NavbarComponent implements OnInit {
               private modalService: NgbModal,
               private projectService: ProjectService,
               private undoRedoService: UndoRedoService,
-              private workspaceService: WorkspaceService
+              private workspaceService: WorkspaceService,
+              private elementsService: ElementsService
           ) { }
 
   ngOnInit() {
@@ -210,10 +212,12 @@ export class NavbarComponent implements OnInit {
     }
 
     if (file.type.match('image/png') || file.type.match('image/jpeg') || file.type.match('image/bmp') || file.type.match('image/svg')) {
-      const canvas = this.managePagesService.getCanvas();
-      const url = window.URL.createObjectURL(file);
-      this.modifyService.loadImageFromURL(canvas,url);
-      window.URL.revokeObjectURL(url);
+      this.elementsService.importImage(file);
+      
+      //const canvas = this.managePagesService.getCanvas();
+      //const url = window.URL.createObjectURL(file);
+      //this.modifyService.loadImageFromURL(canvas,url);
+      //window.URL.revokeObjectURL(url);
     }
     
   }
