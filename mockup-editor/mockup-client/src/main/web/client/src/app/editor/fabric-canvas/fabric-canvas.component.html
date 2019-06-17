@@ -1,23 +1,56 @@
 <!-- <button (click)=onSaveToLocalStorage()>Save to Local Storage</button>
 <button (click)=onLoadFromLocalStorage()>Load from Local Storage</button> -->
-<div class="mt-3" id="canvasWrapper" tabIndex='0' (keydown)="manageKeyboardEvents($event)" dndDropzone
-    [hidden]="!activePage || !pages || pages.length === 0" (dndDrop)="onDrop($event)">
-    <div class="canvas-container">
-        <canvas id="canvas"></canvas>
-    </div>
-</div>
 
-<div class="card mt-3" *ngIf="!pages || pages.length === 0">
-    <div class="card-body">
-        <h5 class="card-title">No pages available for this project.</h5>
-        <p class="card-text">To start create a new page.</p>
-        <button class="btn btn-primary" (click)="onCreatePage()">Create new page</button>
+<div class="workspace mt-5">
+    <div class="ruler-horizontal noselect" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
+        <svg id="svgH" width="1200" height="30" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
-</div>
+    <div class="ruler-vertical noselect" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
+        <svg id="svgV" width="30" height="1200" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div 
+        class="ruler-handle-horizontal" 
+        #horizontalHandler 
+        [hidden]="!showRulers"
+        (click)="onAddRulerLineH()"
+        ></div>
+    <div 
+        class="ruler-handle-vertical" 
+        #verticalHandler 
+        [hidden]="!showRulers"
+        (click)="onAddRulerLineV()"
+    ></div>
 
-<div class="card mt-3" *ngIf="pages.length > 0 && !activePage">
-    <div class="card-body">
-        <h5 class="card-title">No page selected.</h5>
-        <p class="card-text">Please select a page.</p>
+    <div 
+        #canvasWrapper
+        id="canvasWrapper" 
+        tabIndex='0' 
+        (keydown)="manageKeyboardEvents($event)" 
+        dndDropzone
+        (mouseenter) = "onMouseEnter($event)"
+        (mouseleave) = "onMouseLeave($event)"
+        (mousemove) = "onMouseMove($event, canvasWrapper, horizontalHandler, verticalHandler)"
+            [hidden]="!activePage || !pages || pages.length === 0" (dndDrop)="onDrop($event)">
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+				<canvas id="canvasGrid" style="z-index:1;"></canvas>
+            </div>
     </div>
+
+
+    <div class="card" *ngIf="!pages || pages.length === 0">
+        <div class="card-body">
+            <h5 class="card-title">No pages available for this project.</h5>
+            <p class="card-text">To start create a new page.</p>
+            <button class="btn btn-primary" (click)="onCreatePage()">Create new page</button>
+        </div>
+    </div>
+
+    <div class="card" *ngIf="pages.length > 0 && !activePage">
+        <div class="card-body">
+            <h5 class="card-title">No page selected.</h5>
+            <p class="card-text">Please select a page.</p>
+        </div>
+    </div>
+    
 </div>

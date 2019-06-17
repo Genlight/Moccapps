@@ -109,7 +109,7 @@
         </button>
       </div>
 
-      <div *ngIf="selected">
+      <div *ngIf="selected && selected.type != 'activeSelection' && selected.type != 'group'">
         <h2>Element Settings</h2>
         <h3>Opacity:</h3>
         <div>
@@ -250,6 +250,11 @@
           <option value="spray">Spray</option>
         </select> 
       </div>
+
+      <div *ngIf="selected && (selected.type == 'activeSelection' || selected.type == 'group')" id="multipleElementsSettings">
+          <h2>Multiple Elements</h2>
+          <h3>Customizing multiple elements at once is currently not supported.</h3>
+        </div>
     </li>
   </ul>
 </div>

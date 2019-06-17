@@ -1,21 +1,26 @@
 <div>
   <app-navbar></app-navbar>
-
     <div class="
         container-fluid
         d-flex
         flex-row
         justify-content-between
-        align-items-stretch">
+        align-items-stretch"
+        style="margin-top: 54px"
+        >
       <div style="display: flex">
           <app-toolbar></app-toolbar>
           <app-toolbarextension></app-toolbarextension>
           <app-toolbar-pages></app-toolbar-pages>
+
       </div>
       <div style="display: flex; flex: 1">
         <div class="mx-auto">
             <app-fabric-canvas></app-fabric-canvas>
         </div>
+      </div>
+      <div style="display: flex">
+        <app-comment-bar></app-comment-bar>
       </div>
       <div style="display: flex">
         <app-customizepanel></app-customizepanel>

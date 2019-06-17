@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { faEllipsisV, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, faBold, faItalic, faUnderline } from '@fortawesome/free-solid-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
+import { Action, CanvasTransmissionProperty } from '../fabric-canvas/transformation.interface';
+import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
+import { fabric } from '../extendedfabric';
 
 @Component({
   selector: 'app-customizepanel',
@@ -21,6 +24,8 @@ export class CustomizepanelComponent implements OnInit {
   faUnderline = faUnderline;
 
   private canvas: any;
+  //this is used for the transmission of canvas height and width, as those do not easily survive transmission in the regular way
+  private DEFAULT_CANVAS: string = "{\"version\":\"2.7.0\",\"objects\":[]}";
 
   /* variables directly acessed in the html need to be public */
   public selected: any;
@@ -65,13 +70,14 @@ export class CustomizepanelComponent implements OnInit {
   invalidHeightRange: boolean = false;
 
   constructor(
-    private modifyService: FabricmodifyService, 
-    private managePagesService: ManagePagesService) { 
-      this.managePagesService.activePage.subscribe(
-        (page) => {
-          this.activePage = page;
-        }
-      );
+    private modifyService: FabricmodifyService,
+    private undoRedoService: UndoRedoService,
+    private managePagesService: ManagePagesService) {
+    this.managePagesService.activePage.subscribe(
+      (page) => {
+        this.activePage = page;
+      }
+    );
   }
 
   ngOnInit() {
@@ -91,8 +97,15 @@ export class CustomizepanelComponent implements OnInit {
       this.invalidHeightRange = false;
     }
 
-    if (this.activePage.width >= 0 && this.activePage.height >= 0 ) {
+    if (this.activePage.width >= 0 && this.activePage.height >= 0) {
       this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
+
+      let defaultCanvas = JSON.parse(this.DEFAULT_CANVAS);
+      defaultCanvas[CanvasTransmissionProperty.CHANGEHEIGHT] = this.activePage.height;
+      defaultCanvas[CanvasTransmissionProperty.CHANGEWIDTH] = this.activePage.width;
+
+      //TODO: the send works fine but the application of the change is broken due to REST persisting
+      this.managePagesService.sendMessageToSocket(defaultCanvas, Action.PAGEDIMENSIONCHANGE);
     }
   }
 
@@ -104,8 +117,11 @@ export class CustomizepanelComponent implements OnInit {
   setNewPage(canvas: any) {
     this.canvas = canvas;
     this.canvas.on({
+
+      'object:added': (event) => {
+        //this.sendMessageToSocket(JSON.stringify(event.transform.target),'added');
+      },
       'object:moving': (event) => { },
-      'object:modified': (event) => { },
       'selection:created': (event) => {
         const selectedObject = event.target;
         this.selected = null;
@@ -125,15 +141,17 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   manageSelection(elem) {
-    if (elem.type === 'activeSelection') {
+    if (elem.type === 'activeSelection' || elem.type === 'group') {
       // load properties of all elements if they are the same and otherwise default or only load default properties generally?
-    } else if (elem.type === 'textbox') {
-      this.loadTextProperties(elem);
-    } else if (elem.type === 'circle' || elem.type === 'rect') {
-      this.loadElementProperties(elem);
+
+    } else {
+      if (elem.type === 'textbox') {
+        this.loadTextProperties(elem);
+      } else if (elem.type === 'circle' || elem.type === 'rect') {
+        this.loadElementProperties(elem);
+      }
     }
     this.selected = elem;
-    console.log(this.selected.type);
   }
 
   loadTextProperties(text) {
@@ -164,31 +182,83 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setElementProperty(property, value) {
-    if (this.selected) {
-      this.selected.set(property, value);
+    let currentElem = this.selected;
+    console.log('setproperty:current element ' + JSON.stringify(currentElem));
+    // we need a clone here so we don't actually change the value locally
+    // all properties changed this way are sent to the server first and then applied
+    // this way inconsistencies can be avoided
+
+    // TODO: disabled for now, as the server doesn't send changes back to the original user yet
+    //currentElem=fabric.util.object.clone(currentElem);
+
+    if (currentElem) {
+      currentElem.set(property, value);
+      this.undoRedoService.save(currentElem, Action.MODIFIED);
     }
+    if (currentElem.sendMe) {
+      currentElem.sendMe = false;
+      this.managePagesService.sendMessageToSocket(currentElem, Action.MODIFIED);
+    }
+    currentElem.sendMe = true;
+    // TODO: disable once server sends messages also to the origin, will be rendered by applyTransformation
     this.canvas.renderAll();
   }
 
   bringToFront() {
-    this.modifyService.bringToFront(this.canvas);
+    //this.modifyService.bringToFront(this.canvas);
+    this.sendCloneAddVirtualIndex(this.canvas.getActiveObject(),2);
   }
 
   bringForward() {
-    this.modifyService.bringForward(this.canvas);
+    //this.modifyService.bringForward(this.canvas);
+    this.sendCloneAddVirtualIndex(this.canvas.getActiveObject(),1);
   }
 
   sendToBack() {
-    this.modifyService.sendToBack(this.canvas);
+    //this.modifyService.sendToBack(this.canvas);
+    this.sendCloneAddVirtualIndex(this.canvas.getActiveObject(),-2);
   }
 
   sendBackwards() {
-    this.modifyService.sendBackwards(this.canvas);
+    //this.modifyService.sendBackwards(this.canvas);
+    this.sendCloneAddVirtualIndex(this.canvas.getActiveObject(),-1);
+  }
+
+  private sendCloneAddVirtualIndex(obj, index: number) {
+    let toSend = [];
+    if (obj.type === 'activeSelection') {
+      /*obj.getObjects().forEach(function (current) {
+        current.clone((o) => {
+          o['index'] = index;
+          toSend.push(o);
+        })
+      });*/
+      toSend = obj.getObjects();
+
+    } else {
+      toSend = [obj];
+      /*obj.clone((o) => {
+        o['index'] = index;
+        toSend.push(o);
+      })*/
+    }
+    let changeObject = {'objects':toSend, 'index':index};
+    this.sendCanvas(changeObject,Action.PAGEMODIFIED);
+
   }
 
   setCanvasBackgroundColor() {
-    this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
-    this.canvas.renderAll();
+    //sending change
+    //let test = CanvasTransmissionProperty.BACKGROUNDCOLOR
+    let changeObject = { [CanvasTransmissionProperty.BACKGROUNDCOLOR]: this.canvasProperties.backgroundColor };
+    this.sendCanvas(changeObject, Action.PAGEMODIFIED);
+
+    this.managePagesService.getGridCanvas().backgroundColor = this.canvasProperties.backgroundColor;
+    this.managePagesService.getGridCanvas().renderAll();
+    if (this.canvas.backgroundColor !== null) {
+      this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
+      this.canvas.renderAll();
+    }
   }
 
   setElementBackgroundColor() {
@@ -211,18 +281,18 @@ export class CustomizepanelComponent implements OnInit {
     this.setElementProperty('strokeWidth', this.elementProperties.strokeWidth);
   }
 
-  setElementMoveLock() { 
+  setElementMoveLock() {
     this.setElementProperty('lockMovementX', this.elementProperties.lockMovement);
     this.setElementProperty('lockMovementY', this.elementProperties.lockMovement);
   }
 
   setElementScaleLock() {
-    this.setElementProperty('lockScalingX', this.elementProperties.lockMovement);
-    this.setElementProperty('lockScalingY', this.elementProperties.lockMovement);
+    this.setElementProperty('lockScalingX', this.elementProperties.lockScale);
+    this.setElementProperty('lockScalingY', this.elementProperties.lockScale);
   }
 
   setElementRotateLock() {
-    this.setElementProperty('lockRotation', this.elementProperties.lockMovement);
+    this.setElementProperty('lockRotation', this.elementProperties.lockRotate);
   }
 
   setDrawingModeColor() {
@@ -234,7 +304,7 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setDrawingModeStyle() {
-      // TODO
+    // TODO
   }
 
   setFontFamily() {
@@ -287,4 +357,22 @@ export class CustomizepanelComponent implements OnInit {
     this.setElementProperty('lineHeight', this.textProperties.lineHeight);
   }
 
+  /**
+   * creates an empty canvas and appends any property contained in the parameter that should be transmitted, and therefore changed
+   * @param propertyObject this object contains all the properties that should be set on the empty canvas
+   */
+  private sendCanvas(propertyObject: Object, action: Action) {
+    let _canvas = this.canvas;
+    let _pageService = this.managePagesService;
+    let sendCanvas = JSON.parse(this.DEFAULT_CANVAS);
+    //_canvas.cloneWithoutData((o) => {
+      let keys = Object.keys(propertyObject);
+      keys.forEach(function (key) {
+        sendCanvas[key] = propertyObject[key]
+        console.log('assigning ' + JSON.stringify(propertyObject[key]) + ' to ' + key);
+      });
+      console.log('canvasToSend: ' + JSON.stringify(sendCanvas))
+      _pageService.sendMessageToSocket(sendCanvas, action);
+    //});
+  }
 }

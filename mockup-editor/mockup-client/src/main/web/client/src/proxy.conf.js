@@ -11,10 +11,12 @@ const PROXY_CONFIG = [
           "/user",
           "/invite",
           "/invites",
+          "/elements",
           "/logout"
       ],
       target: "http://localhost:8090",
-      secure: false
+      secure: false,
+      ws: true
   }
 ]
 

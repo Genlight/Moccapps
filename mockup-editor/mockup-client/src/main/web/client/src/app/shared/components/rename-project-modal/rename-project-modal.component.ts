@@ -38,6 +38,5 @@ export class RenameProjectModalComponent implements OnInit {
         this.activeModal.close();
       }
     );
-
   }
 }

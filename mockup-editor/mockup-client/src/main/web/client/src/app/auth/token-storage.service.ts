@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import { User } from '../shared/models/User';
 
 const TOKEN_KEY = 'AuthToken';
 const USERNAME_KEY = 'AuthUsername';
@@ -47,5 +48,18 @@ export class TokenStorageService {
       return false;
     }
     return true;
+  }
+
+  /**
+   * author alexander Genser
+   * returns currentUser object
+   * @return User
+   */
+  getUserInfo(): User {
+    return {
+      username: this.getUsername(),
+      name: this.getUsername(),
+      email: this.getEmail()
+    };
   }
 }

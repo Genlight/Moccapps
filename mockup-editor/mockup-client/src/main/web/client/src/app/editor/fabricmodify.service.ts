@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
 import { ManagePagesService } from './managepages.service';
 import { Action } from './fabric-canvas/transformation.interface';
+import { socketMessage } from '../socketConnection/socketMessage';
 let savedElements = null;
 
 @Injectable({
@@ -13,6 +14,7 @@ export class FabricmodifyService {
   canvas: any;
 
   constructor(
+    //private managePagesService:ManagePagesService
   ) { }
 
   /* groups active elements in given canvas if more than one element is selected */
@@ -53,7 +55,7 @@ export class FabricmodifyService {
 
   setBackgroundColor(canvas: any, color: string) {
     canvas.backgroundColor = color;
-    canvas.renderAll();  
+    canvas.renderAll();
   }
 
   /* ungroups elements in given canvas if a group of elements is selected */
@@ -143,7 +145,7 @@ export class FabricmodifyService {
   /* copies active elments in the given canvas and temporarily saves them in a variable */
   copyElement(canvas: any) {
     if (canvas.getActiveObject()) {
-      canvas.getActiveObject().clone(function(cloned) {
+      canvas.getActiveObject().clone(function (cloned) {
         savedElements = cloned;
       });
     }
@@ -155,7 +157,7 @@ export class FabricmodifyService {
     if (savedElements == null) {
       return;
     }
-    savedElements.clone(function(clonedObj) {
+    savedElements.clone(function (clonedObj) {
       canvas.discardActiveObject();
       clonedObj.set({
         left: clonedObj.left + 10,
@@ -165,7 +167,7 @@ export class FabricmodifyService {
       if (clonedObj.type === 'activeSelection') {
         // active selection needs a reference to the canvas.
         clonedObj.canvas = canvas;
-        clonedObj.forEachObject(function(obj) {
+        clonedObj.forEachObject(function (obj) {
           canvas.add(obj);
         });
         // this should solve the unselectability
@@ -189,60 +191,197 @@ export class FabricmodifyService {
     this.copyElement(canvas);
     this.pasteElement(canvas);
   }
+
+  loadImageFromURL(canvas: any, url: any) {
+    if (url.includes('.svg') === true) {
+      fabric.loadSVGFromURL(url, function (objects, options) {
+        const loadedObjects = fabric.util.groupSVGElements(objects, options);
+        loadedObjects.scaleToWidth(300);
+        canvas.add(loadedObjects);
+      });
+    } else {
+      fabric.Image.fromURL(url, (image) => {
+        image.set({
+          left: 10,
+          top: 10,
+          angle: 0,
+          padding: 10,
+          cornersize: 10,
+          hasRotatingPoint: true,
+        });
+        image.scaleToWidth(700);
+        canvas.add(image);
+      });
+    }
+    canvas.renderAll();
+  }
+
+  applyTransformation(message: socketMessage, canvas: any) {
+    let transObj = message.content
+    let parsedObj = JSON.parse(transObj);
+
+    if (message.command === Action.PAGEMODIFIED) {
+      let keys = Object.keys(parsedObj);
+      //console.log(JSON.stringify(canvas));
+
+      //let receivedCanvas = new fabric.Canvas('canvas');
+      //receivedCanvas.loadFromJSON(transObj, () => {
+        //empty callback needed
+      //});
+      //console.log(JSON.stringify(Object.keys(receivedCanvas)))
+          let _this = this;
+
+      keys.forEach(function (key) {
+        // we don't want to set objects completly new
+        if (key === 'objects') return;
+        
+        else if (key === 'index') { 
+
+          let index = parsedObj.index
+          //we need to flip the order if we bring objects to front, so we will bring the topmost object to front first.
+          let orderedObjects = index <0 ? parsedObj.objects : parsedObj.objects.reverse();
+          orderedObjects.forEach(function(current) {
+            switch(index) {
+              case 1:
+                canvas.bringForward(_this.getObjectByUUID(current.uuid,canvas));
+                break;
+              case 2:
+                canvas.bringToFront(_this.getObjectByUUID(current.uuid,canvas));
+                break;
+              case -1:
+                  canvas.sendBackwards(_this.getObjectByUUID(current.uuid,canvas));
+                break;
+              case -2:
+                  canvas.sendToBack(_this.getObjectByUUID(current.uuid,canvas));
+                break;
+            }
+          });
+        }
+
+        //JSON represenation doesn't match the actual property value in this case, ingenious...
+        /*else if (key === 'backgroundColor') {
+          let newKey = 'backgroundColor';
+          canvas[newKey] = parsedObj[key];
+          console.log(`setting BackroundColour: assigning ${parsedObj[key]} to ${newKey}, old value: ${canvas.backgroundColor}`)
+        }*/ else {
+          console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
+          canvas[key] = parsedObj[key];
+        }
+      })
+
+    } else {
+      const old = this.getObjectByUUID(parsedObj.uuid, canvas);
+
+      if (message.command === Action.ADDED) {
+        //old exists if I created the object myself. clean solution: make add button send change but not add in the first place
+        //for 99.9% of the cases, this will suffice (0.1%: in case of uuid collision this becomes inconsistent)
+        if (!old) {
+          this.addRemoteObject(parsedObj, canvas);
+        }
+      } else if (message.command === Action.MODIFIED) {
+
+        //fallback to add if no such element exists, can be removed and replaced by error message if desired
+        if (old === undefined) {
+          this.addRemoteObject(parsedObj, canvas);
+        } else {
+          let selectionChange: boolean = false;
+          let activeSelection = canvas.getActiveObject();
+          let positionInCurrentSelection: number;
+          if (activeSelection && activeSelection.type === 'activeSelection') {
+            let activeSelectionObjects = canvas.getActiveObjects();
+
+            console.log('contains test\nselection: ' + JSON.stringify(activeSelectionObjects) + '\nobject: ' + parsedObj.uuid);
+            console.log('\ncontain result: ' + activeSelectionObjects.indexOf(old));
+            positionInCurrentSelection = activeSelectionObjects.indexOf(old);
+
+            if (positionInCurrentSelection !== -1) {
+
+              selectionChange = true;
+              FabricmodifyService.calcExtractFromGroup(old, activeSelection);
+            }
+          }
+
+          let keys = Object.keys(parsedObj);
+          keys.forEach(function (key) {
+            //console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
+            old[key] = parsedObj[key];
+          });
+          old.sendMe = true;
+          if (selectionChange) {
+            FabricmodifyService.calcInsertIntoGroup(old, activeSelection);
+          }
+
+          //this is necessary to reliably render all changes of the object
+          old.setCoords();
+        }
+      }
+      else if (message.command === Action.REMOVED) {
+        //if no such element exists we are done here
+        if (old !== undefined) {
+          old.sendMe = false;
+          canvas.remove(old);
+        }
+      }
+      console.log('after parse.');
+    }
+    canvas.renderAll();
+  }
+
+
+  getObjectByUUID(uuid: string, canvas: any) {
+    return canvas.getObjects().find((o) => o.uuid === uuid);
+  }
+
   /**
-   * Wendet übergebene Canvas-Objekt-Transformationen auf das Canvas an.
-   * Falls keine UUID gefunden wird, wird eine Exception geworfen (Ausnahme: element:added)
-   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
-   * welches per toJSON() serialissiert/ deserialisiert wurde
+   * This method modifies the values of an object in a way that they are again relative to the
+   * canvas and not the provided group. Counterpart of calcInsertIntoGroup. Does not remove the object
+   * from the group
+   * @param obj the object to modify
+   * @param group the group the object comes from
    */
-  // async applyTransformation(object: any) {
-  //   const canvas = this.managepagesService.getCanvas();
-  //   const old = this.getObjectByUUID(object.uuid);
-  //   this.disableEvents();
-  //   // if not existed, jsut add it
-  //   if (typeof old === 'undefined') {
-  //     await canvas.loadFromJSON(object, () => {
-  //       console.log(`Element added by other user: ${object.uuid}`);
-  //     }).requestRenderAll();
-  //   } else {
-  //     await canvas.remove(old).loadFromJSON(object, () => {
-  //       console.log(`Element changed by other user: ${object.uuid}`);
-  //     }).requestRenderAll();
-  //   }
-  //   this.enableEvents();
-  // }
-  //
-  // /**
-  //  * gleicher Ablauf wie applyTransformation, nur dass hier ein fabric-Objekt entfernt wird
-  //  * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
-  //  * welches per toJSON() serialissiert/ deserialisiert wurde
-  //  */
-  // applyRemoval(object: any) {
-  //   const canvas = this.managepagesService.getCanvas();
-  //   const old = this.getObjectByUUID(object.uuid);
-  //   if (typeof old !== 'undefined') {
-  //     this.disableEvents();
-  //     canvas.remove(old);
-  //     this.enableEvents();
-  //   }
-  // }
-  //
-  // getObjectByUUID(uuid: string) {
-  //   this.canvas = this.managepagesService.getCanvas();
-  //   return this.canvas.getObjects().find((o) => o.uuid === uuid);
-  // }
-  //
-  // enableEvents() {
-  //   this.managepageService.getCanvas()
-  //     .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
-  //     .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
-  //     .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-  //     .on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
-  //     .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-  //     .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
-  // }
-  //
-  // disableEvents() {
-  //   this.managepageService.getCanvas().removeListeners();
-  // }
+  private static calcExtractFromGroup(obj, group) {
+    //console.log('pre extract obj mod: ' +JSON.stringify(obj));
+    let groupHeightMiddle: number = group.height / 2.0;
+    let groupWidthMiddle: number = group.width / 2.0;
+    let groupLeft: number = group.left;
+    let groupTop: number = group.top;
+
+    obj.left = groupLeft + (groupWidthMiddle + obj.left);
+    obj.top = groupTop + (groupHeightMiddle + obj.top);
+
+    //console.log('post extract obj mod: ' +JSON.stringify(obj));
+  }
+
+  /**
+   * This method modifies the values of an object in a way that they are relative to the
+   * provided group. Counterpart of extractFromGroup. Does not add the object to the group.
+   * @param obj the object to modify
+   * @param group the group to insert to
+   */
+  private static calcInsertIntoGroup(obj, group) {
+
+    //console.log('pre insert obj mod: ' +JSON.stringify(obj));
+    let groupHeightMiddle: number = group.height / 2.0;
+    let groupWidthMiddle: number = group.width / 2.0;
+    let groupLeft: number = group.left;
+    let groupTop: number = group.top;
+    obj.left = obj.left - (groupLeft + groupWidthMiddle);
+    obj.top = obj.top - (groupTop + groupHeightMiddle);
+
+    //console.log('post insert mod: ' +JSON.stringify(obj));
+  }
+
+  /**
+   * This method transform a received JSON object and adds it to the canvas
+   * @param obj the object to add
+   * @param canvas the canvas to add on
+   */
+  private addRemoteObject(obj, canvas) {
+    fabric.util.enlivenObjects([obj], function (objects) {
+      objects.forEach(function (o) {
+        o.uuid = obj.uuid;
+        canvas.add(o);
+      });
+    });
+  }
 }

@@ -1,18 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, ElementRef } from '@angular/core';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
 import { DndDropEvent } from 'ngx-drag-drop';
 import { Subject } from 'rxjs';
 import { Itransformation, Action } from './transformation.interface';
 import { fabric } from '../extendedfabric';
+import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
+import * as Rulez from '../../../../node_modules/rulez.js/dist/js/rulez.min.js';
+import { WorkspaceService } from '../workspace.service';
 
 @Component({
   selector: 'app-fabric-canvas',
   templateUrl: './fabric-canvas.component.html',
-  styleUrls: ['./fabric-canvas.component.scss']
+  styleUrls: ['./fabric-canvas.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 
 export class FabricCanvasComponent implements OnInit, OnDestroy {
@@ -24,23 +28,38 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   // AsyncSubject is used, because we don't want to get notified, if we update
   // the canvas with Transformation from other users. AsyncSubject works so, that
   // only new events will be 'observed'.
+  // NOTE: not used in the current version
   public Transformation: Subject<Itransformation>;
 
   pages: Page[];
   activePage: Page;
 
+  // Rulers
+  rulerHorizontal: any;
+  rulerVertical: any;
+  showRulers: boolean = false;
+
+  selectedElement;
+
+  // Mouse position
+  cursorPosition: {
+    x: number;
+    y: number;
+  } = { x: 0, y: 0};
+
   constructor(
     private modifyService: FabricmodifyService,
     private pagesService: ManagePagesService,
-    private undoRedoService: UndoRedoService) { }
+    private undoRedoService: UndoRedoService,
+    private workSpaceService: WorkspaceService) { }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
     this.pagesService.createPage(900, 600);
     this.canvas = this.pagesService.getCanvas();
 
-    // saving initial state of canvas
-    this.undoRedoService.save(this.canvas, Action.PAGECREATED);
+    // saving initial State
+    this.undoRedoService.saveInitialState();
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
 
@@ -52,8 +71,164 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       this.activePage = page;
       if (!!page) {
         this.loadPage(this.activePage);
+        this.setRulerDimensions(page.height, page.width);
       }
     });
+
+    // React to changes when user clicks on hide/show ruler
+    this.workSpaceService.showsRuler.subscribe((value) => {
+      this.showRulers = value;
+      if (this.showRulers) {
+        //Rerender rulers with current dimensions.
+        if (!!this.activePage && !!this.activePage.height && !!this.activePage.width) {
+          this.setRulerDimensions(this.activePage.height, this.activePage.width);
+        }
+        this.showRulerLines();
+      } else {
+        this.hideRulerLines();
+      }
+    });
+
+    this.loadRuler();
+  }
+
+  mouseDownFired = false;
+  
+  onAddRulerLineH() {
+    let div = document.createElement('div');
+    div.className = 'rulerHLine rulerLine';
+    div.style.marginLeft = this.cursorPosition.x + 'px';
+    div.addEventListener('mousedown', (e) => {
+      this.mouseDownFired = true;
+      this.selectedElement = e.target});
+    div.addEventListener('mouseup', (e) => {
+      // Remove line if it goes below 5px
+      if (this.cursorPosition.x < 5) {
+        this.removeRulerLine(e);
+      }
+      this.selectedElement = null;
+    });
+    let workspace = document.querySelector('.workspace');
+    workspace.insertBefore(div, workspace.childNodes[0]);
+  }
+
+  onAddRulerLineV() {
+    let div = document.createElement('div');
+    div.className = 'rulerVLine rulerLine';
+    div.style.marginTop = this.cursorPosition.y + 'px';
+    div.addEventListener('mousedown', (e) => {
+      this.mouseDownFired = true;
+      this.selectedElement = e.target});
+    div.addEventListener('mouseup', (e) => {
+      // Remove line if it goes below 5px
+      if (this.cursorPosition.y < 5) {
+        this.removeRulerLine(e);
+      }
+      this.selectedElement = null;
+    });
+    let workspace = document.querySelector('.workspace');
+    workspace.insertBefore(div, workspace.childNodes[0]);
+  }
+
+  storeRulers() {
+    
+  }
+
+  loadRulers() {
+
+  }
+
+  removeRulerLine(e) {
+    if (!!e && !!e.target) {
+      e.target.parentNode.removeChild(e.target);
+    }
+  }
+
+  hideRulerLines() {
+    //alert('hideRulerLines');
+    var elems = document.querySelectorAll('.rulerLine');
+    var index = 0, length = elems.length;
+    for ( ; index < length; index++) {
+        elems[index].classList.add("hidden");
+    }
+  }
+
+  showRulerLines() {
+    var elems = document.querySelectorAll('.rulerLine');
+    var index = 0, length = elems.length;
+    for ( ; index < length; index++) {
+        elems[index].classList.remove("hidden");
+    }
+  }
+
+  removeAllRulerLines() {
+  }
+
+  onMouseEnter(e) {
+    //alert('enter');
+/*     let x = e.clientX;
+    let y = e.clientY;
+    console.log(`x: ${x} y: ${y}`); */
+  }
+
+  onMouseLeave(e) {
+    //alert('leave');
+  }
+
+  onMouseMove(e, canvasWrapper: HTMLElement, horizontalHandler: HTMLElement, verticalHandler: HTMLElement) {
+    let bounds = canvasWrapper.getBoundingClientRect();
+    this.cursorPosition.x = e.clientX - bounds.left;
+    this.cursorPosition.y = e.clientY - bounds.top;
+    horizontalHandler.style.marginLeft = `${this.cursorPosition.x }px`;
+    verticalHandler.style.marginTop = `${this.cursorPosition.y}px`;
+    //console.log(`x: ${x} y: ${y}`);
+    if (!!this.selectedElement) {
+      if (this.selectedElement.classList.contains('rulerHLine')) {
+        // Move horizontally
+        this.selectedElement.style.marginLeft = `${this.cursorPosition.x }px`;
+      } else if (this.selectedElement.classList.contains('rulerVLine')){
+        // Move vertically
+        this.selectedElement.style.marginTop = `${this.cursorPosition.y }px`;
+      }
+    }
+  }
+
+  /**
+   * Sets dimensions of rulers (height, number);
+   */
+  private setRulerDimensions(height: number, width: number) {
+    if (height >= 0 && width >= 0) {
+      document.getElementById('svgH').setAttribute("width", `${width}`);
+      document.getElementById('svgV').setAttribute("height", `${height}`);
+      this.rulerHorizontal.resize();
+      this.rulerVertical.resize();
+    }
+  }
+
+  /**
+   * Renders rulers initially.
+   */
+  private loadRuler() {
+    this.rulerHorizontal = new Rulez({
+      element: document.getElementById('svgH'),
+      layout: 'horizontal',
+      alignment: 'top',
+    });
+    this.rulerHorizontal.render();
+
+    this.rulerVertical = new Rulez({
+      element: document.getElementById('svgV'),
+      layout: 'vertical',
+      alignment: 'left',
+      textDefaults: {
+        rotation: -90,
+        centerText: {
+            by: 'height',
+            operation: 'sum' //'sum' or 'sub'
+        }
+      },
+    });
+    this.rulerVertical.render();
   }
 
   private loadPage(page: Page) {
@@ -64,28 +239,38 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       if (!!page.page_data) {
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
       }
-      
+
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
+    //this.pagesService.loadGrid(2000,2000);
+    this.pagesService.updateGrid();
   }
 
   onCreatePage() {
-    this.pagesService.addPage("Page 1");
+    this.pagesService.addPage(null);
   }
 
-  /**
-   * for switching event-listener on and off
-   */
   enableEvents() {
     this.canvas
+      .on('before:transform', (event) => {
+        this.pagesService.sendMessageToSocket(event.transform.target.uuid, 'lock');
+      }, )
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-      .on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
+      /*.on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
+      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });*/;
+    }
+  disableEvents() {
+    this.canvas
+      .off('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
+      .off('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
+      .off('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
+      .off('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
+      .off('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
+      .off('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
   }
-
   /**
    * manages keyboard events:
    * - deleting selected elements on delete press
@@ -167,28 +352,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     event.event.stopPropagation();
     const canvas = this.pagesService.getCanvas();
     const url = event.data;
-    if (url.includes('.svg') === true) {
-      fabric.loadSVGFromURL(url, function(objects, options) {
-        const loadedObjects = fabric.util.groupSVGElements(objects, options);
-        loadedObjects.scaleToWidth(300);
-        canvas.add(loadedObjects);
-      });
-    } else {
-      fabric.Image.fromURL(url, (image) => {
-        image.set({
-          left: 10,
-          top: 10,
-          angle: 0,
-          padding: 10,
-          cornersize: 10,
-          hasRotatingPoint: true,
-        });
-        image.scaleToWidth(700);
-        this.canvas.add(image);
-      });
-    }
-    canvas.renderAll();
-    console.log('dropped', JSON.stringify(event, null, 2));
+    this.modifyService.loadImageFromURL(canvas, url);
   }
 
   /**
@@ -198,16 +362,61 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    * which will be transmitted s. transformation.interface
    */
   onTransformation(evt, action: Action) {
-    const transObject = evt.target;
-    const next = ((element) => {
-      if (typeof this.Transformation === 'undefined') {
-        this.Transformation = new Subject<any>();
+    let transObject = evt.target;
+    console.log(`${action} : ${transObject.uuid}`);
+    if (transObject.sendMe) {
+      //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
+      transObject.sendMe = false;
+
+      this.onSaveState(evt, action);
+
+
+      let typ = transObject.type
+      //let objectsToSend = [transObject];
+      //console.log('type: '+typ+', transObj: '+JSON.stringify(transObject));
+
+
+      if(typ==='activeSelection') {
+        //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
+        console.log('selection: '+JSON.stringify(transObject))
+        let oldRenderAddReomve = this.canvas.renderOnAddRemove;
+        this.canvas.renderOnAddRemove = false;
+        this.canvas.discardActiveObject();
+        let sendArray = [];
+        transObject.forEachObject((current) => {
+          let newObj = this.getObjectByUUID(current.uuid);
+          sendArray.push(newObj);
+          newObj.clone((obj) => {
+            obj.uuid = newObj.uuid;
+            this.pagesService.sendMessageToSocket(obj, action);
+            console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
+          })
+        });
+        //fancy canvas magic to ensure the selection behaves properly
+        let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
+
+        this.canvas.setActiveObject(newSelection);
+        console.log('new Selection: '+ JSON.stringify(newSelection));
+        this.canvas.renderOnAddRemove = oldRenderAddReomve;
+
+      } else {
+        this.pagesService.sendMessageToSocket(transObject,action);
       }
-      this.Transformation.next({ element, action });
-      console.log(`${action} : ${element.uuid}`);
-    });
+
+    }
+
+    //this needs to happen externally if the change was made from somebody else; the state of the canvas needs to be accuratly reflected
+    else this.undoRedoService.setState(this.canvas, action);
+
+      //the object needs to be available again regardless of whether or not it was a remote access.
+      //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
+      transObject.sendMe = true;
+  }
+  forEachTransformedObj(evt, next) {
+    const transObject = evt.target;
     if (transObject.type === 'activeSelection') {
-      this.canvas.getActiveObject().forEachObject(next);
+      evt.transform.target.objects.forEach(next);
+      // this.canvas.getActiveObject().forEachObject(next);
       return;
     }
     if (Array.isArray(transObject)) {
@@ -216,34 +425,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       next(transObject);
     }
   }
-  async applyTransformation(object: any) {
-    const old = this.getObjectByUUID(object.uuid);
-    this.canvas.removeListeners();
-    // if not existed, jsut add it
-    if (typeof old === 'undefined') {
-      await this.canvas.loadFromJSON(object, () => {
-        console.log(`Element added by other user: ${object.uuid}`);
-      }).requestRenderAll();
-    } else {
-      await this.canvas.remove(old).loadFromJSON(object, () => {
-        console.log(`Element changed by other user: ${object.uuid}`);
-      }).requestRenderAll();
-    }
-    this.enableEvents();
-  }
-  /**
-   * gleicher Ablauf wie applyTransformation, nur dass hier ein fabric-Objekt entfernt wird
-   * @param object - ein fabric.Object, entspricht einem kompletten Fabric-Objekt,
-   * welches per toJSON() serialissiert/ deserialisiert wurde
-   */
-  applyRemoval(object: any) {
-    const old = this.getObjectByUUID(object.uuid);
-    if (typeof old !== 'undefined') {
-      this.canvas.removeListeners();
-      this.canvas.remove(old);
-      this.enableEvents();
-    }
-  }
+
 
   getObjectByUUID(uuid: string) {
     return this.canvas.getObjects().find((o) => o.uuid === uuid);
@@ -262,7 +444,19 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    * @{author}: Alexander Genser
    */
   onSaveState(evt: any, action: Action) {
-    this.undoRedoService.save(this.canvas, action);
+    const saveObject = evt.target;
+    const objects = [];
+    if (saveObject.type === 'activeSelection') {
+        saveObject.forEachObject( (obj) => {
+          objects.push(obj);
+        });
+    } else {
+      objects.push(saveObject);
+      // console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
+    }
+    this.undoRedoService.save(objects, action);
   }
+
+
 }
 //

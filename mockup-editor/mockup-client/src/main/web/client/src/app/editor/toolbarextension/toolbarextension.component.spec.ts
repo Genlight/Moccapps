@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+/*import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DndModule } from 'ngx-drag-drop';
 
 import { ToolbarextensionComponent } from './toolbarextension.component';
@@ -11,7 +11,9 @@ describe('ToolbarextensionComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ ToolbarextensionComponent, FaIconComponent ],
-      imports: [ DndModule ],
+      imports: [ 
+        DndModule,
+       ],
     })
     .compileComponents();
   }));
@@ -25,4 +27,5 @@ describe('ToolbarextensionComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-});
+});*/
+

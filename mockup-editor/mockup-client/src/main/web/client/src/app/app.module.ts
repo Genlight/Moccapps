@@ -34,6 +34,10 @@ import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.component';
 import { CreateVersionModalComponent } from './shared/components/create-version-modal/create-version-modal.component';
 import { LoadVersionModalComponent } from './shared/components/load-version-modal/load-version-modal.component';
+import { UsercirclePipe } from './shared/pipes/usercircle.pipe';
+import { PageListItemComponent } from './editor/toolbar-pages/page-list-item/page-list-item.component';
+import { CommentComponent } from './editor/comment/comment.component';
+import { CommentBarComponent } from './editor/comment-bar/comment-bar.component';
 
 
 library.add(faBars);
@@ -62,10 +66,14 @@ library.add(faEllipsisV);
     ToolbarPagesComponent,
     CreateVersionModalComponent,
     LoadVersionModalComponent
+    ToolbarPagesComponent,
+    UsercirclePipe,
+    PageListItemComponent,
+    CommentComponent,
+    CommentBarComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     NgbModule,
     FormsModule,
     FontAwesomeModule,
