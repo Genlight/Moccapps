@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,12 +8,12 @@ export class WorkspaceService {
 
   showsRuler: BehaviorSubject<boolean> = new BehaviorSubject(false);
   toolbarPanelState: BehaviorSubject<ToolbarPanelState> = new BehaviorSubject(ToolbarPanelState.None);
-  
+
   store: {
-    toolbarPanelState: ToolbarPanelState  
+    toolbarPanelState: ToolbarPanelState
   };
 
-  constructor() { 
+  constructor() {
     this.store = {
       toolbarPanelState: ToolbarPanelState.None
     }
@@ -21,8 +21,8 @@ export class WorkspaceService {
 
   showRuler(): void {
     this.showsRuler.next(true);
-  } 
-  
+  }
+
   hideRuler(): void {
     this.showsRuler.next(false);
   }
@@ -37,21 +37,21 @@ export class WorkspaceService {
     this.toolbarPanelState.next(this.store.toolbarPanelState);
   }
 
-/*  toggleGroups(): void {
-    if (this.store.toolbarGroupState === ToolbarPanelState.Groups) {
-      this.store.toolbarGroupState = ToolbarPanelState.None;
-    } else {
-      this.store.toolbarGroupState = ToolbarPanelState.Groups;
-    }
-
-    this.toolbarPanelState.next(this.store.toolbarPanelState);
-  }*/
-
   toggleLibrary(): void {
     if (this.store.toolbarPanelState === ToolbarPanelState.Library) {
       this.store.toolbarPanelState = ToolbarPanelState.None;
     } else {
       this.store.toolbarPanelState = ToolbarPanelState.Library;
+    }
+
+    this.toolbarPanelState.next(this.store.toolbarPanelState);
+  }
+
+  toggleGroups(): void {
+    if (this.store.toolbarPanelState === ToolbarPanelState.Groups) {
+      this.store.toolbarPanelState = ToolbarPanelState.None;
+    } else {
+      this.store.toolbarPanelState = ToolbarPanelState.Groups;
     }
 
     this.toolbarPanelState.next(this.store.toolbarPanelState);

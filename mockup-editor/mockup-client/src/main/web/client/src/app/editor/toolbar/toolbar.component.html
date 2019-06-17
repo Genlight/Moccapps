@@ -55,7 +55,7 @@
         </button>
       </li>
       <li class="navbar-item toolbar-item">
-        <button class="btn btn-light btn-toolbar" id="navGroupsButton1">
+        <button class="btn btn-light btn-toolbar" id="navGroupsButton1"  [ngClass]="{'btn-dark': toolbarState === ToolbarPanelState.Groups }">
           <fa-icon [icon]="faGroup" (click)="onGroup1Toggle()"></fa-icon>
         </button>
       </li>

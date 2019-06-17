@@ -91,7 +91,9 @@ export class ToolbarComponent implements OnInit {
   }
 
   onGroup1Toggle() {
-    const panel = document.getElementById('toolbar-groups');
+
+    this.workspaceService.toggleGroups();
+/*    const panel = document.getElementById('toolbar-groups');
     const elementsbutton = document.getElementById('navElementsButton');
     if (panel.classList.contains('extensionhidden')) {
       panel.classList.toggle('extensionhidden');
@@ -102,7 +104,7 @@ export class ToolbarComponent implements OnInit {
 
       const groupbutton = document.getElementById('navGroupsButton1');
       groupbutton.classList.toggle('btn-dark');
-    }
+    }*/
   }
 
 }

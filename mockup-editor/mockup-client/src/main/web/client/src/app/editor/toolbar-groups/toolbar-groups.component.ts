@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Page } from 'src/app/shared/models/Page';
-import { ManagePagesService } from '../managepages.service';
-import { ManageGroupsService } from '../managegroups.service';
+import {Component, OnInit} from '@angular/core';
+import {Page} from 'src/app/shared/models/Page';
+import {ManagePagesService} from '../managepages.service';
+import {ManageGroupsService} from '../managegroups.service';
 
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import {faTrashAlt} from '@fortawesome/free-regular-svg-icons';
 import {GroupPage} from "../../shared/models/Group";
+import {ToolbarPanelState, WorkspaceService} from "../workspace.service";
 
 @Component({
   selector: 'app-toolbar-groups',
@@ -16,6 +17,8 @@ export class ToolbarGroupsComponent implements OnInit {
   isVisible = true;
   faTrashAlt = faTrashAlt;
 
+  showComponent = false;
+
   groups: GroupPage[] = [];
   groupsForPage: GroupPage[] = [];
 
@@ -23,14 +26,16 @@ export class ToolbarGroupsComponent implements OnInit {
 
   constructor(
     private managePagesService: ManagePagesService,
-    private groupService:ManageGroupsService
+    private workspaceService: WorkspaceService,
+    private groupService: ManageGroupsService
   ) {
     this.groupService.groups.subscribe(
       (groups) => {
-        console.log("group new group");
+        this.groupsForPage = [];
+        //console.log("group new group");
         this.groups = groups;
         this.groups.forEach((p, index) => {
-          console.log("Group for page:"+p.pageId+" "+this.activePage.id);
+          console.log("Group for page:" + p.pageId + " " + this.activePage.id + " " + p.getObjects1());
           if (p.pageId === this.activePage.id) {
             this.groupsForPage.push(p);
           }
@@ -44,35 +49,28 @@ export class ToolbarGroupsComponent implements OnInit {
       this.groupsForPage = [];
       this.groups.forEach((p, index) => {
         if (p.pageId === this.activePage.id) {
-          console.log("Group for page:"+p.pageId+" "+this.activePage.id);
+          console.log("Group for page:" + p.pageId + " " + this.activePage.id);
           this.groupsForPage.push(p);
         }
       });
     });
+    this.workspaceService.toolbarPanelState.subscribe(
+      (state) => {
+        if (state === ToolbarPanelState.Groups) {
+          this.showComponent = true;
+        } else {
+          this.showComponent = false;
+        }
+      }
+    )
   }
 
   ngOnInit() {
   }
 
-/*
-  onCreatePage() {
-    const page_name = `Page ${this.pages.length + 1}`;
-    this.managePagesService.addPage(page_name);
-  }
-
-  onDeletePage(event, page: Page) {
-    event.stopPropagation();
-    if (!!page) {
-      this.managePagesService.removePage(page);
-    }
-  }*/
-
   onClickGroupElement(index: number, page: GroupPage) {
     console.log(`active page: index: ${index} ${JSON.stringify(page.group)}`);
     this.managePagesService.setActive(page.group._objects[index]);
-    //if (this.activePage == null || page.id !== this.activePage.id) {
-    //  this.managePagesService.setPageActive(page);
-    //}
-
   }
+
 }
