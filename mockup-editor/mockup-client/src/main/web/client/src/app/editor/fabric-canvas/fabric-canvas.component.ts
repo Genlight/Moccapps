@@ -75,7 +75,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       }
     });
 
-    // React to changes when user clicks on hide/show ruler 
+    // React to changes when user clicks on hide/show ruler
     this.workSpaceService.showsRuler.subscribe((value) => {
       this.showRulers = value;
       if (this.showRulers) {
@@ -239,7 +239,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       if (!!page.page_data) {
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
       }
-      
+
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
     //this.pagesService.loadGrid(2000,2000);
@@ -367,7 +367,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
-      
+
       this.onSaveState(evt, action);
 
 
@@ -398,7 +398,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         this.canvas.setActiveObject(newSelection);
         console.log('new Selection: '+ JSON.stringify(newSelection));
         this.canvas.renderOnAddRemove = oldRenderAddReomve;
-        
+
       } else {
         this.pagesService.sendMessageToSocket(transObject,action);
       }
@@ -452,7 +452,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         });
     } else {
       objects.push(saveObject);
-      console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
+      // console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
     }
     this.undoRedoService.save(objects, action);
   }

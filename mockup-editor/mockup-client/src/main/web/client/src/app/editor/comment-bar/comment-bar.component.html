@@ -1,0 +1,37 @@
+<div class="card" id="comment-bar">
+  <div class="mb-2" style="justify-content: space-between; width: 18rem;">
+    <div>
+      <label><b>Comments</b> <button
+          class="btn btn-secondary"
+          (click)="onCreateComment()"
+          ngbTooltip="Add a Comment"
+          >+</button>
+      </label>
+    </div>
+    <div *ngIf="addingNewComment">
+      <form
+      novalidate
+      #formComment="ngForm"
+      >
+        <div class="form-group">
+          <input type="textarea"
+            id="newComment"
+            class="form-control"
+            name="newComment"
+            [(ngModel)]="newComment"
+            (keyup.enter)="onAddComment()"
+            placeholder="enter comment here..."
+            >
+        </div>
+      </form>
+    </div>
+    <div id="comment-barList" class="card">
+      <app-comment
+        *ngFor="let comment of comments"
+        [comment]="comment">
+      </app-comment>
+    </div>
+
+  </div>
+
+</div>

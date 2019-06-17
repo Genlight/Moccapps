@@ -23,6 +23,7 @@ import * as jsPDF from 'jspdf';
 import { RenameProjectModalComponent } from '../rename-project-modal/rename-project-modal.component';
 import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal.component';
 import { ElementsService } from 'src/app/editor/elements.service';
+import { CommentService } from 'src/app/editor/comment.service';
 
 @Component({
   selector: 'app-navbar',
@@ -69,6 +70,8 @@ export class NavbarComponent implements OnInit {
 
   activePage: Page = null;
 
+  // needed for adding comment button
+  addingComment;
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
@@ -77,7 +80,8 @@ export class NavbarComponent implements OnInit {
               private projectService: ProjectService,
               private undoRedoService: UndoRedoService,
               private workspaceService: WorkspaceService,
-              private elementsService: ElementsService
+              private elementsService: ElementsService,
+              private commentService: CommentService
           ) { }
 
   ngOnInit() {
@@ -149,7 +153,7 @@ export class NavbarComponent implements OnInit {
       await save(imageData, `${this.activePage.page_name}.jpeg`);
     }
   }
-  
+
   /**
    * Exports and saves the active page as png.
    */
@@ -213,13 +217,13 @@ export class NavbarComponent implements OnInit {
 
     if (file.type.match('image/png') || file.type.match('image/jpeg') || file.type.match('image/bmp') || file.type.match('image/svg')) {
       this.elementsService.importImage(file);
-      
+
       //const canvas = this.managePagesService.getCanvas();
       //const url = window.URL.createObjectURL(file);
       //this.modifyService.loadImageFromURL(canvas,url);
       //window.URL.revokeObjectURL(url);
     }
-    
+
   }
 
   onExportPNG() {
@@ -477,5 +481,13 @@ export class NavbarComponent implements OnInit {
       'object:moving': (event) => {},
       'object: scaling': (event) => {}
     });
+  }
+  /**
+   * adding comment,
+   * opening the comment sidebar (if implemented)
+   * @return void
+   */
+  onAddComment() {
+      this.commentService.setAddCommentObs(true);
   }
 }

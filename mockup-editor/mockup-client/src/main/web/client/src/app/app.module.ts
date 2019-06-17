@@ -34,6 +34,8 @@ import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.component';
 import { UsercirclePipe } from './shared/pipes/usercircle.pipe';
 import { PageListItemComponent } from './editor/toolbar-pages/page-list-item/page-list-item.component';
+import { CommentComponent } from './editor/comment/comment.component';
+import { CommentBarComponent } from './editor/comment-bar/comment-bar.component';
 
 
 library.add(faBars);
@@ -61,7 +63,9 @@ library.add(faEllipsisV);
     LastediteddatePipe,
     ToolbarPagesComponent,
     UsercirclePipe,
-    PageListItemComponent
+    PageListItemComponent,
+    CommentComponent,
+    CommentBarComponent
   ],
   imports: [
     BrowserModule,

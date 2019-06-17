@@ -9,7 +9,7 @@ import { Project } from '../shared/models/Project';
 import { SocketConnectionService } from '../socketConnection/socket-connection.service';
 import { TokenStorageService } from '../auth/token-storage.service';
 import { socketMessage } from '../socketConnection/socketMessage';
-import { Action,CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
+import { Action, CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 import { isArray } from 'util';
 import { NotificationService } from '../shared/services/notification.service';
 
@@ -45,7 +45,7 @@ export class ManagePagesService {
   ) {
     this._pages = new BehaviorSubject<Page[]>([]);
     this._activePage = new BehaviorSubject<Page>(null);
-    
+
     this.dataStore = {
       pages: [],
       activePage: null
@@ -60,12 +60,12 @@ export class ManagePagesService {
         this.loadAll();
       }
     });
-  } 
+  }
 
 
   // TODO: change page size, possibly to relative values
   createPage( pagewidth: number, pageheight: number) {
-
+    console.log('createPage');
     let canvas = new fabric.Canvas('canvas',
     {
       backgroundColor: '#ffffff',
@@ -80,13 +80,17 @@ export class ManagePagesService {
 
   /**
    * creates a canvas in the workspace behind the canvas the user works on, to use as a base for a grid of
-   * lines to help object alignment, and sets the background color of the user-canvas to transparent, 
+   * lines to help object alignment, and sets the background color of the user-canvas to transparent,
    * so a grid in the backgound-canvas can be seen if active
    */
   createGridCanvas() {
+    // needed, because on load, there des not exist a canvas
+    if (typeof this.canvas === 'undefined') {
+      this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
+    }
     this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
-      evented: false, 
-      height:	this.dataStore.activePage.height, 
+      evented: false,
+      height:	this.dataStore.activePage.height,
       width: this.dataStore.activePage.width,
       backgroundColor: '#ffffff'
      });
@@ -97,7 +101,7 @@ export class ManagePagesService {
 
   /**
    * Sets a given page to active state (will be rendered).
-   * 
+   *
    * Before doing so, the current workspace of the old active page will be saved.
    */
   setPageActive(page: Page) {
@@ -127,8 +131,8 @@ export class ManagePagesService {
 
   /**
    * Updates the active page dimensions and saves the current canvas status to the active page
-   * @param height 
-   * @param width 
+   * @param height
+   * @param width
    */
   updateActivePageDimensions(height: number, width: number) {
     if (!!height && !!width && height >= 0 && width >= 0) {
@@ -192,21 +196,24 @@ export class ManagePagesService {
     console.log('loadAll');
     if (!!this._activeProject) {
       this.apiService.get(`/project/${this._activeProject.id}/pages`).subscribe(
-        (data) => {          
+        (data) => {
           let pages = (data as Page[]);
-          
+
           // Ensure page order by sorting ids ascending
           pages.sort((a,b) => (a.id - b.id));
-          (this.dataStore.pages) = (data as Page[]);          
+          (this.dataStore.pages) = (data as Page[]);
           this._pages.next(Object.assign({}, this.dataStore).pages);
 
-          // If exists, set the first page as active
-          if (!!this.dataStore.pages && isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
+          // If exists, set the first page as active  REMOVED: !!this.dataStore.activePage.height
+          if (isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
             const firstPage = this.dataStore.pages[0];
             this.setPageActive(firstPage);
             this.loadGrid(2000,2000);
           }
-        }
+        },
+        ((error) => {
+          console.error('error at loadAll: ' + error);
+        })
       );
     }
   }
@@ -235,7 +242,7 @@ export class ManagePagesService {
 
   /**
    * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via socket)
-   * @param id 
+   * @param id
    */
   loadPageBySocket(id: number) {
     if (!!id) {
@@ -259,7 +266,7 @@ export class ManagePagesService {
   }
 
   /**
-   * Creates a new Page 
+   * Creates a new Page
    * @param name the name of the page
    * @param height height in px
    * @param width width in px
@@ -307,7 +314,8 @@ export class ManagePagesService {
       this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
         // Update was successful, update element in local store.
         this.updatePageStore(page);
-      });
+      },
+    (error) => { console.error('error at updatePage: ' + error)});
     }
   }
 
@@ -409,7 +417,7 @@ export class ManagePagesService {
       c.add(horizontal);
       c.add(vertical);
     };
-    
+
     //this.canvas.backgroundColor = null;
     this.canvas.renderAll();
   }
@@ -435,7 +443,7 @@ export class ManagePagesService {
   getCanvas(): fabric.Canvas {
     return this.canvas;
   }
-  
+
   exportToJson(canvas:any):string{
     return JSON.stringify(canvas);
   }
@@ -461,7 +469,7 @@ export class ManagePagesService {
             this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
           }
           break;
-          
+
         case Action.PAGEDIMENSIONCHANGE:
           console.log("received canvasmodify");
           let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
@@ -479,7 +487,7 @@ export class ManagePagesService {
             this.canvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
             this.canvas.renderAll();
           }
-        } else if (parsedObj[CanvasTransmissionProperty.INDEX]) {    
+        } else if (parsedObj[CanvasTransmissionProperty.INDEX]) {
             this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
         }
           break;
@@ -490,7 +498,7 @@ export class ManagePagesService {
           // Check if the page already exists to exclude caller from creating multiple pages.
           this.dataStore.pages.filter((p) => {
             if (p.id === page.id) {
-              // Page with the same id already exists. Receiver is probably the same as caller. 
+              // Page with the same id already exists. Receiver is probably the same as caller.
               pageExists = true;
             }
           });
@@ -520,10 +528,10 @@ export class ManagePagesService {
           }
           break;
         //if nothing matched, the call is further delegated to actually apply transformations
-        default:      
+        default:
           this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
           break;
-      } 
+      }
     }
   }
 
@@ -551,4 +559,12 @@ export class ManagePagesService {
     return this.gridCanvas;
   }
 
+  /**
+   * author: alexander Genser
+   * returns activePage, needed for CommentService
+   * @return Observable<Page>
+   */
+  getActivePage(): Observable<Page> {
+      return this._activePage.asObservable();
+  }
 }
