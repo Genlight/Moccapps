@@ -1,18 +1,14 @@
 package ase.springboot.controller;
 
 
-import ase.DTO.Invitation;
-import ase.DTO.InvitationU;
-import ase.DTO.Project;
-import ase.DTO.User;
+import ase.DAO.impl.PageVersionDAOImpl;
+import ase.DTO.*;
 import ase.Security.UserDetails;
 import ase.message.request.Invitation.InvitationForm;
 import ase.message.request.ProjectForm;
 import ase.message.response.ProjectFormResponse;
 import ase.message.response.ResponseMessage;
-import ase.service.InvitationService;
-import ase.service.ProjectService;
-import ase.service.UserService;
+import ase.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -25,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +35,13 @@ public class ProjectRESTService {
     ProjectService projectService;
     @Autowired
     UserService userService;
+
+    @Autowired
+    PageVersionService pageVersionService;
+
+    @Autowired
+    ProjectVersionService projectVersionService;
+
     private static final Logger logger = LoggerFactory.getLogger(ProjectRESTService.class);
     @Autowired
     InvitationService invitationService;
@@ -61,6 +65,7 @@ public class ProjectRESTService {
             ProjectFormResponse projectForm = new ProjectFormResponse();
             projectForm.setId(project.getId());
             projectForm.setProjectname(project.getProjectname());
+            projectForm.setLastModified(project.getLastModified());
             for (int userId : project.getUsers()) {
                 User user = userService.findUserByID(userId);
                 if (user == null) {
@@ -166,6 +171,54 @@ public class ProjectRESTService {
         }
 
         return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(value = "/project/{id}/versions")
+    public ResponseEntity<?> getProjectVersions(@PathVariable("id") int id) {
+
+        List<ProjectVersion> temp = projectVersionService.getProjectVersionByProjectId(id);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(temp);
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/project/{id}/versions")
+    public ResponseEntity<?> restoreProject(@PathVariable("id") int id,@RequestBody ProjectVersion projectVersion){
+       logger.info("Entered restoreProject");
+
+        ase.Security.UserDetails userDetails=(ase.Security.UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Project project=new Project();
+        project.setProjectname(projectVersion.getVersionName());
+
+        int userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        project.addUser(userId);
+
+        try {
+            project = this.projectService.createProject(project);
+        } catch (Exception e){
+            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
+        }
+
+        List<PageVersion> pages = pageVersionService.getAllPagesForProject(projectVersion.getId());
+        logger.info("restore pages:"+pages.toString());
+        List<Page> pageList = pageVersionService.restorePages(pages,project.getId());
+        logger.info("restore pageversions:"+pageList.toString());
+        project.setPages(pageList);
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writeValueAsString(project);
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/project/{id}")

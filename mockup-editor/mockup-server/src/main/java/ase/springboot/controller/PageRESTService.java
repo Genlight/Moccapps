@@ -5,7 +5,10 @@ import ase.DTO.Page;
 import ase.message.request.Invitation.InvitationActionForm;
 import ase.message.request.PageForm;
 import ase.message.response.ResponseMessage;
+import ase.message.socket.SocketMessage;
 import ase.service.PageService;
+import ase.service.UserService;
+import ase.socketConnection.SocketServer;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,9 +16,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -23,6 +30,12 @@ public class PageRESTService {
 
     @Autowired
     PageService pageService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    SocketServer socketServer;
 
     @GetMapping(value = "/page/{id}")
     public ResponseEntity<?> getPage(@PathVariable("id") int id){
@@ -62,6 +75,27 @@ public class PageRESTService {
 
         page = pageService.create(page);
         if (page!=null){
+
+ /*           SocketMessage socketMessage = new SocketMessage();
+            socketMessage.setProjectId(String.valueOf(page.getProjectId()));
+            socketMessage.setPageId(String.valueOf(page.getId()));
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            String token = userService.getToken(userDetails.getUsername());
+
+            socketMessage.setUser(token);
+            socketMessage.setCommand("CREATE");
+            socketMessage.setContent("CONTENT");
+
+            try {
+                socketServer.onReceive(socketMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+*/
+
             ObjectMapper objectMapper=new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             try {

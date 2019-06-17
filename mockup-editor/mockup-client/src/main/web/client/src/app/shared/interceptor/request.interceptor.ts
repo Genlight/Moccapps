@@ -37,8 +37,14 @@ export class RequestInterceptor implements HttpInterceptor {
             //Unauthorized
             this.tokenStorage.signOut();
             this.router.navigate(['']);
-            this.notificationService.showError('You were automatically logged out due to security reasons. This may be due to a login from another location or inactivity.', 'Authentication error.');
-          } else {
+            this.notificationService.showError('The username or password you entered is incorrect.', 'Authentication error.');
+          }
+        else if (err.status === 408) {
+          //Unauthorized
+          this.tokenStorage.signOut();
+          this.router.navigate(['']);
+          this.notificationService.showError('You were automatically logged out due to security reasons. This may be due to a login from another location or inactivity.', 'Authentication error.');
+        }else {
           this.errorHandlerService.handleError(err);
         }
       }
