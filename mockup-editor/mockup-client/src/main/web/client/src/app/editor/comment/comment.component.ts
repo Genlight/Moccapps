@@ -76,17 +76,17 @@ export class CommentComponent implements OnInit {
   onChangeSubmit(entry) {
     entry.isEditing = false;
     entry.message = this.entryMessages;
-    this.commentService.updateComment(this.comment);
+    this.commentService.updateCommentEntry(this.comment, entry);
   }
   /**
-   * delete a comment and remove comment from html
+   * delete a commententry from comment
    * @param  $event  [description]
    * @param  comment [description]
    */
   onDelete(entry) {
-    const ent = this.comment.entries.find(obj => obj.id === entry.id);
-    this.commentService.deleteCommentEntry(this.comment, ent);
-    this.OnDestroy();
+    const index = this.comment.entries.findIndex(obj => obj.id === entry.id);
+    this.comment.entries.splice(index, 1);
+    this.commentService.deleteCommentEntry(this.comment, entry);
   }
 
   /**
