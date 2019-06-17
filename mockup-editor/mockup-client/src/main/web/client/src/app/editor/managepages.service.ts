@@ -12,6 +12,7 @@ import { socketMessage } from '../socketConnection/socketMessage';
 import { Action,CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 import { isArray } from 'util';
 import { NotificationService } from '../shared/services/notification.service';
+import { OwnedStatelessObject } from '../shared/models/OwnedStatelessObject';
 
 @Injectable({
   providedIn: 'root'
@@ -519,6 +520,16 @@ export class ManagePagesService {
             this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
           }
           break;
+        
+        case Action.LOCK:
+        case Action.SELECTIONMODIFIED:
+          if(parsedObj.userId===this.tokenStorage.getToken()) {
+            //console.log("not locking my own lock");
+            break;
+          }
+          //no break -> sliding into default is INTENTIONAL, if it is not my lock actions need
+          //to be taken in the canvas. Bad practice, I know.
+
         //if nothing matched, the call is further delegated to actually apply transformations
         default:      
           this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
@@ -534,7 +545,17 @@ export class ManagePagesService {
     this.socketService.connect(projectId.toString(),pageId.toString(),this.tokenStorage.getToken(),this.relayChange,this);
   }
   sendMessageToSocket(object: any, command: string){
-    this.socketService.send(JSON.stringify(object),command);
+    let send = object;
+    if(command === Action.LOCK || command === Action.SELECTIONMODIFIED) {
+      send = new OwnedStatelessObject();
+      send.userId = this.tokenStorage.getToken();
+      if(object) {
+        console.log(`lock/select test, object uuid: ${object.uuid}`)
+        send.uuid = object.uuid;
+      }
+      //object ? send.uuid = object.uuid : null;
+    }
+    this.socketService.send(JSON.stringify(send),command);
   }
 
   disconnectSocket(){

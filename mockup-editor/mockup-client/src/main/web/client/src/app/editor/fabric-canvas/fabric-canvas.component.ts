@@ -75,6 +75,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     });
 
     this.loadRuler();
+
+    this.modifyService.newForeignSelections();
   }
 
   /**
@@ -136,12 +138,15 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   enableEvents() {
     this.canvas
-      .on('before:transform', (event) => {
-        this.pagesService.sendMessageToSocket(event.transform.target.uuid, 'lock');
-      }, )
+      .on('before:transform', (event) => { this.onTransformation(event.transform, Action.LOCK); })
+      .on('mouse:up',(event) => { if(event.target !== null) this.onTransformation(event, Action.UNLOCK) })
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
+      .on('selection:created',(event) => { this.onSelection(event) })
+      .on('selection:updated',(event) => { this.onSelection(event) })
+      .on('before:selection:cleared',(event) => { this.onSelection({'target':null}) })
+      .on('after:render',(event) => { this.onAfterRender(event) })
       /*.on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });*/;
@@ -247,12 +252,13 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    */
   onTransformation(evt, action: Action) {
     let transObject = evt.target;
+    //console.log(JSON.stringify(evt));
     console.log(`${action} : ${transObject.uuid}`);
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
       
-      this.onSaveState(evt, action);
+      if(action !== Action.LOCK) this.onSaveState(evt, action);
 
 
       let typ = transObject.type
@@ -272,6 +278,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
           sendArray.push(newObj);
           newObj.clone((obj) => {
             obj.uuid = newObj.uuid;
+            obj.sendMe = false;
             this.pagesService.sendMessageToSocket(obj, action);
             console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
           })
@@ -295,6 +302,26 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       //the object needs to be available again regardless of whether or not it was a remote access.
       //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
       transObject.sendMe = true;
+      
+  }
+
+  onSelection(evt) {
+    let selectedObj = evt.target;
+    let sendArray = [null];
+    if(selectedObj) {
+      if(selectedObj.type === 'activeSelection') {
+        selectedObj.getObjects().forEach( (current) => {
+          sendArray.push(current);
+        })
+      } else {
+        sendArray.push(selectedObj);
+      }
+    }
+    let _this = this;
+    sendArray.forEach((current) => {
+      _this.pagesService.sendMessageToSocket(current,Action.SELECTIONMODIFIED);
+    })
+    
   }
   forEachTransformedObj(evt, next) {
     const transObject = evt.target;
@@ -341,6 +368,23 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.undoRedoService.save(objects, action);
   }
 
+  onAfterRender(event) {
+    let selections = this.modifyService.getForeignSelections();
+    selections.forEach((value,key,map) => {
+      value.forEach((current)=> {
+        if(current === null) return;
+        console.log('foreignly selectec object: '+JSON.stringify(current));
+        this.canvas.contextContainer.strokeStyle = '#FF0000';
+        var bound = current.getBoundingRect();
+        this.canvas.contextContainer.strokeRect(
+          bound.left - 2.5,
+          bound.top - 2.5,
+          bound.width+5,
+          bound.height+5
+        );
+      })
+    })
+  }
 
 }
 //

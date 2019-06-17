@@ -13,7 +13,10 @@ export enum Action {
   PAGEMODIFIED = 'page:modified',
   GROUP = 'group:grouped',
   UNGROUP = 'group:ungrouped',
-  PAGEDIMENSIONCHANGE = 'page:dimensionchange'  
+  PAGEDIMENSIONCHANGE = 'page:dimensionchange',
+  LOCK = 'element:locked',
+  UNLOCK = 'element:unlocked',
+  SELECTIONMODIFIED = 'selection:modified' 
 }
 export enum CanvasTransmissionProperty {
   BACKGROUNDCOLOR = 'backgroundColor',
