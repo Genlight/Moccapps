@@ -2,14 +2,34 @@
 <button (click)=onLoadFromLocalStorage()>Load from Local Storage</button> -->
 
 <div class="workspace mt-5">
-    <div class="ruler-horizontal" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
+    <div class="ruler-horizontal noselect" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
         <svg id="svgH" width="1200" height="30" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
-    <div class="ruler-vertical" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
+    <div class="ruler-vertical noselect" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
         <svg id="svgV" width="30" height="1200" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
+    <div 
+        class="ruler-handle-horizontal" 
+        #horizontalHandler 
+        [hidden]="!showRulers"
+        (click)="onAddRulerLineH()"
+        ></div>
+    <div 
+        class="ruler-handle-vertical" 
+        #verticalHandler 
+        [hidden]="!showRulers"
+        (click)="onAddRulerLineV()"
+    ></div>
 
-    <div id="canvasWrapper" tabIndex='0' (keydown)="manageKeyboardEvents($event)" dndDropzone
+    <div 
+        #canvasWrapper
+        id="canvasWrapper" 
+        tabIndex='0' 
+        (keydown)="manageKeyboardEvents($event)" 
+        dndDropzone
+        (mouseenter) = "onMouseEnter($event)"
+        (mouseleave) = "onMouseLeave($event)"
+        (mousemove) = "onMouseMove($event, canvasWrapper, horizontalHandler, verticalHandler)"
             [hidden]="!activePage || !pages || pages.length === 0" (dndDrop)="onDrop($event)">
             <div class="canvas-container">
                 <canvas id="canvas"></canvas>
@@ -32,4 +52,5 @@
             <p class="card-text">Please select a page.</p>
         </div>
     </div>
+    
 </div>

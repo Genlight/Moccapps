@@ -18,4 +18,11 @@ public interface ElementService {
      * @return list of element names
      */
     List<String> getElements(String category);
+
+    /**
+     * returns a list of available elements the user uploaded to the server
+     * @param userfolder name of the folder containing the user's elements
+     * @return list of element names
+     */
+    List<String> getUserElements(String userfolder);
 }
