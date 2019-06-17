@@ -465,8 +465,9 @@ export class ManagePagesService {
             let pageData = parsedObj.pageData;
             this.loadPageDataStore(parsedObj.id, pageData);
           } else {
-            console.error('page load: received invalid data over socket connection');
-            this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
+            console.error(`page load: received invalid data over socket connection, ParsedObject: ${!!parsedObj}
+                \n pageid: ${parsedObj.pageId} | pageData : ${parsedObj.pageData}`);
+            // this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
           }
           break;
 

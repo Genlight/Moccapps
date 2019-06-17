@@ -26,9 +26,9 @@ export class CommentComponent implements OnInit {
 
   constructor(
     private storageService: TokenStorageService,
-    private commentService: CommentService,
-    private componentFactoryResolver: ComponentFactoryResolver,
-    private viewContainerRef: ViewContainerRef
+    private commentService: CommentService
+    // private componentFactoryResolver: ComponentFactoryResolver,
+    // private viewContainerRef: ViewContainerRef
   ) { }
 
   ngOnInit() {
