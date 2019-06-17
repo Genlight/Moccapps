@@ -31,6 +31,7 @@ export class CommentService {
   ) {
     this.testcount = false;
     this.commentSubject = new BehaviorSubject<Comment[]>([]);
+    this.comments = [];
     this.activePage = this.pageService.getActivePage();
     // this.activePage.subscribe(
     //   page => {
@@ -111,15 +112,25 @@ export class CommentService {
   async addComment(message: string, author: User = this.storageService.getUserInfo()) {
     const canvas = this.pageService.getCanvas();
     const objects = canvas.getActiveObject();
-    const objectUuid = [];
-    await objects.forEachObject( (obj) => { objectUuid.push(obj.uuid); });
 
+    console.log(`addingComment: active objects : ${JSON.stringify(objects)}`);
+
+    const objectUuid = [];
+    if (!!objects) {
+      if (Array.isArray(objects)) {
+        for (const obj of objects) {
+          objectUuid.push(obj.uuid);
+        }
+      } else {
+        objectUuid.push(objects.uuid);
+      }
+    }
     const entry = {
       author,
       message,
       date: new Date(),
       id: 0,
-      isEditing: true
+      isEditing: false
     };
     const comment = {
       uuid: UUID.UUID(),
@@ -132,7 +143,7 @@ export class CommentService {
     console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
     this.comments.push(comment);
-    // this.commentSubject.next(this.comments);
+    this.commentSubject.next(this.comments);
   }
 
   clearComment(comment: Comment) {

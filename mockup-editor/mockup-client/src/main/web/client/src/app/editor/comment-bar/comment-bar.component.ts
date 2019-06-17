@@ -42,7 +42,6 @@ export class CommentBarComponent implements OnInit {
 
   onAddComment() {
     this.commentService.addComment(this.newComment);
-    this.comments.push();
     this.newComment = '';
     this.addingNewComment = false;
   }
