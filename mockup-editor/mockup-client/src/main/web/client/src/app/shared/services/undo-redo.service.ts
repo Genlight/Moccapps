@@ -35,17 +35,27 @@ export class UndoRedoService {
   ) {
     this.redoObs = new BehaviorSubject<boolean>(false);
     this.undoObs = new BehaviorSubject<boolean>(false);
+
     this.undoStack = [];
     this.redoStack = [];
-
     this.redoObs.next(false);
     this.undoObs.next(false);
   }
+  /**
+   * saves an initial state of a page, will always be executed,
+   * when a new page is loaded onto the canvas
+   * s. also fabric-canvas.component - loadPage()
+   * @return void
+   */
   saveInitialState() {
-    // TODO: this needs to be accordingly modified when persisted elements are loaded
+    this.undoStack = [];
+    this.redoStack = [];
+    this.redoObs.next(false);
+    this.undoObs.next(false);
+
     this.state = {
       canvas: this.managepageService.getCanvas().clone((o) => {
-          console.log('saved State: ' + JSON.stringify(o)); 
+          console.log('saved State: ' + JSON.stringify(o));
 
           return o;
         }
@@ -60,14 +70,14 @@ export class UndoRedoService {
    * @return        [description]
    */
   save(objects: any, action: Action): void {
-    // during replay, there should'nt be any saves 
+    // during replay, there should'nt be any saves
     if (this.isReplaying) {
       return;
     }
     const canvas = this.managepageService.getCanvas();
 
 
-   
+
     // previous state
     let _this = this;
     const prevList = [];
@@ -95,7 +105,7 @@ export class UndoRedoService {
       current: currentList,
       action
     });
-    
+
     this.setState(canvas, action);
 
     // set redoStack to null
@@ -139,7 +149,7 @@ export class UndoRedoService {
       const old = this.getObjectByUUID(obj.uuid, canvas);
       canvas.remove(old);
     });*/
-    
+
     let _this = this;
     if(replayState.action === Action.ADDED ) {
       console.log('remove previously added elements: ' +JSON.stringify(replayState.current) );
@@ -157,9 +167,9 @@ export class UndoRedoService {
         });
         //this is necessary to reliably render all changes of the object
         current.setCoords()
-        
+
       // TODO: this should be changed, for a cleaner seperation of concerns
-      //move socket connection (maybe) to manage pages, reduce single dependencies and 
+      //move socket connection (maybe) to manage pages, reduce single dependencies and
       // "all over the place" sends.
         _this.managepageService.sendMessageToSocket(current, Action.MODIFIED);
       });
@@ -243,7 +253,7 @@ export class UndoRedoService {
   }
 
   /**
-   * This was moved out of the actual undo/redo functionality: whether or not a change is 
+   * This was moved out of the actual undo/redo functionality: whether or not a change is
    * undoable by me, the state needs always to be accurate.
    * @param canvas The actual canvas
    * @param action the action that took place
