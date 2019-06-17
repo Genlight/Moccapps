@@ -4,6 +4,7 @@ import { Project } from '../models/Project';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { ProjectUpdateRequest } from '../api/request/project-update-request';
 import { isArray } from 'util';
+import {Version} from "../models/Version";
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,13 @@ export class ProjectService {
       this.dataStore.activeProject = project;
       this._activeProject.next(Object.assign({}, this.dataStore).activeProject);
     }
+  }
+  getProjectVersions<T>(project: Project): Observable<T> {
+    return this.apiService.get(`/project/${project.id}/versions`);
+  }
+
+  restoreProject(version:Version): Observable<any> {
+    return this.apiService.post(`/project/${version.projectId}/versions`, version);
   }
 
   getProjects<T>(): Observable<T> {
