@@ -20,6 +20,8 @@ export class CommentService {
   activePage: Observable<Page>;
   commentSubject: BehaviorSubject<Comment[]>;
   comments: Comment[];
+  // needed for buttons
+  addingComment: BehaviorSubject<boolean>;
   constructor(
     private storageService: TokenStorageService,
     private pageService: ManagePagesService,
@@ -27,12 +29,13 @@ export class CommentService {
   ) {
     this.commentSubject = new BehaviorSubject<Comment[]>([]);
     this.activePage = this.pageService.getActivePage();
-    this.activePage.subscribe(
-      page => {
-        if (page.comments) {
-          this.commentSubject.next(page.comments); }
-        }
-    );
+    // this.activePage.subscribe(
+    //   page => {
+    //     if (page.comments) {
+    //       this.commentSubject.next(page.comments); }
+    //     }
+    // );
+    this.addingComment.next(false);
   }
   /**
    * transformation from the activePage Observable to comment Observable
@@ -117,7 +120,7 @@ export class CommentService {
     console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
     this.comments.push(comment);
-    this.commentSubject.next(this.comments);
+    // this.commentSubject.next(this.comments);
   }
 
   clearComment(comment: Comment) {
@@ -141,6 +144,7 @@ export class CommentService {
     const content = {comment};
     const command = 'comment:deleted';
     console.log(`${command}`);
+    this.removeComment(comment);
     this.socketService.send(JSON.stringify(content), command);
   }
 
@@ -149,5 +153,22 @@ export class CommentService {
     const command = 'commententry:deleted';
     console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
+  }
+
+  getAddCommentObs(): Observable<boolean> {
+    return this.addingComment.asObservable();
+  }
+
+  setAddCommentObs(bool: boolean) {
+    this.addingComment.next(bool);
+  }
+
+  getCommentByUUID(comment: Comment) {
+    return this.comments.find( (o) => o.uuid === comment.uuid  );
+  }
+
+  removeComment(comment: Comment) {
+    const del = this.comments.findIndex(obj => obj.uuid === comment.uuid);
+    this.comments.splice(del, 1);
   }
 }

@@ -13,7 +13,13 @@ export enum Action {
   PAGEMODIFIED = 'page:modified',
   GROUP = 'group:grouped',
   UNGROUP = 'group:ungrouped',
-  PAGEDIMENSIONCHANGE = 'page:dimensionchange'  
+  PAGEDIMENSIONCHANGE = 'page:dimensionchange',
+  COMMENTADDED = 'comment:added',
+  COMMENTMODIFIED = 'comment:modified',
+  COMMENTCLEARED = 'comment:cleared',
+  COMMENTENTRYADDED = 'commententry:added',
+  COMMENTENTRYMODIFIED = 'commententry:modified',
+  COMMENTENTRYDELETED = 'commententry:deleted'
 }
 export enum CanvasTransmissionProperty {
   BACKGROUNDCOLOR = 'backgroundColor',

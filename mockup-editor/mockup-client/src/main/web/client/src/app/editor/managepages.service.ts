@@ -9,7 +9,7 @@ import { Project } from '../shared/models/Project';
 import { SocketConnectionService } from '../socketConnection/socket-connection.service';
 import { TokenStorageService } from '../auth/token-storage.service';
 import { socketMessage } from '../socketConnection/socketMessage';
-import { Action,CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
+import { Action, CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 import { isArray } from 'util';
 import { NotificationService } from '../shared/services/notification.service';
 
@@ -65,7 +65,7 @@ export class ManagePagesService {
 
   // TODO: change page size, possibly to relative values
   createPage( pagewidth: number, pageheight: number) {
-
+    console.log('createPage');
     let canvas = new fabric.Canvas('canvas',
     {
       backgroundColor: '#ffffff',
@@ -84,6 +84,10 @@ export class ManagePagesService {
    * so a grid in the backgound-canvas can be seen if active
    */
   createGridCanvas() {
+    // needed, because on load, there des not exist a canvas
+    if (typeof this.canvas === 'undefined') {
+      this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
+    }
     this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
       evented: false,
       height:	this.dataStore.activePage.height,
@@ -200,13 +204,16 @@ export class ManagePagesService {
           (this.dataStore.pages) = (data as Page[]);
           this._pages.next(Object.assign({}, this.dataStore).pages);
 
-          // If exists, set the first page as active
-          if (!!this.dataStore.pages && isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
+          // If exists, set the first page as active  REMOVED: !!this.dataStore.activePage.height
+          if (isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
             const firstPage = this.dataStore.pages[0];
             this.setPageActive(firstPage);
             this.loadGrid(2000,2000);
           }
-        }
+        },
+        ((error) => {
+          console.error('error at loadAll: ' + error);
+        })
       );
     }
   }
@@ -307,7 +314,8 @@ export class ManagePagesService {
       this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
         // Update was successful, update element in local store.
         this.updatePageStore(page);
-      });
+      },
+    (error) => { console.error('error at updatePage: ' + error)});
     }
   }
 

@@ -10,10 +10,17 @@ export class CommentBarComponent implements OnInit {
   comments: Comment[];
 
   newComment: string;
-  addingNewComment = false;
+  addingNewComment;
   constructor(private commentService: CommentService) {}
 
   ngOnInit() {
+    this.initCommentservice();
+  }
+
+  initCommentservice() {
+    this.commentService.getAddCommentObs().subscribe(
+    (bool) => { this.addingNewComment = bool; }
+    );
     this.commentService.getComments().subscribe(
       (data) => {
         if (Array.isArray(data)) {
@@ -21,13 +28,12 @@ export class CommentBarComponent implements OnInit {
         } else {
           this.comments = [data];
         }
-      },
-      (err) => {
-        // Pnotify
       }
     );
+    this.commentService.getAddCommentObs().subscribe(
+      (bool) => { this.addingNewComment = bool; }
+    );
   }
-
   // creating a comment on an exisiting
   onCreateComment() {
     this.addingNewComment = true;
@@ -36,6 +42,7 @@ export class CommentBarComponent implements OnInit {
 
   onAddComment() {
     this.commentService.addComment(this.newComment);
+    this.comments.push();
     this.newComment = '';
     this.addingNewComment = false;
   }
