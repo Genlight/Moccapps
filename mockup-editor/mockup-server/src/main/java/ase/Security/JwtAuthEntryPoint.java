@@ -22,7 +22,15 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException e)
             throws IOException, ServletException {
 
-        logger.error("Unauthorized error. Message - {}", e.getMessage());
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error -> Unauthorized");
+        logger.error("Error Request:"+request.getRequestURI()+":end");
+        if(request.getRequestURI().trim().equals("/login")){
+            logger.error("Unauthorized error. Message - {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error -> Unauthorized,bad login");
+        }
+        else{
+            logger.error("Unauthorized error. Message - {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "Error -> Unauthorized,token timeout");
+        }
+
     }
 }

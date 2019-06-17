@@ -16,6 +16,8 @@ import {AuthLogoutInfo} from '../../../auth/logout-info';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
+import { CreateVersionModalComponent } from '../create-version-modal/create-version-modal.component';
+import { LoadVersionModalComponent } from '../load-version-modal/load-version-modal.component';
 import { WorkspaceService } from 'src/app/editor/workspace.service';
 import save from 'save-file';
 import { Page } from '../../models/Page';
@@ -231,12 +233,17 @@ export class NavbarComponent implements OnInit {
   }
 
   onSaveVersion() {
-    // TODO
-    alert(this.managePagesService.saveActivePage());
+    if (!!this.project) {
+      const modelRef = this.modalService.open(CreateVersionModalComponent);
+      modelRef.componentInstance.project = this.project;
+    }
   }
 
   onLoadVersion() {
-    // TODO
+    if (!!this.project) {
+      const modelRef = this.modalService.open(LoadVersionModalComponent);
+      modelRef.componentInstance.project = this.project;
+    }
   }
 
   onAllProjects() {
