@@ -3,7 +3,7 @@ import { fabric } from './extendedfabric';
 import { Page } from '../shared/models/Page';
 import { FabricmodifyService } from './fabricmodify.service';
 import { ApiService } from '../api.service';
-import { BehaviorSubject, Observable, from } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, from } from 'rxjs';
 import { ProjectService } from '../shared/services/project.service';
 import { Project } from '../shared/models/Project';
 import { SocketConnectionService } from '../socketConnection/socket-connection.service';
@@ -12,6 +12,7 @@ import { socketMessage } from '../socketConnection/socketMessage';
 import { Action, CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 import { isArray } from 'util';
 import { NotificationService } from '../shared/services/notification.service';
+import { Comment, CommentEntry, CommentAction } from '../shared/models/comments';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,8 @@ export class ManagePagesService {
     pages: Page[],
     activePage: Page
   };
-
+  //
+  commentSubject: BehaviorSubject<CommentAction>;
   constructor(
     private apiService: ApiService,
     private modifyService: FabricmodifyService,
@@ -45,7 +47,7 @@ export class ManagePagesService {
   ) {
     this._pages = new BehaviorSubject<Page[]>([]);
     this._activePage = new BehaviorSubject<Page>(null);
-
+    this.commentSubject = new BehaviorSubject<CommentAction>(null);
     this.dataStore = {
       pages: [],
       activePage: null
@@ -528,7 +530,29 @@ export class ManagePagesService {
             this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
           }
           break;
-        //if nothing matched, the call is further delegated to actually apply transformations
+
+          case Action.COMMENTADDED:
+          case Action.COMMENTMODIFIED:
+          case Action.COMMENTCLEARED:
+            if (!!parsedObj.comment) {
+              this.commentSubject.next({action: message.command, comment: parsedObj.comment});
+            } else {
+              console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment})`);
+            }
+            break;
+          case Action.COMMENTENTRYADDED:
+          case Action.COMMENTENTRYDELETED:
+          case Action.COMMENTENTRYMODIFIED:
+            if (!!parsedObj.comment && !!parsedObj.entry) {
+              this.commentSubject.next({
+                action: message.command,
+                comment: parsedObj.comment,
+                entry: parsedObj.entry});
+            } else {
+              console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment}, entry: ${parsedObj.entry})`);
+            }
+            break;
+        // if nothing matched, the call is further delegated to actually apply transformations
         default:
           this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
           break;
@@ -546,7 +570,7 @@ export class ManagePagesService {
     this.socketService.send(JSON.stringify(object),command);
   }
 
-  disconnectSocket(){
+  disconnectSocket() {
     this.socketService.disconnect();
   }
 
@@ -562,10 +586,10 @@ export class ManagePagesService {
 
   /**
    * author: alexander Genser
-   * returns activePage, needed for CommentService
-   * @return Observable<Page>
+   * returns CommentAction Observable, needed for CommentService
+   * @return Observable<CommentAction>
    */
-  getActivePage(): Observable<Page> {
-      return this._activePage.asObservable();
+  getCommentActionObs(): Observable<CommentAction> {
+      return this.commentSubject.asObservable();
   }
 }
