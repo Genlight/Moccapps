@@ -234,8 +234,8 @@ export class FabricmodifyService {
       keys.forEach(function (key) {
         // we don't want to set objects completly new
         if (key === 'objects') return;
-        
-        else if (key === 'index') { 
+
+        else if (key === 'index') {
 
           let index = parsedObj.index
           //we need to flip the order if we bring objects to front, so we will bring the topmost object to front first.
@@ -322,7 +322,7 @@ export class FabricmodifyService {
           canvas.remove(old);
         }
       }
-      console.log('after parse.');
+      console.log('after parse (applyTransformation).');
     }
     canvas.renderAll();
   }

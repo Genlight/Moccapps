@@ -48,8 +48,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.pagesService.createPage(900, 600);
     this.canvas = this.pagesService.getCanvas();
 
-    // saving initial State
-    this.undoRedoService.saveInitialState();
+
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
 
@@ -123,11 +122,13 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       if (!!page.page_data) {
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
       }
-
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
     //this.pagesService.loadGrid(2000,2000);
     this.pagesService.updateGrid();
+
+    // saving initial State
+    this.undoRedoService.saveInitialState();
   }
 
   onCreatePage() {
