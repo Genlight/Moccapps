@@ -35,6 +35,8 @@ import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.comp
 import { ToolbarGroupsComponent } from './editor/toolbar-groups/toolbar-groups.component';
 import { UsercirclePipe } from './shared/pipes/usercircle.pipe';
 import { PageListItemComponent } from './editor/toolbar-pages/page-list-item/page-list-item.component';
+import { CommentComponent } from './editor/comment/comment.component';
+import { CommentBarComponent } from './editor/comment-bar/comment-bar.component';
 
 
 library.add(faBars);
@@ -63,7 +65,9 @@ library.add(faEllipsisV);
     ToolbarPagesComponent,
     ToolbarGroupsComponent,
     UsercirclePipe,
-    PageListItemComponent
+    PageListItemComponent,
+    CommentComponent,
+    CommentBarComponent
   ],
   imports: [
     BrowserModule,
