@@ -52,16 +52,7 @@ export class UndoRedoService {
     this.redoStack = [];
     this.redoObs.next(false);
     this.undoObs.next(false);
-
-    this.state = {
-      canvas: this.managepageService.getCanvas().clone((o) => {
-          console.log('saved State: ' + JSON.stringify(o));
-
-          return o;
-        }
-      ),
-      action: Action.PAGECREATED
-    };
+    this.setState(this.managepageService.getCanvas(), Action.PAGECREATED);
   }
   /**
    * initializes the undoRedoService with an initial State.
