@@ -68,6 +68,9 @@ export class ToolbarextensionComponent implements OnInit {
   ngOnInit() {
     console.log("loading categories and elements....");
     this.loadCategoriesFromServer();
+    
+    //this.elementMap.set('Personal', this.elementsService.getUserElements());
+    console.log(this.elementMap);
   }
   
 
@@ -84,7 +87,6 @@ export class ToolbarextensionComponent implements OnInit {
           console.log(`loadElements: ${JSON.stringify(response)}`);
           const stringified = JSON.parse(JSON.stringify(response));
           const parsedResponse = JSON.parse(stringified['message']);
-          console.log(parsedResponse);
 
           for (const cat in parsedResponse) {
             if (!this.categories.includes(cat)) {
@@ -92,14 +94,26 @@ export class ToolbarextensionComponent implements OnInit {
 
               let elements = [];
               const elementarray = parsedResponse[cat];
-              for (const elem in elementarray) {
-                const newelem = { 
-                  name: elementarray[elem],
-                  data: 'assets/img/'+cat+'/'+elementarray[elem],
-                  effectAllowed: 'all',
-                  previewimage: 'assets/img/'+cat+'/'+elementarray[elem]
+              if (cat === 'Personal') { // load userspecific elements
+                for (const elem in elementarray) {
+                  const newelem = { 
+                    name: elementarray[elem].split('/')[1],
+                    data: 'assets/img/user/'+elementarray[elem],
+                    effectAllowed: 'all',
+                    previewimage: 'assets/img/user/'+elementarray[elem]
+                  }
+                  elements.push(newelem);
                 }
-                elements.push(newelem);
+              } else { // load system libraries
+                for (const elem in elementarray) {
+                  const newelem = { 
+                    name: elementarray[elem],
+                    data: 'assets/img/system/'+cat+'/'+elementarray[elem],
+                    effectAllowed: 'all',
+                    previewimage: 'assets/img/system/'+cat+'/'+elementarray[elem]
+                  }
+                  elements.push(newelem);
+                }
               }
               this.elementMap.set(cat,elements);
             }

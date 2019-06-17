@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, ElementRef } from '@angular/core';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
 import { DndDropEvent } from 'ngx-drag-drop';
@@ -11,10 +11,12 @@ import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
 import * as Rulez from '../../../../node_modules/rulez.js/dist/js/rulez.min.js';
 import { WorkspaceService } from '../workspace.service';
+
 @Component({
   selector: 'app-fabric-canvas',
   templateUrl: './fabric-canvas.component.html',
-  styleUrls: ['./fabric-canvas.component.scss']
+  styleUrls: ['./fabric-canvas.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 
 export class FabricCanvasComponent implements OnInit, OnDestroy {
@@ -36,6 +38,14 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   rulerHorizontal: any;
   rulerVertical: any;
   showRulers: boolean = false;
+
+  selectedElement;
+
+  // Mouse position
+  cursorPosition: {
+    x: number;
+    y: number;
+  } = { x: 0, y: 0};
 
   constructor(
     private modifyService: FabricmodifyService,
@@ -67,13 +77,119 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     // React to changes when user clicks on hide/show ruler
     this.workSpaceService.showsRuler.subscribe((value) => {
       this.showRulers = value;
-      //Rerender rulers with current dimensions.
-      if (!!this.activePage && !!this.activePage.height && !!this.activePage.width) {
-        this.setRulerDimensions(this.activePage.height, this.activePage.width);
+      if (this.showRulers) {
+        //Rerender rulers with current dimensions.
+        if (!!this.activePage && !!this.activePage.height && !!this.activePage.width) {
+          this.setRulerDimensions(this.activePage.height, this.activePage.width);
+        }
+        this.showRulerLines();
+      } else {
+        this.hideRulerLines();
       }
     });
 
     this.loadRuler();
+  }
+
+  mouseDownFired = false;
+  
+  onAddRulerLineH() {
+    let div = document.createElement('div');
+    div.className = 'rulerHLine rulerLine';
+    div.style.marginLeft = this.cursorPosition.x + 'px';
+    div.addEventListener('mousedown', (e) => {
+      this.mouseDownFired = true;
+      this.selectedElement = e.target});
+    div.addEventListener('mouseup', (e) => {
+      // Remove line if it goes below 5px
+      if (this.cursorPosition.x < 5) {
+        this.removeRulerLine(e);
+      }
+      this.selectedElement = null;
+    });
+    let workspace = document.querySelector('.workspace');
+    workspace.insertBefore(div, workspace.childNodes[0]);
+  }
+
+  onAddRulerLineV() {
+    let div = document.createElement('div');
+    div.className = 'rulerVLine rulerLine';
+    div.style.marginTop = this.cursorPosition.y + 'px';
+    div.addEventListener('mousedown', (e) => {
+      this.mouseDownFired = true;
+      this.selectedElement = e.target});
+    div.addEventListener('mouseup', (e) => {
+      // Remove line if it goes below 5px
+      if (this.cursorPosition.y < 5) {
+        this.removeRulerLine(e);
+      }
+      this.selectedElement = null;
+    });
+    let workspace = document.querySelector('.workspace');
+    workspace.insertBefore(div, workspace.childNodes[0]);
+  }
+
+  storeRulers() {
+    
+  }
+
+  loadRulers() {
+
+  }
+
+  removeRulerLine(e) {
+    if (!!e && !!e.target) {
+      e.target.parentNode.removeChild(e.target);
+    }
+  }
+
+  hideRulerLines() {
+    //alert('hideRulerLines');
+    var elems = document.querySelectorAll('.rulerLine');
+    var index = 0, length = elems.length;
+    for ( ; index < length; index++) {
+        elems[index].classList.add("hidden");
+    }
+  }
+
+  showRulerLines() {
+    var elems = document.querySelectorAll('.rulerLine');
+    var index = 0, length = elems.length;
+    for ( ; index < length; index++) {
+        elems[index].classList.remove("hidden");
+    }
+  }
+
+  removeAllRulerLines() {
+  }
+
+  onMouseEnter(e) {
+    //alert('enter');
+/*     let x = e.clientX;
+    let y = e.clientY;
+    console.log(`x: ${x} y: ${y}`); */
+  }
+
+  onMouseLeave(e) {
+    //alert('leave');
+  }
+
+  onMouseMove(e, canvasWrapper: HTMLElement, horizontalHandler: HTMLElement, verticalHandler: HTMLElement) {
+    let bounds = canvasWrapper.getBoundingClientRect();
+    this.cursorPosition.x = e.clientX - bounds.left;
+    this.cursorPosition.y = e.clientY - bounds.top;
+    horizontalHandler.style.marginLeft = `${this.cursorPosition.x }px`;
+    verticalHandler.style.marginTop = `${this.cursorPosition.y}px`;
+    //console.log(`x: ${x} y: ${y}`);
+    if (!!this.selectedElement) {
+      if (this.selectedElement.classList.contains('rulerHLine')) {
+        // Move horizontally
+        this.selectedElement.style.marginLeft = `${this.cursorPosition.x }px`;
+      } else if (this.selectedElement.classList.contains('rulerVLine')){
+        // Move vertically
+        this.selectedElement.style.marginTop = `${this.cursorPosition.y }px`;
+      }
+    }
   }
 
   /**
