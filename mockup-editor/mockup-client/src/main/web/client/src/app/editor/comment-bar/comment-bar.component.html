@@ -1,11 +1,18 @@
 <div class="card" id="comment-bar">
   <div class="mb-2" style="justify-content: space-between; width: 18rem;">
     <div>
-      <label><b>Comments</b> <button
+      <label>
+        <b>Comments</b>
+        <button
           class="btn btn-secondary"
           (click)="onCreateComment()"
           ngbTooltip="Add a Comment"
           >+</button>
+        <button
+          class="btn btn-primary"
+          (click)="onTestButton()"
+          ngbTooltip="testing commentService"
+          >-</button>
       </label>
     </div>
     <div *ngIf="addingNewComment">

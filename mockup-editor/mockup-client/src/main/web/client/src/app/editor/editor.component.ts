@@ -5,7 +5,7 @@ import { ProjectService } from '../shared/services/project.service';
 import { ManagePagesService } from './managepages.service';
 import { Project } from '../shared/models/Project';
 import { NotificationService } from '../shared/services/notification.service';
-
+import { CommentService } from './comment.service';
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
@@ -16,7 +16,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   activeProject: Project;
 
   constructor(
-    private router: Router, 
+    private router: Router,
     private tokenStorage: TokenStorageService,
     private projectService: ProjectService,
     private pageService: ManagePagesService,
