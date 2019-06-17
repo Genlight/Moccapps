@@ -65,7 +65,7 @@ library.add(faEllipsisV);
     LastediteddatePipe,
     ToolbarPagesComponent,
     CreateVersionModalComponent,
-    LoadVersionModalComponent
+    LoadVersionModalComponent,
     ToolbarPagesComponent,
     UsercirclePipe,
     PageListItemComponent,
