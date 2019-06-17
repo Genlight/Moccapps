@@ -36,6 +36,7 @@ export class CommentService {
     //     }
     // );
     this.addingComment.next(false);
+    console.log('CommentService init');
   }
   /**
    * transformation from the activePage Observable to comment Observable
