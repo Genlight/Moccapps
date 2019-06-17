@@ -4,6 +4,7 @@ import { faHandPaper, faSquare, faCircle } from '@fortawesome/free-regular-svg-i
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
 import { WorkspaceService, ToolbarPanelState } from '../workspace.service';
+import {faObjectGroup} from "@fortawesome/free-solid-svg-icons/faObjectGroup";
 
 @Component({
   selector: 'app-toolbar',
