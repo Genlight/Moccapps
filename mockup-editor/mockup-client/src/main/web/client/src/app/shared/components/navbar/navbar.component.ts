@@ -26,6 +26,7 @@ import { RenameProjectModalComponent } from '../rename-project-modal/rename-proj
 import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal.component';
 import { ElementsService } from 'src/app/editor/elements.service';
 import { CommentService } from 'src/app/editor/comment.service';
+import { CreateProjectModalComponent } from 'src/app/projects/create-project-modal/create-project-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -201,6 +202,12 @@ export class NavbarComponent implements OnInit {
 
   onNewProject() {
     // TODO
+    if (!!this.project) {
+      const modelRef = this.modalService.open(CreateProjectModalComponent);
+      //modelRef.componentInstance.project = this.project;
+    } else {
+      console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
+    }
   }
 
   onNewPage() {
