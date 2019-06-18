@@ -15,7 +15,9 @@ export class FabricmodifyService {
 
   constructor(
     //private managePagesService:ManagePagesService
-  ) { }
+  ) { 
+    this.newForeignSelections();
+  }
 
   /* groups active elements in given canvas if more than one element is selected */
   group(canvas: any) {

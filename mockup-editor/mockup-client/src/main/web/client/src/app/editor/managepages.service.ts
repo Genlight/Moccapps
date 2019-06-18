@@ -522,6 +522,7 @@ export class ManagePagesService {
           break;
         
         case Action.LOCK:
+        case Action.UNLOCK:
         case Action.SELECTIONMODIFIED:
           if(parsedObj.userId===this.tokenStorage.getToken()) {
             //console.log("not locking my own lock");
@@ -546,7 +547,7 @@ export class ManagePagesService {
   }
   sendMessageToSocket(object: any, command: string){
     let send = object;
-    if(command === Action.LOCK || command === Action.SELECTIONMODIFIED) {
+    if(command === Action.LOCK || command === Action.SELECTIONMODIFIED || command === Action.UNLOCK) {
       send = new OwnedStatelessObject();
       send.userId = this.tokenStorage.getToken();
       if(object) {

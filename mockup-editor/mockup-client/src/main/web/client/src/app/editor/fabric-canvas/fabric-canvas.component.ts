@@ -254,14 +254,14 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   enableEvents() {
     this.canvas
-      .on('before:transform', (event) => { this.onTransformation(event.transform, Action.LOCK); })
-      .on('mouse:up',(event) => { if(event.target !== null) this.onTransformation(event, Action.UNLOCK) })
+      .on('before:transform', (event) => { this.statelessTransfer(event.transform, Action.LOCK); })
+      .on('mouse:up',(event) => { if(event.target !== null) this.statelessTransfer(event, Action.UNLOCK) })
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-      .on('selection:created',(event) => { this.onSelection(event) })
-      .on('selection:updated',(event) => { this.onSelection(event) })
-      .on('before:selection:cleared',(event) => { this.onSelection({'target':null}) })
+      .on('selection:created',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
+      .on('selection:updated',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
+      .on('before:selection:cleared',(event) => { this.statelessTransfer({'target':null},Action.SELECTIONMODIFIED) })
       .on('after:render',(event) => { this.onAfterRender(event) })
       /*.on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
@@ -374,7 +374,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
       
-      if(action !== Action.LOCK) this.onSaveState(evt, action);
+      //if(action !== Action.LOCK) 
+      this.onSaveState(evt, action);
 
 
       let typ = transObject.type
@@ -421,9 +422,10 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       
   }
 
-  onSelection(evt) {
+  statelessTransfer(evt, action:string) {
     let selectedObj = evt.target;
-    let sendArray = [null];
+    let sendArray = [];
+    if(action === Action.SELECTIONMODIFIED) sendArray.push(null);
     if(selectedObj) {
       if(selectedObj.type === 'activeSelection') {
         selectedObj.getObjects().forEach( (current) => {
@@ -435,7 +437,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     }
     let _this = this;
     sendArray.forEach((current) => {
-      _this.pagesService.sendMessageToSocket(current,Action.SELECTIONMODIFIED);
+      _this.pagesService.sendMessageToSocket(current,action);
     })
     
   }
@@ -465,6 +467,9 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.pagesService.clearActivePage();
     this.pagesService.clearPages();
     this.canvas.dispose();
+
+    // pretend to have deselected all elements.
+    this.pagesService.sendMessageToSocket(null,Action.SELECTIONMODIFIED);
   }
   /**
    * Undo Redo - functionality
