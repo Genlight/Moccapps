@@ -7,7 +7,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 })
 export class ElementsService {
 
-  userElements: BehaviorSubject<any> = new BehaviorSubject([]);
+  //userElements: BehaviorSubject<any> = new BehaviorSubject([]);
 
   private imagedata = {
     name: null,
@@ -17,7 +17,7 @@ export class ElementsService {
   constructor(private apiService: ApiService) { }
 
   importImage(file: File) {
-    this.userElements.next([{ 
+    /*this.userElements.next([{ 
       name: 'Browser Window',
       data: 'assets/img/system/Systems/browser_window.jpg',
       effectAllowed: 'all',
@@ -27,7 +27,7 @@ export class ElementsService {
         data: 'assets/img/Logos/collups.svg',
         effectAllowed: 'all',
         previewimage: 'assets/img/Logos/collups.svg'
-      }]);
+      }]);*/
 
     const reader = new FileReader();
     this.imagedata.name = file.name;
@@ -36,7 +36,6 @@ export class ElementsService {
     let _this = this;
     reader.onloadend = function () {
       baseString = reader.result;
-      console.log("onload: " + baseString);
       _this.imagedata.encodedImage = baseString;
       _this.sendImage(_this.imagedata).subscribe(
         (response) => {
@@ -45,23 +44,15 @@ export class ElementsService {
     };
   }
 
-  getUserElements():Observable<string[]> {
-    console.log("user elements: "+this.userElements);
+  /*getUserElements():Observable<string[]> {
     return this.userElements;
-  }
+  }*/
 
   getElements<T>(): Observable<T> {
     return this.apiService.get<T>('/elements');
   }
 
   sendImage(img: object): Observable<any> {
-    /*const reader = new FileReader();
-    const imgdata = reader.readAsDataURL(img);
-    var baseString;
-    reader.onloadend = function () {
-        baseString = reader.result;
-    };
-    console.log(baseString); */
     return this.apiService.post('/elements', img);
   }
 }

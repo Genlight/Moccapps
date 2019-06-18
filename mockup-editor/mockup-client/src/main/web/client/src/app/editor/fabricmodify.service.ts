@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
-import { ManagePagesService } from './managepages.service';
+import { Group } from 'fabric';
+import { ManageGroupsService } from './managegroups.service';
 import { Action } from './fabric-canvas/transformation.interface';
+import {ManagePagesService} from "./managepages.service";
 import { socketMessage } from '../socketConnection/socketMessage';
 let savedElements = null;
 
@@ -12,10 +14,11 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
+  private foreignSelections:Map<string,[Object]>;
 
-  constructor(
-    //private managePagesService:ManagePagesService
-  ) { }
+  constructor( private groupService: ManageGroupsService ) { 
+    this.newForeignSelections();
+  }
 
   /* groups active elements in given canvas if more than one element is selected */
   group(canvas: any) {
@@ -25,8 +28,10 @@ export class FabricmodifyService {
     if (canvas.getActiveObject().type !== 'activeSelection') {
       return;
     }
-    canvas.getActiveObject().toGroup();
-    canvas.requestRenderAll();
+    let temp = canvas.getActiveObject().toGroup();
+    temp.set('dirty',true);
+    temp = (temp as Group);
+    this.groupService.add(temp);
   }
 
   clearAll(canvas: any) {
@@ -67,8 +72,11 @@ export class FabricmodifyService {
     if (activeGrp.type !== 'group') {
       return;
     }
+    let temp = (activeGrp as Group);
+    this.groupService.remove(temp);
     activeGrp.toActiveSelection();
     canvas.requestRenderAll();
+
   }
 
   /* adds a text label to the given canvas */
@@ -234,8 +242,8 @@ export class FabricmodifyService {
       keys.forEach(function (key) {
         // we don't want to set objects completly new
         if (key === 'objects') return;
-        
-        else if (key === 'index') { 
+
+        else if (key === 'index') {
 
           let index = parsedObj.index
           //we need to flip the order if we bring objects to front, so we will bring the topmost object to front first.
@@ -278,7 +286,25 @@ export class FabricmodifyService {
         if (!old) {
           this.addRemoteObject(parsedObj, canvas);
         }
-      } else if (message.command === Action.MODIFIED) {
+      } 
+      else if (message.command === Action.LOCK) {
+
+        old['evented'] = false;
+        old['selectable'] = false;
+      }
+      else if(message.command === Action.UNLOCK) {
+        
+        old['evented'] = true;
+        old['selectable'] = true;
+      }   
+      else if(message.command === Action.SELECTIONMODIFIED) {
+        if(!old) {
+          this.foreignSelections.set(parsedObj.userId,[null])
+        } else {
+          this.foreignSelections.get(parsedObj.userId).push(old);
+        }
+      } 
+      else if (message.command === Action.MODIFIED) {
 
         //fallback to add if no such element exists, can be removed and replaced by error message if desired
         if (old === undefined) {
@@ -322,7 +348,7 @@ export class FabricmodifyService {
           canvas.remove(old);
         }
       }
-      console.log('after parse.');
+      console.log('after parse (applyTransformation).');
     }
     canvas.renderAll();
   }
@@ -332,6 +358,13 @@ export class FabricmodifyService {
     return canvas.getObjects().find((o) => o.uuid === uuid);
   }
 
+  getForeignSelections():Map<string,[any]> {
+    return this.foreignSelections;
+  }
+
+  newForeignSelections() {
+    this.foreignSelections = new Map<string,[any]>();
+  }
   /**
    * This method modifies the values of an object in a way that they are again relative to the
    * canvas and not the provided group. Counterpart of calcInsertIntoGroup. Does not remove the object

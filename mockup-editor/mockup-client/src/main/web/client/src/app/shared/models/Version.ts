@@ -1,5 +1,6 @@
 export class Version {
-    id?: number;
-    datetime: Date;
-    tag?: string;
+    id: number;
+    datetime?: Date;
+    versionName: string;
+    projectId: number;
 }

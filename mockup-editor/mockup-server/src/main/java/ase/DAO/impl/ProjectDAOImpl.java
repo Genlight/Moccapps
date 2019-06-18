@@ -21,9 +21,9 @@ import java.util.List;
 public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
 
     private static final Logger logger  = LoggerFactory.getLogger(ProjectDAOImpl.class);
-    private static final String PSTMT_CREATE = "INSERT INTO projects (project_name) VALUES (?)";
+    private static final String PSTMT_CREATE = "INSERT INTO projects (project_name,last_modified) VALUES (?,?)";
     private static final String PSTMT_CREATE_JT_USERS_PROJECTS="INSERT INTO user_project (user_id,project_id) VALUES (?,?)";
-    private static final String PSTMT_UPDATE = "UPDATE projects SET project_name=? WHERE id=?";
+    private static final String PSTMT_UPDATE = "UPDATE projects SET project_name=?,last_modified=? WHERE id=?";
     private static final String PSTMT_DELETE = "DELETE FROM projects WHERE id=?";
     private static final String PSTMT_DELETE_JT_USERS_PROJECTS="DELETE FROM user_project WHERE project_id=?";
     private static final String PSTMT_DELETE_JT_USERS_PROJECTS_SINGLE_ENTRY="DELETE FROM user_project WHERE project_id=? AND user_id=?";
@@ -48,6 +48,7 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_CREATE, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,project.getProjectname());
+            pstmt.setDate(2,new java.sql.Date(System.currentTimeMillis()));
             pstmt.executeUpdate();
             ResultSet rs=pstmt.getGeneratedKeys();
             rs.next();
@@ -110,7 +111,8 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
 
             pstmt=connection.prepareStatement(PSTMT_UPDATE);
             pstmt.setString(1,updatedProject.getProjectname());
-            pstmt.setInt(2,updatedProject.getId());
+            pstmt.setDate(2,updatedProject.getLastModified());
+            pstmt.setInt(3,updatedProject.getId());
             pstmt.executeUpdate();
             pstmt.close();
 
@@ -167,7 +169,8 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
             }
             project = new Project(
                     rs.getInt("id"),
-                    rs.getString("project_name")
+                    rs.getString("project_name"),
+                    rs.getDate("last_modified")
             );
             rs.close();
 
@@ -202,7 +205,8 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
             while(rs.next()){
                 projects.add(new Project(
                         rs.getInt("id"),
-                        rs.getString("project_name")
+                        rs.getString("project_name"),
+                        rs.getDate("last_modified")
                 ));
             }
             rs.close();
