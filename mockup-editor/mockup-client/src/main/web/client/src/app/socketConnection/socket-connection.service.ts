@@ -4,6 +4,9 @@ import * as SockJS from 'sockjs-client';
 import { socketMessage } from './socketMessage';
 import { FabricmodifyService } from '../editor/fabricmodify.service';
 import { ManagePagesService } from '../editor/managepages.service';
+import {environment} from "../../environments/environment";
+
+const API_URL = environment.apiUrl;
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +27,7 @@ export class SocketConnectionService {
     this.userId = userId;
     this.projectId = projectId;
     this.pageId = pageId;
-    const socket = new SockJS('http://localhost:8090/connect');
+    const socket = new SockJS(API_URL+'/connect');
     this.stompClient = Stomp.over(socket);
     const _this = this;
     this.stompClient.connect({}, function (frame) {
