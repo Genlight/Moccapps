@@ -5,11 +5,11 @@
         <fa-icon [icon]="faMousePointer"></fa-icon>
       </button>
     </li>
-    <li class="navbar-item toolbar-item">
+<!--     <li class="navbar-item toolbar-item">
       <button class="btn btn-light btn-toolbar" disabled>
         <fa-icon [icon]="faHandPointer"></fa-icon>
       </button>
-    </li>
+    </li> -->
     <li class="navbar-item toolbar-item" (click)="onAddSquare()">
       <button class="btn btn-light btn-toolbar">
         <fa-icon [icon]="faSquare"></fa-icon>
@@ -39,24 +39,29 @@
     <ul class="navbar-nav sidebar toolbar-bottom">
       <li class="navbar-item toolbar-item">
         <button 
-          class="btn btn-light btn-toolbar" 
+          class="btn btn-light btn-toolbar"
           [ngClass]="{'btn-dark': toolbarState === ToolbarPanelState.Library }"
+          ngbTooltip="Library"
           id="navElementsButton">
           <fa-icon [icon]="faElements" (click)="onElementsToggle()"></fa-icon>
+        </button>
+      </li>
+      <li class="navbar-item toolbar-item">
+        <button class="btn btn-light btn-toolbar" id="navGroupsButton1"  
+          [ngClass]="{'btn-dark': toolbarState === ToolbarPanelState.Groups }"
+          ngbTooltip="Group"
+          >
+          <fa-icon [icon]="faGroup" (click)="onGroup1Toggle()"></fa-icon>
         </button>
       </li>
       <li class="navbar-item toolbar-item">
         <button 
           class="btn btn-light btn-toolbar" 
           id="navGroupsButton"
+          ngbTooltip="Pages"
           [ngClass]="{'btn-dark': toolbarState === ToolbarPanelState.Pages }"
         >
-          <fa-icon [icon]="faLayerGroup" (click)="onGroupToggle()"></fa-icon>
-        </button>
-      </li>
-      <li class="navbar-item toolbar-item">
-        <button class="btn btn-light btn-toolbar" id="navGroupsButton1"  [ngClass]="{'btn-dark': toolbarState === ToolbarPanelState.Groups }">
-          <fa-icon [icon]="faGroup" (click)="onGroup1Toggle()"></fa-icon>
+          <fa-icon [icon]="faFile" (click)="onGroupToggle()"></fa-icon>
         </button>
       </li>
     </ul>
