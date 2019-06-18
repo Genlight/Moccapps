@@ -109,10 +109,11 @@ public class ElementsRESTService {
 
         // decode and save image
         byte[] imageByte = Base64.getDecoder().decode(encodedImage);
-        String imgPath = "../mockup-client/src/main/web/client/src/assets/img/user/"+userdirectory+"/"+name;
+        String directoryPath = "../mockup-client/src/main/web/client/src/assets/img/user/"+userdirectory;
+        String imgPath = directoryPath+"/"+name;
 
         // check if directory exists
-        File directory = new File("../mockup-client/src/main/web/client/src/assets/img/user/"+userdirectory);
+        File directory = new File(directoryPath);
         if (!directory.exists()) {
             directory.mkdir();
         }
