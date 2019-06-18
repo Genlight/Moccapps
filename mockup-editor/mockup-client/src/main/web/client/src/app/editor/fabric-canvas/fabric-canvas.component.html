@@ -11,13 +11,13 @@
     <div 
         class="ruler-handle-horizontal" 
         #horizontalHandler 
-        [hidden]="!showRulers"
+        [hidden]="!showRulers || isLoading"
         (click)="onAddRulerLineH()"
         ></div>
     <div 
         class="ruler-handle-vertical" 
         #verticalHandler 
-        [hidden]="!showRulers"
+        [hidden]="!showRulers || isLoading"
         (click)="onAddRulerLineV()"
     ></div>
 
