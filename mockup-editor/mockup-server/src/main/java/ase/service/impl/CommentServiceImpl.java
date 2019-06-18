@@ -59,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment upadteComment(Comment comment){
+    public Comment updateComment(Comment comment){
         try {
             return commentDAO.update(comment);
         } catch (DAOException e) {
@@ -89,7 +89,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public boolean deleteCommentEntry(CommentEntry commentEntry){
+    public boolean removeCommentEntry(CommentEntry commentEntry){
         try {
             return commentDAO.deleteEntry(commentEntry);
         } catch (DAOException e) {

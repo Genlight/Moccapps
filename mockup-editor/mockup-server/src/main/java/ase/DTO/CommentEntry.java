@@ -66,4 +66,39 @@ public class CommentEntry{
     public void setCommentId(int commentId) {
         this.commentId = commentId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CommentEntry that = (CommentEntry) o;
+
+        if (id != that.id) return false;
+        if (user_id != that.user_id) return false;
+        if (commentId != that.commentId) return false;
+        if (message != null ? !message.equals(that.message) : that.message != null) return false;
+        return date != null ? date.equals(that.date) : that.date == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (message != null ? message.hashCode() : 0);
+        result = 31 * result + user_id;
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + commentId;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CommentEntry{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", user_id=" + user_id +
+                ", date=" + date +
+                ", commentId=" + commentId +
+                '}';
+    }
 }

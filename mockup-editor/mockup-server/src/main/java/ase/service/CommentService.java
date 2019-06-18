@@ -12,13 +12,13 @@ public interface CommentService {
 
     Comment createCommentAndEntry(Comment comment);
 
-    Comment upadteComment(Comment comment);
+    Comment updateComment(Comment comment);
 
     CommentEntry updateCommentEntry(CommentEntry commentEntry);
 
     boolean removeComment(Comment comment);
 
-    boolean deleteCommentEntry(CommentEntry commentEntry);
+    boolean removeCommentEntry(CommentEntry commentEntry);
 
     Comment findCommentById(int id);
 

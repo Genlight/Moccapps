@@ -126,6 +126,8 @@ public class TestData {
         createdComment1=new Comment(COMMENT_1_ID,COMMENT_1_PAGEID,COMMENT_1_CLEARED);
         createdCommentEntry1=new CommentEntry(COMMENTENTRY_1_ID,COMMENTENTRY_1_MESSAGE,COMMENTENTRY_1_USERID,COMMENTENTRY_1_DATE,COMMENTENTRY_1_COMMENTID);
         createdComment1.setCommentObjects(new ArrayList<>(Arrays.asList(COMMENT_1_OBJECT)));
+        createdComment1.setCommentEntryList(new ArrayList<>(Arrays.asList(createdCommentEntry1)));
+
 
         comment2=new Comment(COMMENT_2_ID,COMMENT_2_PAGEID,COMMENT_2_CLEARED);
         commentEntry2=new CommentEntry(COMMENTENTRY_2_ID,COMMENTENTRY_2_MESSAGE,COMMENTENTRY_2_USERID,COMMENTENTRY_2_DATE,COMMENTENTRY_2_COMMENTID);

@@ -97,4 +97,15 @@ public class Comment {
         result = 31 * result + (commentObjects != null ? commentObjects.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", page_id=" + page_id +
+                ", cleared=" + cleared +
+                ", commentEntryList=" + commentEntryList +
+                ", commentObjects=" + commentObjects +
+                '}';
+    }
 }

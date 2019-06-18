@@ -251,6 +251,7 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
             while (rs.next()) {
                 objectList.add(rs.getString("object_id"));
             }
+            comment.setCommentObjects(objectList);
             rs.close();
             pstmt.close();
 
