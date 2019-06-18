@@ -25,6 +25,7 @@ export class ManagePagesService {
   pages: Observable<Page[]>;
   activePage: Observable<Page>;
 
+  isLoadingPage: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private _pages: BehaviorSubject<Page[]>;
   private _activePage: BehaviorSubject<Page>;
   private _activeProject: Project;
@@ -109,13 +110,15 @@ export class ManagePagesService {
     console.log('setPageActive');
     if (!!page) {
       // Persist workspace of old workspace
-      let oldPage = Object.assign({}, this.dataStore.activePage);
+ /*      let oldPage = Object.assign({}, this.dataStore.activePage);
       oldPage.page_data = this.exportToJson(this.canvas);
       console.log(`setPageActive: saving old page: ${JSON.stringify(oldPage)}`);
-      this.updatePage(oldPage);
+      this.updatePage(oldPage); */
 
       //Set new active page
       console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
+      // Set page data from rest api to null
+      page.page_data = null;
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
 
@@ -123,10 +126,11 @@ export class ManagePagesService {
       this.disconnectSocket();
       this.connectToSocket(this._activeProject.id,this._activePage.getValue().id);
 
+      this.isLoadingPage.next(true);
       //Load page by socket
       setTimeout(() => {
         this.loadPageBySocket(page.id);
-      }, 1000);
+      }, 3000);
     }
   }
 
@@ -220,28 +224,6 @@ export class ManagePagesService {
   }
 
   /**
-   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via REST)
-   */
-  load(id: number) {
-    this.apiService.get<Page>(`/project/${this._activeProject.id}/page/${id}`).subscribe(
-      (page) => {
-        if (!!page) {
-          // If a local copy of the page does already exist. Update the page.
-          let pageExists: boolean = false;
-
-          this.dataStore.pages.forEach((p, i) => {
-            if (p.id === page.id) {
-              this.dataStore.pages[i] = page;
-              this._pages.next(Object.assign({}, this.dataStore).pages);
-              pageExists = true;
-            }
-          });
-        }
-      }
-    )
-  }
-
-  /**
    * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via socket)
    * @param id
    */
@@ -256,6 +238,7 @@ export class ManagePagesService {
       if (!!this.dataStore.activePage && !!this.dataStore.activePage.id) {
         if (id === this.dataStore.activePage.id) {
           let currentPage = this.dataStore.activePage;
+          //alert(JSON.stringify(pageData));
           currentPage.page_data = pageData;
           this.dataStore.activePage = currentPage;
           this._activePage.next(Object.assign({}, currentPage));
@@ -310,14 +293,13 @@ export class ManagePagesService {
   }
 
   updatePage(page: Page) {
-    console.log('updatePage');
+/*     console.log('updatePage');
     if (!!page) {
       this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
         // Update was successful, update element in local store.
         this.updatePageStore(page);
-      },
-    (error) => { console.error('error at updatePage: ' + error)});
-    }
+      });
+    } */
   }
 
   private updatePageStore(page: Page) {
@@ -356,16 +338,16 @@ export class ManagePagesService {
   removePage(page: Page) {
     console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
+      this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
       this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
-          this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
           this.removePageFromStore(page.id);
         },
         error => {
           alert(error);
         }
-      );
+      ); 
     }
   }
 
@@ -461,15 +443,15 @@ export class ManagePagesService {
       switch (message.command) {
 
         case Action.PAGELOAD:
-          console.log('page load');
-          if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageData) {
-            let pageData = parsedObj.pageData;
-            this.loadPageDataStore(parsedObj.id, pageData);
+          console.log(`pageload. ${JSON.stringify(parsedObj)}`);
+          if (!!parsedObj) {
+               this.loadPageDataStore(this.dataStore.activePage.id, JSON.stringify(parsedObj));
           } else {
             console.error(`page load: received invalid data over socket connection, ParsedObject: ${!!parsedObj}
                 \n pageid: ${parsedObj.pageId} | pageData : ${parsedObj.pageData}`);
             // this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
           }
+          this.isLoadingPage.next(false);
           break;
 
         case Action.PAGEDIMENSIONCHANGE:
@@ -524,7 +506,7 @@ export class ManagePagesService {
           break;
 
         case Action.PAGERENAMED:
-          alert('page renamed');
+          //alert('page renamed');
           if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageName) {
             this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
           }

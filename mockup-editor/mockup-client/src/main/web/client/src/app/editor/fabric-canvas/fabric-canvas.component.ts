@@ -5,7 +5,6 @@ import { DndDropEvent } from 'ngx-drag-drop';
 import { Subject } from 'rxjs';
 import { Itransformation, Action } from './transformation.interface';
 import { fabric } from '../extendedfabric';
-import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
 
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
@@ -38,6 +37,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   rulerHorizontal: any;
   rulerVertical: any;
   showRulers: boolean = false;
+  isLoading: boolean = true;
 
   selectedElement;
 
@@ -51,7 +51,13 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     private modifyService: FabricmodifyService,
     private pagesService: ManagePagesService,
     private undoRedoService: UndoRedoService,
-    private workSpaceService: WorkspaceService) { }
+    private workSpaceService: WorkspaceService) {
+
+      this.pagesService.isLoadingPage.subscribe((isLoading) => {
+        //alert(isLoading);
+        this.isLoading = isLoading;
+      });
+    }
 
   // TODO: manage canvas for different pages and not just one
   ngOnInit() {
@@ -237,6 +243,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       this.modifyService.clearAll(this.canvas);
       this.modifyService.setHeight(this.canvas, page.height);
       this.modifyService.setWidth(this.canvas, page.width);
+      alert(`loadPage: ${page.page_data}`);
       if (!!page.page_data) {
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
       }
@@ -403,7 +410,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
         this.canvas.setActiveObject(newSelection);
-        //console.log('new Selection: '+ JSON.stringify(newSelection));
+        console.log('new Selection: ' + JSON.stringify(newSelection));
         this.canvas.renderOnAddRemove = oldRenderAddReomve;
 
       } else {

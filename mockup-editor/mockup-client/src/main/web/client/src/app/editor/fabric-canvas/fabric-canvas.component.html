@@ -30,13 +30,18 @@
         (mouseenter) = "onMouseEnter($event)"
         (mouseleave) = "onMouseLeave($event)"
         (mousemove) = "onMouseMove($event, canvasWrapper, horizontalHandler, verticalHandler)"
-            [hidden]="!activePage || !pages || pages.length === 0" (dndDrop)="onDrop($event)">
+            [hidden]="!activePage || !pages || pages.length === 0 || isLoading" (dndDrop)="onDrop($event)">
             <div class="canvas-container">
                 <canvas id="canvas"></canvas>
 				<canvas id="canvasGrid" style="z-index:1;"></canvas>
             </div>
     </div>
 
+    <div class="d-flex justify-content-center" *ngIf="isLoading">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 
     <div class="card" *ngIf="!pages || pages.length === 0">
         <div class="card-body">
@@ -46,11 +51,10 @@
         </div>
     </div>
 
-    <div class="card" *ngIf="pages.length > 0 && !activePage">
+    <div class="card" *ngIf="pages.length > 0 && !activePage && !isLoading">
         <div class="card-body">
             <h5 class="card-title">No page selected.</h5>
             <p class="card-text">Please select a page.</p>
         </div>
     </div>
-    
 </div>
