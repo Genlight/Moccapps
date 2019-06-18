@@ -38,6 +38,9 @@ public class ElementServiceImpl implements ElementService {
     public List<String> getUserElements(String userfolder) {
         List<String> elements = new ArrayList<>();
         File folder = new File("../mockup-client/src/main/web/client/src/assets/img/user/"+userfolder);
+        if (!folder.exists()) {
+            return elements;
+        }
         File[] listOfElements = folder.listFiles();
         for (File elem: listOfElements) {
             elements.add(userfolder+"/"+elem.getName());

@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
+import { Group } from 'fabric';
+import { ManageGroupsService } from './managegroups.service';
 import { Action } from './fabric-canvas/transformation.interface';
+import {ManagePagesService} from "./managepages.service";
 import { socketMessage } from '../socketConnection/socketMessage';
 let savedElements = null;
 
@@ -13,9 +16,7 @@ export class FabricmodifyService {
   canvas: any;
   private foreignSelections:Map<string,[Object]>;
 
-  constructor(
-    //private managePagesService:ManagePagesService
-  ) { 
+  constructor( private groupService: ManageGroupsService ) { 
     this.newForeignSelections();
   }
 
@@ -27,8 +28,10 @@ export class FabricmodifyService {
     if (canvas.getActiveObject().type !== 'activeSelection') {
       return;
     }
-    canvas.getActiveObject().toGroup();
-    canvas.requestRenderAll();
+    let temp = canvas.getActiveObject().toGroup();
+    temp.set('dirty',true);
+    temp = (temp as Group);
+    this.groupService.add(temp);
   }
 
   clearAll(canvas: any) {
@@ -69,8 +72,11 @@ export class FabricmodifyService {
     if (activeGrp.type !== 'group') {
       return;
     }
+    let temp = (activeGrp as Group);
+    this.groupService.remove(temp);
     activeGrp.toActiveSelection();
     canvas.requestRenderAll();
+
   }
 
   /* adds a text label to the given canvas */
@@ -236,8 +242,8 @@ export class FabricmodifyService {
       keys.forEach(function (key) {
         // we don't want to set objects completly new
         if (key === 'objects') return;
-        
-        else if (key === 'index') { 
+
+        else if (key === 'index') {
 
           let index = parsedObj.index
           //we need to flip the order if we bring objects to front, so we will bring the topmost object to front first.
@@ -342,7 +348,7 @@ export class FabricmodifyService {
           canvas.remove(old);
         }
       }
-      console.log('after parse.');
+      console.log('after parse (applyTransformation).');
     }
     canvas.renderAll();
   }

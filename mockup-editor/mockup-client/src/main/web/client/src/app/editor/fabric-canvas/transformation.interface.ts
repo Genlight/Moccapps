@@ -16,7 +16,13 @@ export enum Action {
   PAGEDIMENSIONCHANGE = 'page:dimensionchange',
   LOCK = 'element:locked',
   UNLOCK = 'element:unlocked',
-  SELECTIONMODIFIED = 'selection:modified' 
+  SELECTIONMODIFIED = 'selection:modified', 
+  COMMENTADDED = 'comment:added',
+  COMMENTMODIFIED = 'comment:modified',
+  COMMENTCLEARED = 'comment:cleared',
+  COMMENTENTRYADDED = 'commententry:added',
+  COMMENTENTRYMODIFIED = 'commententry:modified',
+  COMMENTENTRYDELETED = 'commententry:deleted'
 }
 export enum CanvasTransmissionProperty {
   BACKGROUNDCOLOR = 'backgroundColor',

@@ -58,8 +58,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.pagesService.createPage(900, 600);
     this.canvas = this.pagesService.getCanvas();
 
-    // saving initial State
-    this.undoRedoService.saveInitialState();
+
     this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
 
@@ -75,7 +74,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       }
     });
 
-    // React to changes when user clicks on hide/show ruler 
+    // React to changes when user clicks on hide/show ruler
     this.workSpaceService.showsRuler.subscribe((value) => {
       this.showRulers = value;
       if (this.showRulers) {
@@ -241,11 +240,13 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       if (!!page.page_data) {
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
       }
-      
       console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
     //this.pagesService.loadGrid(2000,2000);
     this.pagesService.updateGrid();
+
+    // saving initial State
+    this.undoRedoService.saveInitialState();
   }
 
   onCreatePage() {
@@ -373,8 +374,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
-      
-      //if(action !== Action.LOCK) 
       this.onSaveState(evt, action);
 
 
@@ -385,7 +384,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
       if(typ==='activeSelection') {
         //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
-        console.log('selection: '+JSON.stringify(transObject))
+        //console.log('selection: '+JSON.stringify(transObject))
         let oldRenderAddReomve = this.canvas.renderOnAddRemove;
         this.canvas.renderOnAddRemove = false;
         this.canvas.discardActiveObject();
@@ -397,16 +396,16 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
             obj.uuid = newObj.uuid;
             obj.sendMe = false;//? should be needed but its nonexistence had no effect, treat with care.
             this.pagesService.sendMessageToSocket(obj, action);
-            console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
+            //console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
           })
         });
         //fancy canvas magic to ensure the selection behaves properly
         let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
         this.canvas.setActiveObject(newSelection);
-        console.log('new Selection: '+ JSON.stringify(newSelection));
+        //console.log('new Selection: '+ JSON.stringify(newSelection));
         this.canvas.renderOnAddRemove = oldRenderAddReomve;
-        
+
       } else {
         this.pagesService.sendMessageToSocket(transObject,action);
       }
@@ -484,7 +483,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         });
     } else {
       objects.push(saveObject);
-      console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
+      // console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
     }
     this.undoRedoService.save(objects, action);
   }
