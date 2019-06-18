@@ -394,7 +394,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
           sendArray.push(newObj);
           newObj.clone((obj) => {
             obj.uuid = newObj.uuid;
-            obj.sendMe = false;
+            obj.sendMe = false;//? should be needed but its nonexistence had no effect, treat with care.
             this.pagesService.sendMessageToSocket(obj, action);
             console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
           })
