@@ -26,8 +26,8 @@
                 </ul>
               </li>
               <li role="separator" class="divider"></li>
-              <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version...</button>
-              <button class="btn btn-light menubtn" disabled>Load Version...</button>
+              <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version</button>
+              <button class="btn btn-light menubtn" (click)="onLoadVersion()">Load Version</button>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" (click)="onAllProjects()">All Projects</button>
             </ul>
@@ -68,7 +68,7 @@
                   <fa-icon [icon]="faCheck" *ngIf="grid"></fa-icon> View Grid</button>
               <button class="btn btn-light menubtn" [disabled]="!grid" (click)="onSnapToGrid()">
                   <fa-icon [icon]="faCheck" *ngIf="snapToGrid"></fa-icon> Snap to Grid</button>
-            
+
             </ul>
           </li>
         <button ngbDropdownItem disabled>Help</button>
@@ -80,7 +80,7 @@
     <button [disabled]="redoDisabled" class="btn btn-light ml-1" (click)="onRedo()" disabled>
       <fa-icon [icon]="faRedo"></fa-icon>
     </button>
-    <button class="btn btn-light ml-4" disabled>
+    <button class="btn btn-light ml-4" (click)="onAddComment()">
         <fa-icon [icon]="faCommentAlt"></fa-icon>
         <span class="ml-2 navbar-btn-text">Add Comment</span>
     </button>

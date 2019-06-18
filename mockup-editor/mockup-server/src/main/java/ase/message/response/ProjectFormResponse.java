@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class ProjectFormResponse implements Serializable {
     private int id;
     @NotBlank
     private String projectname;
+    private Date lastModified;
     private List<User> users;
     private List<InvitationU> invitations;
 
@@ -43,6 +45,14 @@ public class ProjectFormResponse implements Serializable {
         this.users = users;
     }
 
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
     public void addUser(User user) {
         if (this.users == null) {
             this.users = new ArrayList<>();
@@ -67,12 +77,12 @@ public class ProjectFormResponse implements Serializable {
 
     @Override
     public String toString() {
-        return "ProjectForm{" +
+        return "ProjectFormResponse{" +
                 "id=" + id +
                 ", projectname='" + projectname + '\'' +
+                ", lastModified=" + lastModified +
                 ", users=" + users +
                 ", invitations=" + invitations +
                 '}';
     }
-
 }
