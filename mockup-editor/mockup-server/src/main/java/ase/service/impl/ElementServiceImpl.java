@@ -4,6 +4,8 @@ import ase.service.ElementService;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +14,15 @@ import java.util.List;
  */
 @Service
 public class ElementServiceImpl implements ElementService {
+
+    private String baseDir = "../mockup-client/src/main/web/client/src/assets/img";
+    private String systemDir = baseDir + "/system";
+    private String userDir = baseDir + "/user";
     @Override
     public List<String> getCategories() {
+        //System.out.println("\n\n\n"+(Paths.get("").toString()));
         List<String> categories = new ArrayList<>();
-        File folder = new File("../mockup-client/src/main/web/client/src/assets/img/system");
+        File folder = new File(systemDir);
         File[] listOfCategories = folder.listFiles();
         for (File category: listOfCategories) {
             categories.add(category.getName());
@@ -26,7 +33,7 @@ public class ElementServiceImpl implements ElementService {
     @Override
     public List<String> getElements(String category) {
         List<String> elements = new ArrayList<>();
-        File folder = new File("../mockup-client/src/main/web/client/src/assets/img/system/"+category);
+        File folder = new File(systemDir+"/"+category);
         File[] listOfElements = folder.listFiles();
         for (File elem: listOfElements) {
             elements.add(elem.getName());
@@ -37,7 +44,7 @@ public class ElementServiceImpl implements ElementService {
     @Override
     public List<String> getUserElements(String userfolder) {
         List<String> elements = new ArrayList<>();
-        File folder = new File("../mockup-client/src/main/web/client/src/assets/img/user/"+userfolder);
+        File folder = new File(userDir + "/" + userfolder);
         if (!folder.exists()) {
             return elements;
         }
