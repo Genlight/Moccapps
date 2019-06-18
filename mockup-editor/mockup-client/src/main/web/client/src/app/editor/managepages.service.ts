@@ -259,7 +259,7 @@ export class ManagePagesService {
     console.log('addPage');
     let pageName = name;
     if (!name) {
-      pageName = `Page ${this.dataStore.pages.length}`;
+      pageName = `Page ${this.dataStore.pages.length + 1}`;
     }
 
     const requestPage: Page = {
