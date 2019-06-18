@@ -14,8 +14,11 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
+  private foreignSelections:Map<string,[Object]>;
 
-  constructor(private groupService: ManageGroupsService) { }
+  constructor( private groupService: ManageGroupsService ) { 
+    this.newForeignSelections();
+  }
 
   /* groups active elements in given canvas if more than one element is selected */
   group(canvas: any) {
@@ -283,7 +286,25 @@ export class FabricmodifyService {
         if (!old) {
           this.addRemoteObject(parsedObj, canvas);
         }
-      } else if (message.command === Action.MODIFIED) {
+      } 
+      else if (message.command === Action.LOCK) {
+
+        old['evented'] = false;
+        old['selectable'] = false;
+      }
+      else if(message.command === Action.UNLOCK) {
+        
+        old['evented'] = true;
+        old['selectable'] = true;
+      }   
+      else if(message.command === Action.SELECTIONMODIFIED) {
+        if(!old) {
+          this.foreignSelections.set(parsedObj.userId,[null])
+        } else {
+          this.foreignSelections.get(parsedObj.userId).push(old);
+        }
+      } 
+      else if (message.command === Action.MODIFIED) {
 
         //fallback to add if no such element exists, can be removed and replaced by error message if desired
         if (old === undefined) {
@@ -337,6 +358,13 @@ export class FabricmodifyService {
     return canvas.getObjects().find((o) => o.uuid === uuid);
   }
 
+  getForeignSelections():Map<string,[any]> {
+    return this.foreignSelections;
+  }
+
+  newForeignSelections() {
+    this.foreignSelections = new Map<string,[any]>();
+  }
   /**
    * This method modifies the values of an object in a way that they are again relative to the
    * canvas and not the provided group. Counterpart of calcInsertIntoGroup. Does not remove the object

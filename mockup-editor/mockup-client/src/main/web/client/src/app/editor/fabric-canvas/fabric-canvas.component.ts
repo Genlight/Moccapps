@@ -89,6 +89,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     });
 
     this.loadRuler();
+
+    this.modifyService.newForeignSelections();
   }
 
   mouseDownFired = false;
@@ -253,12 +255,15 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   enableEvents() {
     this.canvas
-      .on('before:transform', (event) => {
-        this.pagesService.sendMessageToSocket(event.transform.target.uuid, 'lock');
-      }, )
+      .on('before:transform', (event) => { this.statelessTransfer(event.transform, Action.LOCK); })
+      .on('mouse:up',(event) => { if(event.target !== null) this.statelessTransfer(event, Action.UNLOCK) })
       .on('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
+      .on('selection:created',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
+      .on('selection:updated',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
+      .on('before:selection:cleared',(event) => { this.statelessTransfer({'target':null},Action.SELECTIONMODIFIED) })
+      .on('after:render',(event) => { this.onAfterRender(event) })
       /*.on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
       .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
       .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });*/;
@@ -364,11 +369,11 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    */
   onTransformation(evt, action: Action) {
     let transObject = evt.target;
+    //console.log(JSON.stringify(evt));
     console.log(`${action} : ${transObject.uuid}`);
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
-
       this.onSaveState(evt, action);
 
 
@@ -389,6 +394,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
           sendArray.push(newObj);
           newObj.clone((obj) => {
             obj.uuid = newObj.uuid;
+            obj.sendMe = false;//? should be needed but its nonexistence had no effect, treat with care.
             this.pagesService.sendMessageToSocket(obj, action);
             //console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
           })
@@ -412,6 +418,27 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       //the object needs to be available again regardless of whether or not it was a remote access.
       //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
       transObject.sendMe = true;
+      
+  }
+
+  statelessTransfer(evt, action:string) {
+    let selectedObj = evt.target;
+    let sendArray = [];
+    if(action === Action.SELECTIONMODIFIED) sendArray.push(null);
+    if(selectedObj) {
+      if(selectedObj.type === 'activeSelection') {
+        selectedObj.getObjects().forEach( (current) => {
+          sendArray.push(current);
+        })
+      } else {
+        sendArray.push(selectedObj);
+      }
+    }
+    let _this = this;
+    sendArray.forEach((current) => {
+      _this.pagesService.sendMessageToSocket(current,action);
+    })
+    
   }
   forEachTransformedObj(evt, next) {
     const transObject = evt.target;
@@ -439,6 +466,9 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.pagesService.clearActivePage();
     this.pagesService.clearPages();
     this.canvas.dispose();
+
+    // pretend to have deselected all elements.
+    this.pagesService.sendMessageToSocket(null,Action.SELECTIONMODIFIED);
   }
   /**
    * Undo Redo - functionality
@@ -458,6 +488,23 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.undoRedoService.save(objects, action);
   }
 
+  onAfterRender(event) {
+    let selections = this.modifyService.getForeignSelections();
+    selections.forEach((value,key,map) => {
+      value.forEach((current)=> {
+        if(current === null) return;
+        console.log('foreignly selectec object: '+JSON.stringify(current));
+        this.canvas.contextContainer.strokeStyle = '#FF0000';
+        var bound = current.getBoundingRect();
+        this.canvas.contextContainer.strokeRect(
+          bound.left - 2.5,
+          bound.top - 2.5,
+          bound.width+5,
+          bound.height+5
+        );
+      })
+    })
+  }
 
 }
 //
