@@ -91,15 +91,12 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
     this.loadRuler();
   }
-
-  mouseDownFired = false;
   
   onAddRulerLineH() {
     let div = document.createElement('div');
     div.className = 'rulerHLine rulerLine';
     div.style.marginLeft = this.cursorPosition.x + 'px';
     div.addEventListener('mousedown', (e) => {
-      this.mouseDownFired = true;
       this.selectedElement = e.target});
     div.addEventListener('mouseup', (e) => {
       // Remove line if it goes below 5px
@@ -117,7 +114,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     div.className = 'rulerVLine rulerLine';
     div.style.marginTop = this.cursorPosition.y + 'px';
     div.addEventListener('mousedown', (e) => {
-      this.mouseDownFired = true;
       this.selectedElement = e.target});
     div.addEventListener('mouseup', (e) => {
       // Remove line if it goes below 5px
