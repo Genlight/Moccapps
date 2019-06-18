@@ -15,7 +15,11 @@ import java.util.List;
 @Service
 public class ElementServiceImpl implements ElementService {
 
-    private String baseDir = "../mockup-client/src/main/web/client/src/assets/img";
+    //path to the directory if spring is directly started in the mockup-server directory for development purpose
+    //private String baseDir = "../mockup-client/src/main/web/client/src/assets/img";
+
+    //path to the directory if spring is started in the usual mockup-editor directory
+    private String baseDir = "./mockup-client/src/main/web/client/src/assets/img";
     private String systemDir = baseDir + "/system";
     private String userDir = baseDir + "/user";
     @Override
