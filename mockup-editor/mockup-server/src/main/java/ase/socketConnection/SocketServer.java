@@ -1,24 +1,29 @@
 package ase.socketConnection;
 
-import ase.DTO.Page;
 import ase.message.socket.SocketMessage;
 import ase.service.PageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.util.IOUtils;
+import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import java.util.zip.*;
 
 @Controller
 public class SocketServer {
@@ -90,8 +95,17 @@ public class SocketServer {
     }
 
     @MessageMapping("/send")
-    public void onReceive(@Payload SocketMessage message) throws IOException {
-        logger.debug("MESSAGE: " + message.toString());
+    public void onReceive(String compressedMessage) throws IOException {
+        byte[] output2 = Base64.decode(compressedMessage);
+        InputStream in =
+                new InflaterInputStream(new ByteArrayInputStream(output2));
+        String result = IOUtils.toString(in);
+        in.close();
+
+        final ObjectMapper mapper = new ObjectMapper();
+        final SocketMessage message = mapper.readValue(result, SocketMessage.class);
+
+
         if(!pageHandlerMap.keySet().contains(message.getPageId())){
             String pageIdString = message.getPageId();
             int pageId = Integer.parseInt(pageIdString);
@@ -126,6 +140,7 @@ public class SocketServer {
                 }
                 break;
         }
+
 
         if(message.getCommand().startsWith("page")){
             for(PageHandler pageHandler:pageHandlerMap.values()){
