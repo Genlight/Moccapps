@@ -2,6 +2,8 @@ import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
+import { ManagePagesService } from 'src/app/editor/managepages.service';
+import { Action } from 'src/app/editor/fabric-canvas/transformation.interface';
 
 @Component({
   selector: 'app-create-version-modal',
@@ -18,7 +20,8 @@ export class CreateVersionModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private projectService: ProjectService  
+    private projectService: ProjectService,
+    private pageService: ManagePagesService
   ) { }
 
   @Input()
@@ -41,7 +44,13 @@ export class CreateVersionModalComponent implements OnInit {
    * @param versionName 
    */
   createVersion(projectid: number, versionName: string) {
-    
+    this.pageService.sendMessageToSocket(
+      {
+        ProjectID: projectid,
+        VersionName: versionName
+      }
+    , Action.VERSIONCREATED);
+    //this.activeModal.close();
   }
 
 }
