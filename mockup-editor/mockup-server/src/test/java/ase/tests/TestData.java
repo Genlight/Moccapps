@@ -1,9 +1,11 @@
 package ase.tests;
 
-import ase.DTO.Invitation;
-import ase.DTO.Page;
-import ase.DTO.Project;
-import ase.DTO.User;
+import ase.DTO.*;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestData {
 
@@ -54,6 +56,30 @@ public class TestData {
     private static final int PAGE_2_PROJECT_ID=1;
     private static final int PAGE_3_PROJECT_ID=2;
 
+    private static final int COMMENT_1_ID=1;
+    private static final int COMMENT_1_PAGEID=1;
+    private static final boolean COMMENT_1_CLEARED=false;
+
+    private static final String COMMENT_1_OBJECT="1111-1111";
+
+    private static final int COMMENTENTRY_1_ID=1;
+    private static final int COMMENTENTRY_1_COMMENTID=1;
+    private static final String COMMENTENTRY_1_MESSAGE="COMMENT";
+    private static final int COMMENTENTRY_1_USERID=1;
+    private static final Date COMMENTENTRY_1_DATE=java.sql.Date.valueOf( "2019-01-01" );
+
+    private static final int COMMENT_2_ID=2;
+    private static final int COMMENT_2_PAGEID=2;
+    private static final boolean COMMENT_2_CLEARED=false;
+
+    private static final String COMMENT_2_OBJECT="2222-2222";
+
+    private static final int COMMENTENTRY_2_ID=2;
+    private static final int COMMENTENTRY_2_COMMENTID=2;
+    private static final String COMMENTENTRY_2_MESSAGE="COMMENT";
+    private static final int COMMENTENTRY_2_USERID=2;
+    private static final Date COMMENTENTRY_2_DATE=java.sql.Date.valueOf( "2029-02-02" );
+
     public User createdUser1;
     public User createdUser2;
     public User user3;
@@ -68,9 +94,14 @@ public class TestData {
     public Page createdPage2;
     public Page page3;
 
-
     public Invitation createdInvitation1;
     public Invitation invitation2;
+
+    public Comment createdComment1;
+    public CommentEntry createdCommentEntry1;
+
+    public Comment comment2;
+    public CommentEntry commentEntry2;
 
     public void init(){
         createdUser1=new User(1,USER_1_USERNAME,USER_1_EMAIL,USER_1_PASSWORD);
@@ -92,12 +123,23 @@ public class TestData {
         project3.addUser(2);
         project4.addUser(2);
 
-        createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_HEIGHT,PAGE_1_WIDTH,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA);
+        createdComment1=new Comment(COMMENT_1_ID,COMMENT_1_PAGEID,COMMENT_1_CLEARED);
+        createdCommentEntry1=new CommentEntry(COMMENTENTRY_1_ID,COMMENTENTRY_1_MESSAGE,COMMENTENTRY_1_USERID,COMMENTENTRY_1_DATE,COMMENTENTRY_1_COMMENTID);
+        createdComment1.setCommentObjects(new ArrayList<>(Arrays.asList(COMMENT_1_OBJECT)));
+        createdComment1.setCommentEntryList(new ArrayList<>(Arrays.asList(createdCommentEntry1)));
+
+
+        comment2=new Comment(COMMENT_2_ID,COMMENT_2_PAGEID,COMMENT_2_CLEARED);
+        commentEntry2=new CommentEntry(COMMENTENTRY_2_ID,COMMENTENTRY_2_MESSAGE,COMMENTENTRY_2_USERID,COMMENTENTRY_2_DATE,COMMENTENTRY_2_COMMENTID);
+        comment2.setCommentObjects(new ArrayList<>(Arrays.asList(COMMENT_2_OBJECT)));
+
+        createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_HEIGHT,PAGE_1_WIDTH,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA,new ArrayList<>(Arrays.asList(createdComment1)));
         createdPage2=new Page(2,PAGE_2_NAME,PAGE_2_HEIGHT,PAGE_2_WIDTH,PAGE_2_ORDER,PAGE_2_PROJECT_ID,PAGE_2_PAGE_DATA);
-        page3=new Page(PAGE_3_NAME,PAGE_3_HEIGHT,PAGE_3_WIDTH,PAGE_3_ORDER,PAGE_3_PROJECT_ID,PAGE_3_PAGE_DATA);
+        page3=new Page(PAGE_3_NAME,PAGE_3_HEIGHT,PAGE_3_WIDTH,PAGE_3_ORDER,PAGE_3_PROJECT_ID,PAGE_3_PAGE_DATA,new ArrayList());
 
         createdInvitation1 = new Invitation(1,1,1,2,-1);
         invitation2 = new Invitation(2,2,1,-1);
+
 
     }
 }

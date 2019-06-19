@@ -1,5 +1,6 @@
 package ase.service.impl;
 
+import ase.DAO.CommentDAO;
 import ase.DAO.DAOException;
 import ase.DAO.PageDAO;
 import ase.DTO.Page;
@@ -19,6 +20,9 @@ public class PageServiceImpl implements PageService {
 
     @Autowired
     PageDAO pageDAO;
+
+    @Autowired
+    CommentDAO commentDAO;
 
     @Override
     public Page create(Page page) {
@@ -45,7 +49,11 @@ public class PageServiceImpl implements PageService {
     @Override
     public List<Page> getAllPagesForProject(int projectId) {
         try {
-            return pageDAO.findPagesForProject(projectId);
+            List<Page>pages= pageDAO.findPagesForProject(projectId);
+            for(Page p:pages){
+                p.setComments(commentDAO.findCommentsForPage(p.getId()));
+            }
+            return pages;
         } catch (DAOException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -55,7 +63,9 @@ public class PageServiceImpl implements PageService {
     @Override
     public Page getPageByProjectIdAndOrder(int id, int order) {
         try {
-            return pageDAO.findByProjectAndOrder(id,order);
+            Page page= pageDAO.findByProjectAndOrder(id,order);
+            page.setComments(commentDAO.findCommentsForPage(page.getId()));
+            return page;
         } catch (DAOException e) {
             e.printStackTrace();
             return null;
@@ -65,7 +75,9 @@ public class PageServiceImpl implements PageService {
     @Override
     public Page getPageById(int id) {
         try {
-            return pageDAO.findById(id);
+            Page page= pageDAO.findById(id);
+            page.setComments(commentDAO.findCommentsForPage(page.getId()));
+            return page;
         } catch (DAOException e) {
             e.printStackTrace();
             return null;

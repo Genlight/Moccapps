@@ -1,5 +1,6 @@
 package ase.DTO;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Page {
@@ -10,25 +11,47 @@ public class Page {
     private int page_order;
     private int project_id;
     private String page_data;
+    private List<Comment> comments;
 
-    public Page(int id, String page_name, int height, int width, int page_order, int project_id,String page_data) {
-        this.id=id;
-        this.page_name=page_name;
-        this.height = height;
+    public Page(String page_name, int width, int height, int page_order, int project_id, String page_data, List<Comment> comments) {
+        this.id=-1;
+        this.page_name = page_name;
         this.width = width;
-        this.page_order=page_order;
-        this.project_id=project_id;
-        this.page_data=page_data;
+        this.height = height;
+        this.page_order = page_order;
+        this.project_id = project_id;
+        this.page_data = page_data;
+        this.comments = comments;
     }
 
-    public Page(String page_name, int height, int width, int page_order, int project_id,String page_data) {
-        this.id=-1;
-        this.page_name=page_name;
-        this.height = height;
+    public Page(int id, String page_name, int width, int height, int page_order, int project_id, String page_data, List<Comment> comments) {
+        this.id = id;
+        this.page_name = page_name;
         this.width = width;
-        this.page_order=page_order;
-        this.project_id=project_id;
-        this.page_data=page_data;
+        this.height = height;
+        this.page_order = page_order;
+        this.project_id = project_id;
+        this.page_data = page_data;
+        this.comments = comments;
+    }
+
+    public Page(int id, String page_name, int width, int height, int page_order, int project_id, String page_data) {
+        this.id = id;
+        this.page_name = page_name;
+        this.width = width;
+        this.height = height;
+        this.page_order = page_order;
+        this.project_id = project_id;
+        this.page_data = page_data;
+    }
+
+    public Page(String page_name, int width, int height, int page_order, int project_id, String page_data) {
+        this.page_name = page_name;
+        this.width = width;
+        this.height = height;
+        this.page_order = page_order;
+        this.project_id = project_id;
+        this.page_data = page_data;
     }
 
     public Page() {
@@ -91,6 +114,14 @@ public class Page {
         this.project_id = project_id;
     }
 
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,11 +146,12 @@ public class Page {
         return "Page{" +
                 "id=" + id +
                 ", page_name='" + page_name + '\'' +
-                ", page_order=" + page_order +
-                ", project_id=" + project_id +
                 ", width=" + width +
                 ", height=" + height +
+                ", page_order=" + page_order +
+                ", project_id=" + project_id +
                 ", page_data='" + page_data + '\'' +
+                ", comments=" + comments +
                 '}';
     }
 }

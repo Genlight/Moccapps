@@ -4,6 +4,12 @@ DELETE FROM pages;
 DELETE FROM projects;*/
 
 DROP TABLE IF EXISTS invitations;
+DROP TABLE IF EXISTS comment_entries;
+DROP TABLE IF EXISTS comment_objects;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS project_versions;
+DROP TABLE IF EXISTS page_versions;
+
 DROP TABLE IF EXISTS user_project;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS pages;
