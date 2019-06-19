@@ -92,7 +92,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   mouseDownFired = false;
-  
+
   onAddRulerLineH() {
     let div = document.createElement('div');
     div.className = 'rulerHLine rulerLine';
@@ -130,7 +130,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   storeRulers() {
-    
+
   }
 
   loadRulers() {
@@ -457,7 +457,4 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     }
     this.undoRedoService.save(objects, action);
   }
-
-
 }
-//

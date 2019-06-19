@@ -12,10 +12,17 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
-
+  marker: fabric.Object[];
   constructor(
     //private managePagesService:ManagePagesService
-  ) { }
+  ) {
+    this.marker = new fabric.Rect({
+      fill: 'red',
+      stroke: 'red',
+      strokeWidth: 2,
+      opacity: 0.3
+    });
+   }
 
   /* groups active elements in given canvas if more than one element is selected */
   group(canvas: any) {
@@ -383,5 +390,48 @@ export class FabricmodifyService {
         canvas.add(o);
       });
     });
+  }
+  /**
+   * sets Markers for a group of fabric objects
+   * @param  objects fabric.Object[]
+   * @param  canvas  fabric.Canvas -> active Canvas
+   * @return         void
+   */
+  async setMarkerGroup(objects: fabric.Object[], canvas: fabric.Canvas) {
+    await objects.forEach(
+        (obj) => { this.setMarker(obj, canvas); }
+    );
+    canvas.requestRenderAll();
+  }
+  /**
+   * sets a Marker for a single object
+   * @param  objects fabric.Object[]
+   * @param  canvas  fabric.Canvas -> active Canvas
+   * @return         void
+   */
+  setMarker(object: fabric.Object, , canvas: fabric.Canvas) {
+    this.marker.clone((o) => {
+      o.set({
+        width: object.width,
+        height: object.height,
+        left: object.left,
+        top: object.top
+      });
+      // disables Event triggering
+      o.fire = null;
+      o.trigger = function() {};
+
+      this.markers.add(o);
+    });
+  }
+  /**
+   * removes all active Markers from given cnavas
+   * @param  canvas  fabric.Canvas -> active Canvas
+   * @return         void
+   */
+  removeMarker(canvas: fabric.Canvas) {
+    this.managePagesService.getCanvas()
+    .remove(this.markers)
+    .requestRenderAll();
   }
 }
