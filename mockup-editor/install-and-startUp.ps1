@@ -2,7 +2,7 @@
     # this is my own project directory, for you it could be different, change it as needed
     [Parameter()]
     [string]
-    $WorkingDir="$PSScriptRoot"
+    $WorkingDir="$PSScriptRoot",
     # Drop DB is Default, so if db should be kept, use this switch
     [switch]$useOldDB
 )
