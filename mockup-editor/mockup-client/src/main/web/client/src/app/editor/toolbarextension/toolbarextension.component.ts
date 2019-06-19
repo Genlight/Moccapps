@@ -47,7 +47,7 @@ export class ToolbarextensionComponent implements OnInit {
    */
   elementMap = new Map();
 
-
+  elementsFound = true;
   showComponent = false;
 
   constructor(
@@ -84,12 +84,14 @@ export class ToolbarextensionComponent implements OnInit {
     this.elementsService.getElements()
       .subscribe(
         (response) => {
-          // const res = JSON.parse(response);
-          if (response === 'no elements found') {
-            console.error('no elements were found.');
+          console.log(`loadElements (response): ${JSON.stringify(response)}`);
+          if (!response) {
+            this.elementsFound = false;
             return;
+          } else {
+            this.elementsFound = true;
           }
-          console.log(`loadElements: ${JSON.stringify(response)}`);
+
           const stringified = JSON.parse(JSON.stringify(response));
           const parsedResponse = JSON.parse(stringified['message']);
 
