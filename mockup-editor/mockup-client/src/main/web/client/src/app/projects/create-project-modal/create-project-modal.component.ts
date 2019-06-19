@@ -35,8 +35,8 @@ export class CreateProjectModalComponent implements OnInit {
   private resetValues(): void {
     this.project = {
       name: 'My Project',
-      height: 300,
-      width: 150
+      height: 600,
+      width: 900
     };
   }
 

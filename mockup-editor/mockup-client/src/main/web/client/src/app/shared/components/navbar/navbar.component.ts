@@ -16,6 +16,8 @@ import {AuthLogoutInfo} from '../../../auth/logout-info';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
+import { CreateVersionModalComponent } from '../create-version-modal/create-version-modal.component';
+import { LoadVersionModalComponent } from '../load-version-modal/load-version-modal.component';
 import { WorkspaceService } from 'src/app/editor/workspace.service';
 import save from 'save-file';
 import { Page } from '../../models/Page';
@@ -24,6 +26,7 @@ import { RenameProjectModalComponent } from '../rename-project-modal/rename-proj
 import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal.component';
 import { ElementsService } from 'src/app/editor/elements.service';
 import { CommentService } from 'src/app/editor/comment.service';
+import { CreateProjectModalComponent } from 'src/app/projects/create-project-modal/create-project-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -113,6 +116,12 @@ export class NavbarComponent implements OnInit {
     this.workspaceService.showsRuler.subscribe((value) => {
       this.showRuler = value;
     });
+
+    // Handle grid state changes
+    this.workspaceService.showsGrid.subscribe((value) => {
+      this.grid = value;
+      this.toggleGrid();
+    });
   }
 
   onLogout() {
@@ -139,6 +148,13 @@ export class NavbarComponent implements OnInit {
     modelRef.componentInstance.confirm.subscribe(() =>
       {}
     );
+  }
+
+  onExportToJSON() {
+    const canvas = this.managePagesService.getCanvas();
+    const json = this.modifyService.exportToJson(canvas);
+    alert(JSON.stringify(json));
+    console.log('CANVAS JSON: ' + json);
   }
 
   /**
@@ -192,6 +208,12 @@ export class NavbarComponent implements OnInit {
 
   onNewProject() {
     // TODO
+    if (!!this.project) {
+      const modelRef = this.modalService.open(CreateProjectModalComponent);
+      //modelRef.componentInstance.project = this.project;
+    } else {
+      console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
+    }
   }
 
   onNewPage() {
@@ -231,12 +253,17 @@ export class NavbarComponent implements OnInit {
   }
 
   onSaveVersion() {
-    // TODO
-    alert(this.managePagesService.saveActivePage());
+    if (!!this.project) {
+      const modelRef = this.modalService.open(CreateVersionModalComponent);
+      modelRef.componentInstance.project = this.project;
+    }
   }
 
   onLoadVersion() {
-    // TODO
+    if (!!this.project) {
+      const modelRef = this.modalService.open(LoadVersionModalComponent);
+      modelRef.componentInstance.project = this.project;
+    }
   }
 
   onAllProjects() {
@@ -324,22 +351,34 @@ export class NavbarComponent implements OnInit {
    * the grid itself is always there in the grid-canvas, just hidden by the user-canvas
    */
   onViewGrid() {
-    this.grid = !this.grid;
-    const canvas = this.managePagesService.getCanvas();
-    const gridCanvas = this.managePagesService.getGridCanvas();
+    //this.grid = !this.grid;
     if (this.grid) {
-      canvas.backgroundColor = null;
-      if (this.snapToGrid) {
-        this.enableSnapToGrid(10);
-      }
+      this.workspaceService.hideGrid();
     } else {
-      canvas.backgroundColor = gridCanvas.backgroundColor;
-      if (this.snapToGrid) {
-        this.disableSnapToGrid();
-      }
-
+      this.workspaceService.showGrid();
     }
-    canvas.renderAll();
+  }
+
+  toggleGrid() {
+    if (!!this.activePage) {
+      const canvas = this.managePagesService.getCanvas();
+      const gridCanvas = this.managePagesService.getGridCanvas();
+      if (!!canvas && !!gridCanvas) {
+        if (this.grid) {
+          canvas.backgroundColor = null;
+          if (this.snapToGrid) {
+            this.enableSnapToGrid(10);
+          }
+        } else {
+          canvas.backgroundColor = gridCanvas.backgroundColor;
+          if (this.snapToGrid) {
+            this.disableSnapToGrid();
+          }
+    
+        }
+        canvas.renderAll();
+      }
+    }
   }
 
   /**

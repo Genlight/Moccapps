@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { faMousePointer, faFont, faSitemap, faPaintBrush, faTrash, faShapes } from '@fortawesome/free-solid-svg-icons';
+import { faMousePointer, faFont, faSitemap, faPaintBrush, faTrash, faShapes, faFile } from '@fortawesome/free-solid-svg-icons';
 import { faHandPaper, faSquare, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { FabricmodifyService } from '../fabricmodify.service';
 import { ManagePagesService } from '../managepages.service';
 import { WorkspaceService, ToolbarPanelState } from '../workspace.service';
+import {faObjectGroup} from "@fortawesome/free-solid-svg-icons/faObjectGroup";
 
 @Component({
   selector: 'app-toolbar',
@@ -18,9 +19,11 @@ export class ToolbarComponent implements OnInit {
   faCircle = faCircle;
   faFont = faFont;
   faLayerGroup = faSitemap;
+  faGroup = faObjectGroup
   faElements = faShapes;
   faPaintBrush = faPaintBrush;
   faTrash = faTrash;
+  faFile = faFile;
 
   drawingModeOn = false;
 
@@ -87,6 +90,23 @@ export class ToolbarComponent implements OnInit {
   otherwise switches the group button to toggled and the elements button to untoggled */
   onGroupToggle() {
     this.workspaceService.togglePages();
+  }
+
+  onGroup1Toggle() {
+
+    this.workspaceService.toggleGroups();
+/*    const panel = document.getElementById('toolbar-groups');
+    const elementsbutton = document.getElementById('navElementsButton');
+    if (panel.classList.contains('extensionhidden')) {
+      panel.classList.toggle('extensionhidden');
+    } else if (elementsbutton.classList.contains('btn-dark')) {
+      elementsbutton.classList.toggle('btn-dark');
+    } else {
+      panel.classList.toggle('extensionhidden');
+
+      const groupbutton = document.getElementById('navGroupsButton1');
+      groupbutton.classList.toggle('btn-dark');
+    }*/
   }
 
 }

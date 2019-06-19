@@ -57,10 +57,15 @@ public class ElementsRESTService {
 
         Map<String, List<String>> elements = new HashMap<>();
 
-        // load all categories and elements
-        List<String> categories = elementService.getCategories();
-        for(String category : categories){
+        try {
+          // load all categories and elements
+          List<String> categories = elementService.getCategories();
+          for(String category : categories){
             elements.put(category,elementService.getElements(category));
+          }
+        }
+        catch (java.lang.NullPointerException e) {
+          return new ResponseEntity<>(new ResponseMessage("no elements found"), HttpStatus.OK);
         }
 
         // directoryname for user is base64 encoded email
@@ -75,7 +80,7 @@ public class ElementsRESTService {
             String json = objectMapper.writeValueAsString((elements));
             logger.info("List of categories and elements sent to client");
             return new ResponseEntity<>(new ResponseMessage(json),HttpStatus.OK);
-        } catch (JsonProcessingException e) {
+          } catch (JsonProcessingException e) {
             logger.error("Error when loading elements");
             return new ResponseEntity<>(new ResponseMessage("Error when loading elements"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -109,10 +114,11 @@ public class ElementsRESTService {
 
         // decode and save image
         byte[] imageByte = Base64.getDecoder().decode(encodedImage);
-        String imgPath = "../mockup-client/src/main/web/client/src/assets/img/user/"+userdirectory+"/"+name;
+        String directoryPath = "../mockup-client/src/main/web/client/src/assets/img/user/"+userdirectory;
+        String imgPath = directoryPath+"/"+name;
 
         // check if directory exists
-        File directory = new File("../mockup-client/src/main/web/client/src/assets/img/user/"+userdirectory);
+        File directory = new File(directoryPath);
         if (!directory.exists()) {
             directory.mkdir();
         }

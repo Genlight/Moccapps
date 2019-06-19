@@ -13,6 +13,8 @@ import { Action, CanvasTransmissionProperty } from './fabric-canvas/transformati
 import { isArray } from 'util';
 import { NotificationService } from '../shared/services/notification.service';
 import { Comment, CommentEntry, CommentAction } from '../shared/models/comments';
+import { OwnedStatelessObject } from '../shared/models/OwnedStatelessObject';
+import { WorkspaceService } from './workspace.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,9 +27,11 @@ export class ManagePagesService {
   pages: Observable<Page[]>;
   activePage: Observable<Page>;
 
+  isLoadingPage: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private _pages: BehaviorSubject<Page[]>;
   private _activePage: BehaviorSubject<Page>;
   private _activeProject: Project;
+  private _isGridEnabled: boolean;
 
   private DEFAULT_PAGE_DATA: string = "{\"version\":\"2.7.0\",\"objects\":[],\"background\":\"white\"}";
 
@@ -43,7 +47,8 @@ export class ManagePagesService {
     private projectService: ProjectService,
     private notificationService: NotificationService,
     private socketService: SocketConnectionService,
-    private tokenStorage: TokenStorageService
+    private tokenStorage: TokenStorageService,
+    private workspaceService: WorkspaceService
   ) {
     this._pages = new BehaviorSubject<Page[]>([]);
     this._activePage = new BehaviorSubject<Page>(null);
@@ -61,6 +66,10 @@ export class ManagePagesService {
         this._activeProject = project;
         this.loadAll();
       }
+    });
+
+    this.workspaceService.showsGrid.subscribe((value) => {
+      this._isGridEnabled = value;
     });
   }
 
@@ -110,13 +119,20 @@ export class ManagePagesService {
     console.log('setPageActive');
     if (!!page) {
       // Persist workspace of old workspace
-      let oldPage = Object.assign({}, this.dataStore.activePage);
+ /*      let oldPage = Object.assign({}, this.dataStore.activePage);
       oldPage.page_data = this.exportToJson(this.canvas);
       console.log(`setPageActive: saving old page: ${JSON.stringify(oldPage)}`);
-      this.updatePage(oldPage);
+      this.updatePage(oldPage); */
+
+      // If grid was active on the former active page, it will be disabled
+      if (!!this.dataStore.activePage && this._isGridEnabled) {
+        this.workspaceService.hideGrid();
+      }
 
       //Set new active page
       console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
+      // Set page data from rest api to null
+      page.page_data = null;
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
 
@@ -124,10 +140,11 @@ export class ManagePagesService {
       this.disconnectSocket();
       this.connectToSocket(this._activeProject.id,this._activePage.getValue().id);
 
+      this.isLoadingPage.next(true);
       //Load page by socket
       setTimeout(() => {
         this.loadPageBySocket(page.id);
-      }, 1000);
+      }, 3000);
     }
   }
 
@@ -221,28 +238,6 @@ export class ManagePagesService {
   }
 
   /**
-   * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via REST)
-   */
-  load(id: number) {
-    this.apiService.get<Page>(`/project/${this._activeProject.id}/page/${id}`).subscribe(
-      (page) => {
-        if (!!page) {
-          // If a local copy of the page does already exist. Update the page.
-          let pageExists: boolean = false;
-
-          this.dataStore.pages.forEach((p, i) => {
-            if (p.id === page.id) {
-              this.dataStore.pages[i] = page;
-              this._pages.next(Object.assign({}, this.dataStore).pages);
-              pageExists = true;
-            }
-          });
-        }
-      }
-    )
-  }
-
-  /**
    * Loads a page using an id from the backend and updates an existing page with the data retrieved from the backend. (via socket)
    * @param id
    */
@@ -257,6 +252,7 @@ export class ManagePagesService {
       if (!!this.dataStore.activePage && !!this.dataStore.activePage.id) {
         if (id === this.dataStore.activePage.id) {
           let currentPage = this.dataStore.activePage;
+          //alert(JSON.stringify(pageData));
           currentPage.page_data = pageData;
           this.dataStore.activePage = currentPage;
           this._activePage.next(Object.assign({}, currentPage));
@@ -277,7 +273,7 @@ export class ManagePagesService {
     console.log('addPage');
     let pageName = name;
     if (!name) {
-      pageName = `Page ${this.dataStore.pages.length}`;
+      pageName = `Page ${this.dataStore.pages.length + 1}`;
     }
 
     const requestPage: Page = {
@@ -311,14 +307,13 @@ export class ManagePagesService {
   }
 
   updatePage(page: Page) {
-    console.log('updatePage');
+/*     console.log('updatePage');
     if (!!page) {
       this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
         // Update was successful, update element in local store.
         this.updatePageStore(page);
-      },
-    (error) => { console.error('error at updatePage: ' + error)});
-    }
+      });
+    } */
   }
 
   private updatePageStore(page: Page) {
@@ -357,10 +352,10 @@ export class ManagePagesService {
   removePage(page: Page) {
     console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
+      this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
       this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
-          this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
           this.removePageFromStore(page.id);
         },
         error => {
@@ -462,15 +457,15 @@ export class ManagePagesService {
       switch (message.command) {
 
         case Action.PAGELOAD:
-          console.log('page load');
-          if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageData) {
-            let pageData = parsedObj.pageData;
-            this.loadPageDataStore(parsedObj.id, pageData);
+          console.log(`pageload. ${JSON.stringify(parsedObj)}`);
+          if (!!parsedObj) {
+               this.loadPageDataStore(this.dataStore.activePage.id, JSON.stringify(parsedObj));
           } else {
             console.error(`page load: received invalid data over socket connection, ParsedObject: ${!!parsedObj}
                 \n pageid: ${parsedObj.pageId} | pageData : ${parsedObj.pageData}`);
             // this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
           }
+          this.isLoadingPage.next(false);
           break;
 
         case Action.PAGEDIMENSIONCHANGE:
@@ -525,12 +520,11 @@ export class ManagePagesService {
           break;
 
         case Action.PAGERENAMED:
-          alert('page renamed');
+          //alert('page renamed');
           if (!!parsedObj && !!parsedObj.pageId && !!parsedObj.pageName) {
             this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
           }
           break;
-
           case Action.COMMENTADDED:
           case Action.COMMENTMODIFIED:
           case Action.COMMENTCLEARED:
@@ -553,6 +547,17 @@ export class ManagePagesService {
             }
             break;
         // if nothing matched, the call is further delegated to actually apply transformations
+        case Action.LOCK:
+        case Action.UNLOCK:
+        case Action.SELECTIONMODIFIED:
+          if(parsedObj.userId===this.tokenStorage.getToken()) {
+            //console.log("not locking my own lock");
+            break;
+          }
+          //no break -> sliding into default is INTENTIONAL, if it is not my lock actions need
+          //to be taken in the canvas. Bad practice, I know.
+
+        //if nothing matched, the call is further delegated to actually apply transformations
         default:
           this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
           break;
@@ -567,7 +572,17 @@ export class ManagePagesService {
     this.socketService.connect(projectId.toString(),pageId.toString(),this.tokenStorage.getToken(),this.relayChange,this);
   }
   sendMessageToSocket(object: any, command: string){
-    this.socketService.send(JSON.stringify(object),command);
+    let send = object;
+    if(command === Action.LOCK || command === Action.SELECTIONMODIFIED || command === Action.UNLOCK) {
+      send = new OwnedStatelessObject();
+      send.userId = this.tokenStorage.getToken();
+      if(object) {
+        console.log(`lock/select test, object uuid: ${object.uuid}`)
+        send.uuid = object.uuid;
+      }
+      //object ? send.uuid = object.uuid : null;
+    }
+    this.socketService.send(JSON.stringify(send),command);
   }
 
   disconnectSocket() {
@@ -584,6 +599,10 @@ export class ManagePagesService {
     return this.gridCanvas;
   }
 
+  setActive(obj: any) {
+    this.canvas.setActiveObject(obj);
+    this.canvas.requestRenderAll();
+  }
   /**
    * author: alexander Genser
    * returns CommentAction Observable, needed for CommentService

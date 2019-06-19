@@ -21,12 +21,12 @@ export class ToolbarextensionComponent implements OnInit {
   draggableElements = [];
   /**
    * example structure form draggable elements
-   *  [{ 
+   *  [{
     name: 'Browser Window',
     data: 'assets/img/Systems/browser_window.jpg',
     effectAllowed: 'all',
     previewimage: 'assets/img/Systems/browser_window.jpg'
-  }, { 
+  }, {
       name: 'Collups Logo',
       data: 'assets/img/Logos/collups.svg',
       effectAllowed: 'all',
@@ -35,8 +35,8 @@ export class ToolbarextensionComponent implements OnInit {
     */
 
   /**
-   * list of categories 
-   */  
+   * list of categories
+   */
   categories = [];
   /**
    * name of the currently active category
@@ -47,13 +47,13 @@ export class ToolbarextensionComponent implements OnInit {
    */
   elementMap = new Map();
 
-  
+
   showComponent = false;
 
   constructor(
     private elementsService: ElementsService,
     private workspaceService: WorkspaceService
-  ) { 
+  ) {
     this.workspaceService.toolbarPanelState.subscribe(
       (state) => {
         if (state === ToolbarPanelState.Library) {
@@ -68,11 +68,11 @@ export class ToolbarextensionComponent implements OnInit {
   ngOnInit() {
     console.log("loading categories and elements....");
     this.loadCategoriesFromServer();
-    
+
     //this.elementMap.set('Personal', this.elementsService.getUserElements());
     console.log(this.elementMap);
   }
-  
+
 
   /**
    * requests a message with all available categories and the corresponding elements from the server
@@ -84,6 +84,11 @@ export class ToolbarextensionComponent implements OnInit {
     this.elementsService.getElements()
       .subscribe(
         (response) => {
+          // const res = JSON.parse(response);
+          if (response === 'no elements found') {
+            console.error('no elements were found.');
+            return;
+          }
           console.log(`loadElements: ${JSON.stringify(response)}`);
           const stringified = JSON.parse(JSON.stringify(response));
           const parsedResponse = JSON.parse(stringified['message']);
@@ -96,7 +101,7 @@ export class ToolbarextensionComponent implements OnInit {
               const elementarray = parsedResponse[cat];
               if (cat === 'Personal') { // load userspecific elements
                 for (const elem in elementarray) {
-                  const newelem = { 
+                  const newelem = {
                     name: elementarray[elem].split('/')[1],
                     data: 'assets/img/user/'+elementarray[elem],
                     effectAllowed: 'all',
@@ -106,7 +111,7 @@ export class ToolbarextensionComponent implements OnInit {
                 }
               } else { // load system libraries
                 for (const elem in elementarray) {
-                  const newelem = { 
+                  const newelem = {
                     name: elementarray[elem],
                     data: 'assets/img/system/'+cat+'/'+elementarray[elem],
                     effectAllowed: 'all',
@@ -126,7 +131,7 @@ export class ToolbarextensionComponent implements OnInit {
   }
 
   /**
-   * loads the data of available elements of the given category in the draggableElements array 
+   * loads the data of available elements of the given category in the draggableElements array
    * and updates the browser window accordingly
    * @param category category to load
    */
@@ -148,7 +153,7 @@ export class ToolbarextensionComponent implements OnInit {
   onDragStart(event: DragEvent) {
     console.log('drag started', JSON.stringify(event, null, 2));
   }
-  
+
   /**
    * logs in the console that a draggable item is no longer dragged
    * @param event event fired when dragging a draggable event ends
@@ -157,5 +162,3 @@ export class ToolbarextensionComponent implements OnInit {
     console.log('drag ended', JSON.stringify(event, null, 2));
   }
 }
-
-

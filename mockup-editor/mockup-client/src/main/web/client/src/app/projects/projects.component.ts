@@ -150,6 +150,10 @@ export class ProjectsComponent implements OnInit {
   /**
    * Projects
    */
+  onCreateProject(project: Project) {
+    
+  }
+
   onOpenProject(project: Project) {
     this.projectService.setActiveProject(project);
     this.router.navigate(['editor']);

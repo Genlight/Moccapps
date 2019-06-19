@@ -79,6 +79,8 @@ public class TestData {
     private static final String COMMENTENTRY_2_MESSAGE="COMMENT";
     private static final int COMMENTENTRY_2_USERID=2;
     private static final Date COMMENTENTRY_2_DATE=java.sql.Date.valueOf( "2029-02-02" );
+    private static final String PROJECTVERSION_1_TAG="testTag1";
+    private static final String PROJECTVERSION_2_TAG="testTag2";
 
     public User createdUser1;
     public User createdUser2;
@@ -89,6 +91,12 @@ public class TestData {
     public Project createdProject2;
     public Project project3;
     public Project project4;
+
+    public ProjectVersion projectVersion2;
+    public ProjectVersion createdProjectVersion1;
+
+    public PageVersion createdPageVersion1;
+    public PageVersion pageVersion2;
 
     public Page createdPage1;
     public Page createdPage2;
@@ -109,10 +117,10 @@ public class TestData {
         user3=new User(USER_3_USERNAME,USER_3_EMAIL,USER_3_PASSWORD);
         user4=new User(USER_4_USERNAME,USER_4_EMAIL,USER_4_PASSWORD);
 
-        createdProject1=new Project(1,PROJECT_1_NAME);
-        createdProject2=new Project(2,PROJECT_2_NAME);
-        project3=new Project(PROJECT_3_NAME);
-        project4=new Project(PROJECT_4_NAME);
+        createdProject1=new Project(1,PROJECT_1_NAME,java.sql.Date.valueOf( "2010-01-31" ));
+        createdProject2=new Project(2,PROJECT_2_NAME,java.sql.Date.valueOf( "2010-01-31" ));
+        project3=new Project(PROJECT_3_NAME,java.sql.Date.valueOf( "2010-01-31" ));
+        project4=new Project(PROJECT_4_NAME,java.sql.Date.valueOf( "2010-01-31" ));
 
         createdProject1.addUser(1);
         createdProject1.addUser(2);
@@ -140,6 +148,11 @@ public class TestData {
         createdInvitation1 = new Invitation(1,1,1,2,-1);
         invitation2 = new Invitation(2,2,1,-1);
 
+        projectVersion2 = new ProjectVersion(PROJECTVERSION_2_TAG,createdProject2.getId());
+        createdProjectVersion1 = new ProjectVersion(1,PROJECTVERSION_1_TAG,createdProject1.getId());
+
+        createdPageVersion1 = new PageVersion(1,createdPage1.getPage_name(),createdPage1.getHeight(),createdPage1.getWidth(),createdPage1.getPage_order(),createdProjectVersion1.getId(),createdPage1.getPage_data());
+        pageVersion2 = new PageVersion(createdPage2.getPage_name(),createdPage2.getHeight(),createdPage2.getWidth(),createdPage2.getPage_order(),createdProjectVersion1.getId(),createdPage2.getPage_data());
 
     }
 }

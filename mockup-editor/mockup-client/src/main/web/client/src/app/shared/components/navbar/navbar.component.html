@@ -19,14 +19,15 @@
                 <li class="dropdown-submenu">
                 <button class="btn btn-light menubtn">Export</button>
                 <ul class="dropdown-menu">
+                  <!-- <button class="btn btn-light menubtn" (click)="onExportToJSON()" [disabled]="!activePage">Export to JSON</button> -->
                   <button class="btn btn-light menubtn" (click)="onExportToJPEG()" [disabled]="!activePage">Export to JPEG</button>
                   <button class="btn btn-light menubtn" (click)="onExportToPNG()" [disabled]="!activePage">Export to PNG</button>
                   <button class="btn btn-light menubtn" (click)="onExportToPDF()" [disabled]="!activePage">Export to PDF</button>
                 </ul>
               </li>
               <li role="separator" class="divider"></li>
-              <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version...</button>
-              <button class="btn btn-light menubtn" disabled>Load Version...</button>
+              <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version</button>
+              <button class="btn btn-light menubtn" (click)="onLoadVersion()">Load Version</button>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" (click)="onAllProjects()">All Projects</button>
             </ul>

@@ -32,6 +32,9 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { RequestInterceptor } from './shared/interceptor/request.interceptor';
 import { LastediteddatePipe } from './shared/pipes/lastediteddate.pipe';
 import { ToolbarPagesComponent } from './editor/toolbar-pages/toolbar-pages.component';
+import { ToolbarGroupsComponent } from './editor/toolbar-groups/toolbar-groups.component';
+import { CreateVersionModalComponent } from './shared/components/create-version-modal/create-version-modal.component';
+import { LoadVersionModalComponent } from './shared/components/load-version-modal/load-version-modal.component';
 import { UsercirclePipe } from './shared/pipes/usercircle.pipe';
 import { PageListItemComponent } from './editor/toolbar-pages/page-list-item/page-list-item.component';
 import { CommentComponent } from './editor/comment/comment.component';
@@ -62,6 +65,10 @@ library.add(faEllipsisV);
     UserModalComponent,
     LastediteddatePipe,
     ToolbarPagesComponent,
+    CreateVersionModalComponent,
+    LoadVersionModalComponent,
+    ToolbarPagesComponent,
+    ToolbarGroupsComponent,
     UsercirclePipe,
     PageListItemComponent,
     CommentComponent,
@@ -81,6 +88,8 @@ library.add(faEllipsisV);
     ManageUserModalComponent,
     RenameProjectModalComponent,
     DeleteProjectModalComponent,
+    CreateVersionModalComponent,
+    LoadVersionModalComponent,
     UserModalComponent
   ],
   providers: [FabricmodifyService, ManagePagesService, {

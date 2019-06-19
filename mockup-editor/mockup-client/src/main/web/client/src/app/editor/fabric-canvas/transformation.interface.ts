@@ -14,12 +14,16 @@ export enum Action {
   GROUP = 'group:grouped',
   UNGROUP = 'group:ungrouped',
   PAGEDIMENSIONCHANGE = 'page:dimensionchange',
+  LOCK = 'element:locked',
+  UNLOCK = 'element:unlocked',
+  SELECTIONMODIFIED = 'selection:modified', 
   COMMENTADDED = 'comment:added',
   COMMENTMODIFIED = 'comment:modified',
   COMMENTCLEARED = 'comment:cleared',
   COMMENTENTRYADDED = 'commententry:added',
   COMMENTENTRYMODIFIED = 'commententry:modified',
-  COMMENTENTRYDELETED = 'commententry:deleted'
+  COMMENTENTRYDELETED = 'commententry:deleted',
+  VERSIONCREATED = 'version:created'
 }
 export enum CanvasTransmissionProperty {
   BACKGROUNDCOLOR = 'backgroundColor',

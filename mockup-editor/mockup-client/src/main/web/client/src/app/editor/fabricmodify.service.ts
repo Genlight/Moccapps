@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
-import { ManagePagesService } from './managepages.service';
+import { Group } from 'fabric';
+import { ManageGroupsService } from './managegroups.service';
 import { Action } from './fabric-canvas/transformation.interface';
+import {ManagePagesService} from "./managepages.service";
 import { socketMessage } from '../socketConnection/socketMessage';
 let savedElements = null;
 
@@ -12,17 +14,11 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
-  marker: fabric.Object[];
-  constructor(
-    //private managePagesService:ManagePagesService
-  ) {
-    this.marker = new fabric.Rect({
-      fill: 'red',
-      stroke: 'red',
-      strokeWidth: 2,
-      opacity: 0.3
-    });
-   }
+  private foreignSelections:Map<string,[Object]>;
+
+  constructor( private groupService: ManageGroupsService ) {
+    this.newForeignSelections();
+  }
 
   /* groups active elements in given canvas if more than one element is selected */
   group(canvas: any) {
@@ -32,8 +28,10 @@ export class FabricmodifyService {
     if (canvas.getActiveObject().type !== 'activeSelection') {
       return;
     }
-    canvas.getActiveObject().toGroup();
-    canvas.requestRenderAll();
+    let temp = canvas.getActiveObject().toGroup();
+    temp.set('dirty',true);
+    temp = (temp as Group);
+    this.groupService.add(temp);
   }
 
   clearAll(canvas: any) {
@@ -42,6 +40,7 @@ export class FabricmodifyService {
   }
 
   loadFromJSON(canvas: any, json: string) {
+    console.log(`loadFromJSON: object count: ${canvas.objects.length}`);
     canvas.loadFromJSON(json, () => {
       canvas.renderAll();
     });
@@ -74,8 +73,11 @@ export class FabricmodifyService {
     if (activeGrp.type !== 'group') {
       return;
     }
+    let temp = (activeGrp as Group);
+    this.groupService.remove(temp);
     activeGrp.toActiveSelection();
     canvas.requestRenderAll();
+
   }
 
   /* adds a text label to the given canvas */
@@ -285,7 +287,25 @@ export class FabricmodifyService {
         if (!old) {
           this.addRemoteObject(parsedObj, canvas);
         }
-      } else if (message.command === Action.MODIFIED) {
+      }
+      else if (message.command === Action.LOCK) {
+
+        old['evented'] = false;
+        old['selectable'] = false;
+      }
+      else if(message.command === Action.UNLOCK) {
+
+        old['evented'] = true;
+        old['selectable'] = true;
+      }
+      else if(message.command === Action.SELECTIONMODIFIED) {
+        if(!old) {
+          this.foreignSelections.set(parsedObj.userId,[null])
+        } else {
+          this.foreignSelections.get(parsedObj.userId).push(old);
+        }
+      }
+      else if (message.command === Action.MODIFIED) {
 
         //fallback to add if no such element exists, can be removed and replaced by error message if desired
         if (old === undefined) {
@@ -339,6 +359,13 @@ export class FabricmodifyService {
     return canvas.getObjects().find((o) => o.uuid === uuid);
   }
 
+  getForeignSelections():Map<string,[any]> {
+    return this.foreignSelections;
+  }
+
+  newForeignSelections() {
+    this.foreignSelections = new Map<string,[any]>();
+  }
   /**
    * This method modifies the values of an object in a way that they are again relative to the
    * canvas and not the provided group. Counterpart of calcInsertIntoGroup. Does not remove the object
@@ -390,48 +417,5 @@ export class FabricmodifyService {
         canvas.add(o);
       });
     });
-  }
-  /**
-   * sets Markers for a group of fabric objects
-   * @param  objects fabric.Object[]
-   * @param  canvas  fabric.Canvas -> active Canvas
-   * @return         void
-   */
-  async setMarkerGroup(objects: fabric.Object[], canvas: fabric.Canvas) {
-    await objects.forEach(
-        (obj) => { this.setMarker(obj, canvas); }
-    );
-    canvas.requestRenderAll();
-  }
-  /**
-   * sets a Marker for a single object
-   * @param  objects fabric.Object[]
-   * @param  canvas  fabric.Canvas -> active Canvas
-   * @return         void
-   */
-  setMarker(object: fabric.Object, , canvas: fabric.Canvas) {
-    this.marker.clone((o) => {
-      o.set({
-        width: object.width,
-        height: object.height,
-        left: object.left,
-        top: object.top
-      });
-      // disables Event triggering
-      o.fire = null;
-      o.trigger = function() {};
-
-      this.markers.add(o);
-    });
-  }
-  /**
-   * removes all active Markers from given cnavas
-   * @param  canvas  fabric.Canvas -> active Canvas
-   * @return         void
-   */
-  removeMarker(canvas: fabric.Canvas) {
-    this.managePagesService.getCanvas()
-    .remove(this.markers)
-    .requestRenderAll();
   }
 }
