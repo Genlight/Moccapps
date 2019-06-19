@@ -13,6 +13,7 @@ import { Action, CanvasTransmissionProperty } from './fabric-canvas/transformati
 import { isArray } from 'util';
 import { NotificationService } from '../shared/services/notification.service';
 import { OwnedStatelessObject } from '../shared/models/OwnedStatelessObject';
+import { WorkspaceService } from './workspace.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,7 @@ export class ManagePagesService {
   private _pages: BehaviorSubject<Page[]>;
   private _activePage: BehaviorSubject<Page>;
   private _activeProject: Project;
+  private _isGridEnabled: boolean;
 
   private DEFAULT_PAGE_DATA: string = "{\"version\":\"2.7.0\",\"objects\":[],\"background\":\"white\"}";
 
@@ -43,7 +45,8 @@ export class ManagePagesService {
     private projectService: ProjectService,
     private notificationService: NotificationService,
     private socketService: SocketConnectionService,
-    private tokenStorage: TokenStorageService
+    private tokenStorage: TokenStorageService,
+    private workspaceService: WorkspaceService
   ) {
     this._pages = new BehaviorSubject<Page[]>([]);
     this._activePage = new BehaviorSubject<Page>(null);
@@ -61,6 +64,10 @@ export class ManagePagesService {
         this._activeProject = project;
         this.loadAll();
       }
+    });
+
+    this.workspaceService.showsGrid.subscribe((value) => {
+      this._isGridEnabled = value;
     });
   }
 
@@ -114,6 +121,11 @@ export class ManagePagesService {
       oldPage.page_data = this.exportToJson(this.canvas);
       console.log(`setPageActive: saving old page: ${JSON.stringify(oldPage)}`);
       this.updatePage(oldPage); */
+
+      // If grid was active on the former active page, it will be disabled
+      if (!!this.dataStore.activePage && this._isGridEnabled) {
+        this.workspaceService.hideGrid();
+      }
 
       //Set new active page
       console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);

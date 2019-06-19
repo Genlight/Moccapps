@@ -116,6 +116,12 @@ export class NavbarComponent implements OnInit {
     this.workspaceService.showsRuler.subscribe((value) => {
       this.showRuler = value;
     });
+
+    // Handle grid state changes
+    this.workspaceService.showsGrid.subscribe((value) => {
+      this.grid = value;
+      this.toggleGrid();
+    });
   }
 
   onLogout() {
@@ -345,22 +351,34 @@ export class NavbarComponent implements OnInit {
    * the grid itself is always there in the grid-canvas, just hidden by the user-canvas
    */
   onViewGrid() {
-    this.grid = !this.grid;
-    const canvas = this.managePagesService.getCanvas();
-    const gridCanvas = this.managePagesService.getGridCanvas();
+    //this.grid = !this.grid;
     if (this.grid) {
-      canvas.backgroundColor = null;
-      if (this.snapToGrid) {
-        this.enableSnapToGrid(10);
-      }
+      this.workspaceService.hideGrid();
     } else {
-      canvas.backgroundColor = gridCanvas.backgroundColor;
-      if (this.snapToGrid) {
-        this.disableSnapToGrid();
-      }
-
+      this.workspaceService.showGrid();
     }
-    canvas.renderAll();
+  }
+
+  toggleGrid() {
+    if (!!this.activePage) {
+      const canvas = this.managePagesService.getCanvas();
+      const gridCanvas = this.managePagesService.getGridCanvas();
+      if (!!canvas && !!gridCanvas) {
+        if (this.grid) {
+          canvas.backgroundColor = null;
+          if (this.snapToGrid) {
+            this.enableSnapToGrid(10);
+          }
+        } else {
+          canvas.backgroundColor = gridCanvas.backgroundColor;
+          if (this.snapToGrid) {
+            this.disableSnapToGrid();
+          }
+    
+        }
+        canvas.renderAll();
+      }
+    }
   }
 
   /**
