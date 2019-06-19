@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS comment_objects
   FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE
 );
 
- TABLE IF NOT EXISTS comment_entries
+CREATE TABLE IF NOT EXISTS comment_entries
 (
   id        INTEGER DEFAULT nextval('seq_comment') PRIMARY KEY,
   message   VARCHAR(1000) NOT NULL,
