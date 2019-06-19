@@ -65,7 +65,7 @@ public class ElementsRESTService {
           }
         }
         catch (java.lang.NullPointerException e) {
-          return new ResponseEntity<>(new ResponseMessage("no elements found"), HttpStatus.OK);
+          return new ResponseEntity<>(new ResponseMessage("no elements found (No content found)"), HttpStatus.NO_CONTENT);
         }
 
         // directoryname for user is base64 encoded email

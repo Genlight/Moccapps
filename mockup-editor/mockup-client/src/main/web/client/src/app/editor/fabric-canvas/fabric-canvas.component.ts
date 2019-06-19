@@ -245,14 +245,15 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   private loadPage(page: Page) {
     if (!!page) {
-
       this.modifyService.setHeight(this.canvas, page.height);
       this.modifyService.setWidth(this.canvas, page.width);
-      console.log(`loadPage with data: ${page.page_data}`);
+      console.log(`loadPage, page: ${JSON.stringify(page)}`);
       if (!!page.page_data) {
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
+        console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
+      } else {
+        console.error('loadPage: page_data is undefined');
       }
-      console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
     //this.pagesService.loadGrid(2000,2000);
     this.pagesService.updateGrid();
@@ -505,7 +506,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     selections.forEach((value,key,map) => {
       value.forEach((current)=> {
         if(current === null) return;
-        console.log('foreignly selectec object: '+JSON.stringify(current));
+        console.info('foreignly selectec object: '+JSON.stringify(current));
         this.canvas.contextContainer.strokeStyle = '#FF0000';
         var bound = current.getBoundingRect();
         this.canvas.contextContainer.strokeRect(
