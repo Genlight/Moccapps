@@ -56,6 +56,12 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       this.pagesService.isLoadingPage.subscribe((isLoading) => {
         //alert(isLoading);
         this.isLoading = isLoading;
+        // Hide rulers during loading
+        if (this.isLoading) {
+          this.hideRulerLines();
+        } else {
+          this.showRulerLines();
+        }
       });
     }
 

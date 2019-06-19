@@ -7,7 +7,7 @@ import {BehaviorSubject} from 'rxjs';
 export class WorkspaceService {
 
   showsRuler: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  isLoadingPage: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  showsGrid: BehaviorSubject<boolean> = new BehaviorSubject(false);
   toolbarPanelState: BehaviorSubject<ToolbarPanelState> = new BehaviorSubject(ToolbarPanelState.None);
 
   store: {
@@ -28,8 +28,12 @@ export class WorkspaceService {
     this.showsRuler.next(false);
   }
 
-  setIsLoadingPage(value: boolean) {
-    this.isLoadingPage.next(value);
+  showGrid(): void {
+    this.showsGrid.next(true);
+  }
+
+  hideGrid(): void {
+    this.showsGrid.next(false);
   }
 
   togglePages(): void {

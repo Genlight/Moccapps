@@ -22,7 +22,8 @@ export enum Action {
   COMMENTCLEARED = 'comment:cleared',
   COMMENTENTRYADDED = 'commententry:added',
   COMMENTENTRYMODIFIED = 'commententry:modified',
-  COMMENTENTRYDELETED = 'commententry:deleted'
+  COMMENTENTRYDELETED = 'commententry:deleted',
+  VERSIONCREATED = 'version:created'
 }
 export enum CanvasTransmissionProperty {
   BACKGROUNDCOLOR = 'backgroundColor',
