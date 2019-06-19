@@ -23,7 +23,7 @@ public class ElementServiceImpl implements ElementService {
     private String systemDir = baseDir + "/system";
     private String userDir = baseDir + "/user";
     @Override
-    public List<String> getCategories() {
+    public List<String> getCategories() throws java.lang.NullPointerException {
         //System.out.println("\n\n\n"+(Paths.get("").toString()));
         List<String> categories = new ArrayList<>();
         File folder = new File(systemDir);
