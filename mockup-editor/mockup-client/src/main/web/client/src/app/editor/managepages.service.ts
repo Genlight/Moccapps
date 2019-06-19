@@ -164,20 +164,6 @@ export class ManagePagesService {
     }
   }
 
-  /**
-   * Persists the current canvas state to the backend.
-   */
-  saveActivePage() {
-    // Persist current active page
-    if (!!this.dataStore.activePage) {
-      let page = Object.assign({}, this.dataStore.activePage);
-      page.page_data = this.exportToJson(this.canvas);
-      // Save to backend
-      this.updatePage(page);
-      console.log(`saveActivePage: Saved to backend: ${JSON.stringify(page)}`);
-    }
-  }
-
   clearPages() {
     console.log('clearPages');
     this.dataStore.pages = [];
@@ -259,6 +245,35 @@ export class ManagePagesService {
     } else {
       this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
     }
+  }
+
+  /**
+   * Creates a new Page
+   * @param name the name of the page
+   * @param height height in px
+   * @param width width in px
+   */
+  addPageWithREST(name?: string, height: number = 600, width: number = 900, project: Project) {
+    console.log('addPage');
+    let pageName = name;
+    if (!name) {
+      pageName = `Page ${this.dataStore.pages.length + 1}`;
+    }
+
+    const requestPage: Page = {
+      page_name: pageName,
+      height: height,
+      width: width,
+      project_id: project.id,
+      page_data: this.DEFAULT_PAGE_DATA
+    };
+
+    //alert(JSON.stringify(requestPage));
+    this.apiService.post(`/page`, requestPage).subscribe(
+      response => {
+        console.log('HTTP response', response);
+      }
+    );
   }
 
   /**

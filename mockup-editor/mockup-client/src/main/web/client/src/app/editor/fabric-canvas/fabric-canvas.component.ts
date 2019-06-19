@@ -468,9 +468,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     return this.canvas.getObjects().find((o) => o.uuid === uuid);
   }
   ngOnDestroy() {
-    // Save the loaded page before leaving.
-    this.pagesService.saveActivePage();
-
     // Delete pages and the current active page from store. (Unselect current project)
     this.pagesService.clearActivePage();
     this.pagesService.clearPages();

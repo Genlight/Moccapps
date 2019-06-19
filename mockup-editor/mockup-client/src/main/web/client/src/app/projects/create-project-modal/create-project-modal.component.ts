@@ -56,8 +56,6 @@ export class CreateProjectModalComponent implements OnInit {
    * @param value the 
    */
   onCreateProject(value: any): void {
-    // alert(JSON.stringify(value));
-
     const project = new Project();
     project.projectname = this.project.name;
 
@@ -75,16 +73,18 @@ export class CreateProjectModalComponent implements OnInit {
         console.log('HTTP response', res);
         let responseProject = (res as Project);
         if (!!responseProject) {
-          this.projectService.setActiveProject(responseProject);
           // Create intitial page of project.
-          this.pagesService.addPage(null, this.project.height, this.project.width);
+          this.projectService.setActiveProject(responseProject);
+
+          this.pagesService.addPageWithREST(null, this.project.height, this.project.width, responseProject);
+          this.modal.close();
+          this.router.navigate(['editor']);
         }
       },
       err => {
         console.log('HTTP Error', err);
+        this.modal.close();
       }
     );
-    this.modal.close();
-    this.router.navigate(['editor']);
   }
 }
