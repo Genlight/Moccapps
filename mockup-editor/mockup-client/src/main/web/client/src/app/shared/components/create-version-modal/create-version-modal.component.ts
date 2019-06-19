@@ -50,7 +50,7 @@ export class CreateVersionModalComponent implements OnInit {
         VersionName: versionName
       }
     , Action.VERSIONCREATED);
-    //this.activeModal.close();
+    this.activeModal.close();
   }
 
 }
