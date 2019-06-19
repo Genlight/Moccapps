@@ -304,16 +304,6 @@ export class ManagePagesService {
     }
   }
 
-  updatePage(page: Page) {
-/*     console.log('updatePage');
-    if (!!page) {
-      this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
-        // Update was successful, update element in local store.
-        this.updatePageStore(page);
-      });
-    } */
-  }
-
   private updatePageStore(page: Page) {
     this.dataStore.pages.forEach((p, i) => {
       if (p.id === page.id) {
