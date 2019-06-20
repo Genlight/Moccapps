@@ -71,7 +71,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.canvas = this.pagesService.getCanvas();
 
 
-    this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
 
     this.pagesService.pages.subscribe((pages) => {
@@ -88,6 +87,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         this.setRulerDimensions(page.height, page.width);
       }
     });
+    
+    this.enableEvents();
 
     // React to changes when user clicks on hide/show ruler
     this.workSpaceService.showsRuler.subscribe((value) => {
@@ -277,18 +278,18 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       .on('selection:updated',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
       .on('before:selection:cleared',(event) => { this.statelessTransfer({'target':null},Action.SELECTIONMODIFIED) })
       .on('after:render',(event) => { this.onAfterRender(event) })
-      /*.on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
-      .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });*/;
     }
   disableEvents() {
     this.canvas
+      .off('before:transform', (event) => { this.statelessTransfer(event.transform, Action.LOCK); })
+      .off('mouse:up',(event) => { if(event.target !== null) this.statelessTransfer(event, Action.UNLOCK) })
       .off('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .off('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .off('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-      .off('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
-      .off('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-      .off('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
+      .off('selection:created',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
+      .off('selection:updated',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
+      .off('before:selection:cleared',(event) => { this.statelessTransfer({'target':null},Action.SELECTIONMODIFIED) })
+      .off('after:render',(event) => { this.onAfterRender(event) })
   }
   /**
    * manages keyboard events:
@@ -387,7 +388,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
-      this.onSaveState(evt, action);
 
 
       let typ = transObject.type
@@ -395,13 +395,13 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       //console.log('type: '+typ+', transObj: '+JSON.stringify(transObject));
 
 
+      let sendArray = [];
       if(typ==='activeSelection') {
         //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
         //console.log('selection: '+JSON.stringify(transObject))
         let oldRenderAddReomve = this.canvas.renderOnAddRemove;
         this.canvas.renderOnAddRemove = false;
         this.canvas.discardActiveObject();
-        let sendArray = [];
         transObject.forEachObject((current) => {
           let newObj = this.getObjectByUUID(current.uuid);
           sendArray.push(newObj);
@@ -420,13 +420,18 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         this.canvas.renderOnAddRemove = oldRenderAddReomve;
 
       } else {
+        sendArray.push(transObject);
         this.pagesService.sendMessageToSocket(transObject,action);
       }
+      
+      //delete does not necessary have a preceeding 'before:transform'
+      if(action === Action.REMOVED) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
+      this.undoRedoService.save(sendArray,action);
 
     }
 
     //this needs to happen externally if the change was made from somebody else; the state of the canvas needs to be accuratly reflected
-    else this.undoRedoService.setState(this.canvas, action);
+    //else this.undoRedoService.setState(this.canvas, action);
 
       //the object needs to be available again regardless of whether or not it was a remote access.
       //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
@@ -447,6 +452,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         sendArray.push(selectedObj);
       }
     }
+    if(action === Action.LOCK) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
     let _this = this;
     sendArray.forEach((current) => {
       _this.pagesService.sendMessageToSocket(current,action);

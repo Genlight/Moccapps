@@ -26,8 +26,10 @@ export class UndoRedoService {
   // Observables for buttons (enable/ disable)
   undoObs: BehaviorSubject<boolean>;
   redoObs: BehaviorSubject<boolean>;
-  state: CanvasState;
+  //state: CanvasState;
   isReplaying = false;
+
+  private currentlyModifiedObject;
 
   constructor(
     private managepageService: ManagePagesService,
@@ -40,6 +42,7 @@ export class UndoRedoService {
     this.redoStack = [];
     this.redoObs.next(false);
     this.undoObs.next(false);
+    this.currentlyModifiedObject = [];
   }
   /**
    * saves an initial state of a page, will always be executed,
@@ -52,7 +55,8 @@ export class UndoRedoService {
     this.redoStack = [];
     this.redoObs.next(false);
     this.undoObs.next(false);
-    this.setState(this.managepageService.getCanvas(), Action.PAGECREATED);
+    this.currentlyModifiedObject = [];
+    //this.setState(this.managepageService.getCanvas(), Action.PAGECREATED);
   }
   /**
    * initializes the undoRedoService with an initial State.
@@ -60,7 +64,7 @@ export class UndoRedoService {
    * @param  state [description]
    * @return        [description]
    */
-  save(objects: any, action: Action): void {
+  save(objects: Array<any>, action: Action): void {
     // during replay, there should'nt be any saves
     if (this.isReplaying) {
       return;
@@ -74,12 +78,11 @@ export class UndoRedoService {
     const prevList = [];
     if(action!==Action.ADDED) {
       //add doesn't have a previous state
-      if(this.state){
+      //if(this.state){
       this.forEachObject(objects, (obj) => {
-        const prev = this.getObjectByUUID(obj.uuid, (_this.state.canvas));
-
-        prev.clone( (o) => { prevList.push(o); } );
-      })};
+                
+        obj.clone( (o) => { prevList.push(o); } );
+      })/*}*/;
     }
     const currentList = [];
     if(action!==Action.REMOVED) {
@@ -97,21 +100,22 @@ export class UndoRedoService {
       action
     });
 
-    this.setState(canvas, action);
+    //this.setState(canvas, action);
 
     // set redoStack to null
     this.redoStack = [];
     this.redoObs.next(false);
 
+    //TODO: replace the below code with an "disable listeners" maybe
 
     //console.log('show me the stack: '+JSON.stringify(this.undoStack));
     // initial call won't have a state
-    if ( this.state.action === Action.PAGECREATED )  {
+    /*if ( this.state.action === Action.PAGECREATED )  {
       console.log('undo disabled because Page was just created');
       this.undoObs.next(false);
     } else {
       this.undoObs.next(true);
-    }
+    }*/
   }
   /**
    * Save the current state in the redo stack, reset to a state in the undo stack, and enable the buttons accordingly.
@@ -173,7 +177,7 @@ export class UndoRedoService {
       })
 
     }
-    this.setState(canvas,this.invertAction(replayState.action));
+    //this.setState(canvas,this.invertAction(replayState.action));
     canvas.renderAll();
     // add previous objects / State
     /*fabric.util.enlivenObjects([JSON.parse(replayState.previous)], ((obj) => {
@@ -190,7 +194,7 @@ export class UndoRedoService {
 
     // Check, if there are holes in a stack
     console.log('Savestack-Length: ' + saveStack.length);
-    if (playStack.length <= 0 || this.state.action === Action.PAGECREATED) {
+    if (playStack.length <= 0/* || this.state.action === Action.PAGECREATED*/) {
       console.log('Playstack empty. Length: ' + playStack.length);
       player.next(false);
     } else {
@@ -249,12 +253,12 @@ export class UndoRedoService {
    * @param canvas The actual canvas
    * @param action the action that took place
    */
-  setState(canvas:any,action:Action) {
+  /*setState(canvas:any,action:Action) {
     canvas.clone((o) => {
       console.log('saved State: ' + JSON.stringify(o));
       this.state = { canvas: o, action };
     });
-  }
+  }*/
 
 
   /**
@@ -272,5 +276,8 @@ export class UndoRedoService {
     } else {
       next(object);
     }
+  }
+  setCurrentlyModifiedObject(objects:Array<any>) {
+    this.currentlyModifiedObject = objects;
   }
 }
