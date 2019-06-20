@@ -321,6 +321,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     } else {
       if (event.keyCode === 46) { // delete key
         this.modifyService.removeElement(canvas);
+      } else if (event.keyCode === 27) { // Esc key
+        this.modifyService.clearSelection(canvas);
       }
     }
   }
