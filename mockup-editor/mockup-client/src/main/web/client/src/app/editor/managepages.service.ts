@@ -133,6 +133,8 @@ export class ManagePagesService {
       page.page_data = null;
       this.dataStore.activePage = page;
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
+      
+      this.modifyService.newForeignSelections();//double call to test why this does not work.
 
       //this is pretty ugly, but would need rework of multiple components otherwise
       this.disconnectSocket();

@@ -372,7 +372,7 @@ export class FabricmodifyService {
    * @param obj the object to modify
    * @param group the group the object comes from
    */
-  private static calcExtractFromGroup(obj, group) {
+  static calcExtractFromGroup(obj, group) {
     //console.log('pre extract obj mod: ' +JSON.stringify(obj));
     let groupHeightMiddle: number = group.height / 2.0;
     let groupWidthMiddle: number = group.width / 2.0;
@@ -391,7 +391,7 @@ export class FabricmodifyService {
    * @param obj the object to modify
    * @param group the group to insert to
    */
-  private static calcInsertIntoGroup(obj, group) {
+  static calcInsertIntoGroup(obj, group) {
 
     //console.log('pre insert obj mod: ' +JSON.stringify(obj));
     let groupHeightMiddle: number = group.height / 2.0;

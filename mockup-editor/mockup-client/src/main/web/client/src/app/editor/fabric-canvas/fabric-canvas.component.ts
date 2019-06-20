@@ -513,12 +513,29 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   onAfterRender(event) {
     let selections = this.modifyService.getForeignSelections();
+    let _this = this;
+    let currentSelection = this.canvas.getActiveObject();
     selections.forEach((value,key,map) => {
       value.forEach((current)=> {
         if(current === null) return;
-        console.info('foreignly selectec object: '+JSON.stringify(current));
+        //let temp = _this.getObjectByUUID(current.uuid);
+        console.info('what is with the canvas? ' + JSON.stringify(this.canvas));
+        console.info('foreignly selected object: '+JSON.stringify(current));
+        let temp = current;
+
+        if(currentSelection&&currentSelection.type == 'activeSelection') {
+          
+          let selectedObjects = currentSelection.getObjects();
+            if(selectedObjects.find((o) => o.uuid == current.uuid)) {
+              current.clone((clone) => {
+                FabricmodifyService.calcExtractFromGroup(clone,currentSelection);
+                temp = clone;
+            })
+          }
+        }
+
         this.canvas.contextContainer.strokeStyle = '#FF0000';
-        var bound = current.getBoundingRect();
+        var bound = temp.getBoundingRect();
         this.canvas.contextContainer.strokeRect(
           bound.left - 2.5,
           bound.top - 2.5,
