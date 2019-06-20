@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faFolder,faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { ElementsService } from '../elements.service';
 import { WorkspaceService, ToolbarPanelState } from '../workspace.service';
+import { NotificationService } from 'src/app/shared/services/notification.service';
 
 @Component({
   selector: 'app-toolbarextension',
@@ -52,7 +53,8 @@ export class ToolbarextensionComponent implements OnInit {
 
   constructor(
     private elementsService: ElementsService,
-    private workspaceService: WorkspaceService
+    private workspaceService: WorkspaceService,
+    private notificationService: NotificationService
   ) {
     this.workspaceService.toolbarPanelState.subscribe(
       (state) => {
@@ -66,11 +68,20 @@ export class ToolbarextensionComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("loading categories and elements....");
+    //console.log("loading categories and elements....");
     this.loadCategoriesFromServer();
 
     //this.elementMap.set('Personal', this.elementsService.getUserElements());
-    console.log(this.elementMap);
+    //console.log(this.elementMap);
+
+    this.elementsService.userElements.subscribe((value) => {
+      this.elementMap.set('Personal', value);
+      if (this.activeCategory === 'Personal') {
+        this.draggableElements = value;
+      }
+      //this.activeCategory = 'Personal';
+      
+    });
   }
 
 
@@ -84,7 +95,7 @@ export class ToolbarextensionComponent implements OnInit {
     this.elementsService.getElements()
       .subscribe(
         (response) => {
-          console.log(`loadElements (response): ${JSON.stringify(response)}`);
+          //console.log(`loadElements (response): ${JSON.stringify(response)}`);
           if (!response) {
             this.elementsFound = false;
             return;
@@ -111,6 +122,7 @@ export class ToolbarextensionComponent implements OnInit {
                   }
                   elements.push(newelem);
                 }
+                this.elementsService.setUserElements(elements);
               } else { // load system libraries
                 for (const elem in elementarray) {
                   const newelem = {
@@ -127,7 +139,8 @@ export class ToolbarextensionComponent implements OnInit {
           }
         },
         (error) => {
-          console.log("error when loading categories");
+          this.notificationService.showError('Error when loading categories', 'Categories could not be loaded');
+          //console.log("error when loading categories");
         }
     );
   }
@@ -153,7 +166,7 @@ export class ToolbarextensionComponent implements OnInit {
    * @param event event fired when dragging a draggable item starts
    */
   onDragStart(event: DragEvent) {
-    console.log('drag started', JSON.stringify(event, null, 2));
+    //console.log('drag started', JSON.stringify(event, null, 2));
   }
 
   /**
@@ -161,6 +174,6 @@ export class ToolbarextensionComponent implements OnInit {
    * @param event event fired when dragging a draggable event ends
    */
   onDragEnd(event: DragEvent) {
-    console.log('drag ended', JSON.stringify(event, null, 2));
+    //console.log('drag ended', JSON.stringify(event, null, 2));
   }
 }

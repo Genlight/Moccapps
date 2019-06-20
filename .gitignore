@@ -128,3 +128,4 @@ fabric.properties
 
 # Sonarlint plugin
 .idea/sonarlint
+mockup-editor/mockup-client/src/main/web/client/src/assets/img/user/

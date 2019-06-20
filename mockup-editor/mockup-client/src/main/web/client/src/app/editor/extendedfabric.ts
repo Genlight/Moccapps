@@ -31,7 +31,7 @@ fabric.Object.prototype.initialize = function(options) {
         this.setOptions(options);
       }
       if(!this.uuid) this.uuid = UUID.UUID();
-      this.sendMe = true;
+      if(this.sendMe === undefined) this.sendMe = true;
 };
 
 
