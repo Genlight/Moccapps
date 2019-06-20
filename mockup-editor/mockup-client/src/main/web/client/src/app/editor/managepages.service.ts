@@ -242,12 +242,7 @@ export class ManagePagesService {
           currentPage.page_data = pageData;
           this.dataStore.activePage = currentPage;
           this._activePage.next(Object.assign({}, currentPage));
-          setTimeout(
-            () => {
-              this.loadGrid(2000,2000);
-            },
-            500
-          );
+          this.loadGrid(2000,2000);
         }
       }
     } else {
