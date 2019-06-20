@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {Comment, CommentEntry} from '../../shared/models/comments';
 import { CommentService } from '../comment.service';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'app-comment-bar',
   templateUrl: './comment-bar.component.html',
@@ -11,6 +13,9 @@ export class CommentBarComponent implements OnInit {
 
   newComment: string;
   addingNewComment;
+
+  faTimes = faTimes;
+
   constructor(private commentService: CommentService) {}
 
   ngOnInit() {

@@ -1,46 +1,46 @@
 <div  *ngIf="!comment.isCleared"
-      class="list-group list-group-item-action"
-      style="justify-content: space-between;
-              margin-bottom: 8px;">
+      class="
+        list-group 
+        list-group-item-action
+        comment-thread"
+  >
   <ul *ngFor="let entry of comment.entries; let i = index;">
     <div *ngIf="i>0">
       <hr/>
     </div>
-    <div class="container"
-        style="display:flex; align-items:start;">
-      <ul>
-        <div style="font-weight: 500;
+    <div class="d-flex justify-content-between">
+      <span>
+        <span style="font-weight: 500;
                     font-size: 12px;
                     letter-spacing: 0.25px;
                     line-height: 20px;
                     margin-top: 0;
                     font-family: Arial;">
           <mark>{{entry.author.username }}</mark>
-        </div>
-        <div class=".text-muted" style="align-self: stretch;">
+        </span>
+        <div class=".text-muted date" style="align-self: stretch;">
           {{entry.date | date :'short' }}
         </div>
-      </ul>
-      <div *ngIf="i==0" class="container">
-      <button class="btn btn-success" (click)="onIsCleared()">
-      Resolve
-      </button>
+      </span>
+      <div *ngIf="i==0">
+        <button class="btn btn-outline-success" (click)="onIsCleared()">
+        Resolve
+        </button>
       </div>
-      <div *ngIf="entry.author.email===currentUser.email">
-        <div class="display: inline-block;" ngbDropdown>
+  
+      <div class=" float-right" ngbDropdown *ngIf="entry.author.email===currentUser.email">
           <div role="button" class="btn btn-sm" data-toggle="dropdown" ngbDropdownToggle>
              <fa-icon [icon]="faEllipsisV"></fa-icon>
           </div>
-          <div ngbDropdownMenu aria-labelledby="dropdownMenu menu">
+          <div ngbDropdownMenu aria-labelledby="dropdownMenu">
             <button ngbDropdownItem (click)="entry.isEditing= !entry.isEditing" >
-              Change
+              Edit
             </button>
 
             <button ngbDropdownItem (click)="onDelete(entry)" >
               Delete
             </button>
           </div>
-        </div>
       </div>
     </div>
     <div *ngIf="!entry.isEditing">{{entry.message}}</div>
@@ -64,20 +64,27 @@
     </div>
 
   </ul>
-  <form
-  novalidate
-  #formNewCommentEntry="ngForm"
-  >
-    <div class="form-group">
-      <input type="textarea"
-        id="newEntryMessage"
-        class="form-control"
-        name="newEntryMessage"
-        #newEntryMessage
-        [(ngModel)]="newEntry.message"
-        placeholder="reply..."
-        (keyup.enter)="onCreateEntry()"
-        >
-    </div>
-  </form>
+  <div>
+    <form
+    novalidate
+    #formNewCommentEntry="ngForm"
+    >
+      <div class="form-group">
+        <div class="input-group">
+            <input type="textarea"
+            id="newEntryMessage"
+            class="form-control"
+            name="newEntryMessage"
+            #newEntryMessage
+            [(ngModel)]="newEntry.message"
+            placeholder="Write your reply"
+            (keyup.enter)="onCreateEntry()"
+            >
+            <button class="btn btn-primary">
+              Reply
+            </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>

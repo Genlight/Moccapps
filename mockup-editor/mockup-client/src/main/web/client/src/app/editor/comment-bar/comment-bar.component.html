@@ -1,19 +1,27 @@
-<div class="card" id="comment-bar">
+<div class="card" id="comment-bar" ngDraggable>
   <div class="mb-2" style="justify-content: space-between; width: 18rem;">
-    <div>
-      <label>
-        <b>Comments</b>
+    <div class="mb-2" style="display: flex; align-items: center; justify-content: space-between">
+      <div>
+        <label><b>Comments</b></label>
+      </div>
+      <div>
         <button
-          class="btn btn-secondary"
-          (click)="onCreateComment()"
-          ngbTooltip="Add a Comment"
-          >+</button>
+        class="btn btn-secondary"
+        (click)="onCreateComment()"
+        ngbTooltip="Add a Comment"
+        >+</button>
         <button
           class="btn btn-primary"
           (click)="onTestButton()"
           ngbTooltip="testing commentService"
           >-</button>
-      </label>
+        <button
+          class="btn btn-light"
+          (click)="closeComments()"
+        >
+          <fa-icon [icon]="faTimes"></fa-icon>
+        </button>
+      </div>
     </div>
     <div *ngIf="addingNewComment">
       <form
@@ -27,18 +35,17 @@
             name="newComment"
             [(ngModel)]="newComment"
             (keyup.enter)="onAddComment()"
-            placeholder="enter comment here..."
+            placeholder="Write new comment..."
             >
         </div>
       </form>
     </div>
+    <hr>
     <div id="comment-barList" class="card">
       <app-comment
         *ngFor="let comment of comments"
         [comment]="comment">
       </app-comment>
     </div>
-
   </div>
-
 </div>

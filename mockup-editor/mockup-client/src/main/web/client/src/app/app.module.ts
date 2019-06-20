@@ -39,6 +39,7 @@ import { UsercirclePipe } from './shared/pipes/usercircle.pipe';
 import { PageListItemComponent } from './editor/toolbar-pages/page-list-item/page-list-item.component';
 import { CommentComponent } from './editor/comment/comment.component';
 import { CommentBarComponent } from './editor/comment-bar/comment-bar.component';
+import { AngularDraggableModule } from 'angular2-draggable';
 
 
 library.add(faBars);
@@ -82,7 +83,8 @@ library.add(faEllipsisV);
     AppRoutingModule,
     HttpClientModule,
     DndModule,
-    ColorPickerModule
+    ColorPickerModule,
+    AngularDraggableModule
   ],
   entryComponents: [
     ManageUserModalComponent,
