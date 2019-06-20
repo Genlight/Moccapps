@@ -114,7 +114,7 @@ public class ElementsRESTService {
 
         // decode and save image
         byte[] imageByte = Base64.getDecoder().decode(encodedImage);
-        String directoryPath = "../mockup-client/src/main/web/client/src/assets/img/user/"+userdirectory;
+        String directoryPath = "./mockup-client/src/main/web/client/src/assets/img/user/"+userdirectory;
         String imgPath = directoryPath+"/"+name;
 
         // check if directory exists
@@ -148,6 +148,43 @@ public class ElementsRESTService {
                 }
             }
         }
+
+        //---------------------------------------------------------
+        //save file also in target resources folder so client finds it
+        String directoryPath2 = "./mockup-server/target/classes/resources/assets/img/user/"+userdirectory;
+        //String directoryPath = "./mockup-server/assets/img/user/"+userdirectory;
+        String imgPath2 = directoryPath2+"/"+name;
+        File directory2 = new File(directoryPath2);
+        if (!directory2.exists()) {
+            directory2.mkdir();
+        }
+
+        // check if image already exists
+        File image2 = new File(imgPath2);
+        if (image2.exists()) {
+            logger.error("Error when trying to import an image with a name that already exists");
+            return new ResponseEntity<>(new ResponseMessage("Image with the same name already exists"),HttpStatus.CONFLICT);
+        } else {
+            // write image data
+            FileOutputStream fileOutputStream = null;
+            try {
+                fileOutputStream = new FileOutputStream(image2);
+                fileOutputStream.write(imageByte);
+            } catch (IOException e) {
+                //e.printStackTrace();
+                logger.error("Error when trying to write file to disk");
+            } finally {
+                if (fileOutputStream != null) {
+                    try {
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        logger.error("Error when closing FileOutputStream");
+                        //e.printStackTrace();
+                    }
+                }
+            }
+        }
+        //--------------------------------------------------------
 
         // send image url to client
         ObjectMapper objectMapper = new ObjectMapper();

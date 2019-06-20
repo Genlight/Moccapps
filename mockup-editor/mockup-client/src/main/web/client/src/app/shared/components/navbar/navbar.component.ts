@@ -236,14 +236,8 @@ export class NavbarComponent implements OnInit {
     } else {
       return;
     }
-
     if (file.type.match('image/png') || file.type.match('image/jpeg') || file.type.match('image/bmp') || file.type.match('image/svg')) {
       this.elementsService.importImage(file);
-
-      //const canvas = this.managePagesService.getCanvas();
-      //const url = window.URL.createObjectURL(file);
-      //this.modifyService.loadImageFromURL(canvas,url);
-      //window.URL.revokeObjectURL(url);
     }
 
   }

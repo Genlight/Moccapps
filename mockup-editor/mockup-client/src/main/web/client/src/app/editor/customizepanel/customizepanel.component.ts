@@ -76,12 +76,34 @@ export class CustomizepanelComponent implements OnInit {
     this.managePagesService.activePage.subscribe(
       (page) => {
         this.activePage = page;
+        //this.onPageChanged();
       }
     );
+    this.managePagesService.isLoadingPage.subscribe(
+      (value) => {
+        if (!value) {
+          this.onPageChanged();
+        }
+      }
+    )
   }
 
   ngOnInit() {
     this.setNewPage(this.managePagesService.getCanvas());
+  }
+
+  /**
+   * Do initialization after page change
+   */
+  onPageChanged() {
+    if (!!this.canvas) {
+      // Update backgroundcolor
+      const backgroundColor = this.canvas.backgroundColor;
+      //alert(backgroundColor);
+      this.managePagesService.getGridCanvas().backgroundColor = backgroundColor;
+      this.canvasProperties.backgroundColor = backgroundColor;
+    }
+    //this.setCanvasBackgroundColor();
   }
 
   onDimensionChanged() {
@@ -120,6 +142,8 @@ export class CustomizepanelComponent implements OnInit {
 
       'object:added': (event) => {
         //this.sendMessageToSocket(JSON.stringify(event.transform.target),'added');
+        console.log('object added..........');
+        console.log(event.target);
       },
       'object:moving': (event) => { },
       'selection:created': (event) => {

@@ -93,19 +93,21 @@ export class ManagePagesService {
    * so a grid in the backgound-canvas can be seen if active
    */
   createGridCanvas() {
-    // needed, because on load, there des not exist a canvas
-    if (typeof this.canvas === 'undefined') {
-      this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
-    }
-    this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
-      evented: false,
-      height:	this.dataStore.activePage.height,
-      width: this.dataStore.activePage.width,
-      backgroundColor: '#ffffff'
-     });
-    this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
-    //this.canvas.backgroundColor = null;
-    this.canvas.renderAll();
+ 
+      // needed, because on load, there des not exist a canvas
+      if (typeof this.canvas === 'undefined') {
+        this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
+      }
+      this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
+        evented: false,
+        height:	this.dataStore.activePage.height,
+        width: this.dataStore.activePage.width,
+        backgroundColor: '#ffffff'
+       });
+      this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
+      //this.canvas.backgroundColor = null;
+      this.canvas.renderAll();
+    
   }
 
   /**
@@ -132,13 +134,13 @@ export class ManagePagesService {
       // Set page data from rest api to null
       page.page_data = null;
       this.dataStore.activePage = page;
-      this._activePage.next(Object.assign({}, this.dataStore.activePage));
       
       this.modifyService.newForeignSelections();//double call to test why this does not work.
+      //this._activePage.next(Object.assign({}, this.dataStore.activePage));
 
       //this is pretty ugly, but would need rework of multiple components otherwise
       this.disconnectSocket();
-      this.connectToSocket(this._activeProject.id,this._activePage.getValue().id);
+      this.connectToSocket(this.dataStore.activePage.id,this.dataStore.activePage.id);
 
       this.isLoadingPage.next(true);
       //Load page by socket
@@ -163,20 +165,6 @@ export class ManagePagesService {
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
       //Update page in backend,this is at the moment done by every party that receives the change
       //this.updatePage(page);
-    }
-  }
-
-  /**
-   * Persists the current canvas state to the backend.
-   */
-  saveActivePage() {
-    // Persist current active page
-    if (!!this.dataStore.activePage) {
-      let page = Object.assign({}, this.dataStore.activePage);
-      page.page_data = this.exportToJson(this.canvas);
-      // Save to backend
-      this.updatePage(page);
-      console.log(`saveActivePage: Saved to backend: ${JSON.stringify(page)}`);
     }
   }
 
@@ -225,9 +213,9 @@ export class ManagePagesService {
 
           // If exists, set the first page as active  REMOVED: !!this.dataStore.activePage.height
           if (isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
-            const firstPage = this.dataStore.pages[0];
-            this.setPageActive(firstPage);
-            this.loadGrid(2000,2000);
+            //const firstPage = this.dataStore.pages[0];
+            //this.setPageActive(firstPage);
+            //this.loadGrid(2000,2000);
           }
         },
         ((error) => {
@@ -256,11 +244,43 @@ export class ManagePagesService {
           currentPage.page_data = pageData;
           this.dataStore.activePage = currentPage;
           this._activePage.next(Object.assign({}, currentPage));
+          this.loadGrid(2000,2000);
         }
       }
     } else {
       this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
     }
+  }
+
+  /**
+   * Creates a new Page
+   * @param name the name of the page
+   * @param height height in px
+   * @param width width in px
+   */
+  addPageWithREST(project: Project, name?: string, height: number = 600, width: number = 900) {
+    console.log('addPage');
+    let pageName = name;
+    if (!name) {
+      pageName = `Page ${this.dataStore.pages.length + 1}`;
+    }
+
+    const requestPage: Page = {
+      page_name: pageName,
+      height: height,
+      width: width,
+      project_id: project.id,
+      page_data: this.DEFAULT_PAGE_DATA
+    };
+
+    //alert(JSON.stringify(requestPage));
+    this.apiService.post(`/page`, requestPage).subscribe(
+      response => {
+        console.log('HTTP response', response);
+        let page = (response as Page);
+        this.addPageToStore(page);
+      }
+    );
   }
 
   /**
@@ -304,16 +324,6 @@ export class ManagePagesService {
       this.dataStore.pages.push(page);
       this._pages.next(Object.assign({}, this.dataStore).pages);
     }
-  }
-
-  updatePage(page: Page) {
-/*     console.log('updatePage');
-    if (!!page) {
-      this.apiService.put(`/page/${page.id}`, page).subscribe((response) => {
-        // Update was successful, update element in local store.
-        this.updatePageStore(page);
-      });
-    } */
   }
 
   private updatePageStore(page: Page) {
@@ -424,15 +434,17 @@ export class ManagePagesService {
    * if the initial grid (2000x2000) is too small a new one is created
    */
   updateGrid() {
-    const gridCanvas = this.getGridCanvas();
-    gridCanvas.setWidth(this.canvas.width);
-    gridCanvas.setHeight(this.canvas.height);
-    if (this.canvas.height < 2000 && this.canvas.width < 2000) {
-      //this.canvas.backgroundColor = null;
-      //this.canvas.renderAll();
-    } else {
-      console.log("creating new grid");
-      this.loadGrid(this.canvas.width,this.canvas.height);
+    if (!!this.dataStore.activePage && !!this.dataStore.activePage.page_data) {
+      const gridCanvas = this.getGridCanvas();
+      gridCanvas.setWidth(this.canvas.width);
+      gridCanvas.setHeight(this.canvas.height);
+      if (this.canvas.height < 2000 && this.canvas.width < 2000) {
+        //this.canvas.backgroundColor = null;
+        //this.canvas.renderAll();
+      } else {
+        console.log("creating new grid");
+        this.loadGrid(this.canvas.width,this.canvas.height);
+      }
     }
   }
 
@@ -508,14 +520,12 @@ export class ManagePagesService {
           break;
 
         case Action.PAGEREMOVED:
-          if (!!parsedObj && !!parsedObj.id) {
-            const pageId = parsedObj.id;
-            if (parsedObj.confirm === "true") {
+          if (!!parsedObj && !!parsedObj.pageId) {
+            const pageId = parsedObj.pageId;
+            if (!!pageId){
               //Remove page
               this.removePageFromStore(pageId);
-            } else {
-              this.notificationService.showError("Another user is working on the page.", "Could not remove page");
-            }
+            }            
           }
           break;
 
@@ -529,6 +539,7 @@ export class ManagePagesService {
         case Action.LOCK:
         case Action.UNLOCK:
         case Action.SELECTIONMODIFIED:
+
           if(parsedObj.userId===this.tokenStorage.getToken()) {
             //console.log("not locking my own lock");
             break;

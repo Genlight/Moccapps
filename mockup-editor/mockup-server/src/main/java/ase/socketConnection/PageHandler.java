@@ -61,9 +61,7 @@ public class PageHandler {
                     ArrayNode objects = ((ArrayNode)pageData.get("objects"));
                     ObjectNode content = objectMapper.readValue(message.getContent(),ObjectNode.class);
                     String objectUuid = content.get("uuid").asText();
-                    logger.error("element: " + lockedElements.get(message.getUser()));
-                    logger.error("uuid   : " + objectUuid);
-                    if(lockedElements.get(message.getUser())!=null && !lockedElements.get(message.getUser()).equals(objectUuid)){
+                    if(lockedElements.get(objectUuid)!=null && !lockedElements.get(objectUuid).equals(message.getUser())){
                         return false;
                     }
                     for(int i = 0; i < objects.size(); i++){
@@ -92,7 +90,7 @@ public class PageHandler {
                 try{
                     ArrayNode objects = ((ArrayNode)pageData.get("objects"));
                     String objectUuid = objectMapper.readValue(message.getContent(),ObjectNode.class).get("uuid").asText();
-                    if(lockedElements.get(message.getUser())!=null && !lockedElements.get(message.getUser()).equals(objectUuid)){
+                    if(lockedElements.get(objectUuid)!=null && !lockedElements.get(objectUuid).equals(message.getUser())){
                         return false;
                     }
                     for(int i = 0; i < objects.size(); i++) {
@@ -113,7 +111,7 @@ public class PageHandler {
             case "element:locked":
                 try {
                     ObjectNode node = objectMapper.readValue(message.getContent(), ObjectNode.class);
-                    lockedElements.put(message.getUser(),node.get("uuid").asText());
+                    lockedElements.put(node.get("uuid").asText(),message.getUser());
                 }catch (IOException e){
                     logger.error("couldn't parse content in element:locked");
                     return false;
@@ -223,7 +221,11 @@ public class PageHandler {
     }
 
     public void unlockElement(String user){
-        lockedElements.remove(user);
+        for(String uuid : lockedElements.keySet()){
+            if(lockedElements.get(uuid).equals(user)){
+                lockedElements.remove(uuid);
+            }
+        }
     }
 
 }
