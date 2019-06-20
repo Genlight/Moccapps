@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="mx">
-    <span class="navbar-brand app-title">MOCAPPS</span>
+    <span class="navbar-brand app-title">COLLUPS</span>
   </div>
 </nav>
 
@@ -9,9 +9,9 @@
   <div class="row my-5">
     <div class="col-8">
       <div class="billboard">
-        <h2>Create mockups with ease</h2>
+        <h2>Collups</h2>
         <blockquote class="blockquote">
-          <p class="mb-0">Blabla text here.</p>
+          <p class="mb-0">Create Mockups with others with ease.</p>
         </blockquote>
       </div>
 
@@ -28,7 +28,7 @@
                 again .
               </div>
 
-              <form #logForm='ngForm' (ngSubmit)="onSubmit(logForm)">
+              <form #logForm='ngForm' (ngSubmit)="onSubmit(logForm,'login')">
                 <div class="form-group">
                   <label for="inputEmail">Email</label>
                   <input name='email' type="email" class="form-control form-control-user" id="loginEmail"
@@ -49,7 +49,7 @@
           </ngb-tab>
           <ngb-tab title='Register'>
             <ng-template ngbTabContent>
-              <form #regForm='ngForm' (ngSubmit)="onSubmit(regForm)">
+              <form #regForm='ngForm' (ngSubmit)="onSubmit(regForm,'register')">
                 <div class="form-group">
                   <label for="inputUsername">Username*</label>
                   <input name='username' type="text" class="form-control form-control-user" id="inputUsername"
