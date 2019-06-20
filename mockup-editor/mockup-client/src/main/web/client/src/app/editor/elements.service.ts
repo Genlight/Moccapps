@@ -40,8 +40,8 @@ export class ElementsService {
     this._userElementList = this._userElementList.concat(element);
     this.userElements.next(this._userElementList);
     //add element to canvas
-    const canvas = this.managePagesService.getCanvas();
-    this.modifyService.loadImageFromURL(canvas,element.data);
+    //const canvas = this.managePagesService.getCanvas();
+    //this.modifyService.loadImageFromURL(canvas,element.data);
     this.notificationService.showSuccess("Import of Image successful",element.name +" imported");
   }
 
