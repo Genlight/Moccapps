@@ -446,10 +446,14 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     if(selectedObj) {
       if(selectedObj.type === 'activeSelection') {
         selectedObj.getObjects().forEach( (current) => {
-          sendArray.push(current);
-        })
+          current.clone((o) => {
+            sendArray.push(current);
+          });
+        });
       } else {
-        sendArray.push(selectedObj);
+        selectedObj.clone((o) => {
+          sendArray.push(o);
+        });
       }
     }
     if(action === Action.LOCK) this.undoRedoService.setCurrentlyModifiedObject(sendArray);

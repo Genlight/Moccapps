@@ -69,20 +69,19 @@ export class UndoRedoService {
     if (this.isReplaying) {
       return;
     }
-    const canvas = this.managepageService.getCanvas();
-
 
 
     // previous state
     let _this = this;
-    const prevList = [];
+    let prevList = [];
     if(action!==Action.ADDED) {
       //add doesn't have a previous state
       //if(this.state){
-      this.forEachObject(objects, (obj) => {
+      /*this.forEachObject(objects, (obj) => {
                 
         obj.clone( (o) => { prevList.push(o); } );
-      })/*}*/;
+      })}*/;
+      prevList = this.currentlyModifiedObject;
     }
     const currentList = [];
     if(action!==Action.REMOVED) {
@@ -105,8 +104,8 @@ export class UndoRedoService {
     // set redoStack to null
     this.redoStack = [];
     this.redoObs.next(false);
-
-    //TODO: replace the below code with an "disable listeners" maybe
+ 
+    this.undoObs.next(true);
 
     //console.log('show me the stack: '+JSON.stringify(this.undoStack));
     // initial call won't have a state
@@ -163,9 +162,6 @@ export class UndoRedoService {
         //this is necessary to reliably render all changes of the object
         current.setCoords()
 
-      // TODO: this should be changed, for a cleaner seperation of concerns
-      //move socket connection (maybe) to manage pages, reduce single dependencies and
-      // "all over the place" sends.
         _this.managepageService.sendMessageToSocket(current, Action.MODIFIED);
       });
     }
