@@ -120,6 +120,8 @@ export class CustomizepanelComponent implements OnInit {
 
       'object:added': (event) => {
         //this.sendMessageToSocket(JSON.stringify(event.transform.target),'added');
+        console.log('object added..........');
+        console.log(event.target);
       },
       'object:moving': (event) => { },
       'selection:created': (event) => {
