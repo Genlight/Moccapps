@@ -39,7 +39,6 @@ import { UsercirclePipe } from './shared/pipes/usercircle.pipe';
 import { PageListItemComponent } from './editor/toolbar-pages/page-list-item/page-list-item.component';
 import { CommentComponent } from './editor/comment/comment.component';
 import { CommentBarComponent } from './editor/comment-bar/comment-bar.component';
-import { PageDeleteModalComponent } from './editor/toolbar-pages/page-delete-modal/page-delete-modal.component';
 
 
 library.add(faBars);
@@ -73,8 +72,7 @@ library.add(faEllipsisV);
     UsercirclePipe,
     PageListItemComponent,
     CommentComponent,
-    CommentBarComponent,
-    PageDeleteModalComponent
+    CommentBarComponent
   ],
   imports: [
     BrowserModule,
