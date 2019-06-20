@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS projectVersions
   id           INTEGER DEFAULT nextval('seq_project_version') PRIMARY KEY,
   version_name VARCHAR(100) NOT NULL,
   project_id      INTEGER NOT NULL,
+  last_modified DATE,
   FOREIGN KEY (project_id) REFERENCES projects (id)  ON DELETE CASCADE
 );
 

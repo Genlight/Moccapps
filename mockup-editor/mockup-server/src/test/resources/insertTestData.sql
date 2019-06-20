@@ -7,7 +7,7 @@ INSERT INTO projects(id,project_name,last_modified) VALUES
     (2,'project2','2010-01-31');
 
 
-INSERT INTO projectVersions(id,version_name,project_id) VALUES (1,'testTag1',1);
+INSERT INTO projectVersions(id,version_name,project_id,last_modified) VALUES (1,'testTag1',1,'2019-01-01');
 
 
 INSERT INTO pageVersions(id,page_name,page_height,page_width, page_order, page_data, projectVersions_id)

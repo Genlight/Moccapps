@@ -141,15 +141,15 @@ public class TestData {
         commentEntry2=new CommentEntry(COMMENTENTRY_2_ID,COMMENTENTRY_2_MESSAGE,COMMENTENTRY_2_USERID,COMMENTENTRY_2_DATE,COMMENTENTRY_2_COMMENTID);
         comment2.setCommentObjects(new ArrayList<>(Arrays.asList(COMMENT_2_OBJECT)));
 
-        createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_HEIGHT,PAGE_1_WIDTH,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA,new ArrayList<>(Arrays.asList(createdComment1)));
+        createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_HEIGHT,PAGE_1_WIDTH,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA);
         createdPage2=new Page(2,PAGE_2_NAME,PAGE_2_HEIGHT,PAGE_2_WIDTH,PAGE_2_ORDER,PAGE_2_PROJECT_ID,PAGE_2_PAGE_DATA);
-        page3=new Page(PAGE_3_NAME,PAGE_3_HEIGHT,PAGE_3_WIDTH,PAGE_3_ORDER,PAGE_3_PROJECT_ID,PAGE_3_PAGE_DATA,new ArrayList());
+        page3=new Page(PAGE_3_NAME,PAGE_3_HEIGHT,PAGE_3_WIDTH,PAGE_3_ORDER,PAGE_3_PROJECT_ID,PAGE_3_PAGE_DATA);
 
         createdInvitation1 = new Invitation(1,1,1,2,-1);
         invitation2 = new Invitation(2,2,1,-1);
 
-        projectVersion2 = new ProjectVersion(PROJECTVERSION_2_TAG,createdProject2.getId());
-        createdProjectVersion1 = new ProjectVersion(1,PROJECTVERSION_1_TAG,createdProject1.getId());
+        projectVersion2 = new ProjectVersion(PROJECTVERSION_2_TAG,createdProject2.getId(),java.sql.Date.valueOf( "2010-01-31" ));
+        createdProjectVersion1 = new ProjectVersion(1,PROJECTVERSION_1_TAG,createdProject1.getId(),java.sql.Date.valueOf( "2019-01-01" ));
 
         createdPageVersion1 = new PageVersion(1,createdPage1.getPage_name(),createdPage1.getHeight(),createdPage1.getWidth(),createdPage1.getPage_order(),createdProjectVersion1.getId(),createdPage1.getPage_data());
         pageVersion2 = new PageVersion(createdPage2.getPage_name(),createdPage2.getHeight(),createdPage2.getWidth(),createdPage2.getPage_order(),createdProjectVersion1.getId(),createdPage2.getPage_data());
