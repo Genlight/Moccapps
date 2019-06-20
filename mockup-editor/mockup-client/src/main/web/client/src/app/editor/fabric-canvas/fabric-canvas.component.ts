@@ -513,27 +513,25 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   onAfterRender(event) {
     let selections = this.modifyService.getForeignSelections();
-    let _this = this;
     let currentSelection = this.canvas.getActiveObject();
     selections.forEach((value,key,map) => {
       value.forEach((current)=> {
         if(current === null) return;
         //let temp = _this.getObjectByUUID(current.uuid);
-        console.info('what is with the canvas? ' + JSON.stringify(this.canvas));
-        console.info('foreignly selected object: '+JSON.stringify(current));
-        let temp = current;
+        //console.log('foreignly selected object: '+JSON.stringify(current));
+        let temp = this.cloneMemberofGroup(current,currentSelection);
 
-        if(currentSelection&&currentSelection.type == 'activeSelection') {
+        /*if(currentSelection&&currentSelection.type == 'activeSelection') {
           
           let selectedObjects = currentSelection.getObjects();
             if(selectedObjects.find((o) => o.uuid == current.uuid)) {
               current.clone((clone) => {
                 FabricmodifyService.calcExtractFromGroup(clone,currentSelection);
                 temp = clone;
-            })
+            });
           }
-        }
-
+        }*/
+        if(temp === null) temp = current;
         this.canvas.contextContainer.strokeStyle = '#FF0000';
         var bound = temp.getBoundingRect();
         this.canvas.contextContainer.strokeRect(
@@ -544,6 +542,21 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         );
       })
     })
+  }
+
+  cloneMemberofGroup(object:any, group:any) {
+    if(!group || !(group.type === 'activeSelection' || group.type === 'group')) return null;
+    else {
+      let temp;
+      let groupedObjects = group.getObjects();
+      if(groupedObjects.find((o) => o.uuid == object.uuid)) {
+        object.clone((clone) => {
+          FabricmodifyService.calcExtractFromGroup(clone,group);
+          temp = clone;
+        });
+      }
+      return temp;
+    }
   }
 
 }
