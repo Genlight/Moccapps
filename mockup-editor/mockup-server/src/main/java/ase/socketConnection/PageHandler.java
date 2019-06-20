@@ -104,6 +104,7 @@ public class PageHandler {
                         break;
                     }
                     ((ObjectNode)pageData).put("objects",objects);
+                    page.setPage_data(pageData.toString());
                     return true;
                 }catch (IOException e){
                     logger.error("couldn't parse content in element:removed");
