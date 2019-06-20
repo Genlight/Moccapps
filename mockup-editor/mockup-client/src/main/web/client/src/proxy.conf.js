@@ -18,7 +18,7 @@ const PROXY_CONFIG = [
       ],
       target: "http://localhost:8090",
       secure: false,
-      ws: false
+      ws: true
   }
 ]
 
