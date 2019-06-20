@@ -74,9 +74,8 @@ export class CreateProjectModalComponent implements OnInit {
         let responseProject = (res as Project);
         if (!!responseProject) {
           // Create intitial page of project.
+          this.pagesService.addPageWithREST(responseProject, null, this.project.height, this.project.width);
           this.projectService.setActiveProject(responseProject);
-
-          this.pagesService.addPageWithREST(null, this.project.height, this.project.width, responseProject);
           this.modal.close();
           this.router.navigate(['editor']);
         }

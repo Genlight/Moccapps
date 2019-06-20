@@ -30,11 +30,13 @@ export class SocketConnectionService {
     const socket = new SockJS(API_URL+'/connect');
     this.stompClient = Stomp.over(socket);
     const _this = this;
-    this.stompClient.connect({}, function (frame) {
+    this.stompClient.connect({}, (frame) => {
       _this.stompClient.subscribe('/user/' + userId + '/queue/send', function (message) {
         callback.bind(that)(JSON.parse(message.body,/*_this.logMessage*/));
       });
       console.log('Connected: ' + frame);
+
+      //Load page
     });
   }
 

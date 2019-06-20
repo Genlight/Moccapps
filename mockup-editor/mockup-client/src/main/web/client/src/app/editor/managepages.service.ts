@@ -209,8 +209,8 @@ export class ManagePagesService {
 
           // If exists, set the first page as active  REMOVED: !!this.dataStore.activePage.height
           if (isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
-            const firstPage = this.dataStore.pages[0];
-            this.setPageActive(firstPage);
+            //const firstPage = this.dataStore.pages[0];
+            //this.setPageActive(firstPage);
             this.loadGrid(2000,2000);
           }
         },
@@ -253,7 +253,7 @@ export class ManagePagesService {
    * @param height height in px
    * @param width width in px
    */
-  addPageWithREST(name?: string, height: number = 600, width: number = 900, project: Project) {
+  addPageWithREST(project: Project, name?: string, height: number = 600, width: number = 900) {
     console.log('addPage');
     let pageName = name;
     if (!name) {
@@ -272,6 +272,8 @@ export class ManagePagesService {
     this.apiService.post(`/page`, requestPage).subscribe(
       response => {
         console.log('HTTP response', response);
+        let page = (response as Page);
+        this.addPageToStore(page);
       }
     );
   }
@@ -511,14 +513,12 @@ export class ManagePagesService {
           break;
 
         case Action.PAGEREMOVED:
-          if (!!parsedObj && !!parsedObj.id) {
-            const pageId = parsedObj.id;
-            if (parsedObj.confirm === "true") {
+          if (!!parsedObj && !!parsedObj.pageId) {
+            const pageId = parsedObj.pageId;
+            if (!!pageId){
               //Remove page
               this.removePageFromStore(pageId);
-            } else {
-              this.notificationService.showError("Another user is working on the page.", "Could not remove page");
-            }
+            }            
           }
           break;
 
