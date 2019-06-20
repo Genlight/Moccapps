@@ -79,9 +79,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     });
 
     this.pagesService.activePage.subscribe((page) => {
-      if (!!this.activePage) {
-        this.modifyService.clearAll(this.canvas);
-      }
       this.activePage = page;
       if (!!page) {
         this.loadPage(this.activePage);
@@ -107,7 +104,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
     this.modifyService.newForeignSelections();
   }
-
+  
   onAddRulerLineH() {
     let div = document.createElement('div');
     div.className = 'rulerHLine rulerLine';
@@ -143,7 +140,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   storeRulers() {
-
+    
   }
 
   loadRulers() {
@@ -245,21 +242,21 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   private loadPage(page: Page) {
     if (!!page) {
+      this.modifyService.clearAll(this.canvas);
       this.modifyService.setHeight(this.canvas, page.height);
       this.modifyService.setWidth(this.canvas, page.width);
-      console.log(`loadPage, page: ${JSON.stringify(page)}`);
+      console.log(`loadPage with data: ${page.page_data}`);
       if (!!page.page_data) {
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
-        console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
-      } else {
-        console.error('loadPage: page_data is undefined');
-      }
-    }
-    //this.pagesService.loadGrid(2000,2000);
-    this.pagesService.updateGrid();
+            //this.pagesService.loadGrid(2000,2000);
+        this.pagesService.updateGrid();
 
-    // saving initial State
-    this.undoRedoService.saveInitialState();
+        // saving initial State
+        this.undoRedoService.saveInitialState();
+      }
+      console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
+    }
+
   }
 
   onCreatePage() {
@@ -431,7 +428,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       //the object needs to be available again regardless of whether or not it was a remote access.
       //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
       transObject.sendMe = true;
-
+      
   }
 
   statelessTransfer(evt, action:string) {
@@ -451,7 +448,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     sendArray.forEach((current) => {
       _this.pagesService.sendMessageToSocket(current,action);
     })
-
+    
   }
   forEachTransformedObj(evt, next) {
     const transObject = evt.target;
@@ -503,7 +500,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     selections.forEach((value,key,map) => {
       value.forEach((current)=> {
         if(current === null) return;
-        console.info('foreignly selectec object: '+JSON.stringify(current));
+        console.log('foreignly selectec object: '+JSON.stringify(current));
         this.canvas.contextContainer.strokeStyle = '#FF0000';
         var bound = current.getBoundingRect();
         this.canvas.contextContainer.strokeRect(

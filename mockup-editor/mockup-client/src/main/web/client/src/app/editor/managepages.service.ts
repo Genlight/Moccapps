@@ -93,19 +93,21 @@ export class ManagePagesService {
    * so a grid in the backgound-canvas can be seen if active
    */
   createGridCanvas() {
-    // needed, because on load, there des not exist a canvas
-    if (typeof this.canvas === 'undefined') {
-      this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
-    }
-    this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
-      evented: false,
-      height:	this.dataStore.activePage.height,
-      width: this.dataStore.activePage.width,
-      backgroundColor: '#ffffff'
-     });
-    this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
-    //this.canvas.backgroundColor = null;
-    this.canvas.renderAll();
+ 
+      // needed, because on load, there des not exist a canvas
+      if (typeof this.canvas === 'undefined') {
+        this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
+      }
+      this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
+        evented: false,
+        height:	this.dataStore.activePage.height,
+        width: this.dataStore.activePage.width,
+        backgroundColor: '#ffffff'
+       });
+      this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
+      //this.canvas.backgroundColor = null;
+      this.canvas.renderAll();
+    
   }
 
   /**
@@ -132,11 +134,11 @@ export class ManagePagesService {
       // Set page data from rest api to null
       page.page_data = null;
       this.dataStore.activePage = page;
-      this._activePage.next(Object.assign({}, this.dataStore.activePage));
+      //this._activePage.next(Object.assign({}, this.dataStore.activePage));
 
       //this is pretty ugly, but would need rework of multiple components otherwise
       this.disconnectSocket();
-      this.connectToSocket(this._activeProject.id,this._activePage.getValue().id);
+      this.connectToSocket(this.dataStore.activePage.id,this.dataStore.activePage.id);
 
       this.isLoadingPage.next(true);
       //Load page by socket
@@ -211,7 +213,7 @@ export class ManagePagesService {
           if (isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
             //const firstPage = this.dataStore.pages[0];
             //this.setPageActive(firstPage);
-            this.loadGrid(2000,2000);
+            //this.loadGrid(2000,2000);
           }
         },
         ((error) => {
@@ -240,6 +242,12 @@ export class ManagePagesService {
           currentPage.page_data = pageData;
           this.dataStore.activePage = currentPage;
           this._activePage.next(Object.assign({}, currentPage));
+          setTimeout(
+            () => {
+              this.loadGrid(2000,2000);
+            },
+            500
+          );
         }
       }
     } else {
@@ -429,15 +437,17 @@ export class ManagePagesService {
    * if the initial grid (2000x2000) is too small a new one is created
    */
   updateGrid() {
-    const gridCanvas = this.getGridCanvas();
-    gridCanvas.setWidth(this.canvas.width);
-    gridCanvas.setHeight(this.canvas.height);
-    if (this.canvas.height < 2000 && this.canvas.width < 2000) {
-      //this.canvas.backgroundColor = null;
-      //this.canvas.renderAll();
-    } else {
-      console.log("creating new grid");
-      this.loadGrid(this.canvas.width,this.canvas.height);
+    if (!!this.dataStore.activePage && !!this.dataStore.activePage.page_data) {
+      const gridCanvas = this.getGridCanvas();
+      gridCanvas.setWidth(this.canvas.width);
+      gridCanvas.setHeight(this.canvas.height);
+      if (this.canvas.height < 2000 && this.canvas.width < 2000) {
+        //this.canvas.backgroundColor = null;
+        //this.canvas.renderAll();
+      } else {
+        console.log("creating new grid");
+        this.loadGrid(this.canvas.width,this.canvas.height);
+      }
     }
   }
 
@@ -532,6 +542,7 @@ export class ManagePagesService {
         case Action.LOCK:
         case Action.UNLOCK:
         case Action.SELECTIONMODIFIED:
+
           if(parsedObj.userId===this.tokenStorage.getToken()) {
             //console.log("not locking my own lock");
             break;
