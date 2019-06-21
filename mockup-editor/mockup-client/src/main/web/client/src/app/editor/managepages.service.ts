@@ -121,11 +121,6 @@ export class ManagePagesService {
     console.log('setPageActive');
     if (!!page) {
       // Persist workspace of old workspace
- /*      let oldPage = Object.assign({}, this.dataStore.activePage);
-      oldPage.page_data = this.exportToJson(this.canvas);
-      console.log(`setPageActive: saving old page: ${JSON.stringify(oldPage)}`);
-      this.updatePage(oldPage); */
-
       // If grid was active on the former active page, it will be disabled
       if (!!this.dataStore.activePage && this._isGridEnabled) {
         this.workspaceService.hideGrid();
@@ -144,9 +139,16 @@ export class ManagePagesService {
 
       this.isLoadingPage.next(true);
       //Load page by socket
-      setTimeout(() => {
-        this.loadPageBySocket(page.id);
-      }, 3000);
+      // Try to send loadpage command to server. if socket is not ready after 3s. try again in 3s.
+      try {
+        setTimeout(() => {
+          this.loadPageBySocket(page.id);
+        }, 3000);
+      } catch (e) {
+        setTimeout(() => {
+          this.loadPageBySocket(page.id);
+        }, 3000);
+      }
     }
   }
 
@@ -213,7 +215,9 @@ export class ManagePagesService {
 
           // If exists, set the first page as active  REMOVED: !!this.dataStore.activePage.height
           if (isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
-            //const firstPage = this.dataStore.pages[0];
+            const firstPage = this.dataStore.pages[0];
+            //alert('autoload' + firstPage.id);
+            this.setPageActive(firstPage);
             //this.setPageActive(firstPage);
             //this.loadGrid(2000,2000);
           }

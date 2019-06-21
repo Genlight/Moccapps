@@ -26,7 +26,7 @@ export class FabricmodifyService {
   }
 
   loadFromJSON(canvas: any, json: string) {
-    console.log(`loadFromJSON: object count: ${canvas.objects.length}`);
+    console.log(`loadFromJSON: object count: ${((canvas || {}).objects || {}).length}`);
     canvas.loadFromJSON(json, () => {
       canvas.renderAll();
     });
