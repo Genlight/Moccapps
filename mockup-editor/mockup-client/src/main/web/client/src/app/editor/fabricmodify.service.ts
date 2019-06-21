@@ -14,11 +14,7 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
-<<<<<<< HEAD
   private foreignSelections:Map<string,[any]>;
-=======
-  private foreignSelections: Map<string, [Object]>;
->>>>>>> devel
 
   constructor(private groupService: ManageGroupsService) {
     this.newForeignSelections();
@@ -305,7 +301,6 @@ export class FabricmodifyService {
           old['selectable'] = false;
         }
       }
-<<<<<<< HEAD
       else if(message.command === Action.UNLOCK) {
         
         if(old) {
@@ -316,16 +311,6 @@ export class FabricmodifyService {
       else if(message.command === Action.SELECTIONMODIFIED) {
         if(!old) {
           this.foreignSelections.set(parsedObj.userId,[null])
-=======
-      else if (message.command === Action.UNLOCK) {
-
-        old['evented'] = true;
-        old['selectable'] = true;
-      }
-      else if (message.command === Action.SELECTIONMODIFIED) {
-        if (!old) {
-          this.foreignSelections.set(parsedObj.userId, [null])
->>>>>>> devel
         } else {
           this.foreignSelections.get(parsedObj.userId).push(old);
         }
@@ -351,17 +336,6 @@ export class FabricmodifyService {
 
                 if (positionInCurrentSelection !== -1) {
 
-<<<<<<< HEAD
-          let keys = Object.keys(parsedObj);
-          keys.forEach(function (key) {
-            //console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${old[key]}`)
-            old[key] = parsedObj[key];
-          });
-          old.sendMe = true;
-          if (selectionChange) {
-            FabricmodifyService.calcInsertIntoGroup(old, activeSelection);
-          }
-=======
                   selectionChange = true;
                   FabricmodifyService.calcExtractFromGroup(old, activeSelection);
 
@@ -384,7 +358,6 @@ export class FabricmodifyService {
               old.setCoords();
             })
           })
->>>>>>> devel
 
         }
       }
