@@ -417,7 +417,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
             //console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
           })
         });
-        
+
+        if(action === Action.REMOVED) this.undoRedoService.setCurrentlyModifiedObject(undoArray);
         this.undoRedoService.save(undoArray,action);
         //fancy canvas magic to ensure the selection behaves properly
         var newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
@@ -429,11 +430,12 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       } else {
         sendArray.push(transObject);
         this.pagesService.sendMessageToSocket(transObject,action);
+        
+        if(action === Action.REMOVED) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
         this.undoRedoService.save(sendArray,action);
       }
       
       //delete does not necessary have a preceeding 'before:transform'
-      if(action === Action.REMOVED) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
       //if(newSelection) this.canvas.setActiveObject(newSelection);
 
     }
@@ -549,11 +551,19 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       })
     })
   }
-
-  cloneMemberofGroup(object:any, group:any) {
+  /**
+   * Clones an object from a group and modifies it so its position is relativ to the canvas
+   * origin again. Returns null if the object is null, group is not a valid group, or if
+   * the provided object was not a member of the provided group.
+   * @param object object to clone
+   * @param group group the object belongs to
+   * @returns the clone of the object of the group, or null 
+   * 
+   */
+  cloneMemberofGroup(object:any, group:any):any {
     if(!group || !(group.type === 'activeSelection' || group.type === 'group')) return null;
     else {
-      let temp;
+      let temp = null;
       let groupedObjects = group.getObjects();
       if(groupedObjects.find((o) => o.uuid == object.uuid)) {
         object.clone((clone) => {

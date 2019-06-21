@@ -14,7 +14,7 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
-  private foreignSelections:Map<string,[Object]>;
+  private foreignSelections:Map<string,[any]>;
 
   constructor( private groupService: ManageGroupsService ) { 
     this.newForeignSelections();
@@ -295,13 +295,17 @@ export class FabricmodifyService {
       } 
       else if (message.command === Action.LOCK) {
 
-        old['evented'] = false;
-        old['selectable'] = false;
+        if(old) {
+          old['evented'] = false;
+          old['selectable'] = false;
+        }
       }
       else if(message.command === Action.UNLOCK) {
         
-        old['evented'] = true;
-        old['selectable'] = true;
+        if(old) {
+          old['evented'] = true;
+          old['selectable'] = true;
+        }
       }   
       else if(message.command === Action.SELECTIONMODIFIED) {
         if(!old) {
@@ -335,7 +339,7 @@ export class FabricmodifyService {
 
           let keys = Object.keys(parsedObj);
           keys.forEach(function (key) {
-            //console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
+            //console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${old[key]}`)
             old[key] = parsedObj[key];
           });
           old.sendMe = true;
