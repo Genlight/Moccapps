@@ -118,8 +118,14 @@ public class PageHandler {
                 }
                 return true;
             case "element:unlocked":
-                unlockElement(message.getUser());
-                return true;
+                try {
+                    ObjectNode node = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    lockedElements.entrySet().removeIf(e -> e.getKey().equals(node.get("uuid").toString()));
+                    return true;
+                } catch (IOException e) {
+                    logger.error("couldn't parse content in element:unlocked");
+                    return false;
+                }
             case "page:modified":{
                 try {
                     ObjectNode content = objectMapper.readValue(message.getContent(),ObjectNode.class);
@@ -221,11 +227,6 @@ public class PageHandler {
     }
 
     public void unlockElement(String user){
-        for(String uuid : lockedElements.keySet()){
-            if(lockedElements.get(uuid).equals(user)){
-                lockedElements.remove(uuid);
-            }
-        }
+        lockedElements.entrySet().removeIf(e -> e.getValue().equals(user));
     }
-
 }
