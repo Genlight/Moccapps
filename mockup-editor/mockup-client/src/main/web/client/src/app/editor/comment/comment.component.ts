@@ -35,7 +35,8 @@ export class CommentComponent implements OnInit {
     this.initialEntry = this.comment.entries[0];
     this.currentUser = this.storageService.getUserInfo();
     this.newEntry = {
-      author:  this.currentUser,
+      email:  this.currentUser.email,
+      username:  this.currentUser.username,
       message: '',
       date: new Date(),
       id: this.comment.entries.length
@@ -49,7 +50,8 @@ export class CommentComponent implements OnInit {
   onCreateEntry() {
     this.newEntry.id++;
     this.comment.entries.push({
-      author:  this.currentUser,
+      email:  this.currentUser.email,
+      username:  this.currentUser.username,
       message: this.newEntry.message,
       date: new Date(),
       id: this.comment.entries.length,

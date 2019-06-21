@@ -53,7 +53,7 @@ export class SocketConnectionService {
       var deflateString = pako.deflate(json,{ to: 'string' });
       var base64 = btoa(deflateString);
       this.stompClient.send('/app/send', {},  base64);
-      //console.log('send: ' + base64);
+      console.log('send: ' + json);
     }
   }
 

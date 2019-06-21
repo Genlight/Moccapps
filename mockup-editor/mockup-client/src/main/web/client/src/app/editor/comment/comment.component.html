@@ -15,7 +15,7 @@
                     line-height: 20px;
                     margin-top: 0;
                     font-family: Arial;">
-          <mark>{{entry.author.username }}</mark>
+          <mark>{{entry.username }}</mark>
         </div>
         <div class=".text-muted" style="align-self: stretch;">
           {{entry.date | date :'short' }}
@@ -26,7 +26,7 @@
       Resolve
       </button>
       </div>
-      <div *ngIf="entry.author.email===currentUser.email">
+      <!--<div *ngIf="entry.author.email===currentUser.email">
         <div class="display: inline-block;" ngbDropdown>
           <div role="button" class="btn btn-sm" data-toggle="dropdown" ngbDropdownToggle>
              <fa-icon [icon]="faEllipsisV"></fa-icon>
@@ -41,7 +41,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </div>-->
     </div>
     <div *ngIf="!entry.isEditing">{{entry.message}}</div>
     <div *ngIf="entry.isEditing">

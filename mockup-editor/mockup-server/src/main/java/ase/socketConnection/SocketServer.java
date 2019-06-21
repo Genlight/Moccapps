@@ -1,8 +1,10 @@
 package ase.socketConnection;
 
 import ase.message.socket.SocketMessage;
+import ase.service.CommentService;
 import ase.service.PageService;
 import ase.service.ProjectVersionService;
+import ase.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.micrometer.core.instrument.util.IOUtils;
@@ -46,6 +48,12 @@ public class SocketServer {
 
     @Autowired
     private PageService pageService;
+
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private ProjectVersionService projectVersionService;
@@ -116,7 +124,7 @@ public class SocketServer {
             String pageIdString = message.getPageId();
             int pageId = Integer.parseInt(pageIdString);
 
-            PageHandler pageHandler = new PageHandler(message.getProjectId(), pageId, pageService);
+            PageHandler pageHandler = new PageHandler(message.getProjectId(), pageId, pageService,commentService,userService);
             pageHandlerMap.put(pageIdString, pageHandler);
             UserHandler handler = currentUser.get(message.getUser());
 

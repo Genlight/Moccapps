@@ -12,6 +12,9 @@ import { TokenStorageService } from '../auth/token-storage.service';
 import { ManagePagesService } from './managepages.service';
 import { SocketConnectionService } from '../socketConnection/socket-connection.service';
 import { UUID } from 'angular2-uuid';
+import {ApiService} from "../api.service";
+import {isArray} from "util";
+import {GroupPage} from "../shared/models/Group";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +23,7 @@ export class CommentService {
   // test
   testcount;
   // actual active Page, get Comments from there
-  activePage: Observable<Page>;
+  activePage: Page;
   commentSubject: BehaviorSubject<Comment[]>;
   comments: Comment[];
   // needed for buttons
@@ -28,7 +31,8 @@ export class CommentService {
   constructor(
     private storageService: TokenStorageService,
     private pageService: ManagePagesService,
-    private socketService: SocketConnectionService
+    private socketService: SocketConnectionService,
+    private apiService: ApiService
   ) {
     this.testcount = false;
     this.commentSubject = new BehaviorSubject<Comment[]>([]);
@@ -38,12 +42,20 @@ export class CommentService {
     );
     this.addingComment = new BehaviorSubject<boolean>(false);
     console.log('CommentService init');
+    this.pageService.activePage.subscribe((page) => {
+      this.activePage = page;
+    });
   }
   /**
    * for testing comments, will be deleted after persistening of comments
    * @return  Observable<Comment[]>
    */
   getComments(): Observable<Comment[]> {
+    console.log("getComments called:"+`/page/${this.activePage.id}/comments`);
+    return this.apiService.get<Comment[]>(`/page/${this.activePage.id}/comments`);
+  }
+
+  /*getComments(): Observable<Comment[]> {
     const com = {
       objectUuid: ['hjlk'],
       isCleared: false,
@@ -94,7 +106,7 @@ export class CommentService {
       this.commentSubject.next([com2]);
     }
     return this.commentSubject.asObservable();
-  }
+  }*/
 
   createNewEntry( comment: Comment, newEntry: CommentEntry) {
     const content = {
@@ -123,7 +135,8 @@ export class CommentService {
       }
     }
     const entry = {
-      author,
+      email:this.storageService.getUserInfo().email,
+      username:this.storageService.getUserInfo().username,
       message,
       date: new Date(),
       id: 0,
@@ -258,6 +271,21 @@ export class CommentService {
    * testbutton action, to check whether getcomment works
    */
   testgetComments() {
-    this.getComments();
+    this.getComments().subscribe(
+      (data) => {
+        console.log("Got commtents");
+        if (Array.isArray(data)) {
+          this.comments = data;
+          console.log("Got commtents is array:"+(data as Comment[]));
+          data.forEach(function (value) {
+            console.log(value);
+            console.log((value as Comment));
+          });
+        } else {
+          this.comments = [data];
+          console.log("Got commtents:"+data);
+        }
+      }
+    );
   }
 }

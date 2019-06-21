@@ -1,27 +1,41 @@
 package ase.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.sql.Date;
+import java.sql.Timestamp;
 
 public class CommentEntry{
+    @JsonIgnore
     private int id;
+    @JsonProperty("id")
+    private int order;
+    @JsonProperty("message")
     private String message;
-    private int user_id;
-    private Date date;
+    @JsonIgnore
+    private User user;
+    private String email;
+    private String username;
+    @JsonProperty("date")
+    private Timestamp date;
+    @JsonIgnore
     private int commentId;
 
-    public CommentEntry(int id, String message, int user_id, Date date,int commentId) {
+    public CommentEntry(int id, String message, User user, Timestamp date, int commentId, int order) {
         this.id = id;
         this.message = message;
-        this.user_id = user_id;
+        this.user = user;
         this.date = date;
         this.commentId=commentId;
+        this.order = order;
     }
 
-    public CommentEntry(String message, int user_id, Date date) {
+    public CommentEntry(String message, User user, Timestamp date,int order) {
         this.message = message;
-        this.user_id = user_id;
+        this.user = user;
         this.date = date;
-        this.commentId=commentId;
+        this.order = order;
     }
 
     public CommentEntry() {
@@ -43,19 +57,19 @@ public class CommentEntry{
         this.message = message;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
@@ -67,6 +81,30 @@ public class CommentEntry{
         this.commentId = commentId;
     }
 
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    public String getEmail() {
+        return user.getEmail();
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+        return user.getUsername();
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,17 +113,19 @@ public class CommentEntry{
         CommentEntry that = (CommentEntry) o;
 
         if (id != that.id) return false;
-        if (user_id != that.user_id) return false;
+        if (order != that.order) return false;
         if (commentId != that.commentId) return false;
         if (message != null ? !message.equals(that.message) : that.message != null) return false;
+        if (user != null ? !user.equals(that.user) : that.user != null) return false;
         return date != null ? date.equals(that.date) : that.date == null;
     }
 
     @Override
     public int hashCode() {
         int result = id;
+        result = 31 * result + order;
         result = 31 * result + (message != null ? message.hashCode() : 0);
-        result = 31 * result + user_id;
+        result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + commentId;
         return result;
@@ -95,8 +135,9 @@ public class CommentEntry{
     public String toString() {
         return "CommentEntry{" +
                 "id=" + id +
+                ", order=" + order +
                 ", message='" + message + '\'' +
-                ", user_id=" + user_id +
+                ", user_id=" + user +
                 ", date=" + date +
                 ", commentId=" + commentId +
                 '}';

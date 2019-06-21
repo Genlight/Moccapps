@@ -9,7 +9,11 @@ export class Comment {
 }
 
 export class CommentEntry {
-  author: User;
+  //author: User;
+  email: string;
+  username: string;
+  //name:string;
+
   message: string;
   id: number;
   date: Date;

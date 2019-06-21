@@ -1,8 +1,12 @@
 package ase.socketConnection;
 
+import ase.DTO.Comment;
+import ase.DTO.CommentEntry;
 import ase.DTO.Page;
 import ase.message.socket.SocketMessage;
+import ase.service.CommentService;
 import ase.service.PageService;
+import ase.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -11,6 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -19,16 +29,20 @@ public class PageHandler {
     private List<String> currentUser;
     private Page page;
     private PageService pageService;
+    private UserService userService;
+    private CommentService commentService;
     private ObjectMapper objectMapper;
     private String projectId;
     private Map<String,String> lockedElements;
 
     private static final Logger logger= LoggerFactory.getLogger(PageHandler.class);
 
-    public PageHandler(String projectId,int pageId, PageService pageService){
+    public PageHandler(String projectId,int pageId, PageService pageService,CommentService commentService,UserService userService){
         currentUser=new ArrayList<>();
         objectMapper=new ObjectMapper();
         this.pageService = pageService;
+        this.commentService = commentService;
+        this.userService = userService;
         page=pageService.getPageById(pageId);
         this.projectId=projectId;
         lockedElements=new HashMap<>();
@@ -163,8 +177,64 @@ public class PageHandler {
                     return false;
                 }
             }
+
+/*            {
+                "comment": {
+                "uuid": "19f4869e-fb2a-3771-1d98-23ab601153f5",
+                        "entries": [
+                {
+                    "author": {
+                    "username": "asd",
+                            "name": "asd",
+                            "email": "asd"
+                },
+                    "message": "cmd",
+                        "date": "2019-06-20T16:27:17.617Z",
+                        "id": 0,
+                        "isEditing": false
+                }
+    ],
+                "isCleared": false,
+                        "objectUuid": [
+
+    ]
+            }
+            }*/
             case "comment:added":
-                break;
+                try {
+                    Comment comment = new Comment();
+                    logger.info("content:"+message.getContent());
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    comment.setCleared(commentNode.get("isCleared").asBoolean());
+                    comment.setUuid(commentNode.get("uuid").asText());
+                    ArrayNode entries = ((ArrayNode)commentNode.get("entries"));
+                    ArrayList<CommentEntry> commentEntries = new ArrayList<>();
+                    for(JsonNode e:entries){
+                        CommentEntry commentEntry = new CommentEntry();
+                        commentEntry.setMessage(e.get("message").asText());
+                        commentEntry.setOrder(e.get("id").asInt());
+                        JsonNode userNode = e.get("author");
+                        commentEntry.setUser(userService.getUserByEmail(userNode.get("email").asText()));
+                        String stri= e.get("date").asText();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                        LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                        commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        commentEntries.add(commentEntry);
+                    }
+                    ArrayNode objects = ((ArrayNode)commentNode.get("objectUuid"));
+                    ArrayList<String> objectStrings = new ArrayList<>();
+                    for(JsonNode e:objects) {
+                        String temp = e.textValue();
+                        objectStrings.add(temp);
+                    }
+                    comment.setCommentEntryList(commentEntries);
+                    comment.setCommentObjects(objectStrings);
+                    comment.setPage_id(page.getId());
+                    commentService.createCommentAndEntry(comment);
+                } catch (IOException e) {
+                    logger.error("couldn't parse content in comment:added");
+                }
             case "comment:modified":
                 break;
             case "comment:cleared":

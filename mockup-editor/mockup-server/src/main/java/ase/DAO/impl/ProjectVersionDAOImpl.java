@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Repository
@@ -59,7 +60,9 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
             rs.close();
 
             List<Page> pages = pageDAO.findPagesForProject(project.getId());
+            pages.sort(Comparator.comparing(Page::getId));
             for(Page p:pages){
+                logger.info("Create Version:"+p.getId());
                 pageVersionDAO.create(p,projectVersion.getId());
             }
 

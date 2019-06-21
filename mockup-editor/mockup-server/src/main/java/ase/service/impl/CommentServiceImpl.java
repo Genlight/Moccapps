@@ -50,6 +50,7 @@ public class CommentServiceImpl implements CommentService {
             List<CommentEntry> commentEntries=new ArrayList<>();
 
             for(CommentEntry e:commentEntry){
+                e.setCommentId(comment.getId());
                 commentEntries.add(commentDAO.createEntry(e));
             }
 

@@ -3,44 +3,37 @@ package ase.DAO.impl;
 import ase.DAO.AbstractDAO;
 import ase.DAO.CommentDAO;
 import ase.DAO.DAOException;
+import ase.DAO.UserDAO;
 import ase.DTO.Comment;
 import ase.DTO.CommentEntry;
+import ase.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
 
-    /*  CREATE TABLE IF NOT EXISTS comments(
-
-    id INTEGER DEFAULT nextval('sql_comment') PRIMARY KEY,
-    message VARCHAR(1000) NOT NULL,
-    user_id INTEGER NOT NULL,
-    page_id INTEGER NOT NULL,
-    date DATE NOT NULL,
-    cleared BOOLEAN,
-    object_id VARCHAR(100) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id)  ON DELETE CASCADE,
-    FOREIGN KEY (page_id) REFERENCES pages (id)  ON DELETE CASCADE
-)*/
+    @Autowired
+    UserDAO userDAO;
 
     private static final Logger logger  = LoggerFactory.getLogger(CommentDAOImpl.class);
+    private static final Calendar currentDt = new GregorianCalendar(TimeZone.getTimeZone("GMT+2"));
 
-    private static final String PSTMT_CREATE = "INSERT INTO comments (page_id,cleared) VALUES (?,?)";
-    private static final String PSTMT_CREATEENTRY = "INSERT INTO comment_entries (message,user_id,comment_id,date) VALUES (?,?,?,?)";
+    private static final String PSTMT_CREATE = "INSERT INTO comments (page_id,cleared,uuid) VALUES (?,?,?)";
+    private static final String PSTMT_CREATEENTRY = "INSERT INTO comment_entries (message,entry_order,user_id,comment_id,date) VALUES (?,?,?,?,?)";
     private static final String PSTMT_CREATEOBJECT = "INSERT INTO comment_objects (comment_id,object_id) VALUES (?,?)";
 
 
     private static final String PSTMT_UPDATE = "UPDATE comments SET page_id=?,cleared=? WHERE id=?";
-    private static final String PSTMT_UPDATEENTRY = "UPDATE comment_entries SET message=?, user_id=?, comment_id=?,date=? WHERE id=?";
+    private static final String PSTMT_UPDATEENTRY = "UPDATE comment_entries SET message=?, user_id=?, comment_id=?,date=?,entry_order = ? WHERE id=?";
     private static final String PSTMT_UPDATEOBJECT = "UPDATE comment_objects SET comment_id=?, object_id=? WHERE id=?";
 
     private static final String PSTMT_DELETE = "DELETE FROM comments WHERE id=?";
@@ -68,9 +61,11 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
 
         try{
             getConnection();
+            logger.info("comment:"+comment.toString());
             pstmt=connection.prepareStatement(PSTMT_CREATE, Statement.RETURN_GENERATED_KEYS);
             pstmt.setInt(1, comment.getPage_id());
             pstmt.setBoolean(2,comment.isCleared());
+            pstmt.setString(3,comment.getUuid());
             pstmt.executeUpdate();
 
             ResultSet rs=pstmt.getGeneratedKeys();
@@ -103,12 +98,14 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         }
 
         try{
+            logger.info("createEntry:"+commentEntry.toString());
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_CREATEENTRY, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,commentEntry.getMessage());
-            pstmt.setInt(2, commentEntry.getUser_id());
-            pstmt.setInt(3, commentEntry.getCommentId());
-            pstmt.setDate(4,commentEntry.getDate());
+            pstmt.setInt(2,commentEntry.getOrder());
+            pstmt.setInt(3, commentEntry.getUser().getId());
+            pstmt.setInt(4, commentEntry.getCommentId());
+            pstmt.setTimestamp(5,commentEntry.getDate(),currentDt);
             pstmt.executeUpdate();
 
             ResultSet rs=pstmt.getGeneratedKeys();
@@ -162,10 +159,11 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
             getConnection();
             pstmt=connection.prepareStatement(PSTMT_UPDATEENTRY);
             pstmt.setString(1,commentEntry.getMessage());
-            pstmt.setInt(2, commentEntry.getUser_id());
+            pstmt.setInt(2, commentEntry.getUser().getId());
             pstmt.setInt(3, commentEntry.getCommentId());
-            pstmt.setDate(4,commentEntry.getDate());
+            pstmt.setTimestamp(4,commentEntry.getDate());
             pstmt.setInt(5,commentEntry.getId());
+            pstmt.setInt(6,commentEntry.getOrder());
             pstmt.executeUpdate();
             pstmt.close();
 
@@ -239,6 +237,7 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
                 comment = new Comment(
                         rs.getInt("id"),
                         rs.getInt("page_id"),
+                        rs.getString("uuid"),
                         rs.getBoolean("cleared"));
             }
             rs.close();
@@ -278,10 +277,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
             ResultSet rs=pstmt.executeQuery();
             List<CommentEntry> commentEntryList = new ArrayList<>();
             while (rs.next()) {
-                commentEntryList.add(new CommentEntry(
+                commentEntryList.add(new CommentEntry(rs.getInt("id"),
                         rs.getString("message"),
-                        rs.getInt("user_id"),
-                        rs.getDate("date")));
+                        userDAO.findById(rs.getInt("user_id")),
+                        rs.getTimestamp("date"),
+                        rs.getInt("comment_id"),
+                        rs.getInt("entry_order")));
             }
             rs.close();
             pstmt.close();
