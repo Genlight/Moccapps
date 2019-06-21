@@ -17,7 +17,7 @@
         [class.active]="page.id === (activePage || {}).id"
         [page]="page"
         (pageNameChanged) = "onPageNameChanged($event, page)"
-        (deleteClicked) = "onDeletePage($event)"
+        (deleteClicked) = "onDeletePage(page)"
         >
       </div>
       <!-- <div 
