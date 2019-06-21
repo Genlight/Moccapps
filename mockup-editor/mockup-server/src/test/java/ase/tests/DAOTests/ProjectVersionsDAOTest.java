@@ -30,6 +30,7 @@ public class ProjectVersionsDAOTest extends AbstractDAOTest {
         projectVersion1.setId(2);
         projectVersion1.setProjectId(project.getId());
         projectVersion1.setVersionName(testData.projectVersion2.getVersionName());
+        projectVersion1.setLastModified(testData.createdProject2.getLastModified());
         assertEquals("The returned Project has to be equal to the created one", projectVersion1, createdProject);
      }
 

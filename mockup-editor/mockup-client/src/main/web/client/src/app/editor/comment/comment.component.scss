@@ -1,0 +1,23 @@
+.comment-thread {
+    padding: 12px;
+}
+
+.user-circle {
+    font-size: 11px;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    color: white;
+    background: #1888A3;
+    border-radius: 50%;
+    text-align: center;
+    display: inline-block;
+}
+
+.date {
+    font-size: 12px;
+}
+
+.dropdown-toggle::after{
+    display:none;
+}

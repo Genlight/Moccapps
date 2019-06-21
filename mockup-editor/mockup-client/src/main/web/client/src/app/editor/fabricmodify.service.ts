@@ -16,7 +16,7 @@ export class FabricmodifyService {
   canvas: any;
   private foreignSelections:Map<string,[Object]>;
 
-  constructor( private groupService: ManageGroupsService ) { 
+  constructor( private groupService: ManageGroupsService ) {
     this.newForeignSelections();
   }
 
@@ -26,6 +26,7 @@ export class FabricmodifyService {
   }
 
   loadFromJSON(canvas: any, json: string) {
+    console.log(`loadFromJSON: object count: ${canvas.objects.length}`);
     canvas.loadFromJSON(json, () => {
       canvas.renderAll();
     });
@@ -292,24 +293,24 @@ export class FabricmodifyService {
         if (!old) {
           this.addRemoteObject(parsedObj, canvas);
         }
-      } 
+      }
       else if (message.command === Action.LOCK) {
 
         old['evented'] = false;
         old['selectable'] = false;
       }
       else if(message.command === Action.UNLOCK) {
-        
+
         old['evented'] = true;
         old['selectable'] = true;
-      }   
+      }
       else if(message.command === Action.SELECTIONMODIFIED) {
         if(!old) {
           this.foreignSelections.set(parsedObj.userId,[null])
         } else {
           this.foreignSelections.get(parsedObj.userId).push(old);
         }
-      } 
+      }
       else if (message.command === Action.MODIFIED) {
 
         //fallback to add if no such element exists, can be removed and replaced by error message if desired

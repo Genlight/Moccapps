@@ -4,8 +4,9 @@
  */
 import {Injectable} from '@angular/core';
 import { User } from '../shared/models/User';
+import { Action } from '../shared/models/Transformation';
 import { Observable, of, BehaviorSubject } from 'rxjs';
-import {Comment, CommentEntry } from '../shared/models/comments';
+import {Comment, CommentEntry, CommentAction } from '../shared/models/comments';
 import { Page } from '../shared/models/Page';
 import { TokenStorageService } from '../auth/token-storage.service';
 import { ManagePagesService } from './managepages.service';
@@ -32,19 +33,15 @@ export class CommentService {
     this.testcount = false;
     this.commentSubject = new BehaviorSubject<Comment[]>([]);
     this.comments = [];
-    this.activePage = this.pageService.getActivePage();
-    // this.activePage.subscribe(
-    //   page => {
-    //     if (page.comments) {
-    //       this.commentSubject.next(page.comments); }
-    //     }
-    // );
+    this.pageService.getCommentActionObs().subscribe(
+      (data) => { this.applyCommentAction(data); }
+    );
     this.addingComment = new BehaviorSubject<boolean>(false);
     console.log('CommentService init');
   }
   /**
    * for testing comments, will be deleted after persistening of comments
-   * @return [description]
+   * @return  Observable<Comment[]>
    */
   getComments(): Observable<Comment[]> {
     const com = {
@@ -104,7 +101,7 @@ export class CommentService {
       comment,
       entry: newEntry
     };
-    const command = 'commententry:added';
+    const command = Action.COMMENTENTRYADDED;
     console.log(`${command} | new entry: ${content.entry }`);
     this.socketService.send(JSON.stringify(content), command);
   }
@@ -139,7 +136,7 @@ export class CommentService {
       objectUuid
     };
     const content = {comment};
-    const command = 'comment:added';
+    const command = Action.COMMENTADDED;
     console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
     this.comments.push(comment);
@@ -149,7 +146,7 @@ export class CommentService {
   clearComment(comment: Comment) {
     comment.isCleared = true;
     const content = {comment};
-    const command = 'comment:cleared';
+    const command = Action.COMMENTCLEARED;
     console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
 
@@ -157,7 +154,7 @@ export class CommentService {
 
   updateComment(comment: Comment) {
     const content = {comment};
-    const command = 'comment:modified';
+    const command = Action.COMMENTMODIFIED;
     console.log(`${command} : ${content.comment }`);
     this.socketService.send(JSON.stringify(content), command);
     // this.commentSubject.next(this.comments);
@@ -165,7 +162,7 @@ export class CommentService {
 
   updateCommentEntry(comment: Comment, entry: CommentEntry) {
     const content = {comment, entry};
-    const command = 'commententry:modified';
+    const command = Action.COMMENTENTRYMODIFIED;
     console.log(`${command} : ${content.comment }: ID: ${entry.id}, Entrymessage: '${entry.message}'`);
     this.socketService.send(JSON.stringify(content), command);
     // this.commentSubject.next(this.comments);
@@ -178,7 +175,7 @@ export class CommentService {
    */
   deleteCommentEntry(comment: Comment, entry: CommentEntry) {
     const content = {comment};
-    const command = 'commententry:deleted';
+    const command = Action.COMMENTENTRYDELETED;
     console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
   }
@@ -187,13 +184,13 @@ export class CommentService {
    * @param  comment Commment
    * @return         void
    */
-  deleteComment(comment: Comment) {
-    const content = {comment};
-    const command = 'comment:deleted';
-    console.log(`${command}`);
-    this.removeComment(comment);
-    this.socketService.send(JSON.stringify(content), command);
-  }
+  // deleteComment(comment: Comment) {
+  //   const content = {comment};
+  //   const command = 'comment:deleted';
+  //   console.log(`${command}`);
+  //   this.removeComment(comment);
+  //   this.socketService.send(JSON.stringify(content), command);
+  // }
 
   /**
    * needed for buttons and showing comment tab
@@ -216,7 +213,47 @@ export class CommentService {
     const del = this.comments.findIndex(obj => obj.uuid === comment.uuid);
     this.comments.splice(del, 1);
   }
-
+  /**
+   * applies Changes comming through websocket-connection
+   * @param  comAction CommentAction
+   * @return           void
+   */
+  applyCommentAction(comAction: CommentAction) {
+    if (!comAction) { return; }
+    console.log('applyCommentAction, Action: ' + comAction.action);
+    let comment: Comment;
+    let index;
+    switch (comAction.action) {
+      case Action.COMMENTADDED:
+        this.comments.push(comAction.comment);
+        this.commentSubject.next(this.comments);
+        break;
+      case Action.COMMENTMODIFIED:
+        console.error(`action not implemented. (${comAction.action})`);
+        break;
+      case Action.COMMENTCLEARED:
+        comment = this.comments.find((o) => o.uuid === comAction.comment.uuid);
+        comment.isCleared = true;
+        break;
+      case Action.COMMENTENTRYADDED:
+        comment = this.comments.find((o) => o.uuid === comAction.comment.uuid);
+        comment.entries.push(comAction.entry);
+        this.commentSubject.next(this.comments);
+        break;
+      case Action.COMMENTENTRYDELETED:
+        comment = this.comments.find((o) => o.uuid === comAction.comment.uuid);
+        index = comment.entries.findIndex((o) => o.id === comAction.entry.id);
+        comment.entries.splice(index, 1);
+        this.commentSubject.next(this.comments);
+        break;
+      case Action.COMMENTENTRYMODIFIED:
+        comment = this.comments.find((o) => o.uuid === comAction.comment.uuid);
+        let ent = comment.entries.find((o) => o.id === comAction.entry.id);
+        ent = comAction.entry;
+        this.commentSubject.next(this.comments);
+        break;
+    }
+  }
   /**
    * testbutton action, to check whether getcomment works
    */

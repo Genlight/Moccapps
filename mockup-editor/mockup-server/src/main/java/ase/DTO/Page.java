@@ -1,5 +1,6 @@
 package ase.DTO;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Page {
@@ -11,24 +12,24 @@ public class Page {
     private int project_id;
     private String page_data;
 
-    public Page(int id, String page_name, int height, int width, int page_order, int project_id,String page_data) {
-        this.id=id;
-        this.page_name=page_name;
-        this.height = height;
+    public Page(String page_name, int width, int height, int page_order, int project_id, String page_data) {
+        this.id=-1;
+        this.page_name = page_name;
         this.width = width;
-        this.page_order=page_order;
-        this.project_id=project_id;
-        this.page_data=page_data;
+        this.height = height;
+        this.page_order = page_order;
+        this.project_id = project_id;
+        this.page_data = page_data;
     }
 
-    public Page(String page_name, int height, int width, int page_order, int project_id,String page_data) {
-        this.id=-1;
-        this.page_name=page_name;
-        this.height = height;
+    public Page(int id, String page_name, int width, int height, int page_order, int project_id, String page_data) {
+        this.id = id;
+        this.page_name = page_name;
         this.width = width;
-        this.page_order=page_order;
-        this.project_id=project_id;
-        this.page_data=page_data;
+        this.height = height;
+        this.page_order = page_order;
+        this.project_id = project_id;
+        this.page_data = page_data;
     }
 
     public Page() {
@@ -95,19 +96,28 @@ public class Page {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Page page = (Page) o;
-        return id == page.id &&
-                page_order == page.page_order &&
-                project_id == page.project_id &&
-                width == page.width &&
-                height == page.height &&
-                Objects.equals(page_name, page.page_name) &&
-                Objects.equals(page_data, page.page_data);
+
+        if (id != page.id) return false;
+        if (width != page.width) return false;
+        if (height != page.height) return false;
+        if (page_order != page.page_order) return false;
+        if (project_id != page.project_id) return false;
+        if (page_name != null ? !page_name.equals(page.page_name) : page.page_name != null) return false;
+        return page_data != null ? page_data.equals(page.page_data) : page.page_data == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, page_name, page_order, project_id, width, height, page_data);
+        int result = id;
+        result = 31 * result + (page_name != null ? page_name.hashCode() : 0);
+        result = 31 * result + width;
+        result = 31 * result + height;
+        result = 31 * result + page_order;
+        result = 31 * result + project_id;
+        result = 31 * result + (page_data != null ? page_data.hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -115,10 +125,10 @@ public class Page {
         return "Page{" +
                 "id=" + id +
                 ", page_name='" + page_name + '\'' +
-                ", page_order=" + page_order +
-                ", project_id=" + project_id +
                 ", width=" + width +
                 ", height=" + height +
+                ", page_order=" + page_order +
+                ", project_id=" + project_id +
                 ", page_data='" + page_data + '\'' +
                 '}';
     }

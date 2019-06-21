@@ -80,9 +80,9 @@
     <button [disabled]="redoDisabled" class="btn btn-light ml-1" (click)="onRedo()" disabled>
       <fa-icon [icon]="faRedo"></fa-icon>
     </button>
-    <button class="btn btn-light ml-4" (click)="onAddComment()">
+    <button class="btn btn-light ml-4" [ngClass]="{'btn-dark': showsComment}" (click)="onToggleComments()">
         <fa-icon [icon]="faCommentAlt"></fa-icon>
-        <span class="ml-2 navbar-btn-text">Comments</span>
+        <span class="ml-2 navbar-button-text">Comments</span>
     </button>
   </div>
 
@@ -100,7 +100,7 @@
       </li>
  -->
       <li>
-        <button class="btn btn-light mr-3" (click)="onManageUser()">Invite users</button>
+        <button class="btn btn-light mr-3 navbar-button-text" (click)="onManageUser()">Invite users</button>
       </li>
 
       <!--<li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>-->

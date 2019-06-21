@@ -3,4 +3,4 @@ param(
   [string]$Password
 )
 
-﻿createdb --username=postgres --owner=postgres test password $Password
+﻿createdb.exe -U postgres --owner=postgres -W $Password

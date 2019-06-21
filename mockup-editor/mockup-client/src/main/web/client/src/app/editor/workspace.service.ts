@@ -8,6 +8,7 @@ export class WorkspaceService {
 
   showsRuler: BehaviorSubject<boolean> = new BehaviorSubject(false);
   showsGrid: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  showsComments: BehaviorSubject<boolean> = new BehaviorSubject(true);
   toolbarPanelState: BehaviorSubject<ToolbarPanelState> = new BehaviorSubject(ToolbarPanelState.None);
 
   store: {
@@ -17,7 +18,15 @@ export class WorkspaceService {
   constructor() {
     this.store = {
       toolbarPanelState: ToolbarPanelState.None
-    }
+    };
+  }
+
+  showComments(): void {
+    this.showsComments.next(true);
+  }
+
+  hideComments(): void {
+    this.showsComments.next(false);
   }
 
   showRuler(): void {
