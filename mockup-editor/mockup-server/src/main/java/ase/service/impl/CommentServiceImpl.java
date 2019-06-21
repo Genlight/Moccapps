@@ -112,6 +112,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public Comment findCommentByUUID(String uuid){
+        try {
+            return commentDAO.findByUUID(uuid);
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public List<Comment> findCommentsForPage(int id){
         try {
             return commentDAO.findCommentsForPage(id);

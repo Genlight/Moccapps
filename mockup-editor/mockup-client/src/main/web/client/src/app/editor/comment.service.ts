@@ -55,59 +55,6 @@ export class CommentService {
     return this.apiService.get<Comment[]>(`/page/${this.activePage.id}/comments`);
   }
 
-  /*getComments(): Observable<Comment[]> {
-    const com = {
-      objectUuid: ['hjlk'],
-      isCleared: false,
-      uuid: 'uuidcom',
-      entries: [
-        {
-          author: {
-            name: 'jonny',
-            username: 'jonny trave',
-            email: 'tothinkabout@as.com'
-          },
-          message: 'something went wrong',
-          id: 0,
-          date: new Date(),
-          isEditing: false
-        }]};
-    const com2 = {
-      objectUuid: ['asdf'],
-      isCleared: false,
-      uuid: 'uuidcomment',
-      entries: [
-        {
-          author: {
-            name: 'jonny',
-            username: 'jonny trave',
-            email: 'tothinkabout@as.com'
-          },
-          message: 'hello there',
-          id: 0,
-          date: new Date(),
-          isEditing: false
-        },
-        {
-          author: {
-            name: 'jonny',
-            username: 'jonny trave',
-            email: 'tothinkabout@as.com'
-          },
-          message: 'sa something',
-          id: 0,
-          date: new Date(),
-          isEditing: false
-        }]};
-    this.testcount = !this.testcount;
-    if (this.testcount) {
-      this.commentSubject.next([com]);
-    } else {
-      this.commentSubject.next([com2]);
-    }
-    return this.commentSubject.asObservable();
-  }*/
-
   createNewEntry( comment: Comment, newEntry: CommentEntry) {
     const content = {
       comment,
@@ -165,6 +112,7 @@ export class CommentService {
 
   }
 
+  //
   updateComment(comment: Comment) {
     const content = {comment};
     const command = Action.COMMENTMODIFIED;

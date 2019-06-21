@@ -19,6 +19,7 @@ import java.lang.reflect.Array;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -178,32 +179,10 @@ public class PageHandler {
                 }
             }
 
-/*            {
-                "comment": {
-                "uuid": "19f4869e-fb2a-3771-1d98-23ab601153f5",
-                        "entries": [
-                {
-                    "author": {
-                    "username": "asd",
-                            "name": "asd",
-                            "email": "asd"
-                },
-                    "message": "cmd",
-                        "date": "2019-06-20T16:27:17.617Z",
-                        "id": 0,
-                        "isEditing": false
-                }
-    ],
-                "isCleared": false,
-                        "objectUuid": [
-
-    ]
-            }
-            }*/
             case "comment:added":
                 try {
+                    logger.info("comment:added:content:"+message.getContent());
                     Comment comment = new Comment();
-                    logger.info("content:"+message.getContent());
                     ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
                     JsonNode commentNode = content.get("comment");
                     comment.setCleared(commentNode.get("isCleared").asBoolean());
@@ -214,12 +193,16 @@ public class PageHandler {
                         CommentEntry commentEntry = new CommentEntry();
                         commentEntry.setMessage(e.get("message").asText());
                         commentEntry.setOrder(e.get("id").asInt());
-                        JsonNode userNode = e.get("author");
-                        commentEntry.setUser(userService.getUserByEmail(userNode.get("email").asText()));
+                        commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
                         String stri= e.get("date").asText();
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                        LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
-                        commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        if(stri.length()<14){ //date sometimes in epoch ms
+                            commentEntry.setDate(Timestamp.from(Instant.ofEpochMilli(Long.parseLong(stri))));
+                        }
+                        else{
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                            commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        }
                         commentEntries.add(commentEntry);
                     }
                     ArrayNode objects = ((ArrayNode)commentNode.get("objectUuid"));
@@ -236,15 +219,151 @@ public class PageHandler {
                     logger.error("couldn't parse content in comment:added");
                 }
             case "comment:modified":
+                logger.info("comment:modified:content:"+message.getContent());
+                //Command is unnecessary,can't change page or uuid and isCleared has separate cmd
                 break;
             case "comment:cleared":
-                break;
+                logger.info("comment:cleared:content:"+message.getContent());
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+                    comment.setCleared(commentNode.get("isCleared").asBoolean());
+                    commentService.updateComment(comment);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             case "commententry:added":
-                break;
+                logger.info("commententry:added:content:"+message.getContent());
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+
+                    ArrayNode entries = ((ArrayNode)commentNode.get("entries"));
+                    ArrayList<CommentEntry> commentEntries = new ArrayList<>();
+                    for(JsonNode e:entries){
+                        CommentEntry commentEntry = new CommentEntry();
+                        commentEntry.setMessage(e.get("message").asText());
+                        commentEntry.setOrder(e.get("id").asInt());
+                        commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
+                        String stri= e.get("date").asText();
+                        if(stri.length()<14){ //date sometimes in epoch ms
+                            commentEntry.setDate(Timestamp.from(Instant.ofEpochMilli(Long.parseLong(stri))));
+                        }
+                        else{
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                            commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        }
+
+                        commentEntry.setCommentId(comment.getId());
+                        if(!comment.getCommentEntryList().contains(commentEntry)){ //maybe works ?
+                            commentEntries.add(commentEntry);
+                        }
+                    }
+                    if(commentEntries.size()>1){
+                        logger.error("COMPARE DOESN'T WORK");
+                    }
+                    else{
+                        for(CommentEntry e:commentEntries){
+                            commentService.createCommentEntry(e);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
             case "commententry:deleted":
-                break;
+                logger.info("commententry:deleted:content:"+message.getContent());
+
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+                    List<CommentEntry> currentCommentEntryList= comment.getCommentEntryList();
+
+                    ArrayNode entries = ((ArrayNode)commentNode.get("entries"));
+                    ArrayList<CommentEntry> newCommentEntries = new ArrayList<>();
+                    for(JsonNode e:entries){
+                        CommentEntry commentEntry = new CommentEntry();
+                        commentEntry.setMessage(e.get("message").asText());
+                        commentEntry.setOrder(e.get("id").asInt());
+                        commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
+                        String stri= e.get("date").asText();
+                        if(stri.length()<14){ //date sometimes in epoch ms
+                            commentEntry.setDate(Timestamp.from(Instant.ofEpochMilli(Long.parseLong(stri))));
+                        }
+                        else{
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                            commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        }
+                        commentEntry.setCommentId(comment.getId());
+                        newCommentEntries.add(commentEntry);
+                    }
+
+                    for(CommentEntry e:currentCommentEntryList){
+                        if(!newCommentEntries.contains(e)){
+                            logger.info("Removing CommentEntry:"+e);
+                            commentService.removeCommentEntry(e);
+                            break; //Can be just one per message
+                        }
+                    }
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             case "commententry:modified":
-                break;
+                logger.info("commententry:modified:content:"+message.getContent());
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+                    List<CommentEntry> currentCommentEntryList= comment.getCommentEntryList();
+
+                    ArrayNode entries = ((ArrayNode)commentNode.get("entries"));
+                    ArrayList<CommentEntry> newCommentEntries = new ArrayList<>();
+                    for(JsonNode e:entries){
+                        CommentEntry commentEntry = new CommentEntry();
+                        commentEntry.setMessage(e.get("message").asText());
+                        commentEntry.setOrder(e.get("id").asInt());
+                        commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
+                        String stri= e.get("date").asText();
+                        if(stri.length()<14){ //date sometimes in epoch ms
+                            commentEntry.setDate(Timestamp.from(Instant.ofEpochMilli(Long.parseLong(stri))));
+                        }
+                        else{
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                            commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        }
+                        commentEntry.setCommentId(comment.getId());
+                        newCommentEntries.add(commentEntry);
+                    }
+
+                    for(CommentEntry e:currentCommentEntryList){
+                        if(!newCommentEntries.contains(e)){
+                            logger.info("updating CommentEntry:"+e);
+                            commentService.updateCommentEntry(e);
+                            break; //Can be just one per message
+                        }
+                    }
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
         return true;
     }
