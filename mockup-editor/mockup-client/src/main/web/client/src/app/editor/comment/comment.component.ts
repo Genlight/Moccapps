@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ReflectiveInjector } from '@angular/core';
 import {Comment, CommentEntry, EntryEditing } from '../../shared/models/comments';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../shared/models/User';
 import { TokenStorageService } from '../../auth/token-storage.service';
 import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
@@ -13,6 +13,7 @@ import { CommentService } from '../comment.service';
 export class CommentComponent implements OnInit {
 
   faEllipsisV = faEllipsisV;
+  faPaperplane = faPaperPlane;
 
   initialEntry: CommentEntry;
   newEntry: CommentEntry;

@@ -52,6 +52,7 @@ export class NavbarComponent implements OnInit {
   info: any;
 
   grid: boolean = false;
+  showsComment: boolean = false;
   snapToGrid: boolean = false;
 
   /**
@@ -122,6 +123,18 @@ export class NavbarComponent implements OnInit {
       this.grid = value;
       this.toggleGrid();
     });
+
+    this.workspaceService.showsComments.subscribe((value) => {
+      this.showsComment = value;
+    });
+  }
+
+  onToggleComments() {
+    if (this.showsComment) {
+      this.workspaceService.hideComments();
+    } else {
+      this.workspaceService.showComments();
+    }
   }
 
   onLogout() {
