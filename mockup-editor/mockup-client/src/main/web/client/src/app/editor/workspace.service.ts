@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,24 +7,42 @@ import { BehaviorSubject } from 'rxjs';
 export class WorkspaceService {
 
   showsRuler: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  showsGrid: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  showsComments: BehaviorSubject<boolean> = new BehaviorSubject(true);
   toolbarPanelState: BehaviorSubject<ToolbarPanelState> = new BehaviorSubject(ToolbarPanelState.None);
-  
+
   store: {
-    toolbarPanelState: ToolbarPanelState  
+    toolbarPanelState: ToolbarPanelState
   };
 
-  constructor() { 
+  constructor() {
     this.store = {
       toolbarPanelState: ToolbarPanelState.None
-    }
+    };
+  }
+
+  showComments(): void {
+    this.showsComments.next(true);
+  }
+
+  hideComments(): void {
+    this.showsComments.next(false);
   }
 
   showRuler(): void {
     this.showsRuler.next(true);
-  } 
-  
+  }
+
   hideRuler(): void {
     this.showsRuler.next(false);
+  }
+
+  showGrid(): void {
+    this.showsGrid.next(true);
+  }
+
+  hideGrid(): void {
+    this.showsGrid.next(false);
   }
 
   togglePages(): void {
@@ -46,10 +64,21 @@ export class WorkspaceService {
 
     this.toolbarPanelState.next(this.store.toolbarPanelState);
   }
+
+  toggleGroups(): void {
+    if (this.store.toolbarPanelState === ToolbarPanelState.Groups) {
+      this.store.toolbarPanelState = ToolbarPanelState.None;
+    } else {
+      this.store.toolbarPanelState = ToolbarPanelState.Groups;
+    }
+
+    this.toolbarPanelState.next(this.store.toolbarPanelState);
+  }
 }
 
 export enum ToolbarPanelState {
   None,
   Library,
-  Pages
+  Pages,
+  Groups
 }

@@ -1,5 +1,5 @@
 .toolbarextension {
-    width: 15em;
+    width: 15.5em;
     background-color: #F1F1F1;
     //border-left: 1px solid #CACACA;
     position: fixed;
@@ -19,6 +19,22 @@
     width: 90%;
 }
 
-.referenceImage {
+.separator {
     width: 100%;
+    height: 0px;
+    border: none;
+}
+
+.referenceImage {
+    max-width: 8em;
+    max-height: 7em;
+}
+
+.library-element {
+    font-size: 0.8em;
+    width: 9em;
+    height: 8em;
+    align-content: center;
+    text-align: center;
+    display: inline-block;
 }

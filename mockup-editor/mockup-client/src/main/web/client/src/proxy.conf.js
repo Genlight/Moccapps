@@ -1,6 +1,8 @@
 const PROXY_CONFIG = [
   {
       context: [
+          "/",
+          "/connect",
           "/login",
           "/register",
           "/page",
@@ -11,6 +13,7 @@ const PROXY_CONFIG = [
           "/user",
           "/invite",
           "/invites",
+          "/elements",
           "/logout"
       ],
       target: "http://localhost:8090",

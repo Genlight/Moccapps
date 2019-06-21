@@ -2,9 +2,9 @@
     # this is my own project directory, for you it could be different, change it as needed
     [Parameter()]
     [string]
-    $WorkingDir="$PSScriptRoot"
-    # DB host, default is localhost
-    # [string]$serverIp="localhost"
+    $WorkingDir="$PSScriptRoot",
+    # Drop DB is Default, so if db should be kept, use this switch
+    [switch]$useOldDB
 )
 
 # check if Service is up and running
@@ -17,7 +17,11 @@ if( $pgSrv.Status -ne "Running" ) {
 }
 Push-Location $WorkingDir
 
-mvn -DSERVER_IP=localhost clean install
+# if(-not $useOldDB) {
+#   drobdb -
+# }
+
+mvn clean install
 
 pause
 

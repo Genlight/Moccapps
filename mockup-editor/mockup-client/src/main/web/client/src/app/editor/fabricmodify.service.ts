@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { fabric } from './extendedfabric';
-import { ManagePagesService } from './managepages.service';
+import { Group } from 'fabric';
+import { ManageGroupsService } from './managegroups.service';
 import { Action } from './fabric-canvas/transformation.interface';
+import {ManagePagesService} from "./managepages.service";
 import { socketMessage } from '../socketConnection/socketMessage';
 let savedElements = null;
 
@@ -12,21 +14,10 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
+  private foreignSelections:Map<string,[Object]>;
 
-  constructor(
-    //private managePagesService:ManagePagesService
-  ) { }
-
-  /* groups active elements in given canvas if more than one element is selected */
-  group(canvas: any) {
-    if (!canvas.getActiveObject()) {
-      return;
-    }
-    if (canvas.getActiveObject().type !== 'activeSelection') {
-      return;
-    }
-    canvas.getActiveObject().toGroup();
-    canvas.requestRenderAll();
+  constructor( private groupService: ManageGroupsService ) {
+    this.newForeignSelections();
   }
 
   clearAll(canvas: any) {
@@ -35,6 +26,7 @@ export class FabricmodifyService {
   }
 
   loadFromJSON(canvas: any, json: string) {
+    console.log(`loadFromJSON: object count: ${canvas.objects.length}`);
     canvas.loadFromJSON(json, () => {
       canvas.renderAll();
     });
@@ -58,6 +50,26 @@ export class FabricmodifyService {
     canvas.renderAll();
   }
 
+  /* clears selection in canvas */
+  clearSelection(canvas: any) {
+    canvas.discardActiveObject();
+    canvas.renderAll();
+  }
+
+  /* groups active elements in given canvas if more than one element is selected */
+  group(canvas: any) {
+    if (!canvas.getActiveObject()) {
+      return;
+    }
+    if (canvas.getActiveObject().type !== 'activeSelection') {
+      return;
+    }
+    let temp = canvas.getActiveObject().toGroup();
+    temp.set('dirty',true);
+    temp = (temp as Group);
+    this.groupService.add(temp);
+  }
+
   /* ungroups elements in given canvas if a group of elements is selected */
   ungroup(canvas: any) {
     const activeGrp = canvas.getActiveObject();
@@ -67,8 +79,11 @@ export class FabricmodifyService {
     if (activeGrp.type !== 'group') {
       return;
     }
+    let temp = (activeGrp as Group);
+    this.groupService.remove(temp);
     activeGrp.toActiveSelection();
     canvas.requestRenderAll();
+
   }
 
   /* adds a text label to the given canvas */
@@ -222,24 +237,48 @@ export class FabricmodifyService {
 
     if (message.command === Action.PAGEMODIFIED) {
       let keys = Object.keys(parsedObj);
-      console.log(JSON.stringify(canvas));
+      //console.log(JSON.stringify(canvas));
 
-      let receivedCanvas = new fabric.Canvas('canvas');
-      receivedCanvas.loadFromJSON(transObj, () => {
+      //let receivedCanvas = new fabric.Canvas('canvas');
+      //receivedCanvas.loadFromJSON(transObj, () => {
         //empty callback needed
-      });
-      console.log(JSON.stringify(Object.keys(receivedCanvas)))
+      //});
+      //console.log(JSON.stringify(Object.keys(receivedCanvas)))
+          let _this = this;
 
       keys.forEach(function (key) {
         // we don't want to set objects completly new
         if (key === 'objects') return;
 
+        else if (key === 'index') {
+
+          let index = parsedObj.index
+          //we need to flip the order if we bring objects to front, so we will bring the topmost object to front first.
+          let orderedObjects = index <0 ? parsedObj.objects : parsedObj.objects.reverse();
+          orderedObjects.forEach(function(current) {
+            switch(index) {
+              case 1:
+                canvas.bringForward(_this.getObjectByUUID(current.uuid,canvas));
+                break;
+              case 2:
+                canvas.bringToFront(_this.getObjectByUUID(current.uuid,canvas));
+                break;
+              case -1:
+                  canvas.sendBackwards(_this.getObjectByUUID(current.uuid,canvas));
+                break;
+              case -2:
+                  canvas.sendToBack(_this.getObjectByUUID(current.uuid,canvas));
+                break;
+            }
+          });
+        }
+
         //JSON represenation doesn't match the actual property value in this case, ingenious...
-        if (key === 'background') {
+        /*else if (key === 'backgroundColor') {
           let newKey = 'backgroundColor';
           canvas[newKey] = parsedObj[key];
           console.log(`setting BackroundColour: assigning ${parsedObj[key]} to ${newKey}, old value: ${canvas.backgroundColor}`)
-        } else {
+        }*/ else {
           console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
           canvas[key] = parsedObj[key];
         }
@@ -254,7 +293,25 @@ export class FabricmodifyService {
         if (!old) {
           this.addRemoteObject(parsedObj, canvas);
         }
-      } else if (message.command === Action.MODIFIED) {
+      }
+      else if (message.command === Action.LOCK) {
+
+        old['evented'] = false;
+        old['selectable'] = false;
+      }
+      else if(message.command === Action.UNLOCK) {
+
+        old['evented'] = true;
+        old['selectable'] = true;
+      }
+      else if(message.command === Action.SELECTIONMODIFIED) {
+        if(!old) {
+          this.foreignSelections.set(parsedObj.userId,[null])
+        } else {
+          this.foreignSelections.get(parsedObj.userId).push(old);
+        }
+      }
+      else if (message.command === Action.MODIFIED) {
 
         //fallback to add if no such element exists, can be removed and replaced by error message if desired
         if (old === undefined) {
@@ -298,7 +355,7 @@ export class FabricmodifyService {
           canvas.remove(old);
         }
       }
-      console.log('after parse.');
+      console.log('after parse (applyTransformation).');
     }
     canvas.renderAll();
   }
@@ -308,6 +365,13 @@ export class FabricmodifyService {
     return canvas.getObjects().find((o) => o.uuid === uuid);
   }
 
+  getForeignSelections():Map<string,[any]> {
+    return this.foreignSelections;
+  }
+
+  newForeignSelections() {
+    this.foreignSelections = new Map<string,[any]>();
+  }
   /**
    * This method modifies the values of an object in a way that they are again relative to the
    * canvas and not the provided group. Counterpart of calcInsertIntoGroup. Does not remove the object

@@ -16,12 +16,17 @@ import {AuthLogoutInfo} from '../../../auth/logout-info';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/Project';
 import { UndoRedoService } from '../../services/undo-redo.service';
+import { CreateVersionModalComponent } from '../create-version-modal/create-version-modal.component';
+import { LoadVersionModalComponent } from '../load-version-modal/load-version-modal.component';
 import { WorkspaceService } from 'src/app/editor/workspace.service';
 import save from 'save-file';
 import { Page } from '../../models/Page';
 import * as jsPDF from 'jspdf';
 import { RenameProjectModalComponent } from '../rename-project-modal/rename-project-modal.component';
 import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal.component';
+import { ElementsService } from 'src/app/editor/elements.service';
+import { CommentService } from 'src/app/editor/comment.service';
+import { CreateProjectModalComponent } from 'src/app/projects/create-project-modal/create-project-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -47,6 +52,7 @@ export class NavbarComponent implements OnInit {
   info: any;
 
   grid: boolean = false;
+  showsComment: boolean = false;
   snapToGrid: boolean = false;
 
   /**
@@ -68,6 +74,8 @@ export class NavbarComponent implements OnInit {
 
   activePage: Page = null;
 
+  // needed for adding comment button
+  addingComment;
   constructor(private router: Router, private modifyService: FabricmodifyService, private managePagesService: ManagePagesService,
               private data: DataService,
               private tokenStorage: TokenStorageService,
@@ -75,7 +83,9 @@ export class NavbarComponent implements OnInit {
               private modalService: NgbModal,
               private projectService: ProjectService,
               private undoRedoService: UndoRedoService,
-              private workspaceService: WorkspaceService
+              private workspaceService: WorkspaceService,
+              private elementsService: ElementsService,
+              private commentService: CommentService
           ) { }
 
   ngOnInit() {
@@ -107,6 +117,24 @@ export class NavbarComponent implements OnInit {
     this.workspaceService.showsRuler.subscribe((value) => {
       this.showRuler = value;
     });
+
+    // Handle grid state changes
+    this.workspaceService.showsGrid.subscribe((value) => {
+      this.grid = value;
+      this.toggleGrid();
+    });
+
+    this.workspaceService.showsComments.subscribe((value) => {
+      this.showsComment = value;
+    });
+  }
+
+  onToggleComments() {
+    if (this.showsComment) {
+      this.workspaceService.hideComments();
+    } else {
+      this.workspaceService.showComments();
+    }
   }
 
   onLogout() {
@@ -135,6 +163,13 @@ export class NavbarComponent implements OnInit {
     );
   }
 
+  onExportToJSON() {
+    const canvas = this.managePagesService.getCanvas();
+    const json = this.modifyService.exportToJson(canvas);
+    alert(JSON.stringify(json));
+    console.log('CANVAS JSON: ' + json);
+  }
+
   /**
    * Exports and saves the active page as jpeg.
    */
@@ -147,7 +182,7 @@ export class NavbarComponent implements OnInit {
       await save(imageData, `${this.activePage.page_name}.jpeg`);
     }
   }
-  
+
   /**
    * Exports and saves the active page as png.
    */
@@ -186,6 +221,12 @@ export class NavbarComponent implements OnInit {
 
   onNewProject() {
     // TODO
+    if (!!this.project) {
+      const modelRef = this.modalService.open(CreateProjectModalComponent);
+      //modelRef.componentInstance.project = this.project;
+    } else {
+      console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
+    }
   }
 
   onNewPage() {
@@ -208,14 +249,10 @@ export class NavbarComponent implements OnInit {
     } else {
       return;
     }
-
     if (file.type.match('image/png') || file.type.match('image/jpeg') || file.type.match('image/bmp') || file.type.match('image/svg')) {
-      const canvas = this.managePagesService.getCanvas();
-      const url = window.URL.createObjectURL(file);
-      this.modifyService.loadImageFromURL(canvas,url);
-      window.URL.revokeObjectURL(url);
+      this.elementsService.importImage(file);
     }
-    
+
   }
 
   onExportPNG() {
@@ -223,12 +260,17 @@ export class NavbarComponent implements OnInit {
   }
 
   onSaveVersion() {
-    // TODO
-    alert(this.managePagesService.saveActivePage());
+    if (!!this.project) {
+      const modelRef = this.modalService.open(CreateVersionModalComponent);
+      modelRef.componentInstance.project = this.project;
+    }
   }
 
   onLoadVersion() {
-    // TODO
+    if (!!this.project) {
+      const modelRef = this.modalService.open(LoadVersionModalComponent);
+      modelRef.componentInstance.project = this.project;
+    }
   }
 
   onAllProjects() {
@@ -316,22 +358,34 @@ export class NavbarComponent implements OnInit {
    * the grid itself is always there in the grid-canvas, just hidden by the user-canvas
    */
   onViewGrid() {
-    this.grid = !this.grid;
-    const canvas = this.managePagesService.getCanvas();
-    const gridCanvas = this.managePagesService.getGridCanvas();
+    //this.grid = !this.grid;
     if (this.grid) {
-      canvas.backgroundColor = null;
-      if (this.snapToGrid) {
-        this.enableSnapToGrid(10);
-      }
+      this.workspaceService.hideGrid();
     } else {
-      canvas.backgroundColor = gridCanvas.backgroundColor;
-      if (this.snapToGrid) {
-        this.disableSnapToGrid();
-      }
-
+      this.workspaceService.showGrid();
     }
-    canvas.renderAll();
+  }
+
+  toggleGrid() {
+    if (!!this.activePage) {
+      const canvas = this.managePagesService.getCanvas();
+      const gridCanvas = this.managePagesService.getGridCanvas();
+      if (!!canvas && !!gridCanvas) {
+        if (this.grid) {
+          canvas.backgroundColor = null;
+          if (this.snapToGrid) {
+            this.enableSnapToGrid(10);
+          }
+        } else {
+          canvas.backgroundColor = gridCanvas.backgroundColor;
+          if (this.snapToGrid) {
+            this.disableSnapToGrid();
+          }
+    
+        }
+        canvas.renderAll();
+      }
+    }
   }
 
   /**
@@ -473,5 +527,13 @@ export class NavbarComponent implements OnInit {
       'object:moving': (event) => {},
       'object: scaling': (event) => {}
     });
+  }
+  /**
+   * adding comment,
+   * opening the comment sidebar (if implemented)
+   * @return void
+   */
+  onAddComment() {
+      this.commentService.setAddCommentObs(true);
   }
 }

@@ -41,9 +41,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  onSubmit(logForm: NgForm) {
-    console.log(logForm);
-    if (document.activeElement.id === 'register') {
+  onSubmit(logForm: NgForm, type: string) {
+    if (type === 'register') {
       console.log('register');
 
 
@@ -67,7 +66,7 @@ export class HomeComponent implements OnInit {
         }
       );
 
-    } else if (document.activeElement.id === 'login') {
+    } else if (type === 'login') {
 
       this.loginInfo = new AuthLoginInfo(
         logForm.form.value.email,

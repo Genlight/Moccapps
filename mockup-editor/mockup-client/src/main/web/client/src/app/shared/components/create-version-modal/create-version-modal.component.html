@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <h4 class="modal-title">Save version</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form #projNameForm='ngForm'>
+      <div class="form-group">
+          <label for="projectName">Save a version of the current project:</label>
+          <input 
+            type="text" 
+            id="projectName" 
+            class="form-control"
+            name="project_name"
+            #inputname
+            placeholder="Enter the name of the version"
+            required
+            [(ngModel)]="versionName"
+            />
+          <div class="mt-1" *ngIf="projNameForm.invalid" [ngClass]="{'text-danger': projNameForm.invalid}">Input text must contain at least one chracter.</div>
+        </div>
+  </form>
+</div>
+<div class="modal-footer">  
+  <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Cancel')">Cancel</button>
+  <button type="button" [disabled]="projNameForm.invalid" class="btn btn-primary" (click)="onSaveChange()">Save</button>
+</div>

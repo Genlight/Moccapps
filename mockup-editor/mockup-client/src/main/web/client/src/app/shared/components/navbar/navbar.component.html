@@ -9,7 +9,7 @@
         <li class="dropdown-submenu">
           <button class="dropdown-item dropdown-toggle menucursor">File</button>
           <ul class="dropdown-menu">
-            <button class="btn btn-light menubtn" disabled>New Project</button>
+              <!--<button class="btn btn-light menubtn" disabled>New Project</button>-->
               <button class="btn btn-light menubtn" (click)="onNewPage()">New Page</button>
               <li role="separator" class="divider"></li>
               <label for="file-upload" class="btn btn-light menubtn">
@@ -19,14 +19,15 @@
                 <li class="dropdown-submenu">
                 <button class="btn btn-light menubtn">Export</button>
                 <ul class="dropdown-menu">
+                  <!-- <button class="btn btn-light menubtn" (click)="onExportToJSON()" [disabled]="!activePage">Export to JSON</button> -->
                   <button class="btn btn-light menubtn" (click)="onExportToJPEG()" [disabled]="!activePage">Export to JPEG</button>
                   <button class="btn btn-light menubtn" (click)="onExportToPNG()" [disabled]="!activePage">Export to PNG</button>
                   <button class="btn btn-light menubtn" (click)="onExportToPDF()" [disabled]="!activePage">Export to PDF</button>
                 </ul>
               </li>
               <li role="separator" class="divider"></li>
-              <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version...</button>
-              <button class="btn btn-light menubtn" disabled>Load Version...</button>
+              <button class="btn btn-light menubtn" (click)="onSaveVersion()">Save Version</button>
+              <button class="btn btn-light menubtn" (click)="onLoadVersion()">Load Version</button>
               <li role="separator" class="divider"></li>
               <button class="btn btn-light menubtn" (click)="onAllProjects()">All Projects</button>
             </ul>
@@ -67,7 +68,7 @@
                   <fa-icon [icon]="faCheck" *ngIf="grid"></fa-icon> View Grid</button>
               <button class="btn btn-light menubtn" [disabled]="!grid" (click)="onSnapToGrid()">
                   <fa-icon [icon]="faCheck" *ngIf="snapToGrid"></fa-icon> Snap to Grid</button>
-            
+
             </ul>
           </li>
         <button ngbDropdownItem disabled>Help</button>
@@ -79,9 +80,9 @@
     <button [disabled]="redoDisabled" class="btn btn-light ml-1" (click)="onRedo()" disabled>
       <fa-icon [icon]="faRedo"></fa-icon>
     </button>
-    <button class="btn btn-light ml-4" disabled>
+    <button class="btn btn-light ml-4" [ngClass]="{'btn-dark': showsComment}" (click)="onToggleComments()">
         <fa-icon [icon]="faCommentAlt"></fa-icon>
-        <span class="ml-2 navbar-btn-text">Add Comment</span>
+        <span class="ml-2 navbar-button-text">Comments</span>
     </button>
   </div>
 
@@ -99,7 +100,7 @@
       </li>
  -->
       <li>
-        <button class="btn btn-light mr-3" (click)="onManageUser()">Invite users</button>
+        <button class="btn btn-light mr-3 navbar-button-text" (click)="onManageUser()">Invite users</button>
       </li>
 
       <!--<li class="navbar-item navbar-online-users ml-3 mr-3 my-auto">{{users.length}} Person online</li>-->

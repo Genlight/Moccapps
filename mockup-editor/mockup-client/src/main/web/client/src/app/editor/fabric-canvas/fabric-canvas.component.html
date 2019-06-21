@@ -2,21 +2,46 @@
 <button (click)=onLoadFromLocalStorage()>Load from Local Storage</button> -->
 
 <div class="workspace mt-5">
-    <div class="ruler-horizontal" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
+    <div class="ruler-horizontal noselect" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers || isLoading">
         <svg id="svgH" width="1200" height="30" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
-    <div class="ruler-vertical" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers">
+    <div class="ruler-vertical noselect" [hidden]="!activePage || !pages || pages.length === 0 || !showRulers || isLoading">
         <svg id="svgV" width="30" height="1200" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
+    <div 
+        class="ruler-handle-horizontal" 
+        #horizontalHandler 
+        [hidden]="!showRulers || isLoading"
+        (click)="onAddRulerLineH()"
+        ></div>
+    <div 
+        class="ruler-handle-vertical" 
+        #verticalHandler 
+        [hidden]="!showRulers || isLoading"
+        (click)="onAddRulerLineV()"
+    ></div>
 
-    <div id="canvasWrapper" tabIndex='0' (keydown)="manageKeyboardEvents($event)" dndDropzone
-            [hidden]="!activePage || !pages || pages.length === 0" (dndDrop)="onDrop($event)">
+    <div 
+        #canvasWrapper
+        id="canvasWrapper" 
+        tabIndex='0' 
+        (keydown)="manageKeyboardEvents($event)" 
+        dndDropzone
+        (mouseenter) = "onMouseEnter($event)"
+        (mouseleave) = "onMouseLeave($event)"
+        (mousemove) = "onMouseMove($event, canvasWrapper, horizontalHandler, verticalHandler)"
+            [hidden]="!activePage || !pages || pages.length === 0 || isLoading" (dndDrop)="onDrop($event)">
             <div class="canvas-container">
                 <canvas id="canvas"></canvas>
 				<canvas id="canvasGrid" style="z-index:1;"></canvas>
             </div>
     </div>
 
+    <div class="d-flex justify-content-center" *ngIf="isLoading">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 
     <div class="card" *ngIf="!pages || pages.length === 0">
         <div class="card-body">
@@ -26,7 +51,7 @@
         </div>
     </div>
 
-    <div class="card" *ngIf="pages.length > 0 && !activePage">
+    <div class="card" *ngIf="pages.length > 0 && !activePage && !isLoading">
         <div class="card-body">
             <h5 class="card-title">No page selected.</h5>
             <p class="card-text">Please select a page.</p>

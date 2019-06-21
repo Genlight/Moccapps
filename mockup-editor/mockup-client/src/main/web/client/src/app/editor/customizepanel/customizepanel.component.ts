@@ -25,7 +25,7 @@ export class CustomizepanelComponent implements OnInit {
 
   private canvas: any;
   //this is used for the transmission of canvas height and width, as those do not easily survive transmission in the regular way
-  private DEFAULT_CANVAS: string = "{\"version\":\"2.7.0\",\"objects\":[],\"background\":\"white\"}";
+  private DEFAULT_CANVAS: string = "{\"version\":\"2.7.0\",\"objects\":[]}";
 
   /* variables directly acessed in the html need to be public */
   public selected: any;
@@ -57,6 +57,12 @@ export class CustomizepanelComponent implements OnInit {
     },
     text: ''
   };
+  public groupProperties: any = {
+    fillColor: '#ffffff',
+    strokeColor: '#ffffff',
+    strokeWidth: 10,
+    opacity: 100,
+  };
   public drawingMode: any = {
     color: '#000000',
     stroke: 10,
@@ -70,18 +76,40 @@ export class CustomizepanelComponent implements OnInit {
   invalidHeightRange: boolean = false;
 
   constructor(
-    private modifyService: FabricmodifyService, 
+    private modifyService: FabricmodifyService,
     private undoRedoService: UndoRedoService,
-    private managePagesService: ManagePagesService) { 
-      this.managePagesService.activePage.subscribe(
-        (page) => {
-          this.activePage = page;
+    private managePagesService: ManagePagesService) {
+    this.managePagesService.activePage.subscribe(
+      (page) => {
+        this.activePage = page;
+        //this.onPageChanged();
+      }
+    );
+    this.managePagesService.isLoadingPage.subscribe(
+      (value) => {
+        if (!value) {
+          this.onPageChanged();
         }
-      );
+      }
+    )
   }
 
   ngOnInit() {
     this.setNewPage(this.managePagesService.getCanvas());
+  }
+
+  /**
+   * Do initialization after page change
+   */
+  onPageChanged() {
+    if (!!this.canvas) {
+      // Update backgroundcolor
+      const backgroundColor = this.canvas.backgroundColor;
+      //alert(backgroundColor);
+      this.managePagesService.getGridCanvas().backgroundColor = backgroundColor;
+      this.canvasProperties.backgroundColor = backgroundColor;
+    }
+    //this.setCanvasBackgroundColor();
   }
 
   onDimensionChanged() {
@@ -97,7 +125,7 @@ export class CustomizepanelComponent implements OnInit {
       this.invalidHeightRange = false;
     }
 
-    if (this.activePage.width >= 0 && this.activePage.height >= 0 ) {
+    if (this.activePage.width >= 0 && this.activePage.height >= 0) {
       this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
 
       let defaultCanvas = JSON.parse(this.DEFAULT_CANVAS);
@@ -105,7 +133,7 @@ export class CustomizepanelComponent implements OnInit {
       defaultCanvas[CanvasTransmissionProperty.CHANGEWIDTH] = this.activePage.width;
 
       //TODO: the send works fine but the application of the change is broken due to REST persisting
-      this.managePagesService.sendMessageToSocket(defaultCanvas,Action.PAGEDIMENSIONCHANGE);
+      this.managePagesService.sendMessageToSocket(defaultCanvas, Action.PAGEDIMENSIONCHANGE);
     }
   }
 
@@ -117,9 +145,11 @@ export class CustomizepanelComponent implements OnInit {
   setNewPage(canvas: any) {
     this.canvas = canvas;
     this.canvas.on({
-      
+
       'object:added': (event) => {
         //this.sendMessageToSocket(JSON.stringify(event.transform.target),'added');
+        console.log('object added..........');
+        console.log(event.target);
       },
       'object:moving': (event) => { },
       'selection:created': (event) => {
@@ -140,20 +170,54 @@ export class CustomizepanelComponent implements OnInit {
     });
   }
 
+  /**
+   * loads elment properties based on elment type
+   * @param elem selected elment(s)
+   */
   manageSelection(elem) {
-    if (elem.type === 'activeSelection'|| elem.type === 'group') {
+    if (elem.type === 'activeSelection' || elem.type === 'group') {
       // load properties of all elements if they are the same and otherwise default or only load default properties generally?
-      
-    } else {
-      if (elem.type === 'textbox') {
+      this.loadGroupProperties(elem);
+    } else if (elem.type === 'textbox') {
         this.loadTextProperties(elem);
-      } else if (elem.type === 'circle' || elem.type === 'rect') {
-      this.loadElementProperties(elem);
+      } else if (elem.type === 'image') {
+        // probably add filters here
+      } else { //if (elem.type === 'circle' || elem.type === 'rect') {
+        this.loadElementProperties(elem);
       }
-    }
     this.selected = elem;
   }
 
+  /**
+   * copies properties of a group of elments to a variable
+   * @param group element group to copy properties from
+   */
+  loadGroupProperties(group) {
+    group.forEachObject( (elem) => {
+      const fill = elem.fill;
+      const strokeColor = elem.stroke;
+      const strokeWidth = elem.strokeWidth;
+      const opacity = elem.opacity * 100;
+      if (this.groupProperties.fillColor !== fill) {
+        this.groupProperties.strokeColor = '#ffffff';
+      }
+      if (this.groupProperties.strokeColor !== strokeColor) {
+        this.groupProperties.strokeColor = '#ffffff';
+      }
+      if (this.groupProperties.strokeWidth !== strokeWidth) {
+        this.groupProperties.strokeColor = 0;
+      }
+      if (this.groupProperties.opacity !== opacity) {
+        this.groupProperties.opacity = 100;
+      }
+    });
+    
+  }
+
+  /**
+   * copies properties of a text elment to a variable
+   * @param text text element to copy properties from
+   */
   loadTextProperties(text) {
     this.loadElementProperties(text);
     this.textProperties.fontSize = text.fontSize;
@@ -169,6 +233,10 @@ export class CustomizepanelComponent implements OnInit {
     console.log(this.textProperties);
   }
 
+  /**
+   * copies properties of an elment to a variable
+   * @param elem element to copy properties from
+   */
   loadElementProperties(elem) {
     this.elementProperties.backgroundColor = elem.backgroundColor;
     this.elementProperties.fillColor = elem.fill;
@@ -181,9 +249,14 @@ export class CustomizepanelComponent implements OnInit {
     console.log(this.elementProperties);
   }
 
+  /**
+   * set a property for a single object
+   * @param property property to set
+   * @param value new value of the property
+   */
   setElementProperty(property, value) {
     let currentElem = this.selected;
-    console.log('setproperty:current element '+JSON.stringify(currentElem));
+    console.log('setproperty:current element ' + JSON.stringify(currentElem));
     // we need a clone here so we don't actually change the value locally
     // all properties changed this way are sent to the server first and then applied
     // this way inconsistencies can be avoided
@@ -193,39 +266,94 @@ export class CustomizepanelComponent implements OnInit {
 
     if (currentElem) {
       currentElem.set(property, value);
-      this.undoRedoService.save(currentElem,Action.MODIFIED);
+      this.undoRedoService.save(currentElem, Action.MODIFIED);
     }
     if (currentElem.sendMe) {
-      currentElem.sendMe = false; 
-      this.managePagesService.sendMessageToSocket(currentElem,Action.MODIFIED);
+      currentElem.sendMe = false;
+      this.managePagesService.sendMessageToSocket(currentElem, Action.MODIFIED);
     }
     currentElem.sendMe = true;
     // TODO: disable once server sends messages also to the origin, will be rendered by applyTransformation
     this.canvas.renderAll();
   }
 
+  /**
+   * sets a property for each element in a group
+   * @param property property to set
+   * @param value new value of the property
+   */
+  setGroupProperty(property, value) {
+    this.selected.forEachObject((elem) => {
+      elem.set(property, value);
+    });
+    this.canvas.renderAll();
+  }
+
+  setGroupFillColor() {
+    this.setGroupProperty('fill', this.groupProperties.fillColor);
+  }
+
+  setGroupStrokeColor() {
+    this.setGroupProperty('stroke', this.groupProperties.strokeColor);
+  }
+
+  setGroupStrokeWidth() {
+    this.setGroupProperty('strokeWidth', this.groupProperties.strokeWidth);
+  }
+
+  setGroupOpacity() {
+    this.setGroupProperty('opacity', this.groupProperties.opacity / 100);
+  }
+
   bringToFront() {
-    this.modifyService.bringToFront(this.canvas);
+    //this.modifyService.bringToFront(this.canvas);
+    this.sendCloneAddVirtualIndex(this.canvas.getActiveObject(),2);
   }
 
   bringForward() {
-    this.modifyService.bringForward(this.canvas);
+    //this.modifyService.bringForward(this.canvas);
+    this.sendCloneAddVirtualIndex(this.canvas.getActiveObject(),1);
   }
 
   sendToBack() {
-    this.modifyService.sendToBack(this.canvas);
+    //this.modifyService.sendToBack(this.canvas);
+    this.sendCloneAddVirtualIndex(this.canvas.getActiveObject(),-2);
   }
 
   sendBackwards() {
-    this.modifyService.sendBackwards(this.canvas);
+    //this.modifyService.sendBackwards(this.canvas);
+    this.sendCloneAddVirtualIndex(this.canvas.getActiveObject(),-1);
   }
 
-  setCanvasBackgroundColor() { 
+  private sendCloneAddVirtualIndex(obj, index: number) {
+    let toSend = [];
+    if (obj.type === 'activeSelection') {
+      /*obj.getObjects().forEach(function (current) {
+        current.clone((o) => {
+          o['index'] = index;
+          toSend.push(o);
+        })
+      });*/
+      toSend = obj.getObjects();
+
+    } else {
+      toSend = [obj];
+      /*obj.clone((o) => {
+        o['index'] = index;
+        toSend.push(o);
+      })*/
+    }
+    let changeObject = {'objects':toSend, 'index':index};
+    this.sendCanvas(changeObject,Action.PAGEMODIFIED);
+
+  }
+
+  setCanvasBackgroundColor() {
     //sending change
     //let test = CanvasTransmissionProperty.BACKGROUNDCOLOR
-    let changeObject = {[CanvasTransmissionProperty.BACKGROUNDCOLOR]:this.canvasProperties.backgroundColor};
-    this.sendCanvas(changeObject,Action.PAGEMODIFIED);
- 
+    let changeObject = { [CanvasTransmissionProperty.BACKGROUNDCOLOR]: this.canvasProperties.backgroundColor };
+    this.sendCanvas(changeObject, Action.PAGEMODIFIED);
+
     this.managePagesService.getGridCanvas().backgroundColor = this.canvasProperties.backgroundColor;
     this.managePagesService.getGridCanvas().renderAll();
     if (this.canvas.backgroundColor !== null) {
@@ -254,7 +382,7 @@ export class CustomizepanelComponent implements OnInit {
     this.setElementProperty('strokeWidth', this.elementProperties.strokeWidth);
   }
 
-  setElementMoveLock() { 
+  setElementMoveLock() {
     this.setElementProperty('lockMovementX', this.elementProperties.lockMovement);
     this.setElementProperty('lockMovementY', this.elementProperties.lockMovement);
   }
@@ -277,7 +405,7 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setDrawingModeStyle() {
-      // TODO
+    // TODO
   }
 
   setFontFamily() {
@@ -334,18 +462,18 @@ export class CustomizepanelComponent implements OnInit {
    * creates an empty canvas and appends any property contained in the parameter that should be transmitted, and therefore changed
    * @param propertyObject this object contains all the properties that should be set on the empty canvas
    */
-  private sendCanvas(propertyObject:Object,action:Action) {
+  private sendCanvas(propertyObject: Object, action: Action) {
     let _canvas = this.canvas;
     let _pageService = this.managePagesService;
-
-    _canvas.cloneWithoutData((o)=> {
+    let sendCanvas = JSON.parse(this.DEFAULT_CANVAS);
+    //_canvas.cloneWithoutData((o) => {
       let keys = Object.keys(propertyObject);
-      keys.forEach(function(key) {
-        o[key]=propertyObject[key]
-        console.log('assigning '+propertyObject[key] + ' to ' + key);
+      keys.forEach(function (key) {
+        sendCanvas[key] = propertyObject[key]
+        console.log('assigning ' + JSON.stringify(propertyObject[key]) + ' to ' + key);
       });
-      console.log('canvasToSend: ' + JSON.stringify(o))
-      _pageService.sendMessageToSocket(o,action);
-    });
+      console.log('canvasToSend: ' + JSON.stringify(sendCanvas))
+      _pageService.sendMessageToSocket(sendCanvas, action);
+    //});
   }
 }
