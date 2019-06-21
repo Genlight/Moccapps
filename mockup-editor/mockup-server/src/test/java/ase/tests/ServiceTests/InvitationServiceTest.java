@@ -1,10 +1,11 @@
-package ase.tests;
+package ase.tests.ServiceTests;
 
 import ase.DTO.Invitation;
 import ase.message.request.Invitation.InvitationForm;
 import ase.service.InvitationService;
 import ase.service.impl.InvitationServiceImpl;
 import ase.springboot.Application;
+import ase.tests.TestData;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

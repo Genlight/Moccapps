@@ -4,7 +4,7 @@ import { fabric } from './extendedfabric';
 import { Group } from 'fabric';
 import { ManageGroupsService } from './managegroups.service';
 import { Action } from './fabric-canvas/transformation.interface';
-import {ManagePagesService} from "./managepages.service";
+import { ManagePagesService } from "./managepages.service";
 import { socketMessage } from '../socketConnection/socketMessage';
 let savedElements = null;
 
@@ -14,9 +14,13 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
+<<<<<<< HEAD
   private foreignSelections:Map<string,[any]>;
+=======
+  private foreignSelections: Map<string, [Object]>;
+>>>>>>> devel
 
-  constructor( private groupService: ManageGroupsService ) { 
+  constructor(private groupService: ManageGroupsService) {
     this.newForeignSelections();
   }
 
@@ -26,6 +30,7 @@ export class FabricmodifyService {
   }
 
   loadFromJSON(canvas: any, json: string) {
+    console.log(`loadFromJSON: object count: ${((canvas || {}).objects || {}).length}`);
     canvas.loadFromJSON(json, () => {
       canvas.renderAll();
     });
@@ -64,7 +69,7 @@ export class FabricmodifyService {
       return;
     }
     let temp = canvas.getActiveObject().toGroup();
-    temp.set('dirty',true);
+    temp.set('dirty', true);
     temp = (temp as Group);
     this.groupService.add(temp);
   }
@@ -240,10 +245,10 @@ export class FabricmodifyService {
 
       //let receivedCanvas = new fabric.Canvas('canvas');
       //receivedCanvas.loadFromJSON(transObj, () => {
-        //empty callback needed
+      //empty callback needed
       //});
       //console.log(JSON.stringify(Object.keys(receivedCanvas)))
-          let _this = this;
+      let _this = this;
 
       keys.forEach(function (key) {
         // we don't want to set objects completly new
@@ -253,20 +258,20 @@ export class FabricmodifyService {
 
           let index = parsedObj.index
           //we need to flip the order if we bring objects to front, so we will bring the topmost object to front first.
-          let orderedObjects = index <0 ? parsedObj.objects : parsedObj.objects.reverse();
-          orderedObjects.forEach(function(current) {
-            switch(index) {
+          let orderedObjects = index < 0 ? parsedObj.objects : parsedObj.objects.reverse();
+          orderedObjects.forEach(function (current) {
+            switch (index) {
               case 1:
-                canvas.bringForward(_this.getObjectByUUID(current.uuid,canvas));
+                canvas.bringForward(_this.getObjectByUUID(current.uuid, canvas));
                 break;
               case 2:
-                canvas.bringToFront(_this.getObjectByUUID(current.uuid,canvas));
+                canvas.bringToFront(_this.getObjectByUUID(current.uuid, canvas));
                 break;
               case -1:
-                  canvas.sendBackwards(_this.getObjectByUUID(current.uuid,canvas));
+                canvas.sendBackwards(_this.getObjectByUUID(current.uuid, canvas));
                 break;
               case -2:
-                  canvas.sendToBack(_this.getObjectByUUID(current.uuid,canvas));
+                canvas.sendToBack(_this.getObjectByUUID(current.uuid, canvas));
                 break;
             }
           });
@@ -292,7 +297,7 @@ export class FabricmodifyService {
         if (!old) {
           this.addRemoteObject(parsedObj, canvas);
         }
-      } 
+      }
       else if (message.command === Action.LOCK) {
 
         if(old) {
@@ -300,6 +305,7 @@ export class FabricmodifyService {
           old['selectable'] = false;
         }
       }
+<<<<<<< HEAD
       else if(message.command === Action.UNLOCK) {
         
         if(old) {
@@ -310,33 +316,42 @@ export class FabricmodifyService {
       else if(message.command === Action.SELECTIONMODIFIED) {
         if(!old) {
           this.foreignSelections.set(parsedObj.userId,[null])
+=======
+      else if (message.command === Action.UNLOCK) {
+
+        old['evented'] = true;
+        old['selectable'] = true;
+      }
+      else if (message.command === Action.SELECTIONMODIFIED) {
+        if (!old) {
+          this.foreignSelections.set(parsedObj.userId, [null])
+>>>>>>> devel
         } else {
           this.foreignSelections.get(parsedObj.userId).push(old);
         }
-      } 
+      }
       else if (message.command === Action.MODIFIED) {
 
         //fallback to add if no such element exists, can be removed and replaced by error message if desired
         if (old === undefined) {
           this.addRemoteObject(parsedObj, canvas);
         } else {
-          let selectionChange: boolean = false;
-          let activeSelection = canvas.getActiveObject();
-          let positionInCurrentSelection: number;
-          if (activeSelection && activeSelection.type === 'activeSelection') {
-            let activeSelectionObjects = canvas.getActiveObjects();
+          fabric.util.enlivenObjects([parsedObj], function (objects) {
+            objects.forEach(function (aliveObject) {
 
-            console.log('contains test\nselection: ' + JSON.stringify(activeSelectionObjects) + '\nobject: ' + parsedObj.uuid);
-            console.log('\ncontain result: ' + activeSelectionObjects.indexOf(old));
-            positionInCurrentSelection = activeSelectionObjects.indexOf(old);
+              let selectionChange: boolean = false;
+              let activeSelection = canvas.getActiveObject();
+              let positionInCurrentSelection: number;
+              if (activeSelection && activeSelection.type === 'activeSelection') {
+                let activeSelectionObjects = canvas.getActiveObjects();
 
-            if (positionInCurrentSelection !== -1) {
+                //console.log('contains test\nselection: ' + JSON.stringify(activeSelectionObjects) + '\nobject: ' + parsedObj.uuid);
+                //console.log('\ncontain result: ' + activeSelectionObjects.indexOf(old));
+                positionInCurrentSelection = activeSelectionObjects.indexOf(old);
 
-              selectionChange = true;
-              FabricmodifyService.calcExtractFromGroup(old, activeSelection);
-            }
-          }
+                if (positionInCurrentSelection !== -1) {
 
+<<<<<<< HEAD
           let keys = Object.keys(parsedObj);
           keys.forEach(function (key) {
             //console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${old[key]}`)
@@ -346,9 +361,31 @@ export class FabricmodifyService {
           if (selectionChange) {
             FabricmodifyService.calcInsertIntoGroup(old, activeSelection);
           }
+=======
+                  selectionChange = true;
+                  FabricmodifyService.calcExtractFromGroup(old, activeSelection);
 
-          //this is necessary to reliably render all changes of the object
-          old.setCoords();
+                }
+              }
+
+              let keys = Object.keys(aliveObject);
+
+
+              keys.forEach(function (key) {
+                //console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
+                old.set(key, aliveObject[key]);
+              });
+              old.sendMe = true;
+              if (selectionChange) {
+                FabricmodifyService.calcInsertIntoGroup(old, activeSelection);
+              }
+
+              //this is necessary to reliably render all changes of the object
+              old.setCoords();
+            })
+          })
+>>>>>>> devel
+
         }
       }
       else if (message.command === Action.REMOVED) {
@@ -368,12 +405,12 @@ export class FabricmodifyService {
     return canvas.getObjects().find((o) => o.uuid === uuid);
   }
 
-  getForeignSelections():Map<string,[any]> {
+  getForeignSelections(): Map<string, [any]> {
     return this.foreignSelections;
   }
 
   newForeignSelections() {
-    this.foreignSelections = new Map<string,[any]>();
+    this.foreignSelections = new Map<string, [any]>();
   }
   /**
    * This method modifies the values of an object in a way that they are again relative to the

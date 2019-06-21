@@ -3,7 +3,7 @@ import { fabric } from './extendedfabric';
 import { Page } from '../shared/models/Page';
 import { FabricmodifyService } from './fabricmodify.service';
 import { ApiService } from '../api.service';
-import { BehaviorSubject, Observable, from } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, from } from 'rxjs';
 import { ProjectService } from '../shared/services/project.service';
 import { Project } from '../shared/models/Project';
 import { SocketConnectionService } from '../socketConnection/socket-connection.service';
@@ -12,6 +12,7 @@ import { socketMessage } from '../socketConnection/socketMessage';
 import { Action, CanvasTransmissionProperty } from './fabric-canvas/transformation.interface';
 import { isArray } from 'util';
 import { NotificationService } from '../shared/services/notification.service';
+import { Comment, CommentEntry, CommentAction } from '../shared/models/comments';
 import { OwnedStatelessObject } from '../shared/models/OwnedStatelessObject';
 import { WorkspaceService } from './workspace.service';
 
@@ -38,7 +39,8 @@ export class ManagePagesService {
     pages: Page[],
     activePage: Page
   };
-
+  //
+  commentSubject: BehaviorSubject<CommentAction>;
   constructor(
     private apiService: ApiService,
     private modifyService: FabricmodifyService,
@@ -50,7 +52,7 @@ export class ManagePagesService {
   ) {
     this._pages = new BehaviorSubject<Page[]>([]);
     this._activePage = new BehaviorSubject<Page>(null);
-
+    this.commentSubject = new BehaviorSubject<CommentAction>(null);
     this.dataStore = {
       pages: [],
       activePage: null
@@ -73,16 +75,16 @@ export class ManagePagesService {
 
 
   // TODO: change page size, possibly to relative values
-  createPage( pagewidth: number, pageheight: number) {
+  createPage(pagewidth: number, pageheight: number) {
     console.log('createPage');
     let canvas = new fabric.Canvas('canvas',
-    {
-      backgroundColor: '#ffffff',
-      preserveObjectStacking: true,
-      width: pagewidth,
-      height: pageheight,
-      cssOnly: true
-    });
+      {
+        backgroundColor: '#ffffff',
+        preserveObjectStacking: true,
+        width: pagewidth,
+        height: pageheight,
+        cssOnly: true
+      });
 
     this.canvas = canvas;
   }
@@ -93,21 +95,21 @@ export class ManagePagesService {
    * so a grid in the backgound-canvas can be seen if active
    */
   createGridCanvas() {
- 
-      // needed, because on load, there des not exist a canvas
-      if (typeof this.canvas === 'undefined') {
-        this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
-      }
-      this.gridCanvas = new fabric.StaticCanvas('canvasGrid',{
-        evented: false,
-        height:	this.dataStore.activePage.height,
-        width: this.dataStore.activePage.width,
-        backgroundColor: '#ffffff'
-       });
-      this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
-      //this.canvas.backgroundColor = null;
-      this.canvas.renderAll();
-    
+
+    // needed, because on load, there des not exist a canvas
+    if (typeof this.canvas === 'undefined') {
+      this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
+    }
+    this.gridCanvas = new fabric.StaticCanvas('canvasGrid', {
+      evented: false,
+      height: this.dataStore.activePage.height,
+      width: this.dataStore.activePage.width,
+      backgroundColor: '#ffffff'
+    });
+    this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
+    //this.canvas.backgroundColor = null;
+    this.canvas.renderAll();
+
   }
 
   /**
@@ -119,11 +121,6 @@ export class ManagePagesService {
     console.log('setPageActive');
     if (!!page) {
       // Persist workspace of old workspace
- /*      let oldPage = Object.assign({}, this.dataStore.activePage);
-      oldPage.page_data = this.exportToJson(this.canvas);
-      console.log(`setPageActive: saving old page: ${JSON.stringify(oldPage)}`);
-      this.updatePage(oldPage); */
-
       // If grid was active on the former active page, it will be disabled
       if (!!this.dataStore.activePage && this._isGridEnabled) {
         this.workspaceService.hideGrid();
@@ -144,9 +141,16 @@ export class ManagePagesService {
 
       this.isLoadingPage.next(true);
       //Load page by socket
-      setTimeout(() => {
-        this.loadPageBySocket(page.id);
-      }, 3000);
+      // Try to send loadpage command to server. if socket is not ready after 3s. try again in 3s.
+      try {
+        setTimeout(() => {
+          this.loadPageBySocket(page.id);
+        }, 3000);
+      } catch (e) {
+        setTimeout(() => {
+          this.loadPageBySocket(page.id);
+        }, 3000);
+      }
     }
   }
 
@@ -184,7 +188,7 @@ export class ManagePagesService {
    * Saves the current state of the canvas to the given page object.
    * @param page the page in which the canvas string should be saved to.
    */
-  private saveCanvasDataToPage(page: Page): Page {
+  private saveCanvasDataToPage(page: Page): Page {
     if (!!page) {
       page.page_data = this.exportToJson(this.canvas);
     }
@@ -196,9 +200,9 @@ export class ManagePagesService {
    * REST
    */
 
-   /**
-    * Loads all pages from the current project and saves them to the store if successful.
-    */
+  /**
+   * Loads all pages from the current project and saves them to the store if successful.
+   */
   loadAll() {
     console.log('loadAll');
     if (!!this._activeProject) {
@@ -207,13 +211,15 @@ export class ManagePagesService {
           let pages = (data as Page[]);
 
           // Ensure page order by sorting ids ascending
-          pages.sort((a,b) => (a.id - b.id));
+          pages.sort((a, b) => (a.id - b.id));
           (this.dataStore.pages) = (data as Page[]);
           this._pages.next(Object.assign({}, this.dataStore).pages);
 
           // If exists, set the first page as active  REMOVED: !!this.dataStore.activePage.height
           if (isArray(this.dataStore.pages) && this.dataStore.pages.length > 0) {
-            //const firstPage = this.dataStore.pages[0];
+            const firstPage = this.dataStore.pages[0];
+            //alert('autoload' + firstPage.id);
+            this.setPageActive(firstPage);
             //this.setPageActive(firstPage);
             //this.loadGrid(2000,2000);
           }
@@ -231,7 +237,7 @@ export class ManagePagesService {
    */
   loadPageBySocket(id: number) {
     if (!!id) {
-      this.sendMessageToSocket( { pageId: id} , Action.PAGELOAD);
+      this.sendMessageToSocket({ pageId: id }, Action.PAGELOAD);
     }
   }
 
@@ -244,7 +250,7 @@ export class ManagePagesService {
           currentPage.page_data = pageData;
           this.dataStore.activePage = currentPage;
           this._activePage.next(Object.assign({}, currentPage));
-          this.loadGrid(2000,2000);
+          this.loadGrid(2000, 2000);
         }
       }
     } else {
@@ -345,7 +351,7 @@ export class ManagePagesService {
     }
   }
 
-  renamePageStore(pageId: number, pageName: string) {
+  renamePageStore(pageId: number, pageName: string) {
     this.dataStore.pages.forEach((p, i) => {
       if (p.id === pageId) {
         let page = this.dataStore.pages[i];
@@ -362,16 +368,22 @@ export class ManagePagesService {
   removePage(page: Page) {
     console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
-      this.sendMessageToSocket({ pageId: page.id}, Action.PAGEREMOVED);
+      this.sendMessageToSocket({
+        pageId: page.id,
+        pageName: page.page_name
+      }, Action.PAGEREMOVED);
+
       this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
           console.log('HTTP response', response);
           this.removePageFromStore(page.id);
         },
-        error => {
-          alert(error);
+        (error) => {
+          console.error(error);
+          this.removePageFromStore(page.id);
+          //alert(error);
         }
-      ); 
+      );
     }
   }
 
@@ -384,11 +396,10 @@ export class ManagePagesService {
     // If deleted page is currently active, set it to inactive
     if (this.dataStore.activePage.id === pageId) {
       this.clearActivePage();
-    }
-    else if (this.dataStore.pages.length <= 0) {
+    } else if (this.dataStore.pages.length <= 0) {
       this.clearActivePage();
     }
-    // Remove page if server returns http ok.
+
     this._pages.next(Object.assign({}, this.dataStore).pages);
   }
 
@@ -400,26 +411,26 @@ export class ManagePagesService {
   loadGrid(maxWidth: number, maxHeight: number) {
     const c = this.getGridCanvas();
     const options = {
-        distance: 10,
-        width: maxWidth,
-        height: maxHeight,
-        param: {
-          stroke: '#ebebeb',
-          strokeWidth: 1,
-          selectable: false,
-          evented: false,
-          opacity: 0.6
-        }
+      distance: 10,
+      width: maxWidth,
+      height: maxHeight,
+      param: {
+        stroke: '#ebebeb',
+        strokeWidth: 1,
+        selectable: false,
+        evented: false,
+        opacity: 0.6
+      }
     };
     const gridLen = options.width / options.distance;
 
     for (var i = 0; i < gridLen; i++) {
       const distance = i * options.distance;
-      const horizontal = new fabric.Line([ distance, 0, distance, options.width], options.param);
-      const vertical   = new fabric.Line([ 0, distance, options.width, distance], options.param);
-      if( i % 5 === 0) {
-        horizontal.set({stroke: '#cccccc'});
-        vertical.set({stroke: '#cccccc'});
+      const horizontal = new fabric.Line([distance, 0, distance, options.width], options.param);
+      const vertical = new fabric.Line([0, distance, options.width, distance], options.param);
+      if (i % 5 === 0) {
+        horizontal.set({ stroke: '#cccccc' });
+        vertical.set({ stroke: '#cccccc' });
       }
       c.add(horizontal);
       c.add(vertical);
@@ -443,7 +454,7 @@ export class ManagePagesService {
         //this.canvas.renderAll();
       } else {
         console.log("creating new grid");
-        this.loadGrid(this.canvas.width,this.canvas.height);
+        this.loadGrid(this.canvas.width, this.canvas.height);
       }
     }
   }
@@ -453,12 +464,12 @@ export class ManagePagesService {
     return this.canvas;
   }
 
-  exportToJson(canvas:any):string{
+  exportToJson(canvas: any): string {
     return JSON.stringify(canvas);
   }
 
   //TODO: this screams "refactor me properly please"
-  relayChange(message:socketMessage) {
+  relayChange(message: socketMessage) {
     this.handleChange(message);
   }
 
@@ -471,7 +482,7 @@ export class ManagePagesService {
         case Action.PAGELOAD:
           console.log(`pageload. ${JSON.stringify(parsedObj)}`);
           if (!!parsedObj) {
-               this.loadPageDataStore(this.dataStore.activePage.id, JSON.stringify(parsedObj));
+            this.loadPageDataStore(this.dataStore.activePage.id, JSON.stringify(parsedObj));
           } else {
             console.error(`page load: received invalid data over socket connection, ParsedObject: ${!!parsedObj}
                 \n pageid: ${parsedObj.pageId} | pageData : ${parsedObj.pageData}`);
@@ -488,18 +499,18 @@ export class ManagePagesService {
           break;
 
         case Action.PAGEMODIFIED:
-          if(parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]) {
-          console.log("backgroundcolor changed to " + parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]);
-          //always set the grid canvas color
-          this.gridCanvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
-          //only set the "actual" color if it is enabled
-          if (this.canvas.backgroundColor !== null) {
-            this.canvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
-            this.canvas.renderAll();
-          }
-        } else if (parsedObj[CanvasTransmissionProperty.INDEX]) {
+          if (parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]) {
+            console.log("backgroundcolor changed to " + parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]);
+            //always set the grid canvas color
+            this.gridCanvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
+            //only set the "actual" color if it is enabled
+            if (this.canvas.backgroundColor !== null) {
+              this.canvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
+              this.canvas.renderAll();
+            }
+          } else if (parsedObj[CanvasTransmissionProperty.INDEX]) {
             this.modifyService.applyTransformation.bind(this.modifyService)(message, this.canvas);
-        }
+          }
           break;
 
         case Action.PAGECREATED:
@@ -520,12 +531,13 @@ export class ManagePagesService {
           break;
 
         case Action.PAGEREMOVED:
+          alert('Page removed received');
           if (!!parsedObj && !!parsedObj.pageId) {
             const pageId = parsedObj.pageId;
-            if (!!pageId){
+            if (!!pageId) {
               //Remove page
               this.removePageFromStore(pageId);
-            }            
+            }
           }
           break;
 
@@ -535,17 +547,39 @@ export class ManagePagesService {
             this.renamePageStore(parsedObj.pageId, parsedObj.pageName);
           }
           break;
-        
+        case Action.COMMENTADDED:
+        case Action.COMMENTMODIFIED:
+        case Action.COMMENTCLEARED:
+          if (!!parsedObj.comment) {
+            this.commentSubject.next({ action: message.command, comment: parsedObj.comment });
+          } else {
+            console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment})`);
+          }
+          break;
+        case Action.COMMENTENTRYADDED:
+        case Action.COMMENTENTRYDELETED:
+        case Action.COMMENTENTRYMODIFIED:
+          if (!!parsedObj.comment && !!parsedObj.entry) {
+            this.commentSubject.next({
+              action: message.command,
+              comment: parsedObj.comment,
+              entry: parsedObj.entry
+            });
+          } else {
+            console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment}, entry: ${parsedObj.entry})`);
+          }
+          break;
+        // if nothing matched, the call is further delegated to actually apply transformations
         case Action.LOCK:
         case Action.UNLOCK:
         case Action.SELECTIONMODIFIED:
 
-          if(parsedObj.userId===this.tokenStorage.getToken()) {
+          if (parsedObj.userId === this.tokenStorage.getToken()) {
             //console.log("not locking my own lock");
             break;
           }
-          //no break -> sliding into default is INTENTIONAL, if it is not my lock actions need
-          //to be taken in the canvas. Bad practice, I know.
+        //no break -> sliding into default is INTENTIONAL, if it is not my lock actions need
+        //to be taken in the canvas. Bad practice, I know.
 
         //if nothing matched, the call is further delegated to actually apply transformations
         default:
@@ -557,25 +591,25 @@ export class ManagePagesService {
 
   //Socket methods
 
-  connectToSocket(projectId:number,pageId:number){
+  connectToSocket(projectId: number, pageId: number) {
     //TODO: type mismatch, why?
-    this.socketService.connect(projectId.toString(),pageId.toString(),this.tokenStorage.getToken(),this.relayChange,this);
+    this.socketService.connect(projectId.toString(), pageId.toString(), this.tokenStorage.getToken(), this.relayChange, this);
   }
-  sendMessageToSocket(object: any, command: string){
+  sendMessageToSocket(object: any, command: string) {
     let send = object;
-    if(command === Action.LOCK || command === Action.SELECTIONMODIFIED || command === Action.UNLOCK) {
+    if (command === Action.LOCK || command === Action.SELECTIONMODIFIED || command === Action.UNLOCK) {
       send = new OwnedStatelessObject();
       send.userId = this.tokenStorage.getToken();
-      if(object) {
+      if (object) {
         console.log(`lock/select test, object uuid: ${object.uuid}`)
         send.uuid = object.uuid;
       }
       //object ? send.uuid = object.uuid : null;
     }
-    this.socketService.send(JSON.stringify(send),command);
+    this.socketService.send(JSON.stringify(send), command);
   }
 
-  disconnectSocket(){
+  disconnectSocket() {
     this.socketService.disconnect();
   }
 
@@ -595,10 +629,10 @@ export class ManagePagesService {
   }
   /**
    * author: alexander Genser
-   * returns activePage, needed for CommentService
-   * @return Observable<Page>
+   * returns CommentAction Observable, needed for CommentService
+   * @return Observable<CommentAction>
    */
-  getActivePage(): Observable<Page> {
-      return this._activePage.asObservable();
+  getCommentActionObs(): Observable<CommentAction> {
+    return this.commentSubject.asObservable();
   }
 }

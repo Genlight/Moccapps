@@ -1,9 +1,10 @@
-package ase.tests;
+package ase.tests.ServiceTests;
 
 import ase.DTO.Project;
 import ase.service.ProjectService;
 import ase.service.impl.ProjectServiceImpl;
 import ase.springboot.Application;
+import ase.tests.TestData;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

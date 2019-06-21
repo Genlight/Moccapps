@@ -1,4 +1,5 @@
 import { User } from './User';
+import { Action } from './Transformation';
 
 export class Comment {
     objectUuid?: string[];
@@ -18,4 +19,10 @@ export class CommentEntry {
 export class EntryEditing {
   entry: CommentEntry;
   isediting = false;
+}
+
+export class CommentAction {
+  action: Action;
+  comment: Comment;
+  entry?: CommentEntry;
 }

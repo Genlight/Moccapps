@@ -65,7 +65,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       });
     }
 
-  // TODO: manage canvas for different pages and not just one
   ngOnInit() {
     this.pagesService.createPage(900, 600);
     this.canvas = this.pagesService.getCanvas();
@@ -576,4 +575,3 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
 }
-//

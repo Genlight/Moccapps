@@ -77,7 +77,9 @@ export class CreateProjectModalComponent implements OnInit {
           this.pagesService.addPageWithREST(responseProject, null, this.project.height, this.project.width);
           this.projectService.setActiveProject(responseProject);
           this.modal.close();
-          this.router.navigate(['editor']);
+          setTimeout(() => {
+            this.router.navigate(['editor']);
+          }, 1000);
         }
       },
       err => {
