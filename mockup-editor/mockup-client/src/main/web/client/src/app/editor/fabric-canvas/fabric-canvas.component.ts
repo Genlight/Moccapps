@@ -397,35 +397,44 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       let sendArray = [];
       if(typ==='activeSelection') {
         //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
+        
         //console.log('selection: '+JSON.stringify(transObject))
-        let oldRenderAddReomve = this.canvas.renderOnAddRemove;
+        
+        //the objects to be saved must be cloned seperately, otherwise it interferes with the selection
+        let undoArray = [];
+        let oldRenderAddRemove = this.canvas.renderOnAddRemove;
         this.canvas.renderOnAddRemove = false;
         this.canvas.discardActiveObject();
         transObject.forEachObject((current) => {
           let newObj = this.getObjectByUUID(current.uuid);
+          //must not be cloned, or active selection will stop working after one modification
           sendArray.push(newObj);
           newObj.clone((obj) => {
+            undoArray.push(obj);
             obj.uuid = newObj.uuid;
             obj.sendMe = false;//? should be needed but its nonexistence had no effect, treat with care.
             this.pagesService.sendMessageToSocket(obj, action);
             //console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
           })
         });
+        
+        this.undoRedoService.save(undoArray,action);
         //fancy canvas magic to ensure the selection behaves properly
-        let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
+        var newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
-        this.canvas.setActiveObject(newSelection);
         console.log('new Selection: ' + JSON.stringify(newSelection));
-        this.canvas.renderOnAddRemove = oldRenderAddReomve;
+        this.canvas.renderOnAddRemove = oldRenderAddRemove;
+        this.canvas.setActiveObject(newSelection);
 
       } else {
         sendArray.push(transObject);
         this.pagesService.sendMessageToSocket(transObject,action);
+        this.undoRedoService.save(sendArray,action);
       }
       
       //delete does not necessary have a preceeding 'before:transform'
       if(action === Action.REMOVED) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
-      this.undoRedoService.save(sendArray,action);
+      //if(newSelection) this.canvas.setActiveObject(newSelection);
 
     }
 
@@ -445,9 +454,10 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     if(selectedObj) {
       if(selectedObj.type === 'activeSelection') {
         selectedObj.getObjects().forEach( (current) => {
-          current.clone((o) => {
+          sendArray.push(this.cloneMemberofGroup(current,selectedObj));
+          /*current.clone((o) => {
             sendArray.push(current);
-          });
+          });*/
         });
       } else {
         selectedObj.clone((o) => {
