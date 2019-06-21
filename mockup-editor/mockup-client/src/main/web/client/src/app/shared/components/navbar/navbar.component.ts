@@ -27,6 +27,7 @@ import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal
 import { ElementsService } from 'src/app/editor/elements.service';
 import { CommentService } from 'src/app/editor/comment.service';
 import { CreateProjectModalComponent } from 'src/app/projects/create-project-modal/create-project-modal.component';
+import {CommentEntry} from "../../models/comments";
 
 @Component({
   selector: 'app-navbar',
@@ -159,7 +160,9 @@ export class NavbarComponent implements OnInit {
     const modelRef = this.modalService.open(ManageUserModalComponent);
     modelRef.componentInstance.project = this.project;
     modelRef.componentInstance.confirm.subscribe(() =>
-      {}
+      {
+        this.loadProjects()
+      }
     );
   }
 
@@ -535,5 +538,22 @@ export class NavbarComponent implements OnInit {
    */
   onAddComment() {
       this.commentService.setAddCommentObs(true);
+  }
+
+  loadProjects(): void {
+    this.projectService.getProjects<Project[]>()
+      .subscribe(
+        (response) => {
+          console.log(response);
+          var currproj = this.project;
+          for(let a of response) {
+            if(a.id === currproj.id){
+              currproj = a;
+              break;
+            }
+          }
+          this.project = currproj;
+        },
+      );
   }
 }
