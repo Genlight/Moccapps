@@ -523,7 +523,7 @@ export class NavbarComponent implements OnInit {
 
   disableSnapToGrid() {
     const canvas = this.managePagesService.getCanvas();
-    canvas.on({
+    canvas.off({
       'object:moving': (event) => {},
       'object: scaling': (event) => {}
     });

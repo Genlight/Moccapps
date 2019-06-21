@@ -123,7 +123,7 @@ export class ManagePagesService {
       // Persist workspace of old workspace
       // If grid was active on the former active page, it will be disabled
       if (!!this.dataStore.activePage && this._isGridEnabled) {
-        this.workspaceService.hideGrid();
+        //this.workspaceService.hideGrid();
       }
 
       //Set new active page
