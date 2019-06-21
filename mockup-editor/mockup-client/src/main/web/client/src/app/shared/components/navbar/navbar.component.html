@@ -9,7 +9,7 @@
         <li class="dropdown-submenu">
           <button class="dropdown-item dropdown-toggle menucursor">File</button>
           <ul class="dropdown-menu">
-            <button class="btn btn-light menubtn" disabled>New Project</button>
+              <!--<button class="btn btn-light menubtn" disabled>New Project</button>-->
               <button class="btn btn-light menubtn" (click)="onNewPage()">New Page</button>
               <li role="separator" class="divider"></li>
               <label for="file-upload" class="btn btn-light menubtn">
@@ -80,7 +80,6 @@
     <button [disabled]="redoDisabled" class="btn btn-light ml-1" (click)="onRedo()" disabled>
       <fa-icon [icon]="faRedo"></fa-icon>
     </button>
-    <button class="btn btn-light ml-4" [ngClass]="{'btn-dark': showsComment}" (click)="onToggleComments()">
         <fa-icon [icon]="faCommentAlt"></fa-icon>
         <span class="ml-2 navbar-button-text">Comments</span>
     </button>

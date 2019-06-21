@@ -53,3 +53,11 @@ hr {
 .dropdown-toggle::after{
     display:none;
 }
+
+.btn-secondary {
+    width: 100%;
+    text-align: inherit;
+    background-color: transparent;
+    color: black;
+    border: 0;
+}
