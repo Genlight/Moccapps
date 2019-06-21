@@ -529,7 +529,7 @@ export class ManagePagesService {
           break;
 
         case Action.PAGEREMOVED:
-          alert('Page removed received');
+          //alert('Page removed received');
           if (!!parsedObj && !!parsedObj.pageId) {
             const pageId = parsedObj.pageId;
             if (!!pageId) {
