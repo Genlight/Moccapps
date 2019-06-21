@@ -414,7 +414,6 @@ export class NavbarComponent implements OnInit {
    * @param gridSize size of the grid to snap to
    */
   enableSnapToGrid(gridSize: number) {
-    alert('enableSnapToGrid');
     const canvas = this.managePagesService.getCanvas();
     canvas.on({
       'object:moving': (event) => {
