@@ -414,6 +414,7 @@ export class NavbarComponent implements OnInit {
    * @param gridSize size of the grid to snap to
    */
   enableSnapToGrid(gridSize: number) {
+    alert('enableSnapToGrid');
     const canvas = this.managePagesService.getCanvas();
     canvas.on({
       'object:moving': (event) => {
@@ -522,11 +523,11 @@ export class NavbarComponent implements OnInit {
   }
 
   disableSnapToGrid() {
+    this.snapToGrid = false;
+    //alert('disable snap to grid');
     const canvas = this.managePagesService.getCanvas();
-    canvas.on({
-      'object:moving': (event) => {},
-      'object: scaling': (event) => {}
-    });
+    canvas.off('object:moving');
+    canvas.off('object:scaling');
   }
   /**
    * adding comment,
