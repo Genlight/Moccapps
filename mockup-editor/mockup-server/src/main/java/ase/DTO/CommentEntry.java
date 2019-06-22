@@ -105,6 +105,7 @@ public class CommentEntry{
         this.username = username;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -112,20 +113,22 @@ public class CommentEntry{
 
         CommentEntry that = (CommentEntry) o;
 
-        if (id != that.id) return false;
         if (order != that.order) return false;
         if (commentId != that.commentId) return false;
         if (message != null ? !message.equals(that.message) : that.message != null) return false;
         if (user != null ? !user.equals(that.user) : that.user != null) return false;
+        if (email != null ? !email.equals(that.email) : that.email != null) return false;
+        if (username != null ? !username.equals(that.username) : that.username != null) return false;
         return date != null ? date.equals(that.date) : that.date == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + order;
+        int result = order;
         result = 31 * result + (message != null ? message.hashCode() : 0);
         result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + commentId;
         return result;
