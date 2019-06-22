@@ -40,6 +40,7 @@ import { PageListItemComponent } from './editor/toolbar-pages/page-list-item/pag
 import { CommentComponent } from './editor/comment/comment.component';
 import { CommentBarComponent } from './editor/comment-bar/comment-bar.component';
 import { AngularDraggableModule } from 'angular2-draggable';
+import { PageDeleteModalComponent } from './editor/toolbar-pages/page-delete-modal/page-delete-modal.component';
 
 
 library.add(faBars);
@@ -73,7 +74,8 @@ library.add(faEllipsisV);
     UsercirclePipe,
     PageListItemComponent,
     CommentComponent,
-    CommentBarComponent
+    CommentBarComponent,
+    PageDeleteModalComponent
   ],
   imports: [
     BrowserModule,
@@ -92,6 +94,7 @@ library.add(faEllipsisV);
     DeleteProjectModalComponent,
     CreateVersionModalComponent,
     LoadVersionModalComponent,
+    PageDeleteModalComponent,
     UserModalComponent
   ],
   providers: [FabricmodifyService, ManagePagesService, {

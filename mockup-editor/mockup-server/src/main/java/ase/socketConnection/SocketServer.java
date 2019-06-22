@@ -148,10 +148,10 @@ public class SocketServer {
                 return;
             case "page:created":
                 break;
-            case "page:removed":
-                String pageId=message.getPageId();
-                pageHandlerMap.remove(pageId);
-                return;
+           case "page:removed":
+              /*  String pageId=message.getPageId();
+                pageHandlerMap.remove(pageId);*/
+                break;
             case "version:created":
                 for(PageHandler page : pageHandlerMap.values()){
                     page.persistPage();

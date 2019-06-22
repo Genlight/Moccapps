@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Page } from 'src/app/shared/models/Page';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { PageDeleteModalComponent } from '../page-delete-modal/page-delete-modal.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: '[page-list-item]',
@@ -31,7 +33,9 @@ export class PageListItemComponent implements OnInit {
 
   faTrashAlt = faTrashAlt;
 
-  constructor() { }
+  constructor(
+    private modalService: NgbModal
+    ) { }
 
   ngOnInit() {
   }
@@ -63,6 +67,10 @@ export class PageListItemComponent implements OnInit {
 
   onDeleteClick(event, page: Page) {
     event.stopPropagation();
-    this.deleteClicked.emit(page);
+    const modelRef = this.modalService.open(PageDeleteModalComponent);
+    modelRef.componentInstance.page = page;
+    modelRef.componentInstance.confirm.subscribe(() => {
+      this.deleteClicked.emit(page);
+    });
   }
 }
