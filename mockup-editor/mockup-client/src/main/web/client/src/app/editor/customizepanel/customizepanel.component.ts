@@ -264,17 +264,24 @@ export class CustomizepanelComponent implements OnInit {
     // TODO: disabled for now, as the server doesn't send changes back to the original user yet
     //currentElem=fabric.util.object.clone(currentElem);
 
-    if (currentElem) {
-      currentElem.set(property, value);
-      this.undoRedoService.save(currentElem, Action.MODIFIED);
+    if (currentElem&&currentElem.sendMe) {
+      let undoClone;
+      let sendClone;
+      currentElem.clone((o) => {
+        undoClone = o;
+      });
+      currentElem.clone((o) => {
+        sendClone = o;
+      })
+      this.undoRedoService.setCurrentlyModifiedObject([undoClone]);
+      sendClone.set(property, value);
+      this.undoRedoService.save(sendClone, Action.MODIFIED);
+      sendClone.sendMe = false;
+      this.managePagesService.sendMessageToSocket(sendClone, Action.MODIFIED);
+      sendClone.sendMe = true;
     }
-    if (currentElem.sendMe) {
-      currentElem.sendMe = false;
-      this.managePagesService.sendMessageToSocket(currentElem, Action.MODIFIED);
-    }
-    currentElem.sendMe = true;
     // TODO: disable once server sends messages also to the origin, will be rendered by applyTransformation
-    this.canvas.renderAll();
+    //this.canvas.renderAll();
   }
 
   /**
@@ -283,7 +290,16 @@ export class CustomizepanelComponent implements OnInit {
    * @param value new value of the property
    */
   setGroupProperty(property, value) {
+    /*let sendArray = [];
+    let undoClone = [];
+    let sendClone = [];*/
     this.selected.forEachObject((elem) => {
+      /*elem.clone((o) => {
+        undoClone = o;
+      });
+      elem.clone((o) => {
+        sendClone = o;
+      })*/
       elem.set(property, value);
     });
     this.canvas.renderAll();
