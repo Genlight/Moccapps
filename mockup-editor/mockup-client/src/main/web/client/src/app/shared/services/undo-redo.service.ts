@@ -240,7 +240,7 @@ export class UndoRedoService {
     }
   }
   getObjectByUUID(uuid: string, canvas: fabric.Object) {
-    return canvas.getObjects().find((o) => o.uuid === uuid);
+    return this.modifyService.getObjectByUUID(uuid,canvas.getObjects());
   }
 
   /**

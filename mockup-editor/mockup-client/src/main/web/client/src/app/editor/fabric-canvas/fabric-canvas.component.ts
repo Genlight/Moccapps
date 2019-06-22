@@ -488,9 +488,17 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
 
-  getObjectByUUID(uuid: string) {
-    return this.canvas.getObjects().find((o) => o.uuid === uuid);
-  }
+  /**
+ * Checks an array if it contains a certain fabric object with the given uuid.
+ * For details see the called method
+ * 
+ * @param uuid the uuid of the object to be found
+ * @returns the object if found, undefined otherwise
+ */
+getObjectByUUID(uuid: string) {
+    
+  return this.modifyService.getObjectByUUID(uuid,this.canvas);
+}
   ngOnDestroy() {
     // Delete pages and the current active page from store. (Unselect current project)
     this.pagesService.clearActivePage();

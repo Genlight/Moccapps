@@ -258,16 +258,16 @@ export class FabricmodifyService {
           orderedObjects.forEach(function (current) {
             switch (index) {
               case 1:
-                canvas.bringForward(_this.getObjectByUUID(current.uuid, canvas));
+                canvas.bringForward(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
                 break;
               case 2:
-                canvas.bringToFront(_this.getObjectByUUID(current.uuid, canvas));
+                canvas.bringToFront(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
                 break;
               case -1:
-                canvas.sendBackwards(_this.getObjectByUUID(current.uuid, canvas));
+                canvas.sendBackwards(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
                 break;
               case -2:
-                canvas.sendToBack(_this.getObjectByUUID(current.uuid, canvas));
+                canvas.sendToBack(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
                 break;
             }
           });
@@ -285,7 +285,7 @@ export class FabricmodifyService {
       })
 
     } else {
-      const old = this.getObjectByUUID(parsedObj.uuid, canvas);
+      const old = this.getObjectByUUID(parsedObj.uuid, canvas.getObjects());
 
       if (message.command === Action.ADDED) {
         //old exists if I created the object myself. clean solution: make add button send change but not add in the first place
@@ -373,9 +373,36 @@ export class FabricmodifyService {
     canvas.renderAll();
   }
 
-
-  getObjectByUUID(uuid: string, canvas: any) {
-    return canvas.getObjects().find((o) => o.uuid === uuid);
+/**
+ * Checks an array if it contains a certain fabric object with the given uuid.
+ * Also traverses groups inside the array, therefore iterating through all the objects.
+ * Traverses 1 level at a time, and only then steps into a group, as most hits will be at the top level.
+ * Traverses from end to begin of the array, as elements at the begin are rendered in front,
+ * and are therefore more likely to be edited (and therefore searched for).
+ * Supposed to be called initally with canvas.getObjects().
+ * 
+ * @param uuid the uuid of the object to be found
+ * @param array the array to search in
+ * @returns the object if found, undefined otherwise
+ */
+  getObjectByUUID(uuid: string, array: Array<any>) {
+    
+    let grouptsToTraverse = [];
+    for(let i = array.length-1;i>=0;--i ) {
+      let current = array[i];
+      if(current.uuid === uuid) {
+        return current;
+      }
+      if(current.type === 'group') {
+        grouptsToTraverse.push(current);
+      }
+    }
+    for(let i = grouptsToTraverse.length-1; i>=0;--i) {
+      let current = grouptsToTraverse[i];
+      //current.set('dirty',true);
+      let result = this.getObjectByUUID(uuid,current.getObjects());
+      if (result) return result;
+    }
   }
 
   getForeignSelections(): Map<string, [any]> {

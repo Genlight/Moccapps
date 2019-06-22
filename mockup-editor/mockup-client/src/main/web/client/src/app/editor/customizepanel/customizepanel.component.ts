@@ -290,18 +290,26 @@ export class CustomizepanelComponent implements OnInit {
    * @param value new value of the property
    */
   setGroupProperty(property, value) {
-    /*let sendArray = [];
-    let undoClone = [];
-    let sendClone = [];*/
+    //let undoClone = [];
+    //let sendClone = [];
     this.selected.forEachObject((elem) => {
       /*elem.clone((o) => {
-        undoClone = o;
+        undoClone.push(o);
       });
       elem.clone((o) => {
-        sendClone = o;
-      })*/
-      elem.set(property, value);
+        o.set(property, value);
+        o.sendMe = false;
+        sendClone.push(o);
+      })
     });
+    this.undoRedoService.setCurrentlyModifiedObject(undoClone);
+    sendClone.forEach((current) => {
+      this.managePagesService.sendMessageToSocket(current, Action.MODIFIED);
+      current.sendMe = true;
+    })*/
+      elem.set(property,value);
+    })
+
     this.canvas.renderAll();
   }
 
