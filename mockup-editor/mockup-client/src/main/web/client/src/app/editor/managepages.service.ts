@@ -551,7 +551,7 @@ export class ManagePagesService {
         case Action.COMMENTADDED:
         case Action.COMMENTMODIFIED:
         case Action.COMMENTCLEARED:
-          if (parsedObj.userId === this.tokenStorage.getToken()) {
+          if (message.user === this.tokenStorage.getToken()) {
             console.log('comments: action:' + message.command + ', is the same user');
             break;
           }
@@ -565,9 +565,12 @@ export class ManagePagesService {
         case Action.COMMENTENTRYADDED:
         case Action.COMMENTENTRYDELETED:
         case Action.COMMENTENTRYMODIFIED:
-          if (parsedObj.userId === this.tokenStorage.getToken()) {
+          if (message.user === this.tokenStorage.getToken()) {
             console.log('comments: action:' + message.command + ', is the same user');
             break;
+          } else {
+            console.log('comments: action:' + message.command + ', different user: remote: ' +
+              parsedObj.userId + ', this one: ' + this.tokenStorage.getToken() );
           }
           console.log('after same-user check');
           if (!!parsedObj.comment && !!parsedObj.entry) {
