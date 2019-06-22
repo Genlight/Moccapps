@@ -82,7 +82,17 @@ export class FabricmodifyService {
     }
     let temp = (activeGrp as Group);
     this.groupService.remove(temp);
-    activeGrp.toActiveSelection();
+    //activeGrp.toActiveSelection();
+    let objects = activeGrp.getObjects();
+    canvas.remove(activeGrp);
+    activeGrp.destroy();
+    objects.forEach((o)=> {
+      o.sendMe = true;
+      canvas.add(o);
+    });    
+    var newSelection = new fabric.ActiveSelection(objects, {canvas:canvas});
+    canvas.setActiveObject(newSelection);
+    
     canvas.requestRenderAll();
 
   }
