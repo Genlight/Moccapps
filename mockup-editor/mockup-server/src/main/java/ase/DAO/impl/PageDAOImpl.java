@@ -127,8 +127,8 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
                 page = new Page(
                         rs.getInt("id"),
                         rs.getString("page_name"),
-                        rs.getInt("page_height"),
                         rs.getInt("page_width"),
+                        rs.getInt("page_height"),
                         rs.getInt("page_order"),
                         rs.getInt("project_id"),
                         rs.getString("page_data"));
@@ -164,8 +164,8 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
                 page = new Page(
                         rs.getInt("id"),
                         rs.getString("page_name"),
-                        rs.getInt("page_height"),
                         rs.getInt("page_width"),
+                        rs.getInt("page_height"),
                         rs.getInt("page_order"),
                         rs.getInt("project_id"),
                         rs.getString("page_data"));
@@ -193,8 +193,8 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
                 pages.add(new Page(
                         rs.getInt("id"),
                         rs.getString("page_name"),
-                        rs.getInt("page_height"),
                         rs.getInt("page_width"),
+                        rs.getInt("page_height"),
                         rs.getInt("page_order"),
                         rs.getInt("project_id"),
                         rs.getString("page_data")));

@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class PageHandler {
@@ -31,7 +32,7 @@ public class PageHandler {
     private CommentService commentService;
     private ObjectMapper objectMapper;
     private String projectId;
-    private Map<String,String> lockedElements;
+    private ConcurrentHashMap<String,String> lockedElements;
 
     private static final Logger logger= LoggerFactory.getLogger(PageHandler.class);
 
@@ -43,7 +44,7 @@ public class PageHandler {
         this.userService = userService;
         page=pageService.getPageById(pageId);
         this.projectId=projectId;
-        lockedElements=new HashMap<>();
+        lockedElements=new ConcurrentHashMap<>();
     }
 
     public boolean handleMessage(SocketMessage message){
@@ -68,7 +69,7 @@ public class PageHandler {
                 }
                 return true;
             case "element:modified":
-                logger.error(page.getPage_data());
+                logger.debug(page.getPage_data());
                 try {
                     ArrayNode objects = ((ArrayNode)pageData.get("objects"));
                     ObjectNode content = objectMapper.readValue(message.getContent(),ObjectNode.class);
@@ -427,7 +428,12 @@ public class PageHandler {
     }
 
     public String getPageData(){
-        return page.getPage_data();
+        ObjectNode node=objectMapper.createObjectNode();
+        node.put("pagedata",page.getPage_data());
+        node.put("height",page.getHeight());
+        node.put("width",page.getWidth());
+        String test = node.toString();
+        return node.toString();
     }
 
     public void persistPage(){

@@ -9,6 +9,9 @@ import pako from 'pako';
 
 const API_URL = environment.apiUrl;
 
+//IMPORTANT: developement ONLY!!!
+//const API_URL = "http://localhost:8090";
+
 @Injectable({
   providedIn: 'root'
 })

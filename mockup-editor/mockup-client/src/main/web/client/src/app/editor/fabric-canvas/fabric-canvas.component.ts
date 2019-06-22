@@ -70,7 +70,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.canvas = this.pagesService.getCanvas();
 
 
-    this.enableEvents();
     this.Transformation = new Subject<Itransformation>();
 
     this.pagesService.pages.subscribe((pages) => {
@@ -84,6 +83,8 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         this.setRulerDimensions(page.height, page.width);
       }
     });
+    
+    this.enableEvents();
 
     // React to changes when user clicks on hide/show ruler
     this.workSpaceService.showsRuler.subscribe((value) => {
@@ -262,6 +263,15 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.pagesService.addPage(null);
   }
 
+  /**
+   * enables all events we listen to
+   * - before:transform: fired on click that could lead to a drag/rotate/scale
+   * - mouse:up: fired on mouse up while on the canvas, used for unlock (every before:transform is succeeded by mouse:up)
+   * - object:modified: fired when an object is scaled/rotated/move by user mouse action ONLY, NOT by setting properties
+   *  the rest is self explanatory, for more details check 
+   *  http://fabricjs.com/events
+   *  http://fabricjs.com/docs/fabric.Canvas.html
+   */
   enableEvents() {
     this.canvas
       .on('before:transform', (event) => { this.statelessTransfer(event.transform, Action.LOCK); })
@@ -273,18 +283,18 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       .on('selection:updated',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
       .on('before:selection:cleared',(event) => { this.statelessTransfer({'target':null},Action.SELECTIONMODIFIED) })
       .on('after:render',(event) => { this.onAfterRender(event) })
-      /*.on('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
-      .on('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-      .on('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });*/;
     }
   disableEvents() {
     this.canvas
+      .off('before:transform', (event) => { this.statelessTransfer(event.transform, Action.LOCK); })
+      .off('mouse:up',(event) => { if(event.target !== null) this.statelessTransfer(event, Action.UNLOCK) })
       .off('object:added', (evt) => { this.onTransformation(evt, Action.ADDED); })
       .off('object:modified', (evt) => { this.onTransformation(evt, Action.MODIFIED); })
       .off('object:removed', (evt) => { this.onTransformation(evt, Action.REMOVED); })
-      .off('object:added', (evt) => { this.onSaveState(evt, Action.ADDED); })
-      .off('object:modified', (evt) => { this.onSaveState(evt, Action.MODIFIED); })
-      .off('object:removed', (evt) => { this.onSaveState(evt, Action.REMOVED); });
+      .off('selection:created',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
+      .off('selection:updated',(event) => { this.statelessTransfer(event,Action.SELECTIONMODIFIED) })
+      .off('before:selection:cleared',(event) => { this.statelessTransfer({'target':null},Action.SELECTIONMODIFIED) })
+      .off('after:render',(event) => { this.onAfterRender(event) })
   }
   /**
    * manages keyboard events:
@@ -385,53 +395,59 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
-      this.onSaveState(evt, action);
-
 
       let typ = transObject.type
-      //let objectsToSend = [transObject];
-      //console.log('type: '+typ+', transObj: '+JSON.stringify(transObject));
-
-
+      let sendArray = [];
       if(typ==='activeSelection') {
         //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
+        
         //console.log('selection: '+JSON.stringify(transObject))
-        let oldRenderAddReomve = this.canvas.renderOnAddRemove;
+        
+        //the objects to be saved must be cloned seperately, otherwise it interferes with the selection
+        let undoArray = [];
+        let oldRenderAddRemove = this.canvas.renderOnAddRemove;
         this.canvas.renderOnAddRemove = false;
         this.canvas.discardActiveObject();
-        let sendArray = [];
         transObject.forEachObject((current) => {
           let newObj = this.getObjectByUUID(current.uuid);
+          //must not be cloned, or active selection will stop working after one modification
           sendArray.push(newObj);
           newObj.clone((obj) => {
+            undoArray.push(obj);
             obj.uuid = newObj.uuid;
             obj.sendMe = false;//? should be needed but its nonexistence had no effect, treat with care.
             this.pagesService.sendMessageToSocket(obj, action);
             //console.log('newObj: ' + JSON.stringify(obj) + ', action: ' + action);
           })
         });
-        //fancy canvas magic to ensure the selection behaves properly
-        let newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
-        this.canvas.setActiveObject(newSelection);
+        if(action === Action.REMOVED) this.undoRedoService.setCurrentlyModifiedObject(undoArray);
+        this.undoRedoService.save(undoArray,action);
+        //fancy canvas magic to ensure the selection behaves properly
+        var newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
+
         console.log('new Selection: ' + JSON.stringify(newSelection));
-        this.canvas.renderOnAddRemove = oldRenderAddReomve;
+        this.canvas.renderOnAddRemove = oldRenderAddRemove;
+        this.canvas.setActiveObject(newSelection);
 
       } else {
+        sendArray.push(transObject);
         this.pagesService.sendMessageToSocket(transObject,action);
+        
+        if(action === Action.REMOVED) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
+        this.undoRedoService.save(sendArray,action);
       }
-
     }
 
-    //this needs to happen externally if the change was made from somebody else; the state of the canvas needs to be accuratly reflected
-    else this.undoRedoService.setState(this.canvas, action);
-
       //the object needs to be available again regardless of whether or not it was a remote access.
-      //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
       transObject.sendMe = true;
 
   }
-
+  /**
+   * Sends a message to the server that does not contain state information, only an object's id
+   * @param evt event to act upon
+   * @param action the action that should be transmitted to the server
+   */
   statelessTransfer(evt, action:string) {
     let selectedObj = evt.target;
     let sendArray = [];
@@ -439,12 +455,16 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     if(selectedObj) {
       if(selectedObj.type === 'activeSelection') {
         selectedObj.getObjects().forEach( (current) => {
-          sendArray.push(current);
-        })
+          sendArray.push(this.cloneMemberofGroup(current,selectedObj));
+        });
       } else {
-        sendArray.push(selectedObj);
+        selectedObj.clone((o) => {
+          sendArray.push(o);
+        });
       }
     }
+    //if it was a lock, a change is about to happen, so we make the pre-modified state available.
+    if(action === Action.LOCK) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
     let _this = this;
     sendArray.forEach((current) => {
       _this.pagesService.sendMessageToSocket(current,action);
@@ -466,9 +486,17 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
 
-  getObjectByUUID(uuid: string) {
-    return this.canvas.getObjects().find((o) => o.uuid === uuid);
-  }
+  /**
+ * Checks an array if it contains a certain fabric object with the given uuid.
+ * For details see the called method
+ * 
+ * @param uuid the uuid of the object to be found
+ * @returns the object if found, undefined otherwise
+ */
+getObjectByUUID(uuid: string) {
+    
+  return this.modifyService.getObjectByUUID(uuid,this.canvas.getObjects());
+}
   ngOnDestroy() {
     // Delete pages and the current active page from store. (Unselect current project)
     this.pagesService.clearActivePage();
@@ -481,8 +509,9 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   /**
    * Undo Redo - functionality
    * @{author}: Alexander Genser
+   * this was refactored and stays here for documentary purposes for now
    */
-  onSaveState(evt: any, action: Action) {
+  /*onSaveState(evt: any, action: Action) {
     const saveObject = evt.target;
     const objects = [];
     if (saveObject.type === 'activeSelection') {
@@ -494,16 +523,23 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       // console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
     }
     this.undoRedoService.save(objects, action);
-  }
+  }*/
 
+  /**
+  * Is called after render to draw boxes around objects marked by other users 
+  */
   onAfterRender(event) {
     let selections = this.modifyService.getForeignSelections();
+    let currentSelection = this.canvas.getActiveObject();
     selections.forEach((value,key,map) => {
       value.forEach((current) => {
         if(current === null) return;
-        console.log('foreignly selectec object: '+JSON.stringify(current));
+
+        let temp = this.cloneMemberofGroup(current,currentSelection);
+
+        if(temp === null) temp = current;
         this.canvas.contextContainer.strokeStyle = '#FF0000';
-        var bound = current.getBoundingRect();
+        var bound = temp.getBoundingRect();
         this.canvas.contextContainer.strokeRect(
           bound.left - 2.5,
           bound.top - 2.5,
@@ -512,6 +548,30 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         );
       })
     })
+  }
+  
+  /**
+   * Clones an object from a group and modifies it so its position is relativ to the canvas
+   * origin again. Returns null if the object is null, group is not a valid group, or if
+   * the provided object was not a member of the provided group.
+   * @param object object to clone
+   * @param group group the object belongs to
+   * @returns the clone of the object of the group, or null 
+   * 
+   */
+  cloneMemberofGroup(object:any, group:any):any {
+    if(!group || !(group.type === 'activeSelection' || group.type === 'group')) return null;
+    else {
+      let temp = null;
+      let groupedObjects = group.getObjects();
+      if(groupedObjects.find((o) => o.uuid == object.uuid)) {
+        object.clone((clone) => {
+          FabricmodifyService.calcExtractFromGroup(clone,group);
+          temp = clone;
+        });
+      }
+      return temp;
+    }
   }
 
   /**
