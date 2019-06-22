@@ -392,9 +392,9 @@ export class ManagePagesService {
       }
     });
     // If deleted page is currently active, set it to inactive
-    if (this.dataStore.activePage.id === pageId) {
+    if (!!this.dataStore.activePage && this.dataStore.activePage.id === pageId) {
       this.clearActivePage();
-    } else if (this.dataStore.pages.length <= 0) {
+    } else if (!!this.dataStore.pages && this.dataStore.pages.length <= 0) {
       this.clearActivePage();
     }
 
