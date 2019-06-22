@@ -17,6 +17,7 @@ export class NotificationService {
     return PNotify;
   }
   showError(message: string, title?: string) {
+    PNotify.closeAll();
     PNotify.error({
       title: title || 'Error',
       text: message,
@@ -33,6 +34,7 @@ export class NotificationService {
 
   showSuccess(message: string, title?: string) {
     PNotifyButtons;
+    PNotify.closeAll();
     PNotify.success({
       title: title || 'Success',
       text: message,
