@@ -221,6 +221,7 @@ public class PageHandler {
                     comment.setCommentObjects(objectStrings);
                     comment.setPage_id(page.getId());
                     commentService.createCommentAndEntry(comment);
+                    return true;
                 } catch (IOException e) {
                     logger.error("couldn't parse content in comment:added");
                 }
@@ -238,9 +239,11 @@ public class PageHandler {
                     comment = commentService.findCommentByUUID(uuid);
                     comment.setCleared(commentNode.get("isCleared").asBoolean());
                     commentService.updateComment(comment);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                return true;
             case "commententry:added":
                 logger.info("commententry:added:content:"+message.getContent());
                 try {
@@ -268,27 +271,35 @@ public class PageHandler {
                         }
 
                         commentEntry.setCommentId(comment.getId());
-                        if(!comment.getCommentEntryList().contains(commentEntry)){ //maybe works ?
-                            commentEntries.add(commentEntry);
-                        }
+                        boolean exists = false;
+                       for(CommentEntry x:comment.getCommentEntryList()){
+                           if(x.equals(commentEntry)){
+                               exists = true;
+                               break;
+                           }
+                       }
+                       if(!exists){
+                           commentEntries.add(commentEntry);
+                       }
                     }
-                    if(commentEntries.size()>1){
-                        logger.error("COMPARE DOESN'T WORK");
+                    for(CommentEntry x:comment.getCommentEntryList()){
+                        logger.info("Current List:"+x);
                     }
-                    else{
-                        for(CommentEntry e:commentEntries){
-                            commentService.createCommentEntry(e);
-                        }
+
+                    for(CommentEntry e:commentEntries){
+                        logger.info("New List:"+e);
+                        commentService.createCommentEntry(e);
                     }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                return true;
 
             case "commententry:deleted":
                 logger.info("commententry:deleted:content:"+message.getContent());
                 //gets called from somewhere for no reason and deletes all entries
-                /*try {
+                try {
                     Comment comment = new Comment();
                     ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
                     JsonNode commentNode = content.get("comment");
@@ -324,11 +335,10 @@ public class PageHandler {
                         }
                     }
 
-
                 } catch (IOException e) {
                     e.printStackTrace();
-                }*/
-                break;
+                }
+                return true;
             case "commententry:modified":
                 logger.info("commententry:modified:content:"+message.getContent());
                 try {
@@ -371,6 +381,7 @@ public class PageHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                return true;
         }
         return true;
     }
