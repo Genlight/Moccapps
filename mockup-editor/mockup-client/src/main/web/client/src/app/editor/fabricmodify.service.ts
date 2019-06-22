@@ -6,6 +6,7 @@ import { ManageGroupsService } from './managegroups.service';
 import { Action } from './fabric-canvas/transformation.interface';
 import { ManagePagesService } from "./managepages.service";
 import { socketMessage } from '../socketConnection/socketMessage';
+import { UUID } from 'angular2-uuid';
 let savedElements = null;
 
 @Injectable({
@@ -27,7 +28,7 @@ export class FabricmodifyService {
 
   loadFromJSON(canvas: any, json: string) {
     console.log(`loadFromJSON: object count: ${((canvas || {}).objects || {}).length}`);
-    canvas.loadFromJSON(json, () => {
+    canvas.loadFromJSON(JSON.parse(json), () => {
       canvas.renderAll();
     });
   }
@@ -65,7 +66,7 @@ export class FabricmodifyService {
       return;
     }
     let temp = canvas.getActiveObject().toGroup();
-    temp.set('dirty', true);
+    //temp.set('dirty', true);
     temp = (temp as Group);
     this.groupService.add(temp);
   }
@@ -168,32 +169,55 @@ export class FabricmodifyService {
 
   /* pastes previously copied elements to the given canvas
     (based on http://fabricjs.com/copypaste) */
-  pasteElement(canvas: any) {
-    if (savedElements == null) {
-      return;
-    }
-    savedElements.clone(function (clonedObj) {
-      canvas.discardActiveObject();
-      clonedObj.set({
-        left: clonedObj.left + 10,
-        top: clonedObj.top + 10,
-        evented: true,
-      });
-      if (clonedObj.type === 'activeSelection') {
-        // active selection needs a reference to the canvas.
-        clonedObj.canvas = canvas;
-        clonedObj.forEachObject(function (obj) {
-          canvas.add(obj);
-        });
-        // this should solve the unselectability
-        clonedObj.setCoords();
-      } else {
-        canvas.add(clonedObj);
+    pasteElement(canvas: any) {
+      if (savedElements == null) {
+        return;
       }
-      canvas.setActiveObject(clonedObj);
-      canvas.requestRenderAll();
-    });
-  }
+      const _this = this;
+      savedElements.clone(function (clonedObj) {
+        canvas.discardActiveObject();
+        clonedObj.set({
+          left: clonedObj.left + 10,
+          top: clonedObj.top + 10,
+          evented: true,
+          uuid: UUID.UUID()
+        });
+        if (clonedObj.type === 'activeSelection') {
+          // active selection needs a reference to the canvas.
+          clonedObj.canvas = canvas;
+          clonedObj.forEachObject(function(obj) {
+            if (obj.type === 'group') {
+              _this.deepclone(obj,canvas);
+            }
+            canvas.add(obj);
+          });
+          // this should solve the unselectability
+          clonedObj.setCoords();
+        } else {
+          if (clonedObj.type === 'group') {
+            _this.deepclone(clonedObj,canvas);
+          }
+          canvas.add(clonedObj);
+        }
+        canvas.setActiveObject(clonedObj);
+        canvas.requestRenderAll();
+      });
+    }
+  
+    deepclone(elem: any, canvas: any) {
+      const _this = this;
+      elem.canvas = canvas;
+      if (elem.type === 'group') {
+        elem.forEachObject((o) => {
+          if (o.type === 'group') {
+            _this.deepclone(o,canvas);
+          }
+          o.uuid = UUID.UUID();
+        });
+      } else {
+        elem.uuid = UUID.UUID();
+      }
+    }
 
   /* copies active elements from the given canvas and then removes them */
   cutElement(canvas: any) {

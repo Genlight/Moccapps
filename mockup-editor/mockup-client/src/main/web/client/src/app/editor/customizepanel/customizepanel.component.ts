@@ -112,13 +112,16 @@ export class CustomizepanelComponent implements OnInit {
     if (!!this.canvas) {
       // Update backgroundcolor
       const backgroundColor = this.canvas.backgroundColor;
-      //alert(backgroundColor);
+      alert(backgroundColor);
       this.managePagesService.getGridCanvas().backgroundColor = backgroundColor;
       this.canvasProperties.backgroundColor = backgroundColor;
-      if (this.isGridEnabled) {
+      if (!this.isGridEnabled) {
+        this.canvas.backgroundColor = backgroundColor;
+        this.canvas.renderAll();
+      } else {
         this.canvas.backgroundColor = null;
         this.canvas.renderAll();
-      }
+      }  
     }
     //this.setCanvasBackgroundColor();
   }
@@ -367,7 +370,7 @@ export class CustomizepanelComponent implements OnInit {
 
     this.managePagesService.getGridCanvas().backgroundColor = this.canvasProperties.backgroundColor;
     this.managePagesService.getGridCanvas().renderAll();
-    if (this.canvas.backgroundColor !== null) {
+    if (!this.isGridEnabled) {
       this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
       this.canvas.renderAll();
     }
