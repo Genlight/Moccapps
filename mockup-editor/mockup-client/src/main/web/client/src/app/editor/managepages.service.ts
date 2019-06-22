@@ -551,8 +551,13 @@ export class ManagePagesService {
         case Action.COMMENTADDED:
         case Action.COMMENTMODIFIED:
         case Action.COMMENTCLEARED:
+          if (message.user === this.tokenStorage.getToken()) {
+            console.log('comments: action:' + message.command + ', is the same user');
+            break;
+          }
+          console.log('after same-user check');
           if (!!parsedObj.comment) {
-            this.commentSubject.next({ action: message.command, comment: parsedObj.comment });
+            this._commentSubject.next({ action: message.command, comment: parsedObj.comment });
           } else {
             console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment})`);
           }
@@ -560,8 +565,16 @@ export class ManagePagesService {
         case Action.COMMENTENTRYADDED:
         case Action.COMMENTENTRYDELETED:
         case Action.COMMENTENTRYMODIFIED:
+          if (message.user === this.tokenStorage.getToken()) {
+            console.log('comments: action:' + message.command + ', is the same user');
+            break;
+          } else {
+            console.log('comments: action:' + message.command + ', different user: remote: ' +
+              parsedObj.userId + ', this one: ' + this.tokenStorage.getToken() );
+          }
+          console.log('after same-user check');
           if (!!parsedObj.comment && !!parsedObj.entry) {
-            this.commentSubject.next({
+            this._commentSubject.next({
               action: message.command,
               comment: parsedObj.comment,
               entry: parsedObj.entry
@@ -634,6 +647,6 @@ export class ManagePagesService {
    * @return Observable<CommentAction>
    */
   getCommentActionObs(): Observable<CommentAction> {
-    return this.commentSubject.asObservable();
+    return this._commentSubject.asObservable();
   }
 }

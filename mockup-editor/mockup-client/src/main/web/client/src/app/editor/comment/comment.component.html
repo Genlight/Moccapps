@@ -1,5 +1,5 @@
 <div *ngIf="!comment.isCleared" class="
-        list-group 
+        list-group
         list-group-item-action
         card
         mb-2
@@ -52,7 +52,12 @@
         <form novalidate #formCommentEntry="ngForm">
           <div class="form-group">
             <input type="textarea" id="entryMessage" class="form-control" name="entryMessage" #entryMessage
-                   [(ngModel)]="entryMessages" (keyup.enter)="onChangeSubmit(entry)" placeholder="{{entry.message}}">
+                   [(ngModel)]="entryMessages" placeholder="{{entry.message}}">
+             <div class="input-group-append">
+               <button class="btn btn-primary" (click)="onChangeSubmit(entry)">
+                 <fa-icon [icon]="faPaperplane"></fa-icon>
+               </button>
+             </div>
           </div>
         </form>
       </div>
@@ -64,8 +69,8 @@
     <form novalidate #formNewCommentEntry="ngForm">
       <div class="form-group">
         <div class="input-group">
-          <input type="textarea" id="newEntryMessage" class="form-control" name="newEntryMessage" #newEntryMessage
-                 [(ngModel)]="newEntry.message" placeholder="Write your reply" (keyup.enter)="onCreateEntry()">
+          <input type="textarea" id="newEntryMessage" class="form-control" name="newEntryMessage"
+                 [(ngModel)]="newEntryMessage" placeholder="Write your reply">
           <div class="input-group-append">
             <button class="btn btn-primary" (click)="onCreateEntry()">
               <fa-icon [icon]="faPaperplane"></fa-icon>

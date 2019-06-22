@@ -36,9 +36,8 @@ export class CommentBarComponent implements OnInit {
     // ,
     this.commentService.commentSubjectTest.subscribe(
       (value) => {
-        console.log("commentSubject:"+value);
+        console.log("Comment-bar: commentSubject:" + value);
         this.comments = value;
-        //this.getComments(); //load new from rest
       }
     )
   }
