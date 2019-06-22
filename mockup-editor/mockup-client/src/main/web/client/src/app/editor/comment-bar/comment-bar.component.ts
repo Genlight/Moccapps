@@ -33,7 +33,7 @@ export class CommentBarComponent implements OnInit {
 
       }
     )
-    //,
+    // ,
     this.commentService.commentSubjectTest.subscribe(
       (value) => {
         console.log("commentSubject:"+value);
@@ -51,11 +51,6 @@ export class CommentBarComponent implements OnInit {
   }
 
   initCommentservice() {
-    this.commentService.getAddCommentObs().subscribe(
-      (bool) => {
-        this.addingNewComment = bool;
-      }
-    );
     this.commentService.getAddCommentObs().subscribe(
       (bool) => {
         this.addingNewComment = bool;

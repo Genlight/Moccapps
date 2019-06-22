@@ -2,18 +2,18 @@
  * author alexander Genser
  * @param  providedIn root
  */
-import {Injectable} from "@angular/core";
-import {ManagePagesService} from "./managepages.service";
-import {Page} from "../shared/models/Page";
-import {BehaviorSubject, Observable} from "rxjs";
-import {TokenStorageService} from "../auth/token-storage.service";
-import {SocketConnectionService} from "../socketConnection/socket-connection.service";
-import {ApiService} from "../api.service";
-import {Comment,CommentAction, CommentEntry} from "../shared/models/comments";
-import {Action} from "./fabric-canvas/transformation.interface";
-import {User} from "../shared/models/User";
-import {UUID} from "angular2-uuid";
-import {isArray} from "util";
+import {Injectable} from '@angular/core';
+import {ManagePagesService} from './managepages.service';
+import {Page} from '../shared/models/Page';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {TokenStorageService} from '../auth/token-storage.service';
+import {SocketConnectionService} from '../socketConnection/socket-connection.service';
+import {ApiService} from '../api.service';
+import {Comment, CommentAction, CommentEntry} from '../shared/models/comments';
+import {Action} from './fabric-canvas/transformation.interface';
+import {User} from '../shared/models/User';
+import {UUID} from 'angular2-uuid';
+import {isArray} from 'util';
 
 @Injectable({
   providedIn: 'root'
@@ -33,27 +33,25 @@ export class CommentService {
     private socketService: SocketConnectionService,
     private apiService: ApiService
   ) {
-     this.testcount = false;
+    this.testcount = false;
     this.commentSubjectTest = new BehaviorSubject<Comment[]>([]);
     this.comments = [];
     this.pageService.commentSubject.subscribe(
       (data) => {
         if (!data) { return; }
-        console.log("commentSubjectCOMMENT:"+data.comment);
-        //CommentAction (comment:added) ([object Object]) (undefined)
-        if(data.action !== null)
-        {
-          console.log("commentSubjectCOMMENT  action:"+data.action);
+        console.log('commentSubjectCOMMENT:' + data.comment);
+        // CommentAction (comment:added) ([object Object]) (undefined)
+        if (data.action !== null) {
+          console.log('commentSubjectCOMMENT  action:' + data.action);
         }
-        if (data.comment !==null) {
-          console.log("commentSubjectCOMMENT  comment:"+data.comment.toString()+" isArray:"+isArray(data.comment));
+        if (data.comment !== null) {
+          console.log('commentSubjectCOMMENT  comment:' + data.comment.toString() + ' isArray:' + isArray(data.comment));
         }
-        if(data.entry!==null){
-          console.log('commentSubjectCOMMENT, entry: '+data.entry);
+        if (data.entry !== null) {
+          console.log('commentSubjectCOMMENT, entry: ' + data.entry);
         }
 
-
-        //this.getCommentsImpl();
+        // this.getCommentsImpl();
         let comment: Comment;
         let index;
         switch (data.action) {
@@ -67,6 +65,7 @@ export class CommentService {
           case Action.COMMENTCLEARED:
             comment = this.comments.find((o) => o.uuid === data.comment.uuid);
             comment.isCleared = true;
+            this.commentSubjectTest.next(this.comments);
             break;
           case Action.COMMENTENTRYADDED:
             comment = this.comments.find((o) => o.uuid === data.comment.uuid);
@@ -75,38 +74,35 @@ export class CommentService {
             break;
           case Action.COMMENTENTRYDELETED:
             comment = this.comments.find((o) => o.uuid === data.comment.uuid);
-            index = comment.entries.findIndex((o) => o.id === data.entry.id);
-            comment.entries.splice(index, 1);
             this.commentSubjectTest.next(this.comments);
             break;
           case Action.COMMENTENTRYMODIFIED:
             comment = this.comments.find((o) => o.uuid === data.comment.uuid);
-            let ent = comment.entries.find((o) => o.id === data.entry.id);
-            ent = data.entry;
+            index = comment.entries.findIndex((o) => o.id === data.entry.id);
+            let ent = data.entry;
+            comment.entries.splice(index, 1, data.entry);
             this.commentSubjectTest.next(this.comments);
             break;
           default:
-            console.log("default:"+data);
-            break
+            console.log('default:' + data);
+            break;
             }
-      }
-        );
-
-        this.addingComment = new BehaviorSubject<boolean>(false);
-        console.log('CommentService init');
-        this.pageService.activePage.subscribe((page) => {
-          if (!page) { return; }
-          console.log("activePageCOMMENT:"+page);
-          this.activePage = page;
-          this.getCommentsImpl();
-        });
-      }
-      /**
-       * for testing comments, will be deleted after persistening of comments
-       * @return  Observable<Comment[]>
-       */
+    });
+    this.addingComment = new BehaviorSubject<boolean>(false);
+    console.log('CommentService init');
+    this.pageService.activePage.subscribe((page) => {
+      if (!page) { return; }
+      console.log('activePageCOMMENT:' + page);
+      this.activePage = page;
+      this.getCommentsImpl();
+    });
+  }
+  /**
+   * for testing comments, will be deleted after persistening of comments
+   * @return  Observable<Comment[]>
+   */
   getComments(): Observable<Comment[]> {
-    console.log("getComments called:"+`/page/${this.activePage.id}/comments`);
+    console.log('getComments called:' + `/page/${this.activePage.id}/comments`);
     return this.apiService.get<Comment[]>(`/page/${this.activePage.id}/comments`);
   }
 
@@ -151,8 +147,8 @@ export class CommentService {
       }
     }
     const entry = {
-      email:this.storageService.getUserInfo().email,
-      username:this.storageService.getUserInfo().username,
+      email: this.storageService.getUserInfo().email,
+      username: this.storageService.getUserInfo().username,
       message,
       date: new Date(),
       id: 0,
@@ -180,8 +176,7 @@ export class CommentService {
     this.socketService.send(JSON.stringify(content), command);
 
   }
-
-  //
+  // not in use, currently
   updateComment(comment: Comment) {
     const content = {comment};
     const command = Action.COMMENTMODIFIED;
@@ -202,7 +197,7 @@ export class CommentService {
     const content = {comment};
     const command = Action.COMMENTENTRYDELETED;
     console.log(`${command}`);
-    //this.socketService.send(JSON.stringify(content), command);
+    this.socketService.send(JSON.stringify(content), command);
   }
 
   // deleteComment(comment: Comment) {
@@ -233,7 +228,10 @@ export class CommentService {
   }
 
   applyCommentAction(comAction: CommentAction) {
-    console.log('applyCommentAction, Action: ' + comAction.action.toString()+" comment:"+comAction.comment.toString()+" entry:"+comAction.entry.toString());
+    console.log('applyCommentAction, Action: ' +
+      comAction.action.toString() +
+      ' comment:' + comAction.comment.toString() +
+      ' entry:' + comAction.entry.toString());
 
     /*if (!comAction) { return; }
     this.getCommentsImpl();
@@ -274,17 +272,17 @@ export class CommentService {
   testgetComments() {
     this.getComments().subscribe(
       (data) => {
-        console.log("Got commtents");
+        console.log('Got comments');
         if (Array.isArray(data)) {
           this.comments = data;
-          console.log("Got commtents is array:"+(data as Comment[]));
-          data.forEach(function (value) {
+          console.log('Got commtents is array:' + (data as Comment[]));
+          data.forEach(function(value) {
             console.log(value);
             console.log((value as Comment));
           });
         } else {
           this.comments = [data];
-          console.log("Got commtents:"+data);
+          console.log('Got commtents:' + data);
         }
       }
     );

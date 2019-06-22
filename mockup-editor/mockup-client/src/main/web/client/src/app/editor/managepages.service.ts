@@ -98,7 +98,7 @@ export class ManagePagesService {
    * so a grid in the backgound-canvas can be seen if active
    */
   createGridCanvas() {
- 
+
       // needed, because on load, there des not exist a canvas
       if (typeof this.canvas === 'undefined') {
         this.createPage(this.dataStore.activePage.width, this.dataStore.activePage.height);
@@ -112,7 +112,7 @@ export class ManagePagesService {
       this.canvas.lowerCanvasEl.parentNode.appendChild(this.gridCanvas.lowerCanvasEl);
       //this.canvas.backgroundColor = null;
       this.canvas.renderAll();
-    
+
   }
 
   /**
@@ -528,7 +528,7 @@ export class ManagePagesService {
             if (!!pageId){
               //Remove page
               this.removePageFromStore(pageId);
-            }            
+            }
           }
           break;
 
@@ -541,6 +541,7 @@ export class ManagePagesService {
           case Action.COMMENTADDED:
           case Action.COMMENTMODIFIED:
           case Action.COMMENTCLEARED:
+            if (parsedObj.userId === this.tokenStorage.getToken()) { break; }
             console.log("page comment:"+message.command+" "+parsedObj.comment);
             if (!!parsedObj.comment) {
             var asd = new CommentAction();
@@ -555,6 +556,7 @@ export class ManagePagesService {
           case Action.COMMENTENTRYADDED:
           case Action.COMMENTENTRYDELETED:
           case Action.COMMENTENTRYMODIFIED:
+          if(parsedObj.userId === this.tokenStorage.getToken()) { break; }
             console.log("page commententry:"+message.command+" "+parsedObj.comment+" "+parsedObj.entry);
             if (!!parsedObj.comment && !!parsedObj.entry) {
             var asd = new CommentAction();
