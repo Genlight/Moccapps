@@ -241,6 +241,19 @@ public class PageHandler {
                     e.printStackTrace();
                 }
                 return true;
+            case "comment:deleted":
+                logger.info("comment:deleted:content:"+message.getContent());
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+                    commentService.removeComment(comment);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return true;
             case "commententry:added":
                 logger.info("commententry:added:content:"+message.getContent());
                 try {
