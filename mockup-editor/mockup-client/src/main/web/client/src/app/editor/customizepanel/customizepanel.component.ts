@@ -57,6 +57,12 @@ export class CustomizepanelComponent implements OnInit {
     },
     text: ''
   };
+  public groupProperties: any = {
+    fillColor: '#ffffff',
+    strokeColor: '#ffffff',
+    strokeWidth: 10,
+    opacity: 100,
+  };
   public drawingMode: any = {
     color: '#000000',
     stroke: 10,
@@ -76,12 +82,34 @@ export class CustomizepanelComponent implements OnInit {
     this.managePagesService.activePage.subscribe(
       (page) => {
         this.activePage = page;
+        //this.onPageChanged();
       }
     );
+    this.managePagesService.isLoadingPage.subscribe(
+      (value) => {
+        if (!value) {
+          this.onPageChanged();
+        }
+      }
+    )
   }
 
   ngOnInit() {
     this.setNewPage(this.managePagesService.getCanvas());
+  }
+
+  /**
+   * Do initialization after page change
+   */
+  onPageChanged() {
+    if (!!this.canvas) {
+      // Update backgroundcolor
+      const backgroundColor = this.canvas.backgroundColor;
+      //alert(backgroundColor);
+      this.managePagesService.getGridCanvas().backgroundColor = backgroundColor;
+      this.canvasProperties.backgroundColor = backgroundColor;
+    }
+    //this.setCanvasBackgroundColor();
   }
 
   onDimensionChanged() {
@@ -120,6 +148,8 @@ export class CustomizepanelComponent implements OnInit {
 
       'object:added': (event) => {
         //this.sendMessageToSocket(JSON.stringify(event.transform.target),'added');
+        console.log('object added..........');
+        console.log(event.target);
       },
       'object:moving': (event) => { },
       'selection:created': (event) => {
@@ -140,20 +170,54 @@ export class CustomizepanelComponent implements OnInit {
     });
   }
 
+  /**
+   * loads elment properties based on elment type
+   * @param elem selected elment(s)
+   */
   manageSelection(elem) {
     if (elem.type === 'activeSelection' || elem.type === 'group') {
       // load properties of all elements if they are the same and otherwise default or only load default properties generally?
-
-    } else {
-      if (elem.type === 'textbox') {
+      this.loadGroupProperties(elem);
+    } else if (elem.type === 'textbox') {
         this.loadTextProperties(elem);
-      } else if (elem.type === 'circle' || elem.type === 'rect') {
+      } else if (elem.type === 'image') {
+        // probably add filters here
+      } else { //if (elem.type === 'circle' || elem.type === 'rect') {
         this.loadElementProperties(elem);
       }
-    }
     this.selected = elem;
   }
 
+  /**
+   * copies properties of a group of elments to a variable
+   * @param group element group to copy properties from
+   */
+  loadGroupProperties(group) {
+    group.forEachObject( (elem) => {
+      const fill = elem.fill;
+      const strokeColor = elem.stroke;
+      const strokeWidth = elem.strokeWidth;
+      const opacity = elem.opacity * 100;
+      if (this.groupProperties.fillColor !== fill) {
+        this.groupProperties.strokeColor = '#ffffff';
+      }
+      if (this.groupProperties.strokeColor !== strokeColor) {
+        this.groupProperties.strokeColor = '#ffffff';
+      }
+      if (this.groupProperties.strokeWidth !== strokeWidth) {
+        this.groupProperties.strokeColor = 0;
+      }
+      if (this.groupProperties.opacity !== opacity) {
+        this.groupProperties.opacity = 100;
+      }
+    });
+    
+  }
+
+  /**
+   * copies properties of a text elment to a variable
+   * @param text text element to copy properties from
+   */
   loadTextProperties(text) {
     this.loadElementProperties(text);
     this.textProperties.fontSize = text.fontSize;
@@ -169,6 +233,10 @@ export class CustomizepanelComponent implements OnInit {
     console.log(this.textProperties);
   }
 
+  /**
+   * copies properties of an elment to a variable
+   * @param elem element to copy properties from
+   */
   loadElementProperties(elem) {
     this.elementProperties.backgroundColor = elem.backgroundColor;
     this.elementProperties.fillColor = elem.fill;
@@ -181,6 +249,11 @@ export class CustomizepanelComponent implements OnInit {
     console.log(this.elementProperties);
   }
 
+  /**
+   * set a property for a single object
+   * @param property property to set
+   * @param value new value of the property
+   */
   setElementProperty(property, value) {
     let currentElem = this.selected;
     console.log('setproperty:current element ' + JSON.stringify(currentElem));
@@ -202,6 +275,34 @@ export class CustomizepanelComponent implements OnInit {
     currentElem.sendMe = true;
     // TODO: disable once server sends messages also to the origin, will be rendered by applyTransformation
     this.canvas.renderAll();
+  }
+
+  /**
+   * sets a property for each element in a group
+   * @param property property to set
+   * @param value new value of the property
+   */
+  setGroupProperty(property, value) {
+    this.selected.forEachObject((elem) => {
+      elem.set(property, value);
+    });
+    this.canvas.renderAll();
+  }
+
+  setGroupFillColor() {
+    this.setGroupProperty('fill', this.groupProperties.fillColor);
+  }
+
+  setGroupStrokeColor() {
+    this.setGroupProperty('stroke', this.groupProperties.strokeColor);
+  }
+
+  setGroupStrokeWidth() {
+    this.setGroupProperty('strokeWidth', this.groupProperties.strokeWidth);
+  }
+
+  setGroupOpacity() {
+    this.setGroupProperty('opacity', this.groupProperties.opacity / 100);
   }
 
   bringToFront() {

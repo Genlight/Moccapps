@@ -109,7 +109,7 @@
         </button>
       </div>
 
-      <div *ngIf="selected && selected.type != 'activeSelection' && selected.type != 'group'">
+      <div *ngIf="selected && selected.type != 'activeSelection' && selected.type != 'group' && selected.type != 'image'">
         <h2>Element Settings</h2>
         <h3>Opacity:</h3>
         <div>
@@ -253,8 +253,35 @@
 
       <div *ngIf="selected && (selected.type == 'activeSelection' || selected.type == 'group')" id="multipleElementsSettings">
           <h2>Multiple Elements</h2>
-          <h3>Customizing multiple elements at once is currently not supported.</h3>
+          <!--<h3>Customizing multiple elements at once is currently not supported.</h3>-->
+          <h3>Opacity:</h3>
+        <div>
+          <input class="editorslider" type="range" min="0" max="100" step="1" [value]="groupProperties.opacity"
+            [(ngModel)]="groupProperties.opacity" (change)="setGroupOpacity()">
+          <label class="sliderlabel">{{groupProperties.opacity}}</label>
         </div>
+        <h3>Stroke:</h3>
+        <div>
+          <input class="editorslider" type="range" min="0" max="30" step="1" [value]="groupProperties.strokeWidth"
+            [(ngModel)]="groupProperties.strokeWidth" (change)="setGroupStrokeWidth()">
+          <label class="sliderlabel">{{groupProperties.strokeWidth}}</label>
+        </div>
+        <h3>Fill/Stroke Color</h3>
+        <div class="btn-group multicolorbuttons extrapadding" role="group">
+          <button class="btn colorPicker" [(colorPicker)]="groupProperties.fillColor"
+            [style.background]="groupProperties.fillColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
+            [value]="groupProperties.fillColor" [cpPresetColors]="[null, '#000', '#fff']" (colorPickerChange)="setGroupFillColor()">
+          </button>
+          <button class="btn colorPicker" [(colorPicker)]="groupProperties.strokeColor"
+            [style.background]="groupProperties.strokeColor" [cpPosition]="'left'" [cpAlphaChannel]="'disabled'"
+            [value]="groupProperties.strokeColor" [cpPresetColors]="[null, '#000', '#fff']" (colorPickerChange)="setGroupStrokeColor()">
+          </button>
+        </div>
+        </div>
+      <div *ngIf="selected && (selected.type == 'image')" id="ImageSettings">
+        <h2>Images</h2>
+        <h3>Sadly image manipulation is currently not supported.</h3>
+      </div>
     </li>
   </ul>
 </div>

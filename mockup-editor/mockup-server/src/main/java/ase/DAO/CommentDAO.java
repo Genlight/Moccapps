@@ -24,4 +24,6 @@ public interface CommentDAO {
     List<CommentEntry> findEntryByCommentId(int id) throws DAOException;
 
     List<Comment> findCommentsForPage(int pageId) throws DAOException;
+
+    Comment findByUUID(String uuid) throws DAOException;
 }

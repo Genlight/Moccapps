@@ -1,8 +1,12 @@
 package ase.socketConnection;
 
 import ase.message.socket.SocketMessage;
+import ase.service.CommentService;
 import ase.service.PageService;
+import ase.service.ProjectVersionService;
+import ase.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.micrometer.core.instrument.util.IOUtils;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
@@ -45,6 +49,15 @@ public class SocketServer {
     @Autowired
     private PageService pageService;
 
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProjectVersionService projectVersionService;
+
     public SocketServer(){
         executorService= Executors.newCachedThreadPool();
         sessionIdUserIdMap =Collections.synchronizedMap(new HashMap<>());
@@ -82,6 +95,7 @@ public class SocketServer {
         String userId= sessionIdUserIdMap.get(sessionId);
         String pageId=currentUser.get(userId).getPageId();
         sessionIdUserIdMap.remove(sessionId);
+        pageHandlerMap.get(pageId).unlockElement(userId);
         if(!pageHandlerMap.get(pageId).removeUser(userId)){
             pageHandlerMap.remove(pageId);
         }
@@ -110,7 +124,7 @@ public class SocketServer {
             String pageIdString = message.getPageId();
             int pageId = Integer.parseInt(pageIdString);
 
-            PageHandler pageHandler = new PageHandler(message.getProjectId(), pageId, pageService);
+            PageHandler pageHandler = new PageHandler(message.getProjectId(), pageId, pageService,commentService,userService);
             pageHandlerMap.put(pageIdString, pageHandler);
             UserHandler handler = currentUser.get(message.getUser());
 
@@ -133,6 +147,17 @@ public class SocketServer {
                 }
                 return;
             case "page:created":
+                break;
+            case "page:removed":
+                String pageId=message.getPageId();
+                pageHandlerMap.remove(pageId);
+                return;
+            case "version:created":
+                for(PageHandler page : pageHandlerMap.values()){
+                    page.persistPage();
+                }
+                ObjectNode node = mapper.readValue(message.getContent(), ObjectNode.class);
+                projectVersionService.createProjectVersion(Integer.parseInt(message.getProjectId()),node.get("VersionName").asText());
                 break;
             default:
                 if (!pageHandlerMap.get(message.getPageId()).handleMessage(message)){

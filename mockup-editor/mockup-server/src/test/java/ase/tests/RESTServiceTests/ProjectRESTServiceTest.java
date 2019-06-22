@@ -16,6 +16,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,10 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author Matthias Deimel
  */
-@ContextConfiguration(classes = Application.class)
+@ContextConfiguration(classes = {ProjectRESTServiceTest.Config.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("test")
-@WebMvcTest(ProjectRESTService.class)
+@WebMvcTest(ProjectRESTServiceTest.class)
 @AutoConfigureMockMvc(secure = false)
 @WebAppConfiguration
 public class ProjectRESTServiceTest {
@@ -74,10 +77,12 @@ public class ProjectRESTServiceTest {
             .andExpect(content().string("{\"message\":\"success\"}"));
     }
 
-    @TestConfiguration
+    @Configuration
+    @Import(Application.class)
     protected static class Config {
 
         @Bean
+        @Primary
         public ProjectService projectService() {
             return Mockito.mock(ProjectService.class);
         }

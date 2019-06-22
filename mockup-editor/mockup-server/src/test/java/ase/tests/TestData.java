@@ -3,6 +3,7 @@ package ase.tests;
 import ase.DTO.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +67,7 @@ public class TestData {
     private static final int COMMENTENTRY_1_COMMENTID=1;
     private static final String COMMENTENTRY_1_MESSAGE="COMMENT";
     private static final int COMMENTENTRY_1_USERID=1;
-    private static final Date COMMENTENTRY_1_DATE=java.sql.Date.valueOf( "2019-01-01" );
+    private static final Timestamp COMMENTENTRY_1_DATE=Timestamp.valueOf("2019-01-01 03:00:00");
 
     private static final int COMMENT_2_ID=2;
     private static final int COMMENT_2_PAGEID=2;
@@ -78,7 +79,7 @@ public class TestData {
     private static final int COMMENTENTRY_2_COMMENTID=2;
     private static final String COMMENTENTRY_2_MESSAGE="COMMENT";
     private static final int COMMENTENTRY_2_USERID=2;
-    private static final Date COMMENTENTRY_2_DATE=java.sql.Date.valueOf( "2029-02-02" );
+    private static final Timestamp COMMENTENTRY_2_DATE=Timestamp.valueOf("2029-01-01 03:00:00");
     private static final String PROJECTVERSION_1_TAG="testTag1";
     private static final String PROJECTVERSION_2_TAG="testTag2";
 
@@ -131,25 +132,25 @@ public class TestData {
         project3.addUser(2);
         project4.addUser(2);
 
-        createdComment1=new Comment(COMMENT_1_ID,COMMENT_1_PAGEID,COMMENT_1_CLEARED);
-        createdCommentEntry1=new CommentEntry(COMMENTENTRY_1_ID,COMMENTENTRY_1_MESSAGE,COMMENTENTRY_1_USERID,COMMENTENTRY_1_DATE,COMMENTENTRY_1_COMMENTID);
+        createdComment1=new Comment(COMMENT_1_ID,COMMENT_1_PAGEID,"test",COMMENT_1_CLEARED);
+        createdCommentEntry1=new CommentEntry(COMMENTENTRY_1_ID,COMMENTENTRY_1_MESSAGE,createdUser1,COMMENTENTRY_1_DATE,COMMENTENTRY_1_COMMENTID,1);
         createdComment1.setCommentObjects(new ArrayList<>(Arrays.asList(COMMENT_1_OBJECT)));
         createdComment1.setCommentEntryList(new ArrayList<>(Arrays.asList(createdCommentEntry1)));
 
 
-        comment2=new Comment(COMMENT_2_ID,COMMENT_2_PAGEID,COMMENT_2_CLEARED);
-        commentEntry2=new CommentEntry(COMMENTENTRY_2_ID,COMMENTENTRY_2_MESSAGE,COMMENTENTRY_2_USERID,COMMENTENTRY_2_DATE,COMMENTENTRY_2_COMMENTID);
+        comment2=new Comment(COMMENT_2_ID,COMMENT_2_PAGEID,"test",COMMENT_2_CLEARED);
+        commentEntry2=new CommentEntry(COMMENTENTRY_2_ID,COMMENTENTRY_2_MESSAGE,createdUser1,COMMENTENTRY_2_DATE,COMMENTENTRY_2_COMMENTID,1);
         comment2.setCommentObjects(new ArrayList<>(Arrays.asList(COMMENT_2_OBJECT)));
 
-        createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_HEIGHT,PAGE_1_WIDTH,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA,new ArrayList<>(Arrays.asList(createdComment1)));
+        createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_HEIGHT,PAGE_1_WIDTH,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA);
         createdPage2=new Page(2,PAGE_2_NAME,PAGE_2_HEIGHT,PAGE_2_WIDTH,PAGE_2_ORDER,PAGE_2_PROJECT_ID,PAGE_2_PAGE_DATA);
-        page3=new Page(PAGE_3_NAME,PAGE_3_HEIGHT,PAGE_3_WIDTH,PAGE_3_ORDER,PAGE_3_PROJECT_ID,PAGE_3_PAGE_DATA,new ArrayList());
+        page3=new Page(PAGE_3_NAME,PAGE_3_HEIGHT,PAGE_3_WIDTH,PAGE_3_ORDER,PAGE_3_PROJECT_ID,PAGE_3_PAGE_DATA);
 
         createdInvitation1 = new Invitation(1,1,1,2,-1);
         invitation2 = new Invitation(2,2,1,-1);
 
-        projectVersion2 = new ProjectVersion(PROJECTVERSION_2_TAG,createdProject2.getId());
-        createdProjectVersion1 = new ProjectVersion(1,PROJECTVERSION_1_TAG,createdProject1.getId());
+        projectVersion2 = new ProjectVersion(PROJECTVERSION_2_TAG,createdProject2.getId(),java.sql.Date.valueOf( "2010-01-31" ));
+        createdProjectVersion1 = new ProjectVersion(1,PROJECTVERSION_1_TAG,createdProject1.getId(),java.sql.Date.valueOf( "2019-01-01" ));
 
         createdPageVersion1 = new PageVersion(1,createdPage1.getPage_name(),createdPage1.getHeight(),createdPage1.getWidth(),createdPage1.getPage_order(),createdProjectVersion1.getId(),createdPage1.getPage_data());
         pageVersion2 = new PageVersion(createdPage2.getPage_name(),createdPage2.getHeight(),createdPage2.getWidth(),createdPage2.getPage_order(),createdProjectVersion1.getId(),createdPage2.getPage_data());

@@ -6,8 +6,8 @@ import { User } from '../models/User';
 })
 export class UsercirclePipe implements PipeTransform {
 
-  transform(value: User, args?: any): string {
-    return value.username.substr(0,2);
+  transform(value: string, args?: any): string {
+      return value.substr(0,2);
   }
 
 }

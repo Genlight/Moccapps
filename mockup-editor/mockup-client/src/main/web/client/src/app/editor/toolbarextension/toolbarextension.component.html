@@ -1,5 +1,5 @@
 <div class="toolbarextension" id="toolbarextension" *ngIf="showComponent">
-  <label id="extToolbarTitle">extended toolbar</label>
+  <label id="extToolbarTitle"><b>Element Libraries</b></label>
   <div id="extToolbarContent" class="referenceElement">
 
       <span *ngFor="let category of categories">
@@ -10,15 +10,17 @@
           </button>
         </span>
 
+    <div class="separator"></div>
     <span *ngFor="let elem of draggableElements">
       <div [dndDraggable]="elem.data" 
           [dndEffectAllowed]="elem.effectAllowed"
           (dndStart)="onDragStart($event)"
-          (dndEnd)="onDragEnd($event)">
-        {{elem.name}}
+          (dndEnd)="onDragEnd($event)"
+          class="library-element">
+        <!--{{elem.name}}-->
         <!--optionalchild element used as preview when dragging-->
         <div dndDragImageRef class="elementImage">
-          <img src="{{elem.previewimage}}" class="referenceImage">
+          <img src="{{elem.previewimage}}" title="{{elem.name}}" class="referenceImage">
         </div>
       </div>
     </span>

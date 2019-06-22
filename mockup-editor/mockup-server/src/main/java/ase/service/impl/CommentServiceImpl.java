@@ -9,10 +9,12 @@ import org.mapstruct.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class CommentServiceImpl implements CommentService {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
@@ -48,6 +50,7 @@ public class CommentServiceImpl implements CommentService {
             List<CommentEntry> commentEntries=new ArrayList<>();
 
             for(CommentEntry e:commentEntry){
+                e.setCommentId(comment.getId());
                 commentEntries.add(commentDAO.createEntry(e));
             }
 
@@ -102,6 +105,16 @@ public class CommentServiceImpl implements CommentService {
     public Comment findCommentById(int id){
         try {
             return commentDAO.findById(id);
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Comment findCommentByUUID(String uuid){
+        try {
+            return commentDAO.findByUUID(uuid);
         } catch (DAOException e) {
             e.printStackTrace();
         }

@@ -50,9 +50,6 @@ public class PageServiceImpl implements PageService {
     public List<Page> getAllPagesForProject(int projectId) {
         try {
             List<Page>pages= pageDAO.findPagesForProject(projectId);
-            for(Page p:pages){
-                p.setComments(commentDAO.findCommentsForPage(p.getId()));
-            }
             return pages;
         } catch (DAOException e) {
             e.printStackTrace();
@@ -64,7 +61,6 @@ public class PageServiceImpl implements PageService {
     public Page getPageByProjectIdAndOrder(int id, int order) {
         try {
             Page page= pageDAO.findByProjectAndOrder(id,order);
-            page.setComments(commentDAO.findCommentsForPage(page.getId()));
             return page;
         } catch (DAOException e) {
             e.printStackTrace();
@@ -76,7 +72,6 @@ public class PageServiceImpl implements PageService {
     public Page getPageById(int id) {
         try {
             Page page= pageDAO.findById(id);
-            page.setComments(commentDAO.findCommentsForPage(page.getId()));
             return page;
         } catch (DAOException e) {
             e.printStackTrace();

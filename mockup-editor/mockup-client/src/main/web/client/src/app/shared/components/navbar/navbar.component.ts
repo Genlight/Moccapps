@@ -27,6 +27,7 @@ import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal
 import { ElementsService } from 'src/app/editor/elements.service';
 import { CommentService } from 'src/app/editor/comment.service';
 import { CreateProjectModalComponent } from 'src/app/projects/create-project-modal/create-project-modal.component';
+import {CommentEntry} from "../../models/comments";
 
 @Component({
   selector: 'app-navbar',
@@ -52,6 +53,7 @@ export class NavbarComponent implements OnInit {
   info: any;
 
   grid: boolean = false;
+  showsComment: boolean = false;
   snapToGrid: boolean = false;
 
   /**
@@ -122,6 +124,18 @@ export class NavbarComponent implements OnInit {
       this.grid = value;
       this.toggleGrid();
     });
+
+    this.workspaceService.showsComments.subscribe((value) => {
+      this.showsComment = value;
+    });
+  }
+
+  onToggleComments() {
+    if (this.showsComment) {
+      this.workspaceService.hideComments();
+    } else {
+      this.workspaceService.showComments();
+    }
   }
 
   onLogout() {
@@ -146,7 +160,9 @@ export class NavbarComponent implements OnInit {
     const modelRef = this.modalService.open(ManageUserModalComponent);
     modelRef.componentInstance.project = this.project;
     modelRef.componentInstance.confirm.subscribe(() =>
-      {}
+      {
+        this.loadProjects()
+      }
     );
   }
 
@@ -236,14 +252,8 @@ export class NavbarComponent implements OnInit {
     } else {
       return;
     }
-
     if (file.type.match('image/png') || file.type.match('image/jpeg') || file.type.match('image/bmp') || file.type.match('image/svg')) {
       this.elementsService.importImage(file);
-
-      //const canvas = this.managePagesService.getCanvas();
-      //const url = window.URL.createObjectURL(file);
-      //this.modifyService.loadImageFromURL(canvas,url);
-      //window.URL.revokeObjectURL(url);
     }
 
   }
@@ -526,7 +536,24 @@ export class NavbarComponent implements OnInit {
    * opening the comment sidebar (if implemented)
    * @return void
    */
-  onAddComment() {
+  /*onAddComment() {
       this.commentService.setAddCommentObs(true);
+  }*/
+
+  loadProjects(): void {
+    this.projectService.getProjects<Project[]>()
+      .subscribe(
+        (response) => {
+          console.log(response);
+          var currproj = this.project;
+          for(let a of response) {
+            if(a.id === currproj.id){
+              currproj = a;
+              break;
+            }
+          }
+          this.project = currproj;
+        },
+      );
   }
 }

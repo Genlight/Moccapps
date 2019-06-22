@@ -11,13 +11,16 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Repository
 public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersionDAO {
 
     private static final Logger logger  = LoggerFactory.getLogger(ProjectDAOImpl.class);
-    private static final String PSTMT_CREATE = "INSERT INTO projectVersions (version_name,project_id) VALUES (?,?)";
+    private static final String PSTMT_CREATE = "INSERT INTO projectVersions (version_name,project_id,last_modified) VALUES (?,?,?)";
     private static final String PSTMT_DELETE = "DELETE FROM projectVersions WHERE id=?";
     private static final String PSTMT_FINDBYID = "SELECT * FROM projectVersions WHERE id=?";
     private static final String PSTMT_FINDBYPROJECTID = "SELECT * FROM projectVersions WHERE project_id=?";
@@ -48,16 +51,20 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
             pstmt=connection.prepareStatement(PSTMT_CREATE, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,versionName);
             pstmt.setInt(2,project.getId());
+            pstmt.setDate(3,project.getLastModified());
             pstmt.executeUpdate();
             ResultSet rs=pstmt.getGeneratedKeys();
             rs.next();
             projectVersion.setId(rs.getInt(1));
             projectVersion.setVersionName(rs.getString(2));
             projectVersion.setProjectId(rs.getInt(3));
+            projectVersion.setLastModified(rs.getDate(4));
             rs.close();
 
             List<Page> pages = pageDAO.findPagesForProject(project.getId());
+            pages.sort(Comparator.comparing(Page::getId));
             for(Page p:pages){
+                logger.info("Create Version:"+p.getId());
                 pageVersionDAO.create(p,projectVersion.getId());
             }
 
@@ -112,7 +119,8 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
             projectVersion = new ProjectVersion(
                     rs.getInt("id"),
                     rs.getString("version_name"),
-                    rs.getInt("project_id")
+                    rs.getInt("project_id"),
+                    rs.getDate("last_modified")
             );
             rs.close();
 
@@ -138,7 +146,8 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
                 projectVersions.add(new ProjectVersion(
                         rs.getInt("id"),
                         rs.getString("version_name"),
-                        rs.getInt("project_id")
+                        rs.getInt("project_id"),
+                        rs.getDate("last_modified")
                 ));
             }
             rs.close();
@@ -169,7 +178,8 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
             projectVersion = new ProjectVersion(
                     rs.getInt("id"),
                     rs.getString("version_name"),
-                    rs.getInt("project_id")
+                    rs.getInt("project_id"),
+                    rs.getDate("last_modified")
             );
             rs.close();
 
@@ -194,7 +204,8 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
                 projectVersions.add(new ProjectVersion(
                         rs.getInt("id"),
                         rs.getString("version_name"),
-                        rs.getInt("project_id")
+                        rs.getInt("project_id"),
+                        rs.getDate("last_modified")
                 ));
             }
             rs.close();

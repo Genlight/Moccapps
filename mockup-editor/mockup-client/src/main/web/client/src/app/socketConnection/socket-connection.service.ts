@@ -31,7 +31,7 @@ export class SocketConnectionService {
     const socket = new SockJS(API_URL+'/connect');
     this.stompClient = Stomp.over(socket);
     const _this = this;
-    this.stompClient.connect({}, function (frame) {
+    this.stompClient.connect({}, (frame) => {
       _this.stompClient.subscribe('/user/' + userId + '/queue/send', function (message) {
         callback.bind(that)(JSON.parse(message.body,/*_this.logMessage*/),/*_this.logMessage*/);
         //callback.bind(that)(JSON.parse(pako.inflate(atob(message.body)),/*_this.logMessage*/),/*_this.logMessage*/);
@@ -42,6 +42,8 @@ export class SocketConnectionService {
         //console.log("test:"+temp.toString());
       });
       console.log('Connected: ' + frame);
+
+      //Load page
     });
   }
 
@@ -53,7 +55,7 @@ export class SocketConnectionService {
       var deflateString = pako.deflate(json,{ to: 'string' });
       var base64 = btoa(deflateString);
       this.stompClient.send('/app/send', {},  base64);
-      //console.log('send: ' + base64);
+      console.log('send: ' + json);
     }
   }
 

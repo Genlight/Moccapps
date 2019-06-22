@@ -20,20 +20,6 @@ export class FabricmodifyService {
     this.newForeignSelections();
   }
 
-  /* groups active elements in given canvas if more than one element is selected */
-  group(canvas: any) {
-    if (!canvas.getActiveObject()) {
-      return;
-    }
-    if (canvas.getActiveObject().type !== 'activeSelection') {
-      return;
-    }
-    let temp = canvas.getActiveObject().toGroup();
-    temp.set('dirty',true);
-    temp = (temp as Group);
-    this.groupService.add(temp);
-  }
-
   clearAll(canvas: any) {
     canvas.clear();
     this.setBackgroundColor(canvas, "white");
@@ -61,6 +47,26 @@ export class FabricmodifyService {
   setBackgroundColor(canvas: any, color: string) {
     canvas.backgroundColor = color;
     canvas.renderAll();
+  }
+
+  /* clears selection in canvas */
+  clearSelection(canvas: any) {
+    canvas.discardActiveObject();
+    canvas.renderAll();
+  }
+
+  /* groups active elements in given canvas if more than one element is selected */
+  group(canvas: any) {
+    if (!canvas.getActiveObject()) {
+      return;
+    }
+    if (canvas.getActiveObject().type !== 'activeSelection') {
+      return;
+    }
+    let temp = canvas.getActiveObject().toGroup();
+    temp.set('dirty',true);
+    temp = (temp as Group);
+    this.groupService.add(temp);
   }
 
   /* ungroups elements in given canvas if a group of elements is selected */
