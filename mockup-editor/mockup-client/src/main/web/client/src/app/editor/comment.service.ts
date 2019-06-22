@@ -25,8 +25,7 @@ export class CommentService {
   activePage: Page;
   commentSubjectTest: BehaviorSubject<Comment[]>;
   comments: Comment[];
-  // needed for buttons
-  addingComment: BehaviorSubject<boolean>;
+
   constructor(
     private storageService: TokenStorageService,
     private pageService: ManagePagesService,
@@ -88,7 +87,6 @@ export class CommentService {
             break;
             }
     });
-    this.addingComment = new BehaviorSubject<boolean>(false);
     console.log('CommentService init');
     this.pageService.activePage.subscribe((page) => {
       if (!page) { return; }
@@ -122,6 +120,7 @@ export class CommentService {
         } else {
           console.error('getCommentsImpl: ' + JSON.stringify(error));
         }
+        this.commentSubjectTest.next([]);
       }
     );
   }
@@ -136,7 +135,7 @@ export class CommentService {
     this.socketService.send(JSON.stringify(content), command);
   }
 
-  async addComment(message: string, author: User = this.storageService.getUserInfo()) {
+  addComment(message: string, author: User = this.storageService.getUserInfo()) {
     const canvas = this.pageService.getCanvas();
     const objects = canvas.getActiveObject();
 
@@ -206,21 +205,13 @@ export class CommentService {
     this.socketService.send(JSON.stringify(content), command);
   }
 
-  // deleteComment(comment: Comment) {
-  //   const content = {comment};
-  //   const command = 'comment:deleted';
-  //   console.log(`${command}`);
-  //   this.removeComment(comment);
-  //   this.socketService.send(JSON.stringify(content), command);
-  // }
-
-
-  getAddCommentObs(): Observable<boolean> {
-    return this.addingComment.asObservable();
-  }
-
-  setAddCommentObs(bool: boolean) {
-    this.addingComment.next(bool);
+  deleteComment(comment: Comment) {
+    const content = {comment};
+    const command = 'comment:deleted';
+    console.log(`${command}`);
+    this.removeComment(comment);
+    this.commentSubjectTest.next(this.comments);
+    this.socketService.send(JSON.stringify(content), command);
   }
 
   getCommentByUUID(comment: Comment) {

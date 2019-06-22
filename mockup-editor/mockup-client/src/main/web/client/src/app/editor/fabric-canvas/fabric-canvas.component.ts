@@ -514,4 +514,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     })
   }
 
+  /**
+   * 
+   */
 }

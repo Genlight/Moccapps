@@ -43,20 +43,14 @@ export class CommentBarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initCommentservice();
     this.workspaceService.showsComments.subscribe((value) => {
       this.showsComponent = value;
     });
   }
-
-  initCommentservice() {
-    this.commentService.getAddCommentObs().subscribe(
-      (bool) => {
-        this.addingNewComment = bool;
-      }
-    );
-  }
-
+  /**
+   * gets comment per Rest API, s. comment services
+   * @return [description]
+   */
   getComments() {
     this.commentService.getComments().subscribe(
       (data) => {
@@ -75,6 +69,10 @@ export class CommentBarComponent implements OnInit {
     this.addingNewComment = true;
   }
 
+  /**
+   * action on button, adds a new comment + commentEntry
+   * @return void
+   */
   onAddComment() {
     this.commentService.addComment(this.newComment);
     this.newComment = '';
@@ -84,7 +82,7 @@ export class CommentBarComponent implements OnInit {
   onClose() {
     this.workspaceService.hideComments();
   }
-
+  // TODO: only used for testing purposes, should be removed before merge into devel 
   onTestButton() {
     this.commentService.testgetComments();
   }

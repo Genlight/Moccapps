@@ -91,8 +91,12 @@ export class CommentComponent implements OnInit {
    */
   onDelete(entry) {
     const index = this.comment.entries.findIndex(obj => obj.id === entry.id);
-    this.comment.entries.splice(index, 1);
-    this.commentService.deleteCommentEntry(this.comment, entry);
+    if (this.comment.entries.length < 1) {
+      this.commentService.deleteComment(this.comment);  
+    } else {
+      this.comment.entries.splice(index, 1);
+      this.commentService.deleteCommentEntry(this.comment, entry);
+    }
   }
 
   /**
