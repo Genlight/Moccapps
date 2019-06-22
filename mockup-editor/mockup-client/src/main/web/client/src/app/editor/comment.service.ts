@@ -39,7 +39,7 @@ export class CommentService {
     this.pageService.commentSubject.subscribe(
       (data) => {
         if (!data) { return; }
-        console.log('commentSubjectCOMMENT:' + data.comment);
+        // console.log('commentSubjectCOMMENT:' + data.comment);
         // CommentAction (comment:added) ([object Object]) (undefined)
         if (data.action !== null) {
           console.log('commentSubjectCOMMENT  action:' + data.action);
@@ -48,7 +48,7 @@ export class CommentService {
           console.log('commentSubjectCOMMENT  comment:' + data.comment.toString() + ' isArray:' + isArray(data.comment));
         }
         if (data.entry !== null) {
-          console.log('commentSubjectCOMMENT, entry: ' + data.entry);
+          console.log('commentSubjectCOMMENT, entry: ' + JSON.stringify(data.entry));
         }
 
         // this.getCommentsImpl();
@@ -92,7 +92,7 @@ export class CommentService {
     console.log('CommentService init');
     this.pageService.activePage.subscribe((page) => {
       if (!page) { return; }
-      console.log('activePageCOMMENT:' + page);
+      // console.log('activePageCOMMENT:' + page);
       this.activePage = page;
       this.getCommentsImpl();
     });
@@ -115,6 +115,13 @@ export class CommentService {
           this.comments = [data];
         }
         this.commentSubjectTest.next(this.comments);
+      },
+      (error) => {
+        if (error.message === 'No Comments') {
+          console.log('this active Page has no comments. PageId: ' + this.activePage.id);
+        } else {
+          console.error('getCommentsImpl: ' + error);
+        }
       }
     );
   }
