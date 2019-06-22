@@ -210,7 +210,12 @@ public class PageHandler {
     }
 
     public String getPageData(){
-        return page.getPage_data();
+        ObjectNode node=objectMapper.createObjectNode();
+        node.put("pagedata",page.getPage_data());
+        node.put("height",page.getHeight());
+        node.put("width",page.getWidth());
+        String test = node.toString();
+        return node.toString();
     }
 
     public void persistPage(){
