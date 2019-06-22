@@ -15,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -198,7 +195,7 @@ public class PageHandler {
                     for(JsonNode e:entries){
                         CommentEntry commentEntry = new CommentEntry();
                         commentEntry.setMessage(e.get("message").asText());
-                        commentEntry.setOrder(e.get("id").asInt());
+                        commentEntry.setUuid(e.get("id").asText());
                         commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
                         String stri= e.get("date").asText();
                         if(stri.length()<14){ //date sometimes in epoch ms
@@ -258,7 +255,7 @@ public class PageHandler {
                     for(JsonNode e:entries){
                         CommentEntry commentEntry = new CommentEntry();
                         commentEntry.setMessage(e.get("message").asText());
-                        commentEntry.setOrder(e.get("id").asInt());
+                        commentEntry.setUuid(e.get("id").asText());
                         commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
                         String stri= e.get("date").asText();
                         if(stri.length()<14){ //date sometimes in epoch ms
@@ -312,7 +309,7 @@ public class PageHandler {
                     for(JsonNode e:entries){
                         CommentEntry commentEntry = new CommentEntry();
                         commentEntry.setMessage(e.get("message").asText());
-                        commentEntry.setOrder(e.get("id").asInt());
+                        commentEntry.setUuid(e.get("id").asText());
                         commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
                         String stri= e.get("date").asText();
                         if(stri.length()<14){ //date sometimes in epoch ms
@@ -354,7 +351,7 @@ public class PageHandler {
                     for(JsonNode e:entries){
                         CommentEntry commentEntry = new CommentEntry();
                         commentEntry.setMessage(e.get("message").asText());
-                        commentEntry.setOrder(e.get("id").asInt());
+                        commentEntry.setUuid(e.get("id").asText());
                         commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
                         String stri= e.get("date").asText();
                         if(stri.length()<14){ //date sometimes in epoch ms

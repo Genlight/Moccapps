@@ -27,12 +27,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
     private static final Calendar currentDt = new GregorianCalendar(TimeZone.getTimeZone("GMT+2"));
 
     private static final String PSTMT_CREATE = "INSERT INTO comments (page_id,cleared,uuid) VALUES (?,?,?)";
-    private static final String PSTMT_CREATEENTRY = "INSERT INTO comment_entries (message,entry_order,user_id,comment_id,date) VALUES (?,?,?,?,?)";
+    private static final String PSTMT_CREATEENTRY = "INSERT INTO comment_entries (message,uuid,user_id,comment_id,date) VALUES (?,?,?,?,?)";
     private static final String PSTMT_CREATEOBJECT = "INSERT INTO comment_objects (comment_id,object_id) VALUES (?,?)";
 
 
     private static final String PSTMT_UPDATE = "UPDATE comments SET page_id=?,cleared=?,uuid=? WHERE id=?";
-    private static final String PSTMT_UPDATEENTRY = "UPDATE comment_entries SET message=?, user_id=?, comment_id=?,date=?,entry_order = ? WHERE id=?";
+    private static final String PSTMT_UPDATEENTRY = "UPDATE comment_entries SET message=?, user_id=?, comment_id=?,date=?,uuid = ? WHERE id=?";
     private static final String PSTMT_UPDATEOBJECT = "UPDATE comment_objects SET comment_id=?, object_id=? WHERE id=?";
 
     private static final String PSTMT_DELETE = "DELETE FROM comments WHERE id=?";
@@ -102,7 +102,7 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
             getConnection();
             pstmt = connection.prepareStatement(PSTMT_CREATEENTRY, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, commentEntry.getMessage());
-            pstmt.setInt(2, commentEntry.getOrder());
+            pstmt.setString(2, commentEntry.getUuid());
             pstmt.setInt(3, commentEntry.getUser().getId());
             pstmt.setInt(4, commentEntry.getCommentId());
             pstmt.setTimestamp(5, commentEntry.getDate(), currentDt);
@@ -164,7 +164,7 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
             pstmt.setInt(3, commentEntry.getCommentId());
             pstmt.setTimestamp(4, commentEntry.getDate());
             pstmt.setInt(5, commentEntry.getId());
-            pstmt.setInt(6, commentEntry.getOrder());
+            pstmt.setString(6, commentEntry.getUuid());
             pstmt.executeUpdate();
             pstmt.close();
 
@@ -283,7 +283,7 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
                         userDAO.findById(rs.getInt("user_id")),
                         rs.getTimestamp("date"),
                         rs.getInt("comment_id"),
-                        rs.getInt("entry_order")));
+                        rs.getString("uuid")));
             }
             rs.close();
             pstmt.close();

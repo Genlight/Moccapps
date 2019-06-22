@@ -3,14 +3,13 @@ package ase.DTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 public class CommentEntry{
     @JsonIgnore
     private int id;
     @JsonProperty("id")
-    private int order;
+    private String uuid;
     @JsonProperty("message")
     private String message;
     @JsonIgnore
@@ -22,20 +21,20 @@ public class CommentEntry{
     @JsonIgnore
     private int commentId;
 
-    public CommentEntry(int id, String message, User user, Timestamp date, int commentId, int order) {
+    public CommentEntry(int id, String message, User user, Timestamp date, int commentId, String uuid) {
         this.id = id;
         this.message = message;
         this.user = user;
         this.date = date;
         this.commentId=commentId;
-        this.order = order;
+        this.uuid = uuid;
     }
 
-    public CommentEntry(String message, User user, Timestamp date,int order) {
+    public CommentEntry(String message, User user, Timestamp date, String uuid) {
         this.message = message;
         this.user = user;
         this.date = date;
-        this.order = order;
+        this.uuid = uuid;
     }
 
     public CommentEntry() {
@@ -81,12 +80,12 @@ public class CommentEntry{
         this.commentId = commentId;
     }
 
-    public int getOrder() {
-        return order;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getEmail() {
@@ -105,7 +104,6 @@ public class CommentEntry{
         this.username = username;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -113,8 +111,8 @@ public class CommentEntry{
 
         CommentEntry that = (CommentEntry) o;
 
-        if (order != that.order) return false;
         if (commentId != that.commentId) return false;
+        if (uuid != null ? !uuid.equals(that.uuid) : that.uuid != null) return false;
         if (message != null ? !message.equals(that.message) : that.message != null) return false;
         if (user != null ? !user.equals(that.user) : that.user != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
@@ -124,8 +122,7 @@ public class CommentEntry{
 
     @Override
     public int hashCode() {
-        int result = order;
-        result = 31 * result + (message != null ? message.hashCode() : 0);
+        int result = message != null ? message.hashCode() : 0;
         result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (username != null ? username.hashCode() : 0);
@@ -138,9 +135,11 @@ public class CommentEntry{
     public String toString() {
         return "CommentEntry{" +
                 "id=" + id +
-                ", order=" + order +
+                ", uuid='" + uuid + '\'' +
                 ", message='" + message + '\'' +
-                ", user_id=" + user +
+                ", user=" + user +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
                 ", date=" + date +
                 ", commentId=" + commentId +
                 '}';

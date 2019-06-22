@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS comment_objects
 CREATE TABLE IF NOT EXISTS comment_entries
 (
     id          INTEGER DEFAULT nextval('seq_comment_entry') PRIMARY KEY,
-    entry_order INTEGER       NOT NULL,
+    uuid VARCHAR(100)       NOT NULL,
     message     VARCHAR(1000) NOT NULL,
     user_id     INTEGER       NOT NULL,
     comment_id  INTEGER       NOT NULL,
