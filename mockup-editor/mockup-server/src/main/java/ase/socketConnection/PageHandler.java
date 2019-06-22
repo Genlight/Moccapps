@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class PageHandler {
@@ -21,7 +22,7 @@ public class PageHandler {
     private PageService pageService;
     private ObjectMapper objectMapper;
     private String projectId;
-    private Map<String,String> lockedElements;
+    private ConcurrentHashMap<String,String> lockedElements;
 
     private static final Logger logger= LoggerFactory.getLogger(PageHandler.class);
 
@@ -31,7 +32,7 @@ public class PageHandler {
         this.pageService = pageService;
         page=pageService.getPageById(pageId);
         this.projectId=projectId;
-        lockedElements=new HashMap<>();
+        lockedElements=new ConcurrentHashMap<>();
     }
 
     public boolean handleMessage(SocketMessage message){
@@ -56,7 +57,7 @@ public class PageHandler {
                 }
                 return true;
             case "element:modified":
-                logger.error(page.getPage_data());
+                logger.debug(page.getPage_data());
                 try {
                     ArrayNode objects = ((ArrayNode)pageData.get("objects"));
                     ObjectNode content = objectMapper.readValue(message.getContent(),ObjectNode.class);

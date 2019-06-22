@@ -15,7 +15,7 @@ let savedElements = null;
 
 export class FabricmodifyService {
   canvas: any;
-  private foreignSelections: Map<string, [Object]>;
+  private foreignSelections:Map<string,[any]>;
 
   constructor(private groupService: ManageGroupsService) {
     this.newForeignSelections();
@@ -282,16 +282,16 @@ export class FabricmodifyService {
           orderedObjects.forEach(function (current) {
             switch (index) {
               case 1:
-                canvas.bringForward(_this.getObjectByUUID(current.uuid, canvas));
+                canvas.bringForward(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
                 break;
               case 2:
-                canvas.bringToFront(_this.getObjectByUUID(current.uuid, canvas));
+                canvas.bringToFront(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
                 break;
               case -1:
-                canvas.sendBackwards(_this.getObjectByUUID(current.uuid, canvas));
+                canvas.sendBackwards(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
                 break;
               case -2:
-                canvas.sendToBack(_this.getObjectByUUID(current.uuid, canvas));
+                canvas.sendToBack(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
                 break;
             }
           });
@@ -309,7 +309,7 @@ export class FabricmodifyService {
       })
 
     } else {
-      const old = this.getObjectByUUID(parsedObj.uuid, canvas);
+      const old = this.getObjectByUUID(parsedObj.uuid, canvas.getObjects());
 
       if (message.command === Action.ADDED) {
         //old exists if I created the object myself. clean solution: make add button send change but not add in the first place
@@ -320,17 +320,21 @@ export class FabricmodifyService {
       }
       else if (message.command === Action.LOCK) {
 
-        old['evented'] = false;
-        old['selectable'] = false;
+        if(old) {
+          old['evented'] = false;
+          old['selectable'] = false;
+        }
       }
-      else if (message.command === Action.UNLOCK) {
-
-        old['evented'] = true;
-        old['selectable'] = true;
-      }
-      else if (message.command === Action.SELECTIONMODIFIED) {
-        if (!old) {
-          this.foreignSelections.set(parsedObj.userId, [null])
+      else if(message.command === Action.UNLOCK) {
+        
+        if(old) {
+          old['evented'] = true;
+          old['selectable'] = true;
+        }
+      }   
+      else if(message.command === Action.SELECTIONMODIFIED) {
+        if(!old) {
+          this.foreignSelections.set(parsedObj.userId,[null])
         } else {
           this.foreignSelections.get(parsedObj.userId).push(old);
         }
@@ -393,9 +397,36 @@ export class FabricmodifyService {
     canvas.renderAll();
   }
 
-
-  getObjectByUUID(uuid: string, canvas: any) {
-    return canvas.getObjects().find((o) => o.uuid === uuid);
+/**
+ * Checks an array if it contains a certain fabric object with the given uuid.
+ * Also traverses groups inside the array, therefore iterating through all the objects.
+ * Traverses 1 level at a time, and only then steps into a group, as most hits will be at the top level.
+ * Traverses from end to begin of the array, as elements at the begin are rendered in front,
+ * and are therefore more likely to be edited (and therefore searched for).
+ * Supposed to be called initally with canvas.getObjects().
+ * 
+ * @param uuid the uuid of the object to be found
+ * @param array the array to search in
+ * @returns the object if found, undefined otherwise
+ */
+  getObjectByUUID(uuid: string, array: Array<any>) {
+    
+    let grouptsToTraverse = [];
+    for(let i = array.length-1;i>=0;--i ) {
+      let current = array[i];
+      if(current.uuid === uuid) {
+        return current;
+      }
+      if(current.type === 'group') {
+        grouptsToTraverse.push(current);
+      }
+    }
+    for(let i = grouptsToTraverse.length-1; i>=0;--i) {
+      let current = grouptsToTraverse[i];
+      //current.set('dirty',true);
+      let result = this.getObjectByUUID(uuid,current.getObjects());
+      if (result) return result;
+    }
   }
 
   getForeignSelections(): Map<string, [any]> {
@@ -412,7 +443,7 @@ export class FabricmodifyService {
    * @param obj the object to modify
    * @param group the group the object comes from
    */
-  private static calcExtractFromGroup(obj, group) {
+  static calcExtractFromGroup(obj, group) {
     //console.log('pre extract obj mod: ' +JSON.stringify(obj));
     let groupHeightMiddle: number = group.height / 2.0;
     let groupWidthMiddle: number = group.width / 2.0;
@@ -431,7 +462,7 @@ export class FabricmodifyService {
    * @param obj the object to modify
    * @param group the group to insert to
    */
-  private static calcInsertIntoGroup(obj, group) {
+  static calcInsertIntoGroup(obj, group) {
 
     //console.log('pre insert obj mod: ' +JSON.stringify(obj));
     let groupHeightMiddle: number = group.height / 2.0;

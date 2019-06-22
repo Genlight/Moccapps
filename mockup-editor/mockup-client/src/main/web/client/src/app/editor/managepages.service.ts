@@ -131,6 +131,8 @@ export class ManagePagesService {
       // Set page data from rest api to null
       page.page_data = null;
       this.dataStore.activePage = page;
+      
+      this.modifyService.newForeignSelections();//double call to test why this does not work.
       //this._activePage.next(Object.assign({}, this.dataStore.activePage));
 
       //this is pretty ugly, but would need rework of multiple components otherwise
