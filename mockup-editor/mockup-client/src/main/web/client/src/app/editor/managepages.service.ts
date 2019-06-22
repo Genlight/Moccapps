@@ -241,12 +241,19 @@ export class ManagePagesService {
     }
   }
 
-  loadPageDataStore(id: number, pageData: string) {
+  loadPageDataStore(id: number, pageData: string, height?: number, width?: number) {
     if (!!id && !!pageData) {
       if (!!this.dataStore.activePage && !!this.dataStore.activePage.id) {
         if (id === this.dataStore.activePage.id) {
           let currentPage = this.dataStore.activePage;
           //alert(JSON.stringify(pageData));
+          if (!!height) {
+            currentPage.height = height;
+          }
+          if (!!width) {
+            currentPage.width = width;
+          }
+
           currentPage.page_data = pageData;
           this.dataStore.activePage = currentPage;
           this._activePage.next(Object.assign({}, currentPage));
@@ -481,8 +488,13 @@ export class ManagePagesService {
 
         case Action.PAGELOAD:
           console.log(`pageload. ${JSON.stringify(parsedObj)}`);
-          if (!!parsedObj) {
-            this.loadPageDataStore(this.dataStore.activePage.id, JSON.stringify(parsedObj));
+          if (!!parsedObj && !!parsedObj.pagedata) {
+            this.loadPageDataStore(
+              this.dataStore.activePage.id, 
+              JSON.stringify(parsedObj.pagedata),
+              parsedObj.height,
+              parsedObj.width
+            );
           } else {
             console.error(`page load: received invalid data over socket connection, ParsedObject: ${!!parsedObj}
                 \n pageid: ${parsedObj.pageId} | pageData : ${parsedObj.pageData}`);
