@@ -44,7 +44,7 @@ export class CommentService {
    * @return  Observable<Comment[]>
    */
   getComments(): Observable<Comment[]> {
-    const com = {
+    const com = [{
       objectUuid: ['hjlk'],
       isCleared: false,
       uuid: 'uuidcom',
@@ -59,8 +59,24 @@ export class CommentService {
           id: 0,
           date: new Date(),
           isEditing: false
-        }]};
-    const com2 = {
+        }]},
+        {
+          objectUuid: ['hjlk'],
+          isCleared: false,
+          uuid: 'uuidcom2',
+          entries: [
+            {
+              author: {
+                name: 'jonny',
+                username: 'jonny trave',
+                email: 'tothinkabout@as.com'
+              },
+              message: 'something went wrong',
+              id: 0,
+              date: new Date(),
+              isEditing: false
+            }]}];
+    const com2 = [{
       objectUuid: ['asdf'],
       isCleared: false,
       uuid: 'uuidcomment',
@@ -86,17 +102,20 @@ export class CommentService {
           id: 0,
           date: new Date(),
           isEditing: false
-        }]};
+        }]}];
     this.testcount = !this.testcount;
     if (this.testcount) {
-      this.commentSubject.next([com]);
+      this.comments = com;
+      this.commentSubject.next(com);
     } else {
-      this.commentSubject.next([com2]);
+      this.comments = com2;
+      this.commentSubject.next(com2);
     }
     return this.commentSubject.asObservable();
   }
 
   createNewEntry( comment: Comment, newEntry: CommentEntry) {
+    comment.entries.push(newEntry);
     const content = {
       comment,
       entry: newEntry
@@ -160,7 +179,7 @@ export class CommentService {
     // this.commentSubject.next(this.comments);
   }
 
-  updateCommentEntry(comment: Comment, entry: CommentEntry) {
+  updateCommentEntry(comment: Comment, entry: CommentEntry) {  
     const content = {comment, entry};
     const command = Action.COMMENTENTRYMODIFIED;
     console.log(`${command} : ${content.comment }: ID: ${entry.id}, Entrymessage: '${entry.message}'`);
@@ -220,7 +239,8 @@ export class CommentService {
    */
   applyCommentAction(comAction: CommentAction) {
     if (!comAction) { return; }
-    console.log('applyCommentAction, Action: ' + comAction.action);
+    console.log('applyCommentAction, Action: ' + JSON.stringify(comAction));
+    console.log(`current comments: ${(this.comments.length)}`);
     let comment: Comment;
     let index;
     switch (comAction.action) {
@@ -236,20 +256,25 @@ export class CommentService {
         comment.isCleared = true;
         break;
       case Action.COMMENTENTRYADDED:
-        comment = this.comments.find((o) => o.uuid === comAction.comment.uuid);
-        comment.entries.push(comAction.entry);
+        const i = this.comments.findIndex((o) => o.uuid === comAction.comment.uuid);
+        console.log(`CommentEntry, apply entry at index ${i}`);
+        if (i < 0) {
+          this.comments.push(comAction.comment);
+        } else {
+          Object.assign(this.comments[i], comAction.comment);
+        }
         this.commentSubject.next(this.comments);
         break;
       case Action.COMMENTENTRYDELETED:
-        comment = this.comments.find((o) => o.uuid === comAction.comment.uuid);
-        index = comment.entries.findIndex((o) => o.id === comAction.entry.id);
-        comment.entries.splice(index, 1);
+        const commentindex = this.comments.findIndex((o) => o.uuid === comAction.comment.uuid);
+        index = comment[commentindex].entries.findIndex((o) => o.id === comAction.entry.id);
+        this.comments[commentindex].entries.splice(index, 1);
         this.commentSubject.next(this.comments);
         break;
       case Action.COMMENTENTRYMODIFIED:
-        comment = this.comments.find((o) => o.uuid === comAction.comment.uuid);
-        let ent = comment.entries.find((o) => o.id === comAction.entry.id);
-        ent = comAction.entry;
+        const comIndex = this.comments.findIndex((o) => o.uuid === comAction.comment.uuid);
+        const j = comment.entries.findIndex((o) => o.id === comAction.entry.id);
+        Object.assign(this.comments[comIndex].entries[j], comAction.entry);
         this.commentSubject.next(this.comments);
         break;
     }

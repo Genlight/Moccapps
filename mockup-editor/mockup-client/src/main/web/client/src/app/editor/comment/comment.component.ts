@@ -56,6 +56,7 @@ export class CommentComponent implements OnInit {
       isEditing: false
     });
     this.newEntry.message = '';
+
     this.commentService.createNewEntry(this.comment, this.newEntry);
   }
   /**

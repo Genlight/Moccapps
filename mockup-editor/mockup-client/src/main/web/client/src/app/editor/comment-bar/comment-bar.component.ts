@@ -23,6 +23,7 @@ export class CommentBarComponent implements OnInit {
     );
     this.commentService.getComments().subscribe(
       (data) => {
+        console.log(`applying comments: ${JSON.stringify(data)}`);
         if (Array.isArray(data)) {
           this.comments = data;
         } else {
