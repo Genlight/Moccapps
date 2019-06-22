@@ -16,4 +16,5 @@
     padding: 0px;
     height: calc(100vh - 54px);
     padding-top: 2px;
+    @extend .background-color;
 }

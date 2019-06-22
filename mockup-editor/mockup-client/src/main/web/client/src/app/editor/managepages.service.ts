@@ -123,7 +123,7 @@ export class ManagePagesService {
       // Persist workspace of old workspace
       // If grid was active on the former active page, it will be disabled
       if (!!this.dataStore.activePage && this._isGridEnabled) {
-        this.workspaceService.hideGrid();
+        //this.workspaceService.hideGrid();
       }
 
       //Set new active page
@@ -394,9 +394,9 @@ export class ManagePagesService {
       }
     });
     // If deleted page is currently active, set it to inactive
-    if (this.dataStore.activePage.id === pageId) {
+    if (!!this.dataStore.activePage && this.dataStore.activePage.id === pageId) {
       this.clearActivePage();
-    } else if (this.dataStore.pages.length <= 0) {
+    } else if (!!this.dataStore.pages && this.dataStore.pages.length <= 0) {
       this.clearActivePage();
     }
 
@@ -531,7 +531,7 @@ export class ManagePagesService {
           break;
 
         case Action.PAGEREMOVED:
-          alert('Page removed received');
+          //alert('Page removed received');
           if (!!parsedObj && !!parsedObj.pageId) {
             const pageId = parsedObj.pageId;
             if (!!pageId) {

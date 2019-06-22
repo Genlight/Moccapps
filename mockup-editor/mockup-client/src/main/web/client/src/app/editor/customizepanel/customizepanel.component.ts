@@ -6,6 +6,7 @@ import { Action, CanvasTransmissionProperty } from '../fabric-canvas/transformat
 import { UndoRedoService } from '../../shared/services/undo-redo.service';
 import { Page } from 'src/app/shared/models/Page';
 import { fabric } from '../extendedfabric';
+import { WorkspaceService } from '../workspace.service';
 
 @Component({
   selector: 'app-customizepanel',
@@ -75,10 +76,13 @@ export class CustomizepanelComponent implements OnInit {
   invalidWidthRange: boolean = false;
   invalidHeightRange: boolean = false;
 
+  isGridEnabled: boolean = false;
+
   constructor(
     private modifyService: FabricmodifyService,
     private undoRedoService: UndoRedoService,
-    private managePagesService: ManagePagesService) {
+    private managePagesService: ManagePagesService,
+    private workspaceService: WorkspaceService) {
     this.managePagesService.activePage.subscribe(
       (page) => {
         this.activePage = page;
@@ -91,7 +95,10 @@ export class CustomizepanelComponent implements OnInit {
           this.onPageChanged();
         }
       }
-    )
+    );
+    this.workspaceService.showsGrid.subscribe((value) => {
+      this.isGridEnabled = value;
+    });
   }
 
   ngOnInit() {
@@ -108,6 +115,10 @@ export class CustomizepanelComponent implements OnInit {
       //alert(backgroundColor);
       this.managePagesService.getGridCanvas().backgroundColor = backgroundColor;
       this.canvasProperties.backgroundColor = backgroundColor;
+      if (this.isGridEnabled) {
+        this.canvas.backgroundColor = null;
+        this.canvas.renderAll();
+      }
     }
     //this.setCanvasBackgroundColor();
   }

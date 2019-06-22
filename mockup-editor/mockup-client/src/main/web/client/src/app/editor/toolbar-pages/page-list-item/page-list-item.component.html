@@ -3,7 +3,7 @@
   (dblclick)="onEnterEditMode()"
   style="cursor: pointer;
         display: flex; align-items: center; justify-content: space-between">
-  <span class="my-auto" *ngIf="!editMode">{{page.page_name}}</span>
+  <span class="my-auto" *ngIf="!editMode">{{(page.page_name.length > 10) ? ( page.page_name | slice:0:10) + '...' : (page.page_name)}}</span>
   <span class="my-auto" [hidden]="!editMode">
       <input
         id="page_name_edit_input"
@@ -11,6 +11,7 @@
           type="text"
           required
           style="width: 120px"
+          (keyup.enter)="onLeaveEditMode(editInput.value)"
           (focusout)="onLeaveEditMode(editInput.value)"
           [value]="page.page_name">
   </span>
