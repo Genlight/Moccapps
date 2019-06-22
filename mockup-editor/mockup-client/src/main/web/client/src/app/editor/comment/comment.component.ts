@@ -42,13 +42,6 @@ export class CommentComponent implements OnInit {
     this.initialEntry = new CommentEntry();
    // }
     this.currentUser = this.storageService.getUserInfo();
-    this.newEntry = {
-      email:  this.currentUser.email,
-      username:  this.currentUser.username,
-      message: '',
-      date: new Date(),
-      id: 0 // UUID.UUID()
-    };
   }
   /**
    * Create new entry under the specified comment, send it per socket to Server
@@ -56,20 +49,20 @@ export class CommentComponent implements OnInit {
    * @param  comment Comment
    */
   onCreateEntry() {
-    console.log('OnCreateEntry:' + this.newEntry + ' ' + this.newEntryMessage);
     // this.newEntry.id++;
     const ent = {
       email:  this.storageService.getEmail(),
       username:  this.storageService.getUsername(),
       message: this.newEntryMessage,
       date: new Date(),
-      id: this.comment.entries.length, // UUID.UUID(),
+      id: UUID.UUID(),
       isEditing: false
     };
     this.comment.entries.push(ent);
-    this.newEntry.message = '';
-
+    this.newEntryMessage = '';
     this.commentService.createNewEntry(this.comment, ent);
+
+    console.log('OnCreateEntry:' + JSON.stringify(this.comment) + ' | Entry' + JSON.stringify(ent));
   }
   /**
    * isCleared means, that a commment or the problem which is adressed has been isCleared
@@ -103,7 +96,7 @@ export class CommentComponent implements OnInit {
   }
 
   /**
-   * cleanup Comment
+   * cleanup  * Comment
    * @return void
    */
   OnDestroy() {

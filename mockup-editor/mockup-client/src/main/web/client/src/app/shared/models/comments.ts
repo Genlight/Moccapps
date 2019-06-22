@@ -18,7 +18,7 @@ export class CommentEntry {
   //name:string;
 
   message: string;
-  id: number;
+  id: string;
   date: Date;
   isEditing ? = false;
 

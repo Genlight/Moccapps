@@ -120,14 +120,13 @@ export class CommentService {
         if (error.message === 'No Comments') {
           console.log('this active Page has no comments. PageId: ' + this.activePage.id);
         } else {
-          console.error('getCommentsImpl: ' + error);
+          console.error('getCommentsImpl: ' + JSON.stringify(error));
         }
       }
     );
   }
 
   createNewEntry( comment: Comment, newEntry: CommentEntry) {
-    comment.entries.push(newEntry);
     const content = {
       comment,
       entry: newEntry
@@ -158,7 +157,7 @@ export class CommentService {
       username: this.storageService.getUserInfo().username,
       message,
       date: new Date(),
-      id: 0,
+      id: UUID.UUID(),
       isEditing: false
     };
     const comment = {
@@ -283,10 +282,10 @@ export class CommentService {
         if (Array.isArray(data)) {
           this.comments = data;
           console.log('Got commtents is array:' + (data as Comment[]));
-          data.forEach(function(value) {
-            console.log(value);
-            console.log((value as Comment));
-          });
+          // data.forEach(function(value) {
+          //   console.log(value);
+          //   console.log((value as Comment));
+          // });
         } else {
           this.comments = [data];
           console.log('Got commtents:' + data);
