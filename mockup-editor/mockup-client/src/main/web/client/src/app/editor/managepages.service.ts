@@ -26,10 +26,12 @@ export class ManagePagesService {
 
   pages: Observable<Page[]>;
   activePage: Observable<Page>;
+  commentSubject: Observable<CommentAction>;
 
   isLoadingPage: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private _pages: BehaviorSubject<Page[]>;
   private _activePage: BehaviorSubject<Page>;
+  private _commentSubject: BehaviorSubject<CommentAction>;
   private _activeProject: Project;
   private _isGridEnabled: boolean;
 
@@ -40,7 +42,7 @@ export class ManagePagesService {
     activePage: Page
   };
   //
-  commentSubject: BehaviorSubject<CommentAction>;
+
   constructor(
     private apiService: ApiService,
     private modifyService: FabricmodifyService,
@@ -52,13 +54,14 @@ export class ManagePagesService {
   ) {
     this._pages = new BehaviorSubject<Page[]>([]);
     this._activePage = new BehaviorSubject<Page>(null);
-    this.commentSubject = new BehaviorSubject<CommentAction>(null);
+    this._commentSubject = new BehaviorSubject<CommentAction>(null);
     this.dataStore = {
       pages: [],
       activePage: null
     };
     this.pages = this._pages.asObservable();
     this.activePage = this._activePage.asObservable();
+    this.commentSubject = this._commentSubject.asObservable();
 
     // Handle change of project status
     this.projectService.activeProject.subscribe((project) => {
@@ -538,8 +541,13 @@ export class ManagePagesService {
           case Action.COMMENTADDED:
           case Action.COMMENTMODIFIED:
           case Action.COMMENTCLEARED:
+            console.log("page comment:"+message.command+" "+parsedObj.comment);
             if (!!parsedObj.comment) {
-              this.commentSubject.next({action: message.command, comment: parsedObj.comment});
+            var asd = new CommentAction();
+            asd.comment=parsedObj.comment;
+            asd.action=message.command;
+            //this._commentSubject.next((Object.assign({}, asd)));
+            this._commentSubject.next({action:message.command,comment:parsedObj.comment});
             } else {
               console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment})`);
             }
@@ -547,11 +555,13 @@ export class ManagePagesService {
           case Action.COMMENTENTRYADDED:
           case Action.COMMENTENTRYDELETED:
           case Action.COMMENTENTRYMODIFIED:
+            console.log("page commententry:"+message.command+" "+parsedObj.comment+" "+parsedObj.entry);
             if (!!parsedObj.comment && !!parsedObj.entry) {
-              this.commentSubject.next({
-                action: message.command,
-                comment: parsedObj.comment,
-                entry: parsedObj.entry});
+            var asd = new CommentAction();
+            asd.comment=parsedObj.comment;
+            asd.action=message.command;
+            asd.entry=parsedObj.entry;
+            this._commentSubject.next((Object.assign({}, asd)));
             } else {
               console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment}, entry: ${parsedObj.entry})`);
             }
@@ -614,12 +624,5 @@ export class ManagePagesService {
     this.canvas.setActiveObject(obj);
     this.canvas.requestRenderAll();
   }
-  /**
-   * author: alexander Genser
-   * returns CommentAction Observable, needed for CommentService
-   * @return Observable<CommentAction>
-   */
-  getCommentActionObs(): Observable<CommentAction> {
-      return this.commentSubject.asObservable();
-  }
+
 }

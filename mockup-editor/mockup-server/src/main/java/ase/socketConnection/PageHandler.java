@@ -281,8 +281,8 @@ public class PageHandler {
 
             case "commententry:deleted":
                 logger.info("commententry:deleted:content:"+message.getContent());
-
-                try {
+                //gets called from somewhere for no reason and deletes all entries
+                /*try {
                     Comment comment = new Comment();
                     ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
                     JsonNode commentNode = content.get("comment");
@@ -321,7 +321,8 @@ public class PageHandler {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                }*/
+                break;
             case "commententry:modified":
                 logger.info("commententry:modified:content:"+message.getContent());
                 try {

@@ -536,9 +536,9 @@ export class NavbarComponent implements OnInit {
    * opening the comment sidebar (if implemented)
    * @return void
    */
-  onAddComment() {
+  /*onAddComment() {
       this.commentService.setAddCommentObs(true);
-  }
+  }*/
 
   loadProjects(): void {
     this.projectService.getProjects<Project[]>()

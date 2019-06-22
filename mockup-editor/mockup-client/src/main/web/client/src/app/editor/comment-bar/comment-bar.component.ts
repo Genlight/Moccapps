@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import {Comment, CommentEntry} from '../../shared/models/comments';
-import { CommentService } from '../comment.service';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { WorkspaceService } from '../workspace.service';
+import {Component, OnInit} from '@angular/core';
+import {Comment} from '../../shared/models/comments';
+import {CommentService} from '../comment.service';
+import {faTimes} from '@fortawesome/free-solid-svg-icons';
+import {WorkspaceService} from '../workspace.service';
+import {ManagePagesService} from "../managepages.service";
+
 @Component({
   selector: 'app-comment-bar',
   templateUrl: './comment-bar.component.html',
@@ -15,11 +17,31 @@ export class CommentBarComponent implements OnInit {
 
   showsComponent: boolean;
   addingNewComment;
-  isLoading: boolean = false; 
+  isLoading: boolean = false;
 
   faTimes = faTimes;
 
-  constructor(private commentService: CommentService, private workspaceService: WorkspaceService) {}
+  constructor(private commentService: CommentService,
+              private workspaceService: WorkspaceService,
+              private pageService: ManagePagesService) {this.pageService.activePage.subscribe(
+      (value) => {
+        if(value == null){
+          console.log("page null");
+        }else{
+          //this.getComments();
+        }
+
+      }
+    )
+    //,
+    this.commentService.commentSubjectTest.subscribe(
+      (value) => {
+        console.log("commentSubject:"+value);
+        this.comments = value;
+        //this.getComments(); //load new from rest
+      }
+    )
+  }
 
   ngOnInit() {
     this.initCommentservice();
@@ -30,47 +52,29 @@ export class CommentBarComponent implements OnInit {
 
   initCommentservice() {
     this.commentService.getAddCommentObs().subscribe(
-    (bool) => { this.addingNewComment = bool; }
-    );
-    this.commentService.getComments().subscribe(
-      (data) => {
-        console.log("Got commtents:"+data);
-        this.comments = (data as Comment[]);
-        let temp: Comment[] = [];
-        data.forEach(function (value) {
-          console.log(value);
-          console.log((value as Comment));
-          var com = new Comment();
-          com.uuid = value.uuid;
-          com.isCleared = value.isCleared;
-          let temp1: CommentEntry[] = [];
-          value.entries.forEach(function (value) {
-
-              //var usr = new User();
-              //var aut = (value.author as User);
-
-              var ent = new CommentEntry();
-              ent.email = value.email;
-              ent.username = value.username;
-
-              ent.date=value.date;
-              ent.id=value.id;
-              ent.isEditing=false;
-              ent.message=value.message;
-              temp1.push(ent);
-          });
-          com.entries=temp1;
-          com.objectUuid = value.objectUuid;
-          temp.push(com);
-        });
-        this.comments = temp;
-        console.log(temp);
+      (bool) => {
+        this.addingNewComment = bool;
       }
     );
     this.commentService.getAddCommentObs().subscribe(
-      (bool) => { this.addingNewComment = bool; }
+      (bool) => {
+        this.addingNewComment = bool;
+      }
     );
   }
+
+  getComments() {
+    this.commentService.getComments().subscribe(
+      (data) => {
+        if (Array.isArray(data)) {
+          this.comments = data;
+        } else {
+          this.comments = [data];
+        }
+      }
+    );
+  }
+
   // creating a comment on an exisiting
   onCreateComment() {
     this.addingNewComment = true;
@@ -86,11 +90,7 @@ export class CommentBarComponent implements OnInit {
     this.workspaceService.hideComments();
   }
 
-  /**
-   * test
-   * @return void
-   */
   onTestButton() {
-    this.initCommentservice();
+    this.commentService.testgetComments();
   }
 }
