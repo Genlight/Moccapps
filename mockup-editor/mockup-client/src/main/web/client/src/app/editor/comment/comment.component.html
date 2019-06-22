@@ -52,12 +52,8 @@
         <form novalidate #formCommentEntry="ngForm">
           <div class="form-group">
             <input type="textarea" id="entryMessage" class="form-control" name="entryMessage" #entryMessage
-                   [(ngModel)]="entryMessages" placeholder="{{entry.message}}">
-             <div class="input-group-append">
-               <button class="btn btn-primary" (click)="onChangeSubmit(entry)">
-                 <fa-icon [icon]="faPaperplane"></fa-icon>
-               </button>
-             </div>
+                   [(ngModel)]="entryMessages" placeholder="{{entry.message}}"
+                   (keyup.enter)="onChangeSubmit(entry)">
           </div>
         </form>
       </div>
