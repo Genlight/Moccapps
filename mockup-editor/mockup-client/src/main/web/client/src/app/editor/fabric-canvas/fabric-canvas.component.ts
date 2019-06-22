@@ -104,7 +104,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
     this.modifyService.newForeignSelections();
   }
-  
+
   onAddRulerLineH() {
     let div = document.createElement('div');
     div.className = 'rulerHLine rulerLine';
@@ -140,7 +140,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   storeRulers() {
-    
+
   }
 
   loadRulers() {
@@ -263,6 +263,15 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     this.pagesService.addPage(null);
   }
 
+  /**
+   * enables all events we listen to
+   * - before:transform: fired on click that could lead to a drag/rotate/scale
+   * - mouse:up: fired on mouse up while on the canvas, used for unlock (every before:transform is succeeded by mouse:up)
+   * - object:modified: fired when an object is scaled/rotated/move by user mouse action ONLY, NOT by setting properties
+   *  the rest is self explanatory, for more details check 
+   *  http://fabricjs.com/events
+   *  http://fabricjs.com/docs/fabric.Canvas.html
+   */
   enableEvents() {
     this.canvas
       .on('before:transform', (event) => { this.statelessTransfer(event.transform, Action.LOCK); })
@@ -387,12 +396,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
 
-
       let typ = transObject.type
-      //let objectsToSend = [transObject];
-      //console.log('type: '+typ+', transObj: '+JSON.stringify(transObject));
-
-
       let sendArray = [];
       if(typ==='activeSelection') {
         //Elements in groups/selections are orientated relative to the group and not to the canvas => selection is rebuild on every message to propagate the changes to the objects.
@@ -433,21 +437,17 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         if(action === Action.REMOVED) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
         this.undoRedoService.save(sendArray,action);
       }
-      
-      //delete does not necessary have a preceeding 'before:transform'
-      //if(newSelection) this.canvas.setActiveObject(newSelection);
-
     }
 
-    //this needs to happen externally if the change was made from somebody else; the state of the canvas needs to be accuratly reflected
-    //else this.undoRedoService.setState(this.canvas, action);
-
       //the object needs to be available again regardless of whether or not it was a remote access.
-      //If the locking strategy involves sending it to the sender as well, this might need to be put into an else block (untested proposition)
       transObject.sendMe = true;
-      
-  }
 
+  }
+  /**
+   * Sends a message to the server that does not contain state information, only an object's id
+   * @param evt event to act upon
+   * @param action the action that should be transmitted to the server
+   */
   statelessTransfer(evt, action:string) {
     let selectedObj = evt.target;
     let sendArray = [];
@@ -456,9 +456,6 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       if(selectedObj.type === 'activeSelection') {
         selectedObj.getObjects().forEach( (current) => {
           sendArray.push(this.cloneMemberofGroup(current,selectedObj));
-          /*current.clone((o) => {
-            sendArray.push(current);
-          });*/
         });
       } else {
         selectedObj.clone((o) => {
@@ -466,12 +463,13 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         });
       }
     }
+    //if it was a lock, a change is about to happen, so we make the pre-modified state available.
     if(action === Action.LOCK) this.undoRedoService.setCurrentlyModifiedObject(sendArray);
     let _this = this;
     sendArray.forEach((current) => {
       _this.pagesService.sendMessageToSocket(current,action);
     })
-    
+
   }
   forEachTransformedObj(evt, next) {
     const transObject = evt.target;
@@ -497,7 +495,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
  */
 getObjectByUUID(uuid: string) {
     
-  return this.modifyService.getObjectByUUID(uuid,this.canvas);
+  return this.modifyService.getObjectByUUID(uuid,this.canvas.getObjects());
 }
   ngOnDestroy() {
     // Delete pages and the current active page from store. (Unselect current project)
@@ -511,8 +509,9 @@ getObjectByUUID(uuid: string) {
   /**
    * Undo Redo - functionality
    * @{author}: Alexander Genser
+   * this was refactored and stays here for documentary purposes for now
    */
-  onSaveState(evt: any, action: Action) {
+  /*onSaveState(evt: any, action: Action) {
     const saveObject = evt.target;
     const objects = [];
     if (saveObject.type === 'activeSelection') {
@@ -524,28 +523,20 @@ getObjectByUUID(uuid: string) {
       // console.log('clone test\nprepushed id: '+saveObject.uuid+'\npostpush id: '+objects[0].uuid)
     }
     this.undoRedoService.save(objects, action);
-  }
+  }*/
 
+  /**
+  * Is called after render to draw boxes around objects marked by other users 
+  */
   onAfterRender(event) {
     let selections = this.modifyService.getForeignSelections();
     let currentSelection = this.canvas.getActiveObject();
     selections.forEach((value,key,map) => {
-      value.forEach((current)=> {
+      value.forEach((current) => {
         if(current === null) return;
-        //let temp = _this.getObjectByUUID(current.uuid);
-        //console.log('foreignly selected object: '+JSON.stringify(current));
+
         let temp = this.cloneMemberofGroup(current,currentSelection);
 
-        /*if(currentSelection&&currentSelection.type == 'activeSelection') {
-          
-          let selectedObjects = currentSelection.getObjects();
-            if(selectedObjects.find((o) => o.uuid == current.uuid)) {
-              current.clone((clone) => {
-                FabricmodifyService.calcExtractFromGroup(clone,currentSelection);
-                temp = clone;
-            });
-          }
-        }*/
         if(temp === null) temp = current;
         this.canvas.contextContainer.strokeStyle = '#FF0000';
         var bound = temp.getBoundingRect();
@@ -558,6 +549,7 @@ getObjectByUUID(uuid: string) {
       })
     })
   }
+  
   /**
    * Clones an object from a group and modifies it so its position is relativ to the canvas
    * origin again. Returns null if the object is null, group is not a valid group, or if
@@ -582,4 +574,7 @@ getObjectByUUID(uuid: string) {
     }
   }
 
+  /**
+   * 
+   */
 }

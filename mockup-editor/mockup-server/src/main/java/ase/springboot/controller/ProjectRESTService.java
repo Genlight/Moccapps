@@ -95,6 +95,7 @@ public class ProjectRESTService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String json = objectMapper.writeValueAsString(projectFormResponses);
+            logger.info(json);
             return ResponseEntity.ok(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();

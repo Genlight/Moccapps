@@ -24,8 +24,8 @@ VALUES (1,'page1',100,100,1,'{ "customer": "John Doe", "items": {"product": "Bee
 
 INSERT INTO invitations(id,project_id,inviter_user_id,invitee_user_id,status) VALUES ( 1,1,1,2,-1);
 
-INSERT INTO comments(id,page_id,cleared) VALUES ( 1,1,FALSE );
-INSERT INTO comment_entries(id,message,user_id,comment_id,date) VALUES ( 1,'COMMENT',1,1,'01-01-2019');
+INSERT INTO comments(id,uuid,page_id,cleared) VALUES ( 1,'test',1,FALSE );
+INSERT INTO comment_entries(id,uuid,message,user_id,comment_id,date) VALUES ( 1,'1111-1111','COMMENT',1,1,'2019-01-01 03:00:00');
 INSERT INTO comment_objects(id,comment_id,object_id) VALUES ( 1,1,'1111-1111' );
 
 

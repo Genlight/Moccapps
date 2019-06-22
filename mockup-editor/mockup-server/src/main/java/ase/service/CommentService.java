@@ -22,6 +22,8 @@ public interface CommentService {
 
     Comment findCommentById(int id);
 
+    Comment findCommentByUUID(String uuid);
+
     List<Comment> findCommentsForPage(int id);
 
     List<CommentEntry> findCommentEntriesForComment(int id);
