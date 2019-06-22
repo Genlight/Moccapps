@@ -221,6 +221,7 @@ public class PageHandler {
                     return true;
                 } catch (IOException e) {
                     logger.error("couldn't parse content in comment:added");
+                    return false;
                 }
             case "comment:modified":
                 logger.info("comment:modified:content:"+message.getContent());
@@ -239,6 +240,7 @@ public class PageHandler {
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return false;
                 }
                 return true;
             case "comment:deleted":
@@ -252,6 +254,7 @@ public class PageHandler {
                     commentService.removeComment(comment);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return false;
                 }
                 return true;
             case "commententry:added":
@@ -303,6 +306,7 @@ public class PageHandler {
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return false;
                 }
                 return true;
 
@@ -347,6 +351,7 @@ public class PageHandler {
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return false;
                 }
                 return true;
             case "commententry:modified":
@@ -390,6 +395,7 @@ public class PageHandler {
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return false;
                 }
                 return true;
         }
