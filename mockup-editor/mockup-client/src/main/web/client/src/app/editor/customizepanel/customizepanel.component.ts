@@ -112,7 +112,7 @@ export class CustomizepanelComponent implements OnInit {
     if (!!this.canvas) {
       // Update backgroundcolor
       const backgroundColor = this.canvas.backgroundColor;
-      alert(backgroundColor);
+      //alert(backgroundColor);
       this.managePagesService.getGridCanvas().backgroundColor = backgroundColor;
       this.canvasProperties.backgroundColor = backgroundColor;
       if (!this.isGridEnabled) {

@@ -197,7 +197,9 @@ export class FabricmodifyService {
           clonedObj.canvas = canvas;
           clonedObj.forEachObject(function(obj) {
             if (obj.type === 'group') {
-              _this.deepclone(obj,canvas);
+              _this.changeUUIDs(obj);
+            } else {
+              obj.uuid = UUID.UUID();
             }
             canvas.add(obj);
           });
@@ -205,7 +207,8 @@ export class FabricmodifyService {
           clonedObj.setCoords();
         } else {
           if (clonedObj.type === 'group') {
-            _this.deepclone(clonedObj,canvas);
+            _this.changeUUIDs(clonedObj);
+            clonedObj.setCoords();
           }
           canvas.add(clonedObj);
         }
@@ -214,19 +217,19 @@ export class FabricmodifyService {
       });
     }
   
-    deepclone(elem: any, canvas: any) {
+    /**
+     * changes uuid of groups in groups to be able to copy them
+     * @param elem element to change uuid of
+     */
+    changeUUIDs(elem: any) {
       const _this = this;
-      elem.canvas = canvas;
       if (elem.type === 'group') {
         elem.forEachObject((o) => {
-          if (o.type === 'group') {
-            _this.deepclone(o,canvas);
-          }
-          o.uuid = UUID.UUID();
+          _this.changeUUIDs(o);
+          o.setCoords();
         });
-      } else {
-        elem.uuid = UUID.UUID();
       }
+      elem.uuid = UUID.UUID();
     }
 
   /* copies active elements from the given canvas and then removes them */
