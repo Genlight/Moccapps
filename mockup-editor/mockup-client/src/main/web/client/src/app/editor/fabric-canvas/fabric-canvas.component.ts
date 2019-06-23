@@ -406,9 +406,9 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       } else if (event.keyCode === 88) { // 'x' key
         this.modifyService.cutElement(canvas);
       } else if (event.keyCode === 90) { // 'z' key
-        // TODO undo
+        this.undoRedoService.undo();
       } else if (event.keyCode === 89) { // 'y' key
-        // TODO redo
+        this.undoRedoService.redo();
       } else if (event.keyCode === 71 && event.shiftKey) { // 'g' key
         this.modifyService.ungroup(canvas);
       } else if (event.keyCode === 71) { // 'g' key
