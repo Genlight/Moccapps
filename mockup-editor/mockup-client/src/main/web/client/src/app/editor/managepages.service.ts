@@ -144,7 +144,7 @@ export class ManagePagesService {
 
       //this is pretty ugly, but would need rework of multiple components otherwise
       this.disconnectSocket();
-      this.connectToSocket(this.dataStore.activePage.id,this.dataStore.activePage.id);
+      this.connectToSocket(this._activeProject.id,this.dataStore.activePage.id);
 
       this.isLoadingPage.next(true);
       //Load page by socket
