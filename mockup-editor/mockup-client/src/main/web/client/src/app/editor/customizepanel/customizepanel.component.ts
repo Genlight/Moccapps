@@ -340,27 +340,58 @@ export class CustomizepanelComponent implements OnInit {
    * @param value new value of the property
    */
   setGroupProperty(property, value) {
-    //let undoClone = [];
-    //let sendClone = [];
-    this.selected.forEachObject((elem) => {
-      /*elem.clone((o) => {
-        undoClone.push(o);
-      });
-      elem.clone((o) => {
-        o.set(property, value);
-        o.sendMe = false;
-        sendClone.push(o);
+    let undoClone = [];
+    let sendClone = [];
+    let selectedClone;
+
+      this.selected.forEachObject((elem) => {
+        elem.clone((o) => {
+          o.uuid = elem.uuid;
+          undoClone.push(o);
+        });
+        elem.clone((o) => {
+          o.uuid = elem.uuid;
+          o.set(property, value);
+          o.sendMe = false;
+          sendClone.push(o);
+        })
       })
-    });
-    this.undoRedoService.setCurrentlyModifiedObject(undoClone);
+    if(this.selected.type === 'group') {
+      let undoGroup;
+      this.selected.clone((o) => {
+        o.uuid = this.selected.uuid;
+        undoGroup = o;
+      });
+      undoGroup['_objects'] = undoClone;
+      let sendGroup;
+      this.selected.clone((o) => {
+        o.uuid = this.selected.uuid;
+        sendGroup = o;
+      });
+      sendGroup['_objects'] = sendClone;
+      this.undoRedoService.setCurrentlyModifiedObject([undoGroup]);
+      this.managePagesService.sendMessageToSocket(sendGroup,Action.MODIFIED);
+      this.undoRedoService.save([sendGroup],Action.MODIFIED);
+    } else {
+
+      this.undoRedoService.setCurrentlyModifiedObject(undoClone);
+      sendClone.forEach((current) => {
+        FabricmodifyService.calcExtractFromGroup(current,this.selected);
+        this.managePagesService.sendMessageToSocket(current, Action.MODIFIED);
+        FabricmodifyService.calcInsertIntoGroup(current, this.selected);
+      })
+      this.undoRedoService.save([sendClone],Action.MODIFIED);
+    }
+    /*this.undoRedoService.setCurrentlyModifiedObject(undoClone);
     sendClone.forEach((current) => {
       this.managePagesService.sendMessageToSocket(current, Action.MODIFIED);
       current.sendMe = true;
     })*/
-      elem.set(property,value);
-    })
 
-    this.canvas.renderAll();
+      //elem.set(property,value);
+    //})
+
+    //this.canvas.renderAll();
   }
 
   setGroupFillColor() {
