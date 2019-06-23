@@ -179,6 +179,7 @@ export class ManagePagesService {
       this._activePage.next(Object.assign({}, this.dataStore.activePage));
       //Update page in backend,this is at the moment done by every party that receives the change
       //this.updatePage(page);
+      this.updateGrid();
     }
   }
 
@@ -473,6 +474,7 @@ export class ManagePagesService {
         //console.log("creating new grid");
         this.loadGrid(this.canvas.width, this.canvas.height);
       }
+      gridCanvas.renderAll();
     }
   }
 
@@ -534,6 +536,7 @@ export class ManagePagesService {
             //console.log("backgroundcolor changed to " + parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]);
             //always set the grid canvas color
             this.gridCanvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
+            this.gridCanvas.renderAll();
             //only set the "actual" color if it is enabled
             if (this.canvas.backgroundColor !== null) {
               this.canvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
