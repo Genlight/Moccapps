@@ -93,7 +93,7 @@ export class ProjectsComponent implements OnInit {
       },
       (error) => {
         //console.error(error);
-        this.notificationService.showError(error, 'ERROR');
+        this.notificationService.showError('Please try again by refreshing page.', 'Error: Could not load project.');
       }
     );
   }
@@ -112,7 +112,7 @@ export class ProjectsComponent implements OnInit {
           this.invites = invites;
         },
         (error) => {
-          this.notificationService.showError(error, 'ERROR');
+          this.notificationService.showError('Please try again by refreshing page', 'ERROR: Could not load invites');
         }
     );
   }
