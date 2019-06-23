@@ -299,6 +299,11 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setCanvasDimensions(height: number, width: number) {
+    this.modifyService.setHeight(this.canvas, height);
+    this.modifyService.setHeight(this.canvas, width);
+  }
+
   /**
    * Renders rulers initially.
    */

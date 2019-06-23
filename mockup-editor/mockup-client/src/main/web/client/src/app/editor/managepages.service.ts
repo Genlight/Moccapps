@@ -172,8 +172,10 @@ export class ManagePagesService {
       page = this.saveCanvasDataToPage(page);
       page.height = height;
       page.width = width;
-      this.dataStore.activePage = page;
-      this._activePage.next(Object.assign({}, this.dataStore.activePage));
+      this.modifyService.setHeight(this.canvas, page.height);
+      this.modifyService.setWidth(this.canvas, page.width);
+      //this.dataStore.activePage = page;
+      //this._activePage.next(Object.assign({}, this.dataStore.activePage));
       //Update page in backend,this is at the moment done by every party that receives the change
       //this.updatePage(page);
     }
