@@ -481,9 +481,18 @@ export class ManagePagesService {
   handleChange(message: socketMessage) {
     if (!!message) {
       let parsedObj = JSON.parse(message.content);
-
+ 
       switch (message.command) {
-
+        case Action.PROJECTRENAMED: 
+          // Check if project name field exists and if the renamed project is set to active by the user.
+          if (!!parsedObj && !!parsedObj.projectName && !!parsedObj.projectID) {
+            console.log('socket: projectrenamed');
+            if (!!this._activeProject && this._activeProject.id === parsedObj.projectID) {
+              this.workspaceService.projectName.next(parsedObj.projectName);
+            }
+          }
+          
+          break;
         case Action.PAGELOAD:
           console.log(`pageload. ${JSON.stringify(parsedObj)}`);
           if (!!parsedObj && !!parsedObj.pagedata) {

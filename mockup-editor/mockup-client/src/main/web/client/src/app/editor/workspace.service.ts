@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,7 @@ export class WorkspaceService {
   showsGrid: BehaviorSubject<boolean> = new BehaviorSubject(false);
   showsComments: BehaviorSubject<boolean> = new BehaviorSubject(true);
   toolbarPanelState: BehaviorSubject<ToolbarPanelState> = new BehaviorSubject(ToolbarPanelState.None);
+  projectName: Subject<string> = new Subject();
 
   store: {
     toolbarPanelState: ToolbarPanelState
