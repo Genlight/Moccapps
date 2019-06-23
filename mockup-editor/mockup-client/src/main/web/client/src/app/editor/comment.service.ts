@@ -41,13 +41,13 @@ export class CommentService {
         // console.log('commentSubjectCOMMENT:' + data.comment);
         // CommentAction (comment:added) ([object Object]) (undefined)
         if (data.action !== null) {
-          console.log('commentSubjectCOMMENT  action:' + data.action);
+          //console.log('commentSubjectCOMMENT  action:' + data.action);
         }
         if (data.comment !== null) {
-          console.log('commentSubjectCOMMENT  comment:' + data.comment.toString() + ' isArray:' + isArray(data.comment));
+          //console.log('commentSubjectCOMMENT  comment:' + data.comment.toString() + ' isArray:' + isArray(data.comment));
         }
         if (data.entry !== null) {
-          console.log('commentSubjectCOMMENT, entry: ' + JSON.stringify(data.entry));
+          //console.log('commentSubjectCOMMENT, entry: ' + JSON.stringify(data.entry));
         }
 
         // this.getCommentsImpl();
@@ -59,7 +59,7 @@ export class CommentService {
             this.commentSubjectTest.next(this.comments);
             break;
           case Action.COMMENTMODIFIED:
-            console.error(`action not implemented. (${data.action})`);
+            //console.error(`action not implemented. (${data.action})`);
             break;
           case Action.COMMENTCLEARED:
             comment = this.comments.find((o) => o.uuid === data.comment.uuid);
@@ -83,11 +83,11 @@ export class CommentService {
             this.commentSubjectTest.next(this.comments);
             break;
           default:
-            console.log('default:' + data);
+            //console.log('default:' + data);
             break;
             }
     });
-    console.log('CommentService init');
+    //console.log('CommentService init');
     this.pageService.activePage.subscribe((page) => {
       if (!page) { return; }
       // console.log('activePageCOMMENT:' + page);
@@ -100,7 +100,7 @@ export class CommentService {
    * @return  Observable<Comment[]>
    */
   getComments(): Observable<Comment[]> {
-    console.log('getComments called:' + `/page/${this.activePage.id}/comments`);
+    //console.log('getComments called:' + `/page/${this.activePage.id}/comments`);
     return this.apiService.get<Comment[]>(`/page/${this.activePage.id}/comments`);
   }
 
@@ -116,9 +116,9 @@ export class CommentService {
       },
       (error) => {
         if (error.message === 'No Comments') {
-          console.log('this active Page has no comments. PageId: ' + this.activePage.id);
+          //console.log('this active Page has no comments. PageId: ' + this.activePage.id);
         } else {
-          console.error('getCommentsImpl: ' + JSON.stringify(error));
+          //console.error('getCommentsImpl: ' + JSON.stringify(error));
         }
         this.commentSubjectTest.next([]);
       }

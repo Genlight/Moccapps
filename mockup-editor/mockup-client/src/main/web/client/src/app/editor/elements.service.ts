@@ -51,7 +51,7 @@ export class ElementsService {
    */
   setUserElements(elements: {}[]) {
     this._userElementList = elements;
-    console.log("setting elment list: "+elements.toLocaleString);
+    //console.log("setting elment list: "+elements.toLocaleString);
   }
 
   /**

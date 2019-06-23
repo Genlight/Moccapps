@@ -176,7 +176,7 @@ export class NavbarComponent implements OnInit {
         }
       });
     } else {
-      console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
+      //console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
     }
   }
 
@@ -194,7 +194,7 @@ export class NavbarComponent implements OnInit {
     const canvas = this.managePagesService.getCanvas();
     const json = this.modifyService.exportToJson(canvas);
     alert(JSON.stringify(json));
-    console.log('CANVAS JSON: ' + json);
+    //console.log('CANVAS JSON: ' + json);
   }
 
   /**
@@ -256,7 +256,7 @@ export class NavbarComponent implements OnInit {
       const modelRef = this.modalService.open(CreateProjectModalComponent);
       //modelRef.componentInstance.project = this.project;
     } else {
-      console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
+      //console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
     }
   }
 
@@ -372,7 +372,7 @@ export class NavbarComponent implements OnInit {
   }
 
   onEditProfile() {
-    console.log('clicked oneditProfile');
+    //console.log('clicked oneditProfile');
     const modelRef = this.modalService.open(UserModalComponent);
     modelRef.result.then((result) => {
       if ( result === 'success' ) {
@@ -570,7 +570,7 @@ export class NavbarComponent implements OnInit {
     this.projectService.getProjects<Project[]>()
       .subscribe(
         (response) => {
-          console.log(response);
+          //console.log(response);
           var currproj = this.project;
           for(let a of response) {
             if(a.id === currproj.id){

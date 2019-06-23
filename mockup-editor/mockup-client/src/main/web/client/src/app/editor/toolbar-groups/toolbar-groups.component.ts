@@ -35,7 +35,7 @@ export class ToolbarGroupsComponent implements OnInit {
         //console.log("group new group");
         this.groups = groups;
         this.groups.forEach((p, index) => {
-          console.log("Group for page:" + p.pageId + " " + this.activePage.id + " " + p.getObjects1());
+          //console.log("Group for page:" + p.pageId + " " + this.activePage.id + " " + p.getObjects1());
           if (p.pageId === this.activePage.id) {
             this.groupsForPage.push(p);
           }
@@ -43,13 +43,13 @@ export class ToolbarGroupsComponent implements OnInit {
       }
     );
     this.managePagesService.activePage.subscribe((page) => {
-      console.log("group new page");
+      //console.log("group new page");
       this.activePage = page;
       groupService.activePage = page;
       this.groupsForPage = [];
       this.groups.forEach((p, index) => {
         if (p.pageId === this.activePage.id) {
-          console.log("Group for page:" + p.pageId + " " + this.activePage.id);
+          //console.log("Group for page:" + p.pageId + " " + this.activePage.id);
           this.groupsForPage.push(p);
         }
       });
@@ -69,7 +69,7 @@ export class ToolbarGroupsComponent implements OnInit {
   }
 
   onClickGroupElement(index: number, page: GroupPage) {
-    console.log(`active page: index: ${index} ${JSON.stringify(page.group)}`);
+    //console.log(`active page: index: ${index} ${JSON.stringify(page.group)}`);
     this.managePagesService.setActive(page.group._objects[index]);
   }
 
