@@ -463,7 +463,7 @@ export class ManagePagesService {
    * if the initial grid (2000x2000) is too small a new one is created
    */
   updateGrid() {
-    if (!!this.dataStore.activePage && !!this.dataStore.activePage.page_data) {
+    if (!!this.dataStore.activePage) {
       const gridCanvas = this.getGridCanvas();
       gridCanvas.setWidth(this.canvas.width);
       gridCanvas.setHeight(this.canvas.height);
