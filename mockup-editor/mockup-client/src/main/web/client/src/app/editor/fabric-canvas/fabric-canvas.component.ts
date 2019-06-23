@@ -61,6 +61,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
           this.hideRulerLines();
         } else {
           this.showRulerLines();
+          this.removeAllRulerLines();
           //Load rulers from localstorage if existant
           /* setTimeout(() => { this.loadRulersFromLocalStorage(); }
           , 500); */
