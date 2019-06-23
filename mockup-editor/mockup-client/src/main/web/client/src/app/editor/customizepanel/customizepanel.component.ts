@@ -144,7 +144,7 @@ export class CustomizepanelComponent implements OnInit {
         this.activePage.height = 3000;
       }
       if (this.activePage.width >= 3000) {
-        this.activePage.height = 3000;
+        this.activePage.width = 3000;
       }
       this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
 
