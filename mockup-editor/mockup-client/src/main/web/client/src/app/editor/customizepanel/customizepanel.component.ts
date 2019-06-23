@@ -140,6 +140,12 @@ export class CustomizepanelComponent implements OnInit {
     }
 
     if (this.activePage.width >= 0 && this.activePage.height >= 0) {
+      if (this.activePage.height >= 3000) {
+        this.activePage.height = 3000;
+      }
+      if (this.activePage.width >= 3000) {
+        this.activePage.height = 3000;
+      }
       this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
 
       let defaultCanvas = JSON.parse(this.DEFAULT_CANVAS);
@@ -286,7 +292,7 @@ export class CustomizepanelComponent implements OnInit {
       });
       currentElem.clone((o) => {
         sendClone = o;
-      })
+      });
       this.undoRedoService.setCurrentlyModifiedObject([undoClone]);
       sendClone.set(property, value);
       this.undoRedoService.save(sendClone, Action.MODIFIED);
@@ -296,6 +302,36 @@ export class CustomizepanelComponent implements OnInit {
     }
     // TODO: disable once server sends messages also to the origin, will be rendered by applyTransformation
     //this.canvas.renderAll();
+  }
+
+  /**
+   * sets element lock properties
+   * this uses the same calls as setElementProperty, but the locks would have been inconsistent
+   * with the sending and undoing of actions otherwise
+   */
+  setElementLocks() {
+    let currentElem = this.selected;
+    if (currentElem&&currentElem.sendMe) {
+      let undoClone;
+      let sendClone;
+      currentElem.clone((o) => {
+        undoClone = o;
+      });
+      const _this = this;
+      currentElem.clone((o) => {
+        sendClone = o;
+      });
+      this.undoRedoService.setCurrentlyModifiedObject([undoClone]);
+      sendClone.set('lockMovementX', this.elementProperties.lockMovement);
+      sendClone.set('lockMovementY', this.elementProperties.lockMovement);
+      sendClone.set('lockScalingX', this.elementProperties.lockScale);
+      sendClone.set('lockScalingY', this.elementProperties.lockScale);
+      sendClone.set('lockRotation', this.elementProperties.lockRotate);
+      this.undoRedoService.save(sendClone, Action.MODIFIED);
+      sendClone.sendMe = false;
+      this.managePagesService.sendMessageToSocket(sendClone, Action.MODIFIED);
+      sendClone.sendMe = true;
+    }
   }
 
   /**
@@ -428,17 +464,15 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setElementMoveLock() {
-    this.setElementProperty('lockMovementX', this.elementProperties.lockMovement);
-    this.setElementProperty('lockMovementY', this.elementProperties.lockMovement);
+    this.setElementLocks();
   }
 
   setElementScaleLock() {
-    this.setElementProperty('lockScalingX', this.elementProperties.lockScale);
-    this.setElementProperty('lockScalingY', this.elementProperties.lockScale);
+    this.setElementLocks();
   }
 
   setElementRotateLock() {
-    this.setElementProperty('lockRotation', this.elementProperties.lockRotate);
+    this.setElementLocks();
   }
 
   setDrawingModeColor() {
@@ -478,10 +512,14 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setTextDecoration() {
-    this.setElementProperty('underline', this.textProperties.textDecoration.underline);
+    //this.setElementProperty('underline', this.textProperties.textDecoration.underline);
     this.setElementProperty('linethrough', this.textProperties.textDecoration.linethrough);
-    //console.log(this.textProperties.textDecoration.underline);
-    //console.log(this.textProperties.textDecoration.linethrough);
+    //console.log("underline "+this.textProperties.textDecoration.underline);
+    //console.log("linethrough "+this.textProperties.textDecoration.linethrough);
+  }
+
+  setUnderline() {
+    this.setElementProperty('underline', this.textProperties.textDecoration.underline);
   }
 
   setText() {

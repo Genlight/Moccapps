@@ -38,9 +38,9 @@ public class CommentRESTService {
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         try {
             String json = objectMapper.writeValueAsString(comments);
-            if (comments.isEmpty()) {
-                    return new ResponseEntity<>(new ResponseMessage("No Comments"), HttpStatus.BAD_REQUEST);
-            }
+           // if (comments.isEmpty()) {
+           //         return new ResponseEntity<>(new ResponseMessage("No Comments"), HttpStatus.BAD_REQUEST);
+            //}
             logger.info(json);
             return ResponseEntity.ok(json);
         } catch (JsonProcessingException e) {
