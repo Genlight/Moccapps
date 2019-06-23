@@ -63,11 +63,13 @@
               <button class="btn btn-light menubtn" *ngIf="!showRuler; else hideRulers" (click)="onShowRuler()">View Rulers</button>
               <ng-template #hideRulers>
                 <button class="btn btn-light menubtn" (click)="onHideRuler()">Hide Rulers</button>
+                <button class="btn btn-light menubtn" (click)="onDeleteRuler()">Delete Rulers</button>
               </ng-template>
               <button class="btn btn-light menubtn" (click)="onViewGrid()">
                   <fa-icon [icon]="faCheck" *ngIf="grid"></fa-icon> View Grid</button>
               <button class="btn btn-light menubtn" [disabled]="!grid" (click)="onSnapToGrid()">
                   <fa-icon [icon]="faCheck" *ngIf="snapToGrid"></fa-icon> Snap to Grid</button>
+             
 
             </ul>
           </li>

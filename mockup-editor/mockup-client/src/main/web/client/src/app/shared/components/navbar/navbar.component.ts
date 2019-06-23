@@ -27,6 +27,8 @@ import { ManageUserModalComponent } from '../manage-user-modal/manage-user-modal
 import { ElementsService } from 'src/app/editor/elements.service';
 import { CommentService } from 'src/app/editor/comment.service';
 import { CreateProjectModalComponent } from 'src/app/projects/create-project-modal/create-project-modal.component';
+import { SocketConnectionService } from 'src/app/socketConnection/socket-connection.service';
+import { Action } from 'src/app/editor/fabric-canvas/transformation.interface';
 import {CommentEntry} from "../../models/comments";
 
 @Component({
@@ -86,7 +88,8 @@ export class NavbarComponent implements OnInit {
               private undoRedoService: UndoRedoService,
               private workspaceService: WorkspaceService,
               private elementsService: ElementsService,
-              private commentService: CommentService
+              private commentService: CommentService,
+              private socketService: SocketConnectionService
           ) { }
 
   ngOnInit() {
@@ -128,6 +131,15 @@ export class NavbarComponent implements OnInit {
     this.workspaceService.showsComments.subscribe((value) => {
       this.showsComment = value;
     });
+
+    /**
+     * Handles project name changes from socket connection
+     */
+    this.workspaceService.projectName.subscribe((value) => {
+      if (!!value && value.length > 1) {
+        this.project.projectname = value;
+      }
+    });
   }
 
   onToggleComments() {
@@ -151,6 +163,18 @@ export class NavbarComponent implements OnInit {
     if (!!this.project) {
       const modelRef = this.modalService.open(RenameProjectModalComponent);
       modelRef.componentInstance.project = this.project;
+      modelRef.componentInstance.changedName.subscribe((name) => {
+        // Notify other clients of project name change
+        try {
+          this.socketService.send(
+            JSON.stringify(
+              {
+                projectName: name, 
+                projectID: this.project.id }), Action.PROJECTRENAMED);
+        } catch (e) {
+          console.warn('Could not send rename project socket message: ' + e);
+        }
+      });
     } else {
       //console.error(`onRenameProjectName: Could not open rename modal. this.project is null`);
     }
@@ -220,6 +244,10 @@ export class NavbarComponent implements OnInit {
 
   onHideRuler() {
     this.workspaceService.hideRuler();
+  }
+
+  onDeleteRuler() {
+    this.workspaceService.deleteRulers.next();
   }
 
   onNewProject() {

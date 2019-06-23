@@ -16,6 +16,9 @@ export class RenameProjectModalComponent implements OnInit {
   @Output() 
   confirmed: EventEmitter<boolean> = new EventEmitter<boolean>();
 
+  @Output()
+  changedName: EventEmitter<string> = new EventEmitter<string>();
+
   constructor(
     public activeModal: NgbActiveModal,
     private projectService: ProjectService  
@@ -35,6 +38,7 @@ export class RenameProjectModalComponent implements OnInit {
     this.projectService.updateProject(this.projectRef).subscribe(
       (response) => {
         this.confirmed.emit(true);
+        this.changedName.emit(this.projectName);
         this.activeModal.close();
       }
     );
