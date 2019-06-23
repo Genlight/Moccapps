@@ -115,10 +115,13 @@ export class CustomizepanelComponent implements OnInit {
       //alert(backgroundColor);
       this.managePagesService.getGridCanvas().backgroundColor = backgroundColor;
       this.canvasProperties.backgroundColor = backgroundColor;
-      if (this.isGridEnabled) {
+      if (!this.isGridEnabled) {
+        this.canvas.backgroundColor = backgroundColor;
+        this.canvas.renderAll();
+      } else {
         this.canvas.backgroundColor = null;
         this.canvas.renderAll();
-      }
+      }  
     }
     //this.setCanvasBackgroundColor();
   }
@@ -275,17 +278,24 @@ export class CustomizepanelComponent implements OnInit {
     // TODO: disabled for now, as the server doesn't send changes back to the original user yet
     //currentElem=fabric.util.object.clone(currentElem);
 
-    if (currentElem) {
-      currentElem.set(property, value);
-      this.undoRedoService.save(currentElem, Action.MODIFIED);
+    if (currentElem&&currentElem.sendMe) {
+      let undoClone;
+      let sendClone;
+      currentElem.clone((o) => {
+        undoClone = o;
+      });
+      currentElem.clone((o) => {
+        sendClone = o;
+      })
+      this.undoRedoService.setCurrentlyModifiedObject([undoClone]);
+      sendClone.set(property, value);
+      this.undoRedoService.save(sendClone, Action.MODIFIED);
+      sendClone.sendMe = false;
+      this.managePagesService.sendMessageToSocket(sendClone, Action.MODIFIED);
+      sendClone.sendMe = true;
     }
-    if (currentElem.sendMe) {
-      currentElem.sendMe = false;
-      this.managePagesService.sendMessageToSocket(currentElem, Action.MODIFIED);
-    }
-    currentElem.sendMe = true;
     // TODO: disable once server sends messages also to the origin, will be rendered by applyTransformation
-    this.canvas.renderAll();
+    //this.canvas.renderAll();
   }
 
   /**
@@ -294,9 +304,26 @@ export class CustomizepanelComponent implements OnInit {
    * @param value new value of the property
    */
   setGroupProperty(property, value) {
+    //let undoClone = [];
+    //let sendClone = [];
     this.selected.forEachObject((elem) => {
-      elem.set(property, value);
+      /*elem.clone((o) => {
+        undoClone.push(o);
+      });
+      elem.clone((o) => {
+        o.set(property, value);
+        o.sendMe = false;
+        sendClone.push(o);
+      })
     });
+    this.undoRedoService.setCurrentlyModifiedObject(undoClone);
+    sendClone.forEach((current) => {
+      this.managePagesService.sendMessageToSocket(current, Action.MODIFIED);
+      current.sendMe = true;
+    })*/
+      elem.set(property,value);
+    })
+
     this.canvas.renderAll();
   }
 
@@ -367,7 +394,7 @@ export class CustomizepanelComponent implements OnInit {
 
     this.managePagesService.getGridCanvas().backgroundColor = this.canvasProperties.backgroundColor;
     this.managePagesService.getGridCanvas().renderAll();
-    if (this.canvas.backgroundColor !== null) {
+    if (!this.isGridEnabled) {
       this.canvas.setBackgroundColor(this.canvasProperties.backgroundColor);
       this.canvas.renderAll();
     }

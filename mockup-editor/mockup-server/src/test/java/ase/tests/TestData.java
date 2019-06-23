@@ -3,6 +3,7 @@ package ase.tests;
 import ase.DTO.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +67,7 @@ public class TestData {
     private static final int COMMENTENTRY_1_COMMENTID=1;
     private static final String COMMENTENTRY_1_MESSAGE="COMMENT";
     private static final int COMMENTENTRY_1_USERID=1;
-    private static final Date COMMENTENTRY_1_DATE=java.sql.Date.valueOf( "2019-01-01" );
+    private static final Timestamp COMMENTENTRY_1_DATE=Timestamp.valueOf("2019-01-01 03:00:00");
 
     private static final int COMMENT_2_ID=2;
     private static final int COMMENT_2_PAGEID=2;
@@ -78,7 +79,7 @@ public class TestData {
     private static final int COMMENTENTRY_2_COMMENTID=2;
     private static final String COMMENTENTRY_2_MESSAGE="COMMENT";
     private static final int COMMENTENTRY_2_USERID=2;
-    private static final Date COMMENTENTRY_2_DATE=java.sql.Date.valueOf( "2029-02-02" );
+    private static final Timestamp COMMENTENTRY_2_DATE=Timestamp.valueOf("2029-01-01 03:00:00");
     private static final String PROJECTVERSION_1_TAG="testTag1";
     private static final String PROJECTVERSION_2_TAG="testTag2";
 
@@ -131,14 +132,14 @@ public class TestData {
         project3.addUser(2);
         project4.addUser(2);
 
-        createdComment1=new Comment(COMMENT_1_ID,COMMENT_1_PAGEID,COMMENT_1_CLEARED);
-        createdCommentEntry1=new CommentEntry(COMMENTENTRY_1_ID,COMMENTENTRY_1_MESSAGE,COMMENTENTRY_1_USERID,COMMENTENTRY_1_DATE,COMMENTENTRY_1_COMMENTID);
+        createdComment1=new Comment(COMMENT_1_ID,COMMENT_1_PAGEID,"test",COMMENT_1_CLEARED);
+        createdCommentEntry1=new CommentEntry(COMMENTENTRY_1_ID,COMMENTENTRY_1_MESSAGE,createdUser1,COMMENTENTRY_1_DATE,COMMENTENTRY_1_COMMENTID,"1111-1111");
         createdComment1.setCommentObjects(new ArrayList<>(Arrays.asList(COMMENT_1_OBJECT)));
         createdComment1.setCommentEntryList(new ArrayList<>(Arrays.asList(createdCommentEntry1)));
 
 
-        comment2=new Comment(COMMENT_2_ID,COMMENT_2_PAGEID,COMMENT_2_CLEARED);
-        commentEntry2=new CommentEntry(COMMENTENTRY_2_ID,COMMENTENTRY_2_MESSAGE,COMMENTENTRY_2_USERID,COMMENTENTRY_2_DATE,COMMENTENTRY_2_COMMENTID);
+        comment2=new Comment(COMMENT_2_ID,COMMENT_2_PAGEID,"test",COMMENT_2_CLEARED);
+        commentEntry2=new CommentEntry(COMMENTENTRY_2_ID,COMMENTENTRY_2_MESSAGE,createdUser1,COMMENTENTRY_2_DATE,COMMENTENTRY_2_COMMENTID,"1111-1111");
         comment2.setCommentObjects(new ArrayList<>(Arrays.asList(COMMENT_2_OBJECT)));
 
         createdPage1=new Page(1,PAGE_1_NAME,PAGE_1_HEIGHT,PAGE_1_WIDTH,PAGE_1_ORDER,PAGE_1_PROJECT_ID,PAGE_1_PAGE_DATA);

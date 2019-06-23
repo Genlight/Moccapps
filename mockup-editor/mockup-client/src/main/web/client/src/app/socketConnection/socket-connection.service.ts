@@ -9,6 +9,9 @@ import pako from 'pako';
 
 const API_URL = environment.apiUrl;
 
+//IMPORTANT: developement ONLY!!!
+//const API_URL = "http://localhost:8090";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -55,7 +58,7 @@ export class SocketConnectionService {
       var deflateString = pako.deflate(json,{ to: 'string' });
       var base64 = btoa(deflateString);
       this.stompClient.send('/app/send', {},  base64);
-      //console.log('send: ' + base64);
+      console.log('send: ' + json);
     }
   }
 

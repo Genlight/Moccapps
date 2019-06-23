@@ -50,6 +50,7 @@ public class CommentServiceImpl implements CommentService {
             List<CommentEntry> commentEntries=new ArrayList<>();
 
             for(CommentEntry e:commentEntry){
+                e.setCommentId(comment.getId());
                 commentEntries.add(commentDAO.createEntry(e));
             }
 
@@ -104,6 +105,16 @@ public class CommentServiceImpl implements CommentService {
     public Comment findCommentById(int id){
         try {
             return commentDAO.findById(id);
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Comment findCommentByUUID(String uuid){
+        try {
+            return commentDAO.findByUUID(uuid);
         } catch (DAOException e) {
             e.printStackTrace();
         }

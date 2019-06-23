@@ -29,6 +29,7 @@ import { CommentService } from 'src/app/editor/comment.service';
 import { CreateProjectModalComponent } from 'src/app/projects/create-project-modal/create-project-modal.component';
 import { SocketConnectionService } from 'src/app/socketConnection/socket-connection.service';
 import { Action } from 'src/app/editor/fabric-canvas/transformation.interface';
+import {CommentEntry} from "../../models/comments";
 
 @Component({
   selector: 'app-navbar',
@@ -183,7 +184,9 @@ export class NavbarComponent implements OnInit {
     const modelRef = this.modalService.open(ManageUserModalComponent);
     modelRef.componentInstance.project = this.project;
     modelRef.componentInstance.confirm.subscribe(() =>
-      {}
+      {
+        this.loadProjects()
+      }
     );
   }
 
@@ -555,7 +558,24 @@ export class NavbarComponent implements OnInit {
    * opening the comment sidebar (if implemented)
    * @return void
    */
-  onAddComment() {
+  /*onAddComment() {
       this.commentService.setAddCommentObs(true);
+  }*/
+
+  loadProjects(): void {
+    this.projectService.getProjects<Project[]>()
+      .subscribe(
+        (response) => {
+          console.log(response);
+          var currproj = this.project;
+          for(let a of response) {
+            if(a.id === currproj.id){
+              currproj = a;
+              break;
+            }
+          }
+          this.project = currproj;
+        },
+      );
   }
 }
