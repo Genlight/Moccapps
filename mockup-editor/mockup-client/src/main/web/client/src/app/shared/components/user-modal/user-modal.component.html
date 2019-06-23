@@ -40,7 +40,8 @@
         name="newPwd" placeholder="New Password"
         class="form-control"
         #newPwd="ngModel"
-        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" />
+        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+        required/>
        <div *ngIf="newPwd.invalid && (formSubmitted || newPwd.touched)"
         class="alert alert-danger">
          <div *ngIf="newPwd.errors.pattern"> Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters.</div>
@@ -52,7 +53,8 @@
        placeholder="Confirm Password"
        class="form-control"
        #confirmpassword="ngModel"
-       pattern="{{ newPwd.value }}" />
+       pattern="{{ newPwd.value }}" 
+       required/>
        <div *ngIf="confirmpassword.invalid && (formSubmitted || confirmpassword.touched)" class="alert alert-danger">
          <div *ngIf="confirmpassword.errors.required"> Confirmation password is required. </div>
          <div *ngIf="confirmpassword.errors.pattern"> Password & Confirm Password does not match.</div>
@@ -63,6 +65,6 @@
   <div class="modal-footer">
     <button type="button"  class="btn btn-outline-secondary" (click)="activeModal.close('Cancel')">Cancel</button>
 
-    <button type="button" [disabled]="password.invalid || (confirmpassword.invalid && confirmpassword.touched) || (newPwd.invalid && newPwd.touched)"
+    <button type="button" [disabled]="form.invalid || password.invalid || (confirmpassword.invalid && confirmpassword.touched) || (newPwd.invalid && newPwd.touched)"
             class="btn btn-primary" (click)="onUpdateUserInfo()">Apply</button>
   </div>
