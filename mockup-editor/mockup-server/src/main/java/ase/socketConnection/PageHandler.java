@@ -1,8 +1,12 @@
 package ase.socketConnection;
 
+import ase.DTO.Comment;
+import ase.DTO.CommentEntry;
 import ase.DTO.Page;
 import ase.message.socket.SocketMessage;
+import ase.service.CommentService;
 import ase.service.PageService;
+import ase.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -11,6 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,16 +28,20 @@ public class PageHandler {
     private List<String> currentUser;
     private Page page;
     private PageService pageService;
+    private UserService userService;
+    private CommentService commentService;
     private ObjectMapper objectMapper;
     private String projectId;
     private ConcurrentHashMap<String,String> lockedElements;
 
     private static final Logger logger= LoggerFactory.getLogger(PageHandler.class);
 
-    public PageHandler(String projectId,int pageId, PageService pageService){
+    public PageHandler(String projectId,int pageId, PageService pageService,CommentService commentService,UserService userService){
         currentUser=new ArrayList<>();
         objectMapper=new ObjectMapper();
         this.pageService = pageService;
+        this.commentService = commentService;
+        this.userService = userService;
         page=pageService.getPageById(pageId);
         this.projectId=projectId;
         lockedElements=new ConcurrentHashMap<>();
@@ -170,18 +182,223 @@ public class PageHandler {
                     return false;
                 }
             }
+
             case "comment:added":
-                break;
+                try {
+                    logger.info("comment:added:content:"+message.getContent());
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    comment.setCleared(commentNode.get("isCleared").asBoolean());
+                    comment.setUuid(commentNode.get("uuid").asText());
+                    ArrayNode entries = ((ArrayNode)commentNode.get("entries"));
+                    ArrayList<CommentEntry> commentEntries = new ArrayList<>();
+                    for(JsonNode e:entries){
+                        CommentEntry commentEntry = new CommentEntry();
+                        commentEntry.setMessage(e.get("message").asText());
+                        commentEntry.setUuid(e.get("id").asText());
+                        commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
+                        String stri= e.get("date").asText();
+                        if(stri.length()<14){ //date sometimes in epoch ms
+                            commentEntry.setDate(Timestamp.from(Instant.ofEpochMilli(Long.parseLong(stri))));
+                        }
+                        else{
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                            commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        }
+                        commentEntries.add(commentEntry);
+                    }
+                    ArrayNode objects = ((ArrayNode)commentNode.get("objectUuid"));
+                    ArrayList<String> objectStrings = new ArrayList<>();
+                    for(JsonNode e:objects) {
+                        String temp = e.textValue();
+                        objectStrings.add(temp);
+                    }
+                    comment.setCommentEntryList(commentEntries);
+                    comment.setCommentObjects(objectStrings);
+                    comment.setPage_id(page.getId());
+                    commentService.createCommentAndEntry(comment);
+                    return true;
+                } catch (IOException e) {
+                    logger.error("couldn't parse content in comment:added");
+                    return false;
+                }
             case "comment:modified":
+                logger.info("comment:modified:content:"+message.getContent());
+                //Command is unnecessary,can't change page or uuid and isCleared has separate cmd
                 break;
             case "comment:cleared":
-                break;
+                logger.info("comment:cleared:content:"+message.getContent());
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+                    comment.setCleared(commentNode.get("isCleared").asBoolean());
+                    commentService.updateComment(comment);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
+            case "comment:deleted":
+                logger.info("comment:deleted:content:"+message.getContent());
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+                    commentService.removeComment(comment);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
             case "commententry:added":
-                break;
+                logger.info("commententry:added:content:"+message.getContent());
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+
+                    ArrayNode entries = ((ArrayNode)commentNode.get("entries"));
+                    ArrayList<CommentEntry> commentEntries = new ArrayList<>();
+                    for(JsonNode e:entries){
+                        CommentEntry commentEntry = new CommentEntry();
+                        commentEntry.setMessage(e.get("message").asText());
+                        commentEntry.setUuid(e.get("id").asText());
+                        commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
+                        String stri= e.get("date").asText();
+                        if(stri.length()<14){ //date sometimes in epoch ms
+                            commentEntry.setDate(Timestamp.from(Instant.ofEpochMilli(Long.parseLong(stri))));
+                        }
+                        else{
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                            commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        }
+
+                        commentEntry.setCommentId(comment.getId());
+                        boolean exists = false;
+                       for(CommentEntry x:comment.getCommentEntryList()){
+                           if(x.equals(commentEntry)){
+                               exists = true;
+                               break;
+                           }
+                       }
+                       if(!exists){
+                           commentEntries.add(commentEntry);
+                       }
+                    }
+                    for(CommentEntry x:comment.getCommentEntryList()){
+                        logger.info("Current List:"+x);
+                    }
+
+                    for(CommentEntry e:commentEntries){
+                        logger.info("New List:"+e);
+                        commentService.createCommentEntry(e);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
+
             case "commententry:deleted":
-                break;
+                logger.info("commententry:deleted:content:"+message.getContent());
+                //gets called from somewhere for no reason and deletes all entries
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+                    List<CommentEntry> currentCommentEntryList= comment.getCommentEntryList();
+
+                    ArrayNode entries = ((ArrayNode)commentNode.get("entries"));
+                    ArrayList<CommentEntry> newCommentEntries = new ArrayList<>();
+                    for(JsonNode e:entries){
+                        CommentEntry commentEntry = new CommentEntry();
+                        commentEntry.setMessage(e.get("message").asText());
+                        commentEntry.setUuid(e.get("id").asText());
+                        commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
+                        String stri= e.get("date").asText();
+                        if(stri.length()<14){ //date sometimes in epoch ms
+                            commentEntry.setDate(Timestamp.from(Instant.ofEpochMilli(Long.parseLong(stri))));
+                        }
+                        else{
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                            commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        }
+                        commentEntry.setCommentId(comment.getId());
+                        newCommentEntries.add(commentEntry);
+                    }
+
+                    for(CommentEntry e:currentCommentEntryList){
+                        if(!newCommentEntries.contains(e)){
+                            logger.info("Removing CommentEntry:"+e);
+                            commentService.removeCommentEntry(e);
+                            break; //Can be just one per message
+                        }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
             case "commententry:modified":
-                break;
+                logger.info("commententry:modified:content:"+message.getContent());
+                try {
+                    Comment comment = new Comment();
+                    ObjectNode content = objectMapper.readValue(message.getContent(), ObjectNode.class);
+                    JsonNode commentNode = content.get("comment");
+                    String uuid = commentNode.get("uuid").asText();
+                    comment = commentService.findCommentByUUID(uuid);
+                    List<CommentEntry> currentCommentEntryList= comment.getCommentEntryList();
+
+                    ArrayNode entries = ((ArrayNode)commentNode.get("entries"));
+                    ArrayList<CommentEntry> newCommentEntries = new ArrayList<>();
+                    for(JsonNode e:entries){
+                        CommentEntry commentEntry = new CommentEntry();
+                        commentEntry.setMessage(e.get("message").asText());
+                        commentEntry.setUuid(e.get("id").asText());
+                        commentEntry.setUser(userService.getUserByEmail(e.get("email").asText()));
+                        String stri= e.get("date").asText();
+                        if(stri.length()<14){ //date sometimes in epoch ms
+                            commentEntry.setDate(Timestamp.from(Instant.ofEpochMilli(Long.parseLong(stri))));
+                        }
+                        else{
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            LocalDateTime dateTime = LocalDateTime.parse(stri, formatter);
+                            commentEntry.setDate(Timestamp.valueOf(dateTime));
+                        }
+                        commentEntry.setCommentId(comment.getId());
+                        newCommentEntries.add(commentEntry);
+                    }
+
+                    for(CommentEntry e:currentCommentEntryList){
+                        if(!newCommentEntries.contains(e)){
+                            logger.info("updating CommentEntry:"+e);
+                            commentService.updateCommentEntry(e);
+                            break; //Can be just one per message
+                        }
+                    }
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
         }
         return true;
     }

@@ -26,10 +26,12 @@ export class ManagePagesService {
 
   pages: Observable<Page[]>;
   activePage: Observable<Page>;
+  commentSubject: Observable<CommentAction>;
 
   isLoadingPage: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private _pages: BehaviorSubject<Page[]>;
   private _activePage: BehaviorSubject<Page>;
+  private _commentSubject: BehaviorSubject<CommentAction>;
   private _activeProject: Project;
   private _isGridEnabled: boolean;
 
@@ -40,7 +42,7 @@ export class ManagePagesService {
     activePage: Page
   };
   //
-  commentSubject: BehaviorSubject<CommentAction>;
+
   constructor(
     private apiService: ApiService,
     private modifyService: FabricmodifyService,
@@ -52,13 +54,14 @@ export class ManagePagesService {
   ) {
     this._pages = new BehaviorSubject<Page[]>([]);
     this._activePage = new BehaviorSubject<Page>(null);
-    this.commentSubject = new BehaviorSubject<CommentAction>(null);
+    this._commentSubject = new BehaviorSubject<CommentAction>(null);
     this.dataStore = {
       pages: [],
       activePage: null
     };
     this.pages = this._pages.asObservable();
     this.activePage = this._activePage.asObservable();
+    this.commentSubject = this._commentSubject.asObservable();
 
     // Handle change of project status
     this.projectService.activeProject.subscribe((project) => {
@@ -125,6 +128,10 @@ export class ManagePagesService {
       if (!!this.dataStore.activePage && this._isGridEnabled) {
         //this.workspaceService.hideGrid();
       }
+
+      // Save and delete rulers before page swap. NOT WORKING RULERS
+ /*      this.workspaceService.saveRulers.next();
+      this.workspaceService.deleteRulers.next(); */
 
       //Set new active page
       console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
@@ -483,9 +490,18 @@ export class ManagePagesService {
   handleChange(message: socketMessage) {
     if (!!message) {
       let parsedObj = JSON.parse(message.content);
-
+ 
       switch (message.command) {
-
+        case Action.PROJECTRENAMED: 
+          // Check if project name field exists and if the renamed project is set to active by the user.
+          if (!!parsedObj && !!parsedObj.projectName && !!parsedObj.projectID) {
+            console.log('socket: projectrenamed');
+            if (!!this._activeProject && this._activeProject.id === parsedObj.projectID) {
+              this.workspaceService.projectName.next(parsedObj.projectName);
+            }
+          }
+          
+          break;
         case Action.PAGELOAD:
           console.log(`pageload. ${JSON.stringify(parsedObj)}`);
           if (!!parsedObj && !!parsedObj.pagedata) {
@@ -562,8 +578,13 @@ export class ManagePagesService {
         case Action.COMMENTADDED:
         case Action.COMMENTMODIFIED:
         case Action.COMMENTCLEARED:
+          if (message.user === this.tokenStorage.getToken()) {
+            console.log('comments: action:' + message.command + ', is the same user');
+            break;
+          }
+          console.log('after same-user check');
           if (!!parsedObj.comment) {
-            this.commentSubject.next({ action: message.command, comment: parsedObj.comment });
+            this._commentSubject.next({ action: message.command, comment: parsedObj.comment });
           } else {
             console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment})`);
           }
@@ -571,8 +592,16 @@ export class ManagePagesService {
         case Action.COMMENTENTRYADDED:
         case Action.COMMENTENTRYDELETED:
         case Action.COMMENTENTRYMODIFIED:
+          if (message.user === this.tokenStorage.getToken()) {
+            console.log('comments: action:' + message.command + ', is the same user');
+            break;
+          } else {
+            console.log('comments: action:' + message.command + ', different user: remote: ' +
+              parsedObj.userId + ', this one: ' + this.tokenStorage.getToken() );
+          }
+          console.log('after same-user check');
           if (!!parsedObj.comment && !!parsedObj.entry) {
-            this.commentSubject.next({
+            this._commentSubject.next({
               action: message.command,
               comment: parsedObj.comment,
               entry: parsedObj.entry
@@ -645,6 +674,6 @@ export class ManagePagesService {
    * @return Observable<CommentAction>
    */
   getCommentActionObs(): Observable<CommentAction> {
-    return this.commentSubject.asObservable();
+    return this._commentSubject.asObservable();
   }
 }

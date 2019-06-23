@@ -6,6 +6,7 @@ export enum Action {
   ADDED = 'element:added',
   REMOVED = 'element:removed',
   MODIFIED = 'element:modified',
+  PROJECTRENAMED = 'page:projectrenamed',
   PAGECREATED = 'page:created',
   PAGEREMOVED = 'page:removed',
   PAGERENAMED = 'page:renamed',

@@ -6,14 +6,25 @@ export class Comment {
     isCleared = false;
     entries: CommentEntry[];
     uuid: string;
+  public toString = () : string => {
+    return `Comment (${this.uuid}) (${this.entries})`;
+  }
 }
 
 export class CommentEntry {
-  author: User;
+  //author: User;
+  email: string;
+  username: string;
+  //name:string;
+
   message: string;
-  id: number;
+  id: string;
   date: Date;
   isEditing ? = false;
+
+  public toString = () : string => {
+    return `CommentEntry (${this.email}) (${this.message})`;
+  }
 }
 
 export class EntryEditing {
@@ -25,4 +36,7 @@ export class CommentAction {
   action: Action;
   comment: Comment;
   entry?: CommentEntry;
+  public toString = () : string => {
+    return `CommentAction (${this.action}) (${this.comment}) (${this.entry})`;
+  }
 }

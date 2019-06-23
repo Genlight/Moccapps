@@ -5,6 +5,8 @@ import { User } from '../../shared/models/User';
 import { TokenStorageService } from '../../auth/token-storage.service';
 import { SocketConnectionService } from '../../socketConnection/socket-connection.service';
 import { CommentService } from '../comment.service';
+import {UUID} from 'angular2-uuid';
+
 @Component({
   selector: 'app-comment',
   templateUrl: './comment.component.html',
@@ -33,14 +35,13 @@ export class CommentComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.initialEntry = this.comment.entries[0];
+    /*if(typeof this.comment !== 'undefined' && typeof this.comment.entries[0] !== 'undefined'){
+      this.initialEntry = this.comment.entries[0];
+    }
+    else{*/
+    this.initialEntry = new CommentEntry();
+   // }
     this.currentUser = this.storageService.getUserInfo();
-    this.newEntry = {
-      author:  this.currentUser,
-      message: '',
-      date: new Date(),
-      id: this.comment.entries.length
-    };
   }
   /**
    * Create new entry under the specified comment, send it per socket to Server
@@ -48,16 +49,20 @@ export class CommentComponent implements OnInit {
    * @param  comment Comment
    */
   onCreateEntry() {
-    this.newEntry.id++;
-    this.comment.entries.push({
-      author:  this.currentUser,
-      message: this.newEntry.message,
+    // this.newEntry.id++;
+    const ent = {
+      email:  this.storageService.getEmail(),
+      username:  this.storageService.getUsername(),
+      message: this.newEntryMessage,
       date: new Date(),
-      id: this.comment.entries.length,
+      id: UUID.UUID(),
       isEditing: false
-    });
-    this.newEntry.message = '';
-    this.commentService.createNewEntry(this.comment, this.newEntry);
+    };
+    this.comment.entries.push(ent);
+    this.newEntryMessage = '';
+    this.commentService.createNewEntry(this.comment, ent);
+
+    console.log('OnCreateEntry:' + JSON.stringify(this.comment) + ' | Entry' + JSON.stringify(ent));
   }
   /**
    * isCleared means, that a commment or the problem which is adressed has been isCleared
@@ -86,12 +91,19 @@ export class CommentComponent implements OnInit {
    */
   onDelete(entry) {
     const index = this.comment.entries.findIndex(obj => obj.id === entry.id);
-    this.comment.entries.splice(index, 1);
-    this.commentService.deleteCommentEntry(this.comment, entry);
+    if (this.comment.entries.length < 1) {
+      this.commentService.deleteComment(this.comment);  
+    } else {
+      this.comment.entries.splice(index, 1);
+      this.commentService.deleteCommentEntry(this.comment, entry);
+    }
+    if (this.comment.entries.length < 1) {
+      this.commentService.deleteComment(this.comment);
+    }
   }
 
   /**
-   * cleanup Comment
+   * cleanup  * Comment
    * @return void
    */
   OnDestroy() {

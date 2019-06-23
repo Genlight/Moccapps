@@ -203,7 +203,9 @@ export class FabricmodifyService {
             } else {
               obj.uuid = UUID.UUID();
             }
+            FabricmodifyService.calcExtractFromGroup(obj,clonedObj);
             canvas.add(obj);
+            FabricmodifyService.calcInsertIntoGroup(obj,clonedObj);
           });
           // this should solve the unselectability
           clonedObj.setCoords();
