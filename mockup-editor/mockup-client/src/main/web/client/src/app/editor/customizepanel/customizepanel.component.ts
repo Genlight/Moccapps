@@ -140,6 +140,12 @@ export class CustomizepanelComponent implements OnInit {
     }
 
     if (this.activePage.width >= 0 && this.activePage.height >= 0) {
+      if (this.activePage.height >= 3000) {
+        this.activePage.height = 3000;
+      }
+      if (this.activePage.width >= 3000) {
+        this.activePage.height = 3000;
+      }
       this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
 
       let defaultCanvas = JSON.parse(this.DEFAULT_CANVAS);
@@ -286,7 +292,7 @@ export class CustomizepanelComponent implements OnInit {
       });
       currentElem.clone((o) => {
         sendClone = o;
-      })
+      });
       this.undoRedoService.setCurrentlyModifiedObject([undoClone]);
       sendClone.set(property, value);
       this.undoRedoService.save(sendClone, Action.MODIFIED);
@@ -471,10 +477,14 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setTextDecoration() {
-    this.setElementProperty('underline', this.textProperties.textDecoration.underline);
+    //this.setElementProperty('underline', this.textProperties.textDecoration.underline);
     this.setElementProperty('linethrough', this.textProperties.textDecoration.linethrough);
-    //console.log(this.textProperties.textDecoration.underline);
-    //console.log(this.textProperties.textDecoration.linethrough);
+    //console.log("underline "+this.textProperties.textDecoration.underline);
+    //console.log("linethrough "+this.textProperties.textDecoration.linethrough);
+  }
+
+  setUnderline() {
+    this.setElementProperty('underline', this.textProperties.textDecoration.underline);
   }
 
   setText() {
