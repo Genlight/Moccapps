@@ -332,11 +332,11 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   private loadPage(page: Page) {
     if (!!page) {
-      this.modifyService.clearAll(this.canvas);
       this.modifyService.setHeight(this.canvas, page.height);
       this.modifyService.setWidth(this.canvas, page.width);
       //console.log(`loadPage with data: ${page.page_data}`);
       if (!!page.page_data) {
+        this.modifyService.clearAll(this.canvas);
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
             //this.pagesService.loadGrid(2000,2000);
         this.pagesService.updateGrid();
