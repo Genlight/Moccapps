@@ -20,6 +20,9 @@ export class CreateProjectModalComponent implements OnInit {
     width: number
   };
 
+  isProjectNameInvalid = false;
+  isDimensionsInvalid = false;
+
   constructor(
     private modalService: NgbModal,
     private projectService: ProjectService,
@@ -38,6 +41,9 @@ export class CreateProjectModalComponent implements OnInit {
       height: 600,
       width: 900
     };
+
+    this.isProjectNameInvalid = false;
+    this.isDimensionsInvalid = false;
   }
 
   openModal(content) {
@@ -51,6 +57,22 @@ export class CreateProjectModalComponent implements OnInit {
     );
   }
 
+  onNameChanged() {
+    if (this.project.name.length <= 0) {
+      this.isProjectNameInvalid = true;
+    } else {
+      this.isProjectNameInvalid = false;
+    }
+  }
+
+  onDimensionChanged() {
+    if (this.project.height <= 0 || this.project.width <= 0 || this.project.height > 3000 || this.project.width > 3000) {
+      this.isDimensionsInvalid = true;
+    } else {
+      this.isDimensionsInvalid = false;
+    }
+  }
+
   /**
    * Creates a new Project, initial page and sets the created project to active set.
    * @param value the 
@@ -61,11 +83,13 @@ export class CreateProjectModalComponent implements OnInit {
 
     if (this.project.name.length <= 0) {
       this.notificationService.showError('Project name must not be empty.', 'Error');
+      this.isProjectNameInvalid = true;
       return;
     } 
 
-    if (this.project.height <= 0 || this.project.width <= 0) {
-      this.notificationService.showError('Project canvas size must be larger than 0px.', 'Error');
+    if (this.project.height <= 0 || this.project.width <= 0 || this.project.height > 3000 || this.project.width > 3000) {
+      this.notificationService.showError('Project canvas size must between 0-3000 px.', 'Error');
+      this.isDimensionsInvalid = true;
       return;
     }
     this.projectService.createProject(project).subscribe(
