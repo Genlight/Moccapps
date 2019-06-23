@@ -62,7 +62,7 @@ export class CommentComponent implements OnInit {
     this.newEntryMessage = '';
     this.commentService.createNewEntry(this.comment, ent);
 
-    console.log('OnCreateEntry:' + JSON.stringify(this.comment) + ' | Entry' + JSON.stringify(ent));
+    //console.log('OnCreateEntry:' + JSON.stringify(this.comment) + ' | Entry' + JSON.stringify(ent));
   }
   /**
    * isCleared means, that a commment or the problem which is adressed has been isCleared

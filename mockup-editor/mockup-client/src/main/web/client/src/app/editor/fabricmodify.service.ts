@@ -27,7 +27,7 @@ export class FabricmodifyService {
   }
 
   loadFromJSON(canvas: any, json: string) {
-    console.log(`loadFromJSON: object count: ${((canvas || {}).objects || {}).length}`);
+    //console.log(`loadFromJSON: object count: ${((canvas || {}).objects || {}).length}`);
     canvas.loadFromJSON(JSON.parse(json), () => {
       canvas.renderAll();
     });
@@ -318,7 +318,7 @@ export class FabricmodifyService {
           canvas[newKey] = parsedObj[key];
           console.log(`setting BackroundColour: assigning ${parsedObj[key]} to ${newKey}, old value: ${canvas.backgroundColor}`)
         }*/ else {
-          console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
+          //console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
           canvas[key] = parsedObj[key];
         }
       })
@@ -407,7 +407,7 @@ export class FabricmodifyService {
           canvas.remove(old);
         }
       }
-      console.log('after parse (applyTransformation).');
+      //console.log('after parse (applyTransformation).');
     }
     canvas.renderAll();
   }

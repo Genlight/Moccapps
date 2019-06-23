@@ -79,7 +79,7 @@ export class ManagePagesService {
 
   // TODO: change page size, possibly to relative values
   createPage(pagewidth: number, pageheight: number) {
-    console.log('createPage');
+    //console.log('createPage');
     let canvas = new fabric.Canvas('canvas',
       {
         backgroundColor: '#ffffff',
@@ -121,7 +121,7 @@ export class ManagePagesService {
    * Before doing so, the current workspace of the old active page will be saved.
    */
   setPageActive(page: Page) {
-    console.log('setPageActive');
+    //console.log('setPageActive');
     if (!!page) {
       // Persist workspace of old workspace
       // If grid was active on the former active page, it will be disabled
@@ -130,7 +130,7 @@ export class ManagePagesService {
       }
 
       //Set new active page
-      console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
+      //console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
       // Set page data from rest api to null
       page.page_data = null;
       this.dataStore.activePage = page;
@@ -176,13 +176,13 @@ export class ManagePagesService {
   }
 
   clearPages() {
-    console.log('clearPages');
+    //console.log('clearPages');
     this.dataStore.pages = [];
     this._pages.next(Object.assign({}, this.dataStore).pages);
   }
 
   clearActivePage() {
-    console.log('clearActivePage');
+    //console.log('clearActivePage');
     this.dataStore.activePage = null;
     this._activePage.next(null);
   }
@@ -207,7 +207,7 @@ export class ManagePagesService {
    * Loads all pages from the current project and saves them to the store if successful.
    */
   loadAll() {
-    console.log('loadAll');
+    //console.log('loadAll');
     if (!!this._activeProject) {
       this.apiService.get(`/project/${this._activeProject.id}/pages`).subscribe(
         (data) => {
@@ -228,7 +228,7 @@ export class ManagePagesService {
           }
         },
         ((error) => {
-          console.error('error at loadAll: ' + error);
+          //console.error('error at loadAll: ' + error);
         })
       );
     }
@@ -275,7 +275,7 @@ export class ManagePagesService {
    * @param width width in px
    */
   addPageWithREST(project: Project, name?: string, height: number = 600, width: number = 900) {
-    console.log('addPage');
+    //console.log('addPage');
     let pageName = name;
     if (!name) {
       pageName = `Page ${this.dataStore.pages.length + 1}`;
@@ -292,7 +292,7 @@ export class ManagePagesService {
     //alert(JSON.stringify(requestPage));
     this.apiService.post(`/page`, requestPage).subscribe(
       response => {
-        console.log('HTTP response', response);
+        //console.log('HTTP response', response);
         let page = (response as Page);
         this.addPageToStore(page);
       }
@@ -306,7 +306,7 @@ export class ManagePagesService {
    * @param width width in px
    */
   addPage(name?: string, height: number = 600, width: number = 900) {
-    console.log('addPage');
+    //console.log('addPage');
     let pageName = name;
     if (!name) {
       pageName = `Page ${this.dataStore.pages.length + 1}`;
@@ -323,7 +323,7 @@ export class ManagePagesService {
     //alert(JSON.stringify(requestPage));
     this.apiService.post(`/page`, requestPage).subscribe(
       response => {
-        console.log('HTTP response', response);
+        //console.log('HTTP response', response);
         let page = (response as Page);
         this.addPageToStore(page);
 
@@ -352,7 +352,7 @@ export class ManagePagesService {
   }
 
   renamePage(page: Page) {
-    console.log(`renamePage: ${JSON.stringify(page)}`);
+    //console.log(`renamePage: ${JSON.stringify(page)}`);
     if (!!page) {
       this.sendMessageToSocket({
         pageId: page.id,
@@ -376,7 +376,7 @@ export class ManagePagesService {
    * Removes the given page from the datastore.
    */
   removePage(page: Page) {
-    console.log(`removePage: ${JSON.stringify(page)}`);
+    //console.log(`removePage: ${JSON.stringify(page)}`);
     if (!!page) {
       this.sendMessageToSocket({
         pageId: page.id,
@@ -385,11 +385,11 @@ export class ManagePagesService {
 
       this.apiService.delete(`/page/${page.id}`).subscribe(
         response => {
-          console.log('HTTP response', response);
+          //console.log('HTTP response', response);
           this.removePageFromStore(page.id);
         },
         (error) => {
-          console.error(error);
+          //console.error(error);
           this.removePageFromStore(page.id);
           //alert(error);
         }
@@ -463,7 +463,7 @@ export class ManagePagesService {
         //this.canvas.backgroundColor = null;
         //this.canvas.renderAll();
       } else {
-        console.log("creating new grid");
+        //console.log("creating new grid");
         this.loadGrid(this.canvas.width, this.canvas.height);
       }
     }
@@ -490,7 +490,7 @@ export class ManagePagesService {
       switch (message.command) {
 
         case Action.PAGELOAD:
-          console.log(`pageload. ${JSON.stringify(parsedObj)}`);
+          //console.log(`pageload. ${JSON.stringify(parsedObj)}`);
           if (!!parsedObj && !!parsedObj.pagedata) {
             this.loadPageDataStore(
               this.dataStore.activePage.id, 
@@ -499,15 +499,15 @@ export class ManagePagesService {
               parsedObj.width
             );
           } else {
-            console.error(`page load: received invalid data over socket connection, ParsedObject: ${!!parsedObj}
-                \n pageid: ${parsedObj.pageId} | pageData : ${parsedObj.pageData}`);
+            //console.error(`page load: received invalid data over socket connection, ParsedObject: ${!!parsedObj}
+            //    \n pageid: ${parsedObj.pageId} | pageData : ${parsedObj.pageData}`);
             // this.notificationService.showError('Received data invalid.', 'Could not load page from socket');
           }
           this.isLoadingPage.next(false);
           break;
 
         case Action.PAGEDIMENSIONCHANGE:
-          console.log("received canvasmodify");
+          //console.log("received canvasmodify");
           let width = parsedObj[CanvasTransmissionProperty.CHANGEWIDTH];
           let height = parsedObj[CanvasTransmissionProperty.CHANGEHEIGHT];
           this.updateActivePageDimensions(height, width);
@@ -515,7 +515,7 @@ export class ManagePagesService {
 
         case Action.PAGEMODIFIED:
           if (parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]) {
-            console.log("backgroundcolor changed to " + parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]);
+            //console.log("backgroundcolor changed to " + parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR]);
             //always set the grid canvas color
             this.gridCanvas.backgroundColor = parsedObj[CanvasTransmissionProperty.BACKGROUNDCOLOR];
             //only set the "actual" color if it is enabled
@@ -566,27 +566,27 @@ export class ManagePagesService {
         case Action.COMMENTMODIFIED:
         case Action.COMMENTCLEARED:
           if (message.user === this.tokenStorage.getToken()) {
-            console.log('comments: action:' + message.command + ', is the same user');
+            //console.log('comments: action:' + message.command + ', is the same user');
             break;
           }
-          console.log('after same-user check');
+          //console.log('after same-user check');
           if (!!parsedObj.comment) {
             this._commentSubject.next({ action: message.command, comment: parsedObj.comment });
           } else {
-            console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment})`);
+            //console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment})`);
           }
           break;
         case Action.COMMENTENTRYADDED:
         case Action.COMMENTENTRYDELETED:
         case Action.COMMENTENTRYMODIFIED:
           if (message.user === this.tokenStorage.getToken()) {
-            console.log('comments: action:' + message.command + ', is the same user');
+            //console.log('comments: action:' + message.command + ', is the same user');
             break;
           } else {
-            console.log('comments: action:' + message.command + ', different user: remote: ' +
+            //console.log('comments: action:' + message.command + ', different user: remote: ' +
               parsedObj.userId + ', this one: ' + this.tokenStorage.getToken() );
           }
-          console.log('after same-user check');
+          //console.log('after same-user check');
           if (!!parsedObj.comment && !!parsedObj.entry) {
             this._commentSubject.next({
               action: message.command,
@@ -594,7 +594,7 @@ export class ManagePagesService {
               entry: parsedObj.entry
             });
           } else {
-            console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment}, entry: ${parsedObj.entry})`);
+            //console.error(`error at '${message.command}': undefined object: (comment: ${parsedObj.comment}, entry: ${parsedObj.entry})`);
           }
           break;
         // if nothing matched, the call is further delegated to actually apply transformations
@@ -629,7 +629,7 @@ export class ManagePagesService {
       send = new OwnedStatelessObject();
       send.userId = this.tokenStorage.getToken();
       if (object) {
-        console.log(`lock/select test, object uuid: ${object.uuid}`)
+        //console.log(`lock/select test, object uuid: ${object.uuid}`)
         send.uuid = object.uuid;
       }
       //object ? send.uuid = object.uuid : null;

@@ -26,7 +26,7 @@ export class CommentBarComponent implements OnInit {
               private pageService: ManagePagesService) {this.pageService.activePage.subscribe(
       (value) => {
         if(value == null){
-          console.log("page null");
+          //console.log("page null");
         }else{
           //this.getComments();
         }
@@ -36,7 +36,7 @@ export class CommentBarComponent implements OnInit {
     // ,
     this.commentService.commentSubjectTest.subscribe(
       (value) => {
-        console.log("Comment-bar: commentSubject:" + value);
+        //console.log("Comment-bar: commentSubject:" + value);
         this.comments = value;
       }
     )
@@ -54,7 +54,7 @@ export class CommentBarComponent implements OnInit {
   getComments() {
     this.commentService.getComments().subscribe(
       (data) => {
-        console.log(`applying comments: ${JSON.stringify(data)}`);
+        //console.log(`applying comments: ${JSON.stringify(data)}`);
         if (Array.isArray(data)) {
           this.comments = data;
         } else {

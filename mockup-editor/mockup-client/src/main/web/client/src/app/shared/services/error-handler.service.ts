@@ -14,7 +14,7 @@ export class ErrorHandlerService {
   }
 
   public handleError(error: HttpErrorResponse) {
-    console.error(error);
+    //console.error(error);
     /* PNotify.error({
       title: error.statusText,
       text: 'Error while communcating with server.'

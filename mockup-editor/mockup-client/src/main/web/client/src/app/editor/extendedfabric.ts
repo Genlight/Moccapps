@@ -104,7 +104,7 @@ fabric.Object.prototype.resizeToScale = function() {
       this.strokeWidth = this._origStrokeWidth / Math.max(this.scaleX, this.scaleY);
     } else {
       this._objects.forEach( function(obj) {
-        console.log(obj);
+        //console.log(obj);
         obj.strokeWidth = obj._origStrokeWidth / Math.max(obj.group.scaleX, obj.group.scaleY);
       });
     }

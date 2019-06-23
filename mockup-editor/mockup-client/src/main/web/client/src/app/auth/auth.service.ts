@@ -24,12 +24,12 @@ export class AuthService {
   }
 
   attemptAuth(credentials: AuthLoginInfo): Observable<JwtResponse> {
-    console.log(credentials.toString())
+    //console.log(credentials.toString())
     return this.http.post<JwtResponse>(API_URL + '/login', credentials, httpOptions);
   }
 
   signUp(info: SignUpInfo): Observable<string> {
-    console.log(info.toString())
+    //console.log(info.toString())
     return this.http.post<string>(API_URL + '/register', info, httpOptions);
   }
 

@@ -57,7 +57,7 @@ export class ManageUserModalComponent implements OnInit {
 
   loadProjectUsers() {
     if (this.projectRef == null) {
-      console.error('Project reference is null');
+      //console.error('Project reference is null');
     }
 
     //Create a copy of the users field.
@@ -106,7 +106,7 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   onSelectUser(user) {
-    console.log(user.item);
+    //console.log(user.item);
     this.addNewUser(user.item);
   }
 

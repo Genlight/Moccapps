@@ -245,7 +245,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       this.modifyService.clearAll(this.canvas);
       this.modifyService.setHeight(this.canvas, page.height);
       this.modifyService.setWidth(this.canvas, page.width);
-      console.log(`loadPage with data: ${page.page_data}`);
+      //console.log(`loadPage with data: ${page.page_data}`);
       if (!!page.page_data) {
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
             //this.pagesService.loadGrid(2000,2000);
@@ -254,7 +254,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         // saving initial State
         this.undoRedoService.saveInitialState();
       }
-      console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
+      //console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
 
   }
@@ -338,7 +338,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    */
   onSaveToLocalStorage() {
     const json = JSON.stringify(this.canvas);
-    console.log(json);
+    //console.log(json);
     localStorage.setItem('Canvas', json);
   }
 
@@ -426,7 +426,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         //fancy canvas magic to ensure the selection behaves properly
         var newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
-        console.log('new Selection: ' + JSON.stringify(newSelection));
+        //console.log('new Selection: ' + JSON.stringify(newSelection));
         this.canvas.renderOnAddRemove = oldRenderAddRemove;
         this.canvas.setActiveObject(newSelection);
 
