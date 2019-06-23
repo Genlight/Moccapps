@@ -374,7 +374,13 @@ export class CustomizepanelComponent implements OnInit {
       });*/
       toSend = obj.getObjects();
 
-    } else {
+    } else if(obj.type === 'group') {
+      let hackedString = JSON.stringify(obj);
+      let hackedParse = JSON.parse(hackedString);
+      hackedParse.uuid = obj.uuid;
+      toSend = [hackedParse];
+    } 
+    else {
       toSend = [obj];
       /*obj.clone((o) => {
         o['index'] = index;
@@ -382,6 +388,7 @@ export class CustomizepanelComponent implements OnInit {
       })*/
     }
     let changeObject = {'objects':toSend, 'index':index};
+
     this.sendCanvas(changeObject,Action.PAGEMODIFIED);
 
   }
@@ -504,6 +511,9 @@ export class CustomizepanelComponent implements OnInit {
     let _canvas = this.canvas;
     let _pageService = this.managePagesService;
     let sendCanvas = JSON.parse(this.DEFAULT_CANVAS);
+
+    //hack
+    
     //_canvas.cloneWithoutData((o) => {
       let keys = Object.keys(propertyObject);
       keys.forEach(function (key) {
@@ -512,6 +522,7 @@ export class CustomizepanelComponent implements OnInit {
       });
       //console.log('canvasToSend: ' + JSON.stringify(sendCanvas))
       _pageService.sendMessageToSocket(sendCanvas, action);
+
     //});
   }
 }

@@ -433,6 +433,7 @@ export class FabricmodifyService {
                   for(let i = 0;i<selectedObj.length;i++) {
                     if(newGroup.uuid === selectedObj[i].uuid) {
                       activeSelection._objects[i] = newGroup;
+                      newGroup.group = activeSelection;
                       break;
                     }
                   }
