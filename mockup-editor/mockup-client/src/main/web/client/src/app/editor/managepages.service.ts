@@ -597,7 +597,7 @@ export class ManagePagesService {
             break;
           } else {
             //console.log('comments: action:' + message.command + ', different user: remote: ' +
-              parsedObj.userId + ', this one: ' + this.tokenStorage.getToken() );
+              parsedObj.userId + ', this one: ' + this.tokenStorage.getToken();
           }
           //console.log('after same-user check');
           if (!!parsedObj.comment && !!parsedObj.entry) {
