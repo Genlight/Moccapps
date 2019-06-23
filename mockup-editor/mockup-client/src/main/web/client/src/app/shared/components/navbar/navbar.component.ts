@@ -172,7 +172,7 @@ export class NavbarComponent implements OnInit {
                 projectName: name, 
                 projectID: this.project.id }), Action.PROJECTRENAMED);
         } catch (e) {
-          console.warn('Could not send rename project socket message: ' + e);
+          //console.warn('Could not send rename project socket message: ' + e);
         }
       });
     } else {
