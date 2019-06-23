@@ -1,11 +1,6 @@
 import { fabric } from 'fabric';
 import { UUID } from 'angular2-uuid';
 
-// das fabric objekt kann wie alles andere in JS per Object.prototype seine member
-// anpassen. So funktioniert auch Typescript im wesentlichen.
-// Diese Klasse wrappt also alles, was wir für alle fabric-Objekte gleich haben wollen.
-//
-// ff. snippet dazu gefunden unter https://stackoverflow.com/questions/34347336/the-toobject-function-in-fabric-js
 /**
  * overriding the toObject function from fabric.js to include the uuid correctly in the object
  * also adding a sendMe field to distinguish between changes "to be sent" and "already sent/applied" 
