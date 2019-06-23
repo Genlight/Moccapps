@@ -66,6 +66,8 @@ export class FabricmodifyService {
       return;
     }
     let temp = canvas.getActiveObject().toGroup();
+    canvas.discardActiveObject();
+    canvas.setActiveObject(temp);
     //temp.set('dirty', true);
     temp = (temp as Group);
     this.groupService.add(temp);
