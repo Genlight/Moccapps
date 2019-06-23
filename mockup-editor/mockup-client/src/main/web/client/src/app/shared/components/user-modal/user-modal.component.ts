@@ -47,7 +47,7 @@ export class UserModalComponent implements OnInit {
         if (data.message === 'success') {
           if (this.pwd.pwd !== '') {
                 this.notificationService.showSuccess(
-                  `Because you changed your Password, you will be logged out. Pleas Sign in again.`,
+                  `You were logged out for security reasons after changing your password. Please sign in again.`,
                   'Success on Update'
                 );
                 this.router.navigate(['']);
@@ -56,7 +56,7 @@ export class UserModalComponent implements OnInit {
             this.router.navigate(['editor']);
           }
         } else {
-          pnote.error(data.message);
+          //pnote.error(data.message);
           this.activeModal.close('error');
         }
       },
