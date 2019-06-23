@@ -481,7 +481,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   onTransformation(evt, action: Action) {
     let transObject = evt.target;
     //console.log(JSON.stringify(evt));
-    console.log(`${action} : ${transObject.uuid}`);
+    //console.log(`${action} : ${transObject.uuid}`);
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
