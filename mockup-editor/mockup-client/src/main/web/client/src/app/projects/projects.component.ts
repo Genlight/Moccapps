@@ -88,11 +88,11 @@ export class ProjectsComponent implements OnInit {
     this.projectService.getProjects<Project[]>()
     .subscribe(
       (response) => {
-        console.log(response);
+        //console.log(response);
         this.projects = response;
       },
       (error) => {
-        console.error(error);
+        //console.error(error);
         this.notificationService.showError(error, 'ERROR');
       }
     );
@@ -102,7 +102,7 @@ export class ProjectsComponent implements OnInit {
     this.inviteService.getInvites()
       .subscribe(
         (response) => {
-          console.log(`loadInvites: ${JSON.stringify(response)}`);
+          //console.log(`loadInvites: ${JSON.stringify(response)}`);
           let invites = (response as Invite[]);
 
           if (!isArray(invites)) {
@@ -190,7 +190,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   onEditProfile() {
-    console.log('clicked oneditProfile');
+    //console.log('clicked oneditProfile');
     const modelRef = this.modalService.open(UserModalComponent);
     modelRef.result.then((result) => {
       if ( result === 'success' ) {

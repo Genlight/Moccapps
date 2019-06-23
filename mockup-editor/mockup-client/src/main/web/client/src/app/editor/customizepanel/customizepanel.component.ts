@@ -162,20 +162,20 @@ export class CustomizepanelComponent implements OnInit {
 
       'object:added': (event) => {
         //this.sendMessageToSocket(JSON.stringify(event.transform.target),'added');
-        console.log('object added..........');
-        console.log(event.target);
+        //console.log('object added..........');
+        //console.log(event.target);
       },
       'object:moving': (event) => { },
       'selection:created': (event) => {
         const selectedObject = event.target;
         this.selected = null;
-        console.log("selection created: " + JSON.stringify(selectedObject));
+        //console.log("selection created: " + JSON.stringify(selectedObject));
         this.manageSelection(selectedObject);
       },
       'selection:updated': (event) => {
         const selectedObject = event.target;
         this.selected = null;
-        console.log("selection updated: " + selectedObject);
+        //console.log("selection updated: " + selectedObject);
         this.manageSelection(selectedObject);
       },
       'selection:cleared': (event) => {
@@ -244,7 +244,7 @@ export class CustomizepanelComponent implements OnInit {
     this.textProperties.textDecoration.underline = text.underline;
     this.textProperties.textDecoration.linethrough = text.linethrough;
     this.textProperties.text = text.text;
-    console.log(this.textProperties);
+    //console.log(this.textProperties);
   }
 
   /**
@@ -260,7 +260,7 @@ export class CustomizepanelComponent implements OnInit {
     this.elementProperties.lockMovement = elem.lockMovementX;
     this.elementProperties.lockScale = elem.lockScalingX;
     this.elementProperties.lockRotate = elem.lockRotation;
-    console.log(this.elementProperties);
+    //console.log(this.elementProperties);
   }
 
   /**
@@ -270,7 +270,7 @@ export class CustomizepanelComponent implements OnInit {
    */
   setElementProperty(property, value) {
     let currentElem = this.selected;
-    console.log('setproperty:current element ' + JSON.stringify(currentElem));
+    //console.log('setproperty:current element ' + JSON.stringify(currentElem));
     // we need a clone here so we don't actually change the value locally
     // all properties changed this way are sent to the server first and then applied
     // this way inconsistencies can be avoided
@@ -473,8 +473,8 @@ export class CustomizepanelComponent implements OnInit {
   setTextDecoration() {
     this.setElementProperty('underline', this.textProperties.textDecoration.underline);
     this.setElementProperty('linethrough', this.textProperties.textDecoration.linethrough);
-    console.log(this.textProperties.textDecoration.underline);
-    console.log(this.textProperties.textDecoration.linethrough);
+    //console.log(this.textProperties.textDecoration.underline);
+    //console.log(this.textProperties.textDecoration.linethrough);
   }
 
   setText() {
@@ -508,9 +508,9 @@ export class CustomizepanelComponent implements OnInit {
       let keys = Object.keys(propertyObject);
       keys.forEach(function (key) {
         sendCanvas[key] = propertyObject[key]
-        console.log('assigning ' + JSON.stringify(propertyObject[key]) + ' to ' + key);
+        //console.log('assigning ' + JSON.stringify(propertyObject[key]) + ' to ' + key);
       });
-      console.log('canvasToSend: ' + JSON.stringify(sendCanvas))
+      //console.log('canvasToSend: ' + JSON.stringify(sendCanvas))
       _pageService.sendMessageToSocket(sendCanvas, action);
     //});
   }

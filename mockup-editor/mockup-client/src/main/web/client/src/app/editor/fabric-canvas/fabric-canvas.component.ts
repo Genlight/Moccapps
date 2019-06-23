@@ -61,6 +61,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
           this.hideRulerLines();
         } else {
           this.showRulerLines();
+          this.removeAllRulerLines();
           //Load rulers from localstorage if existant
           /* setTimeout(() => { this.loadRulersFromLocalStorage(); }
           , 500); */
@@ -298,6 +299,11 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setCanvasDimensions(height: number, width: number) {
+    this.modifyService.setHeight(this.canvas, height);
+    this.modifyService.setHeight(this.canvas, width);
+  }
+
   /**
    * Renders rulers initially.
    */
@@ -326,19 +332,19 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   private loadPage(page: Page) {
     if (!!page) {
-      this.modifyService.clearAll(this.canvas);
       this.modifyService.setHeight(this.canvas, page.height);
       this.modifyService.setWidth(this.canvas, page.width);
-      console.log(`loadPage with data: ${page.page_data}`);
+      this.pagesService.updateGrid();
+      //console.log(`loadPage with data: ${page.page_data}`);
       if (!!page.page_data) {
+        this.modifyService.clearAll(this.canvas);
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
             //this.pagesService.loadGrid(2000,2000);
-        this.pagesService.updateGrid();
 
         // saving initial State
         this.undoRedoService.saveInitialState();
       }
-      console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
+      //console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
 
   }
@@ -422,7 +428,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    */
   onSaveToLocalStorage() {
     const json = JSON.stringify(this.canvas);
-    console.log(json);
+    //console.log(json);
     localStorage.setItem('Canvas', json);
   }
 
@@ -475,7 +481,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   onTransformation(evt, action: Action) {
     let transObject = evt.target;
     //console.log(JSON.stringify(evt));
-    console.log(`${action} : ${transObject.uuid}`);
+    //console.log(`${action} : ${transObject.uuid}`);
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
@@ -510,7 +516,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         //fancy canvas magic to ensure the selection behaves properly
         var newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
-        console.log('new Selection: ' + JSON.stringify(newSelection));
+        //console.log('new Selection: ' + JSON.stringify(newSelection));
         this.canvas.renderOnAddRemove = oldRenderAddRemove;
         this.canvas.setActiveObject(newSelection);
 

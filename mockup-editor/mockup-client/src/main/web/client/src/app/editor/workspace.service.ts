@@ -8,7 +8,7 @@ export class WorkspaceService {
 
   showsRuler: BehaviorSubject<boolean> = new BehaviorSubject(false);
   showsGrid: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  showsComments: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  showsComments: BehaviorSubject<boolean> = new BehaviorSubject(false);
   toolbarPanelState: BehaviorSubject<ToolbarPanelState> = new BehaviorSubject(ToolbarPanelState.None);
   projectName: Subject<string> = new Subject();
   deleteRulers: Subject<void> = new Subject();

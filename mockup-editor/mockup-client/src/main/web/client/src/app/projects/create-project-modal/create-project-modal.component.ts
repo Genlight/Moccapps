@@ -44,9 +44,9 @@ export class CreateProjectModalComponent implements OnInit {
     this.modal = this.modalService.open(content);
     this.modal.result.then(
       (result) => {
-        console.log(`Closed create project modal dialog. ${result}`);
+        //console.log(`Closed create project modal dialog. ${result}`);
       }, (reason) => {
-        console.log(`Dismissed create project modal dialog. ${reason}`);
+        //console.log(`Dismissed create project modal dialog. ${reason}`);
       }
     );
   }
@@ -70,7 +70,7 @@ export class CreateProjectModalComponent implements OnInit {
     }
     this.projectService.createProject(project).subscribe(
       res => {
-        console.log('HTTP response', res);
+        //console.log('HTTP response', res);
         let responseProject = (res as Project);
         if (!!responseProject) {
           // Create intitial page of project.
@@ -83,7 +83,7 @@ export class CreateProjectModalComponent implements OnInit {
         }
       },
       err => {
-        console.log('HTTP Error', err);
+        //console.log('HTTP Error', err);
         this.modal.close();
       }
     );

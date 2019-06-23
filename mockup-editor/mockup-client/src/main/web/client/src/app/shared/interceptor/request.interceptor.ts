@@ -32,7 +32,7 @@ export class RequestInterceptor implements HttpInterceptor {
 
     return next.handle(request).do((event: HttpEvent<any>) => {}, (err: any) => {
       if (err instanceof HttpErrorResponse) {
-        console.error(err);
+        //console.error(err);
         if (err.status === 401) {
             //Unauthorized
             this.tokenStorage.signOut();
