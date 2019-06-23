@@ -11,6 +11,9 @@ export class WorkspaceService {
   showsComments: BehaviorSubject<boolean> = new BehaviorSubject(true);
   toolbarPanelState: BehaviorSubject<ToolbarPanelState> = new BehaviorSubject(ToolbarPanelState.None);
   projectName: Subject<string> = new Subject();
+  deleteRulers: Subject<void> = new Subject();
+  saveRulers: Subject<void> = new Subject();
+  loadRulers: Subject<void> = new Subject();
 
   store: {
     toolbarPanelState: ToolbarPanelState

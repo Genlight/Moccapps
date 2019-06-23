@@ -246,6 +246,10 @@ export class NavbarComponent implements OnInit {
     this.workspaceService.hideRuler();
   }
 
+  onDeleteRuler() {
+    this.workspaceService.deleteRulers.next();
+  }
+
   onNewProject() {
     // TODO
     if (!!this.project) {

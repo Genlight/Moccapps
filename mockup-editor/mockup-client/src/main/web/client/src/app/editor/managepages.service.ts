@@ -129,6 +129,10 @@ export class ManagePagesService {
         //this.workspaceService.hideGrid();
       }
 
+      // Save and delete rulers before page swap. NOT WORKING RULERS
+ /*      this.workspaceService.saveRulers.next();
+      this.workspaceService.deleteRulers.next(); */
+
       //Set new active page
       console.log(`setPageActive: loading new page: ${JSON.stringify(page)}`);
       // Set page data from rest api to null
