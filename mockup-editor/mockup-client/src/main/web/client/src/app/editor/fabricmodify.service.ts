@@ -480,7 +480,8 @@ export class FabricmodifyService {
       }
       //console.log('after parse (applyTransformation).');
     }
-    canvas.renderAll();
+    //canvas.renderAll();
+    canvas.requestRenderAll();
   }
 
 /**
