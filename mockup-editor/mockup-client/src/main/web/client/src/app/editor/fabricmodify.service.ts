@@ -303,7 +303,7 @@ export class FabricmodifyService {
           let index = parsedObj.index
           //we need to flip the order if we bring objects to front, so we will bring the topmost object to front first.
           let orderedObjects = index < 0 ? parsedObj.objects : parsedObj.objects.reverse();
-          console.log('canvas before orderchange:'+JSON.stringify(canvas));
+          //console.log('canvas before orderchange:'+JSON.stringify(canvas));
           orderedObjects.forEach(function (current) {
             let old = _this.getObjectByUUID(current.uuid, canvas.getObjects());
             switch (index) {
@@ -325,7 +325,7 @@ export class FabricmodifyService {
                 break;
             }
           });
-          console.log('canvas after orderchange:'+JSON.stringify(canvas));
+          //console.log('canvas after orderchange:'+JSON.stringify(canvas));
         }
 
         //JSON represenation doesn't match the actual property value in this case, ingenious...

@@ -13,6 +13,9 @@ fabric.Object.prototype.toObject = (function(toObject) {
         )
         .concat(
             ['sendMe']
+        )
+        .concat(
+            ['lockMovementX','lockMovementY','lockScalingX','lockScalingY','lockRotation']
         );
         return toObject.apply(this, [propertiesToInclude]);
     };

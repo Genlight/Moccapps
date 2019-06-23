@@ -305,6 +305,36 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   /**
+   * sets element lock properties
+   * this uses the same calls as setElementProperty, but the locks would have been inconsistent
+   * with the sending and undoing of actions otherwise
+   */
+  setElementLocks() {
+    let currentElem = this.selected;
+    if (currentElem&&currentElem.sendMe) {
+      let undoClone;
+      let sendClone;
+      currentElem.clone((o) => {
+        undoClone = o;
+      });
+      const _this = this;
+      currentElem.clone((o) => {
+        sendClone = o;
+      });
+      this.undoRedoService.setCurrentlyModifiedObject([undoClone]);
+      sendClone.set('lockMovementX', this.elementProperties.lockMovement);
+      sendClone.set('lockMovementY', this.elementProperties.lockMovement);
+      sendClone.set('lockScalingX', this.elementProperties.lockScale);
+      sendClone.set('lockScalingY', this.elementProperties.lockScale);
+      sendClone.set('lockRotation', this.elementProperties.lockRotate);
+      this.undoRedoService.save(sendClone, Action.MODIFIED);
+      sendClone.sendMe = false;
+      this.managePagesService.sendMessageToSocket(sendClone, Action.MODIFIED);
+      sendClone.sendMe = true;
+    }
+  }
+
+  /**
    * sets a property for each element in a group
    * @param property property to set
    * @param value new value of the property
@@ -427,17 +457,15 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setElementMoveLock() {
-    this.setElementProperty('lockMovementX', this.elementProperties.lockMovement);
-    this.setElementProperty('lockMovementY', this.elementProperties.lockMovement);
+    this.setElementLocks();
   }
 
   setElementScaleLock() {
-    this.setElementProperty('lockScalingX', this.elementProperties.lockScale);
-    this.setElementProperty('lockScalingY', this.elementProperties.lockScale);
+    this.setElementLocks();
   }
 
   setElementRotateLock() {
-    this.setElementProperty('lockRotation', this.elementProperties.lockRotate);
+    this.setElementLocks();
   }
 
   setDrawingModeColor() {
