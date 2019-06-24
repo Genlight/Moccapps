@@ -51,6 +51,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/webjars/**",
                 "/connect/**");
     }
+
+    /**
+     * configures the Web Security session Manager by given HttpSecurity infos
+     * @param  http      HttpSecurity
+     * @throws Exception [description]
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
@@ -70,7 +76,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-
+    /**
+     * configures the Authentication Manager by a given AuthenticationManagerBuilder object
+     * @param  authenticationManagerBuilder AuthenticationManagerBuilder
+     * @throws Exception                    [description]
+     */
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
@@ -78,13 +88,21 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder());
     }
 
-
+    /**
+     * returns a AuthenticationManagerBuilder bean instance
+     * @return AuthenticationManager
+     * @throws Exception     [description]
+     */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * returns a new instance of a passwordEncoder
+     * @return PasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

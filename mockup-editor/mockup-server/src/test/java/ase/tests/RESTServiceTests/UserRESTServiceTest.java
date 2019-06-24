@@ -38,7 +38,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@ContextConfiguration(classes = Application.class)
 @ContextConfiguration(classes = {UserRESTServiceTest.Config.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("test")

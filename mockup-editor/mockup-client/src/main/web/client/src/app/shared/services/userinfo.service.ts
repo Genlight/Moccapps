@@ -6,8 +6,6 @@ import { User } from '../models/User';
 import { Password } from '../models/Password';
 import { TokenStorageService } from '../../auth/token-storage.service';
 import { environment } from '../../../environments/environment';
-// const testUser = { id: 1, name: 'Name1', email: 'some.email@outlook.com' };
-// const source: Observable<User> = of(testUser);
 
 const API_URL = environment.apiUrl;
 @Injectable({

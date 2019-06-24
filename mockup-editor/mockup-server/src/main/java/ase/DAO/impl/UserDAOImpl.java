@@ -29,6 +29,12 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
     private static final String PSTMT_FINDALL="SELECT * FROM users";
     private PreparedStatement pstmt;
 
+    /**
+     * creates an entry for a user
+     * @param  user         User
+     * @return              User
+     * @throws DAOException [description]
+     */
     @Override
     public User create(User user) throws DAOException{
         if(user==null){
@@ -62,7 +68,12 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
         return user;
 
     }
-
+    /**
+     * updates an existing User
+     * @param  user         User
+     * @return              User
+     * @throws DAOException [description]
+     */
     @Override
     public User update(User user) throws DAOException{
         if(user==null){
@@ -90,6 +101,12 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
         return user;
     }
 
+    /**
+     * deletes an existing User by ID
+     * @param  id           Integer
+     * @return              boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean delete(int id) throws DAOException{
         int success;
@@ -119,6 +136,12 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
         return (success>0);
     }
 
+    /**
+     * find an user by ID
+     * @param  id           Integer
+     * @return              User
+     * @throws DAOException [description]
+     */
     @Override
     public User findById(int id) throws DAOException{
         if(id<0){
@@ -145,6 +168,12 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
         }
     }
 
+    /**
+     * find an existing user by a given email
+     * @param  email        String
+     * @return              User
+     * @throws DAOException [description]
+     */
     @Override
     public User findByEmail(String email) throws DAOException{
         try {
@@ -172,6 +201,11 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
         }
     }
 
+    /**
+     * return all users
+     * @return List<User>
+     * @throws DAOException  [description]
+     */
     @Override
     public List<User> findAll() throws DAOException {
         List<User> users=new ArrayList<>();
@@ -197,6 +231,12 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
         }
     }
 
+    /**
+     * return all users, either by email oder Username, defined in given searchterm
+     * @param  searchterm   String
+     * @return              List<User>
+     * @throws DAOException [description]
+     */
     public List<User> searchByEmailOrUsername(String searchterm) throws DAOException {
         List<User> users = new ArrayList<>();
         try {

@@ -28,7 +28,12 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
     private PreparedStatement pstmt;
 
     private static final Logger logger  = LoggerFactory.getLogger(PageDAOImpl.class);
-
+    /**
+     * creates a page entry
+     * @param  page         Page
+     * @return              Page
+     * @throws DAOException [description]
+     */
     @Override
     public Page create(Page page) throws DAOException {
         if(page==null){
@@ -62,6 +67,12 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
         return page;
     }
 
+    /**
+     * updates an existing Page
+     * @param  page         Page
+     * @return              Page
+     * @throws DAOException [description]
+     */
     @Override
     public Page update(Page page) throws DAOException {
         if(page==null){
@@ -88,6 +99,12 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
         return page;
     }
 
+    /**
+     * deletes an existing Page
+     * @param  page         Page
+     * @return              boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean delete(Page page) throws DAOException {
         int success;
@@ -111,6 +128,12 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
         return (success>0);
     }
 
+    /**
+     * find a Page by a given ID
+     * @param  id           Integer
+     * @return              Page
+     * @throws DAOException [description]
+     */
     @Override
     public Page findById(int id) throws DAOException {
         if(id<0){
@@ -143,6 +166,13 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
         }
     }
 
+    /**
+     * find a Page by a given Project and a given order number
+     * @param  id           Integer
+     * @param  order        Integer
+     * @return              Page
+     * @throws DAOException [description]
+     */
     @Override
     public Page findByProjectAndOrder(int id, int order) throws DAOException {
         if(id<0){
@@ -180,6 +210,13 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
         }
     }
 
+    /**
+     * gets all Pages by a given ProjectID
+     * @param  searchID     Integer
+     * @param  queryString  String
+     * @return              List<Page>
+     * @throws DAOException [description]
+     */
     @NotNull
     private List<Page> getPages(int searchID, String queryString) throws DAOException {
         try{
@@ -210,7 +247,12 @@ public class PageDAOImpl extends AbstractDAO implements PageDAO {
         }
     }
 
-
+    /**
+     * s. above function getPages
+     * @param  projectID    Integer
+     * @return              List<Page>
+     * @throws DAOException [description]
+     */
     @Override
     public List<Page> findPagesForProject(int projectID) throws DAOException {
         return getPages(projectID, PSTMT_FINDBYPROJECTID);

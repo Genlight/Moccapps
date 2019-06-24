@@ -52,6 +52,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
     private static final String PSTMT_FINDBYOBJECTID = "SELECT * FROM comment_objects WHERE object_id=?";
     private PreparedStatement pstmt;
 
+    /**
+     * creates a new comment
+     * @param  comment      Comment
+     * @return Comment
+     * @throws DAOException
+     */
     @Override
     public Comment create(Comment comment) throws DAOException {
         if (comment == null) {
@@ -90,6 +96,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         return comment;
     }
 
+    /**
+     * creates a new CommentEntry for a existing comment
+     * @param  commentEntry CommentEntry
+     * @return CommentEntry
+     * @throws DAOException
+     */
     @Override
     public CommentEntry createEntry(CommentEntry commentEntry) throws DAOException {
         if (commentEntry == null) {
@@ -123,7 +135,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         }
         return commentEntry;
     }
-
+    /**
+     * updates a Comment
+     * @param  comment      Comment
+     * @return CommentEntry
+     * @throws DAOException [description]
+     */
     @Override
     public Comment update(Comment comment) throws DAOException {
         if (comment == null) {
@@ -148,7 +165,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         }
         return comment;
     }
-
+    /**
+     * updates an existing CommentEntry
+     * @param  commentEntry CommentEntry
+     * @return CommentEntry
+     * @throws DAOException [description]
+     */
     @Override
     public CommentEntry updateEntry(CommentEntry commentEntry) throws DAOException {
         if (commentEntry == null) {
@@ -176,6 +198,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         return commentEntry;
     }
 
+    /**
+     * delete an existing comment
+     * @param  comment      Comment
+     * @return boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean delete(Comment comment) throws DAOException {
         int success;
@@ -199,6 +227,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         return (success > 0);
     }
 
+    /**
+     * deletes an existing CommentEntry
+     * @param  commentEntry CommentEntry
+     * @return boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean deleteEntry(CommentEntry commentEntry) throws DAOException {
         int success;
@@ -222,6 +256,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         return (success > 0);
     }
 
+    /**
+     * find a comment by an given ID
+     * @param  id           Integer
+     * @return              Comment
+     * @throws DAOException [description]
+     */
     @Override
     public Comment findById(int id) throws DAOException {
         if (id < 0) {
@@ -265,6 +305,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         }
     }
 
+    /**
+     * find and return an List of CommentEntries, given an ID from a comment
+     * @param  id           Integer
+     * @return              List<CommentEntry>
+     * @throws DAOException [description]
+     */
     @Override
     public List<CommentEntry> findEntryByCommentId(int id) throws DAOException {
         if (id < 0) {
@@ -296,6 +342,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         }
     }
 
+    /**
+     * finds Comments by a given pageId
+     * @param  pageId       Integer
+     * @return              List<Comment>
+     * @throws DAOException [description]
+     */
     @Override
     public List<Comment> findCommentsForPage(int pageId) throws DAOException {
         try {
@@ -325,6 +377,12 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
         }
     }
 
+    /**
+     * finds a comment by a given UUID
+     * @param  uuid         String
+     * @return              Comment
+     * @throws DAOException [description]
+     */
     @Override
     public Comment findByUUID(String uuid) throws DAOException {
         if (uuid == null || uuid.isEmpty()) {
@@ -367,35 +425,4 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
             throw new DAOException("Error during Find by uuid of comment: Couldn't connect to database");
         }
     }
-
-
-    /*@Override
-    public List<Comment> findCommentforObject(String objectId) throws DAOException {
-        try{
-            List<Comment> comments=new ArrayList<>();
-            getConnection();
-            pstmt=connection.prepareStatement(PSTMT_FINDBYOBJECTID);
-            pstmt.setString(1, objectId);
-            ResultSet rs=pstmt.executeQuery();
-
-            while(rs.next()){
-                comments.add(new Comment(
-                        rs.getInt("id"),
-                        rs.getString("message"),
-                        rs.getInt("user_id"),
-                        rs.getInt("page_id"),
-                        rs.getDate("date"),
-                        rs.getBoolean("cleared"),
-                        rs.getString("object_id")));
-            }
-            rs.close();
-            pstmt.close();
-            return comments;
-
-        }catch (SQLException e){
-            logger.error(e.getMessage());
-            logger.error("Error during Find multiple Comments: Couldn't connect to database");
-            throw new DAOException("Error during Find multiple Comments: Couldn't connect to database");
-        }
-    }*/
 }

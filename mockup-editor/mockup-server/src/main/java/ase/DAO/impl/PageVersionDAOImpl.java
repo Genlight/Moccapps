@@ -30,6 +30,13 @@ public class PageVersionDAOImpl  extends AbstractDAO implements PageVersionDAO {
 
     private static final Logger logger  = LoggerFactory.getLogger(PageVersionDAOImpl.class);
 
+    /**
+     * creates a version from a given Page, identified by ID
+     * @param  page         Page
+     * @param  id           Integer
+     * @return              PageVersion
+     * @throws DAOException [description]
+     */
     @Override
     public PageVersion create(Page page, int id) throws DAOException {
         if(page==null){
@@ -72,7 +79,12 @@ public class PageVersionDAOImpl  extends AbstractDAO implements PageVersionDAO {
             throw new DAOException("Error during Creation of Page: Couldn't connect to database");
         }
     }
-
+    /**
+     * update an existing Page version
+     * @param  page         PageVersion
+     * @return              PageVersion
+     * @throws DAOException [description]
+     */
     @Override
     public PageVersion update(PageVersion page) throws DAOException {
         if(page==null){
@@ -99,6 +111,12 @@ public class PageVersionDAOImpl  extends AbstractDAO implements PageVersionDAO {
         return page;
     }
 
+    /**
+     * deletes a Page version
+     * @param  page         PageVersion
+     * @return              boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean delete(PageVersion page) throws DAOException {
         int success;
@@ -122,6 +140,12 @@ public class PageVersionDAOImpl  extends AbstractDAO implements PageVersionDAO {
         return (success>0);
     }
 
+    /**
+     * finds a PageVersion by ID
+     * @param  id           Integer
+     * @return              PageVersion
+     * @throws DAOException [description]
+     */
     @Override
     public PageVersion findById(int id) throws DAOException {
         if(id<0){
@@ -154,6 +178,13 @@ public class PageVersionDAOImpl  extends AbstractDAO implements PageVersionDAO {
         }
     }
 
+    /**
+     * finds and return a Pageverion by Project(ID) and a given ID
+     * @param  id           Integer
+     * @param  order        Integer
+     * @return              PageVersion
+     * @throws DAOException [description]
+     */
     @Override
     public PageVersion findByProjectAndOrder(int id, int order) throws DAOException {
         if(id<0){
@@ -191,6 +222,13 @@ public class PageVersionDAOImpl  extends AbstractDAO implements PageVersionDAO {
         }
     }
 
+    /**
+     * returns PageVersions by given a Page ID
+     * @param  searchID     Integer
+     * @param  queryString  string
+     * @return              List<PageVersion>
+     * @throws DAOException [description]
+     */
     @NotNull
     private List<PageVersion> getPages(int searchID, String queryString) throws DAOException {
         try{
@@ -221,7 +259,12 @@ public class PageVersionDAOImpl  extends AbstractDAO implements PageVersionDAO {
         }
     }
 
-
+    /**
+     * s. function getPages
+     * @param  projectID    Integer
+     * @return              List<PageVersion>
+     * @throws DAOException [description]
+     */
     @Override
     public List<PageVersion> findPagesForProject(int projectID) throws DAOException {
         return getPages(projectID, PSTMT_FINDBYPROJECTVERSIONID);

@@ -16,6 +16,14 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthEntryPoint.class);
 
+    /**
+     * is used when the JWT-Authentication failed
+     * @param  request          HttpServletRequest
+     * @param  response         HttpServletResponse
+     * @param  e                AuthenticationException
+     * @throws IOException      [description]
+     * @throws ServletException [description]
+     */
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,

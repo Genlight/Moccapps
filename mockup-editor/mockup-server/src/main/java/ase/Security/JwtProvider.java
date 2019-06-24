@@ -23,6 +23,11 @@ public class JwtProvider {
     @Value("${mockup.app.jwtExpiration}")
     private int jwtExpiration;
 
+    /**
+     * returns a String representing a new JWT token, combines info from given Authentication infos
+     * @param  authentication Authentication
+     * @return                String
+     */
     public String generateJwtToken(Authentication authentication) {
 
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
@@ -36,6 +41,11 @@ public class JwtProvider {
                 .compact();
     }
 
+    /**
+     * validates a JWT Token
+     * @param  authToken String
+     * @return           boolean
+     */
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
@@ -55,6 +65,11 @@ public class JwtProvider {
         return false;
     }
 
+    /**
+     * returns the username from a given JWT token
+     * @param  token String
+     * @return       String
+     */
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
@@ -62,6 +77,11 @@ public class JwtProvider {
                 .getBody().getSubject();
     }
 
+    /**
+     * returns the expiry date for a given JWT token
+     * @param  token String
+     * @return       Date
+     */
     public Date getExpireDateFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
@@ -69,6 +89,11 @@ public class JwtProvider {
                 .getBody().getExpiration();
     }
 
+    /**
+     * returns a authentication object from a given JWT token
+     * @param  token String
+     * @return       Authentication
+     */
     public Authentication getAuthentication(String token) {
         String username = getUserNameFromJwtToken(token);
         String oldToken = userService.getToken(username);

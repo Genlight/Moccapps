@@ -32,7 +32,12 @@ public class InvitationDAOImpl extends AbstractDAO implements InvitationDAO {
     private PreparedStatement pstmt;
 
 
-
+    /**
+     * creates a new invitation
+     * @param  invitation   Invitation
+     * @return              Invitation
+     * @throws DAOException [description]
+     */
     @Override
     public Invitation create(Invitation invitation) throws DAOException {
         if(invitation==null){
@@ -64,6 +69,12 @@ public class InvitationDAOImpl extends AbstractDAO implements InvitationDAO {
         return invitation;
     }
 
+    /**
+     * updates a given Invitation
+     * @param  invitation   Invitation
+     * @return              boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean update(Invitation invitation) throws DAOException {
         if(invitation==null){
@@ -88,6 +99,12 @@ public class InvitationDAOImpl extends AbstractDAO implements InvitationDAO {
         return true;
     }
 
+    /**
+     * deletes a given invitation
+     * @param  invitation   Invitation
+     * @return              boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean delete(Invitation invitation) throws DAOException {
         int success;
@@ -111,6 +128,12 @@ public class InvitationDAOImpl extends AbstractDAO implements InvitationDAO {
         return (success>0);
     }
 
+    /**
+     * finds an invitation by an ID
+     * @param  id           Inteer
+     * @return              Invitation
+     * @throws DAOException [description]
+     */
     @Override
     public Invitation findById(int id) throws DAOException {
         if(id<0){
@@ -141,6 +164,13 @@ public class InvitationDAOImpl extends AbstractDAO implements InvitationDAO {
         }
     }
 
+    /**
+     * returns an List of invitations, given a userID
+     * @param  searchID     Integer
+     * @param  queryString
+     * @return              List<Invitation>
+     * @throws DAOException [description]
+     */
     @NotNull
     private List<Invitation> getInvitations(int searchID, String queryString) throws DAOException {
         try{
@@ -168,7 +198,7 @@ public class InvitationDAOImpl extends AbstractDAO implements InvitationDAO {
             throw new DAOException("Error during Find multiple Invitations: Couldn't connect to database");
         }
     }
-
+    /** s. function getInvitations */
     @Override
     public List<Invitation> findInvitationsForInviter(int invitationrID) throws DAOException {
         return getInvitations(invitationrID, PSTMT_FINDBYINVITERID);
