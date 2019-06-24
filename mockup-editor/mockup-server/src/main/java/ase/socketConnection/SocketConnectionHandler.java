@@ -1,3 +1,6 @@
+/**
+ *  Class for a socket connection to a specified user 
+ */
 package ase.socketConnection;
 
 import ase.message.socket.SocketMessage;
@@ -22,7 +25,9 @@ public class SocketConnectionHandler implements Runnable{
         this.messagingTemplate=simpMessagingTemplate;
         logger.info(user);
     }
-
+    /**
+     * start a new socketConnection
+     */
     @Override
     public void run() {
         SocketMessage currentMessage;

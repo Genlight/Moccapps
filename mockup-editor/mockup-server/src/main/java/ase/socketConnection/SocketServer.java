@@ -65,7 +65,10 @@ public class SocketServer {
 
         currentUser=new HashMap<>();
     }
-
+    /**
+     * handles a handleWebSocketSubscribeListener
+     * @param sessionSubscribeEvent SessionSubscribeEvent
+     */
     @EventListener
     public void handleWebSocketSubscribeListener(SessionSubscribeEvent sessionSubscribeEvent){
         String destination=(String) sessionSubscribeEvent.getMessage().getHeaders().get("simpDestination");

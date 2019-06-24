@@ -47,6 +47,32 @@ public class PageHandler {
         lockedElements=new ConcurrentHashMap<>();
     }
 
+    /**
+     * handles a given socket message from a client
+     * depending on the command,
+     * different actions are performed for backend and client
+     *
+     * cases:
+     * * element:added : Object added to canvas, object/s will be inside content, as Array
+     * * element:modified : Object modified, object/s will be inside content, as Array
+     * * element:removed : Object removed from canvas, object/s will be inside content, as Array
+     * * page:load: Called when a user joins the socket connection. The whole current page state/string is sent to the user (only to the sender if possible)
+     * * page:created : Notification that a new page was created by the user for the specified projectID
+     * * page:modified : if background or similar fields but not height/width are changed,  which only concerns the canvas BUT NOT the objects. will contain the whole canvas ( plus objects ?)   an empty/default canvas with the necessary property(s) set.
+     * * page:dimensionchange : to transmit changes of height and width, uses the same string representation as page:modified, but does not origin from canvas. Necessary due to how height and width are handled in the canvas
+     * * page:renamed : When a page is renamed. Change of name must be persisted in the backend
+     * * page:removed : Notification that an existing page was removed
+     * * comment:added :  Comment is added by the current user (see ID)
+     * * comment:modified : Comment will be updated, but only the message should be allowed to be updated. when the target is removed from canvas, then the comment should show something like “target object was removed” (Frontend).
+     * * comment:cleared : deleting a comment, use uuid for that
+     * * commententry:added: adding an entry to a comment { content: { comment: Comment, entry: CommentEntry }
+     * * commententry:deleted: deleting an entry to a comment
+     * * commententry:modified: modifying an entry to a comment
+     * * version:created : Version is created either by the user via a button press or via a timer(tbd)
+     *
+     * @param  message SocketMessage
+     * @return         boolean
+     */
     public boolean handleMessage(SocketMessage message){
         JsonNode pageData;
         logger.debug("Command: " + message.getCommand());
@@ -403,6 +429,10 @@ public class PageHandler {
         return true;
     }
 
+    /**
+     * add user to the Socket Thread
+     * @param user User
+     */
     public void addUser(String user){
         if(!currentUser.contains(user)){
             currentUser.add(user);
@@ -427,6 +457,10 @@ public class PageHandler {
         return currentUser;
     }
 
+    /**
+     * return the assoc. page data as a String
+     * @return String
+     */
     public String getPageData(){
         ObjectNode node=objectMapper.createObjectNode();
         node.put("pagedata",page.getPage_data());
@@ -436,19 +470,32 @@ public class PageHandler {
         return node.toString();
     }
 
+    /**
+     * save the page data in db
+     */
     public void persistPage(){
         pageService.update(page);
         logger.debug("page: " + page.getId() + " persisted");
     }
-
+    /**
+     * shutdown action, is called after the last user disconnects
+     */
     private void shutdown(){
         persistPage();
     }
 
+    /**
+     * return the Project id
+     * @return String
+     */
     public String getProjectId() {
         return projectId;
     }
 
+    /**
+     * unlock an element previously locked by a user (identified by user token)
+     * @param user String
+     */
     public void unlockElement(String user){
         lockedElements.entrySet().removeIf(e -> e.getValue().equals(user));
     }
