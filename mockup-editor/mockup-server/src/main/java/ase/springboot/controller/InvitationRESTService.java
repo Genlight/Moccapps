@@ -43,6 +43,12 @@ public class InvitationRESTService {
 
 
     //GET		/project/invite
+
+    /**
+     * Returns all invites of the user who calls this REST endpoint as json object.
+     * @return Json array of all invites  when succesful with HTTP statuscode 200
+     *         or HTTP status code 400 with error message otherwise.
+     */
     @GetMapping("/project/invite")
     public ResponseEntity<?> getAllInvitesForUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -86,7 +92,11 @@ public class InvitationRESTService {
     }*/
 
 
-    //PUT		/project/invite/{id}
+    /**
+     * Updates an existing invitation status of the submitted invite object. (Caller can accept or decline the invitation)
+     * @return Returns HTTP Status 200 if the status update (accept or decline invitation) was successful.
+     *         Returns HTTP Status 400 if unsuccesful.
+     */
     @PutMapping(value = "/project/invite/{id}")
     public ResponseEntity<?> updateInvitation(@Valid @RequestBody InvitationActionForm invitationForm) {
         Invitation invitation = invitationService.getInvitationById(invitationForm.getId());
@@ -105,7 +115,12 @@ public class InvitationRESTService {
         }
 
     }
-    //DELETE	/project/invite/{id}
+
+    /**
+     * Deletes an existing invitation by invitation id.
+     * @return Returns HTTP Status 200 if the invitation could be deleted.
+     *         Returns HTTP Status 400 otherwise.
+     */
     @DeleteMapping("/project/invite/{id}")
     public ResponseEntity<?> deleteInvitation(@PathVariable("id") int id) {
         Invitation invitation = invitationService.getInvitationById(id);

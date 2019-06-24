@@ -46,6 +46,11 @@ public class ProjectRESTService {
     @Autowired
     InvitationService invitationService;
 
+    /**
+     * Returns all projects of the user calling the REST-endpoint.
+     * @return Json array of all projects when succesful with HTTP statuscode 200
+     *         Returns HTTP Status 400 otherwise.
+     */
     @GetMapping("/project")
     public ResponseEntity<?> getProjects() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -104,6 +109,12 @@ public class ProjectRESTService {
 
     }
 
+    /**
+     * Creates a project with the project json object.
+     * @param projectForm the project json object.
+     * @return Json object of the created project when succesful with HTTP statuscode 200
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PostMapping("/project")
     public ResponseEntity<?> createProject(@Valid @RequestBody ProjectForm projectForm){
         ase.Security.UserDetails userDetails=(ase.Security.UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -163,6 +174,12 @@ public class ProjectRESTService {
         }
     }
 
+    /**
+     * Updates an existing project with the project json object.
+     * @param projectForm
+     * @return Json object of the updated project when succesful with HTTP statuscode 200
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PutMapping(value = "/project/{id}")
     public ResponseEntity<?> updateProject(@Valid @RequestBody ProjectForm projectForm) {
         Project project = new Project();
@@ -188,6 +205,11 @@ public class ProjectRESTService {
         return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Returns all saved versions of an existing project given the project id
+     * @param id  the project id
+     * @return  JSON object of all versions of an existing project.
+     */
     @GetMapping(value = "/project/{id}/versions")
     public ResponseEntity<?> getProjectVersions(@PathVariable("id") int id) {
 
@@ -203,6 +225,13 @@ public class ProjectRESTService {
         }
     }
 
+    /**
+     * Returns the json object of a prior saved project including all pages given the project id and the projectVersion
+     * @param id  the project id
+     * @param projectVersion    the project version
+     * @return the project including all pages when succesful with HTTP statuscode 200
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PostMapping("/project/{id}/versions")
     public ResponseEntity<?> restoreProject(@PathVariable("id") int id,@RequestBody ProjectVersion projectVersion){
        logger.info("Entered restoreProject");
@@ -236,6 +265,12 @@ public class ProjectRESTService {
         }
     }
 
+    /**
+     * Deletes an existing project by the project id.
+     * @param id   the project id of the projet to be deleted.
+     * @returnReturns HTTP Status 200 if successful.
+     *                Returns HTTP Status 400 otherwise.
+     */
     @DeleteMapping("/project/{id}")
     public ResponseEntity<?> deleteProject(@PathVariable("id") String id) {
         if (projectService.deleteProject(Integer.parseInt(id))) {

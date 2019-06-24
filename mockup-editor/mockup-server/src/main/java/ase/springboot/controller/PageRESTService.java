@@ -37,6 +37,13 @@ public class PageRESTService {
     @Autowired
     SocketServer socketServer;
 
+    /**
+     * Returns a page by submitted page id.
+     * @param id    the page id.
+     * @return Returns HTTP Status 200 and the page object as json object if successful.
+     *         Returns HTTP Status 500 if an error occurs server side.
+     *         Returns HTTP Status 400 otherwise.
+     */
     @GetMapping(value = "/page/{id}")
     public ResponseEntity<?> getPage(@PathVariable("id") int id){
 
@@ -59,6 +66,13 @@ public class PageRESTService {
 
     }
 
+    /**
+     * Creates a new page by submitted page json object specified in PageForm
+     * @param pageForm  the page json object
+     * @return Returns HTTP Status 200 and the created page object as json object if successful.
+     *         Returns HTTP Status 500 if an error occurs server side.
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PostMapping(value = "/page")
     public ResponseEntity<?> createPage(@Valid @RequestBody PageForm pageForm) {
         Page page = new Page();
@@ -75,27 +89,6 @@ public class PageRESTService {
 
         page = pageService.create(page);
         if (page!=null){
-
- /*           SocketMessage socketMessage = new SocketMessage();
-            socketMessage.setProjectId(String.valueOf(page.getProjectId()));
-            socketMessage.setPageId(String.valueOf(page.getId()));
-
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-            String token = userService.getToken(userDetails.getUsername());
-
-            socketMessage.setUser(token);
-            socketMessage.setCommand("CREATE");
-            socketMessage.setContent("CONTENT");
-
-            try {
-                socketServer.onReceive(socketMessage);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-*/
-
             ObjectMapper objectMapper=new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             try {
@@ -111,6 +104,12 @@ public class PageRESTService {
         }
     }
 
+    /**
+     * Updates an existing page with the page json object.
+     * @param pageForm  the updated page json object.
+     * @return Returns HTTP Status 200 if successful.
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PutMapping(value = "/page/{id}")
     public ResponseEntity<?> updatePage(@Valid @RequestBody PageForm pageForm) {
         Page page = new Page();
@@ -129,6 +128,12 @@ public class PageRESTService {
         return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Deletes an existing page by the page id.
+     * @param id   the page id of the page to be deleted.
+     * @returnReturns HTTP Status 200 if successful.
+     *                Returns HTTP Status 400 otherwise.
+     */
     @DeleteMapping("/page/{id}")
     public ResponseEntity<?> deletePage(@PathVariable("id") int id) {
         Page page = pageService.getPageById(id);
@@ -140,6 +145,12 @@ public class PageRESTService {
     }
 
 
+    /**
+     * Returns all pages of a project given the project id.
+     * @param id   the project id
+     * @returnReturns Json array of all pages of the requested project when succesful with HTTP statuscode 200
+     *                Returns HTTP Status 400 otherwise.
+     */
     @GetMapping("/project/{id}/pages")
     public ResponseEntity<?> getProjectPages(@PathVariable("id") int id) {
         List<Page> pages = pageService.getAllPagesForProject(id);
@@ -160,6 +171,13 @@ public class PageRESTService {
 
     }
 
+    /**
+     * Returns all pages of a project given the project id ordered by the parameter.
+     * @param id    the project id.
+     * @param order the page order.
+     * @return Json array of all pages of the requested project when succesful with HTTP statuscode 200
+     *         Returns HTTP Status 400 otherwise.
+     */
     @GetMapping("/project/{id}/{order}")
     public ResponseEntity<?> getProjectPages(@PathVariable("id") int id,@PathVariable("order") int order) {
         Page page = pageService.getPageByProjectIdAndOrder(id,order);
