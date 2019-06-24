@@ -66,7 +66,7 @@ public class SocketServer {
         currentUser=new HashMap<>();
     }
     /**
-     * handles a handleWebSocketSubscribeListener
+     * handles a WebSocketSubscribeListener
      * @param sessionSubscribeEvent SessionSubscribeEvent
      */
     @EventListener
@@ -91,7 +91,10 @@ public class SocketServer {
         connectionHandler=new SocketConnectionHandler(queue,userId,messagingTemplate);
         executorService.submit(connectionHandler);
     }
-
+    /**
+     * handles the disconnect Event
+     * @param sessionDisconnectEvent SessionDisconnectEvent
+     */
     @EventListener
     public void onDisconnectEvent(SessionDisconnectEvent sessionDisconnectEvent){
         String sessionId=(String) sessionDisconnectEvent.getMessage().getHeaders().get("simpSessionId");
@@ -111,6 +114,10 @@ public class SocketServer {
         currentUser.remove(userId);
     }
 
+    /**
+     * REST API, recieves send messages from client
+     * @param "/send" String
+     */
     @MessageMapping("/send")
     public void onReceive(String compressedMessage) throws IOException {
         byte[] output2 = Base64.decode(compressedMessage);
@@ -182,6 +189,12 @@ public class SocketServer {
         sendMessages(pageHandlerMap.get(message.getPageId()).getUser(),message);
     }
 
+    /**
+     * puts a new message into the message queue 
+     * which is further send to all users
+     * @param user    List<String>
+     * @param message SocketMessage
+     */
     private void sendMessages(List<String> user, SocketMessage message){
         for(String userId:user){
             try {
