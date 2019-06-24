@@ -37,7 +37,12 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
 
     @Autowired
     UserDAO userDAO;
-
+    /**
+     * creates a new entry for a project
+     * @param  project      Project
+     * @return              Project
+     * @throws DAOException [description]
+     */
     @Override
     public Project create(Project project) throws DAOException {
         try {
@@ -72,6 +77,12 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
 
     }
 
+    /**
+     * updates an existing Project
+     * @param  updatedProject Project
+     * @return                Project
+     * @throws DAOException   [description]
+     */
     @Override
     public Project update(Project updatedProject) throws DAOException {
         if(updatedProject==null){
@@ -124,6 +135,12 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
         return updatedProject;
     }
 
+    /**
+     * deletes an existing Project
+     * @param  id           Integer
+     * @return              boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean delete(int id) throws DAOException {
         if(id<0){
@@ -154,6 +171,12 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
         return true;
     }
 
+    /**
+     * finds a Project by a given ID
+     * @param  id           Integer
+     * @return              Project
+     * @throws DAOException [description]
+     */
     @Override
     public Project findById(int id) throws DAOException {
         try{
@@ -194,6 +217,11 @@ public class ProjectDAOImpl extends AbstractDAO implements ProjectDAO {
         }
     }
 
+    /**
+     * returns all Projects
+     * @return List<Project>
+     * @throws DAOException  [description]
+     */
     @Override
     public List<Project> findAll() throws DAOException {
         try{

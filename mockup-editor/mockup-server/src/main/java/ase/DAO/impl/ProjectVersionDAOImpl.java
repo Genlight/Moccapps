@@ -39,6 +39,13 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
     @Autowired
     PageDAO pageDAO;
 
+    /**
+     * creates an entry for a ProjectVersion and set a name
+     * @param  project      ProjectVersion
+     * @param  versionName  string
+     * @return              ProjectVersion
+     * @throws DAOException [description]
+     */
     @Override
     public ProjectVersion create(Project project,String versionName) throws DAOException {
         try {
@@ -78,6 +85,12 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
 
     }
 
+    /**
+     * deletes an existing ProjectVersion by ID
+     * @param  id           Integer
+     * @return              boolean
+     * @throws DAOException [description]
+     */
     @Override
     public boolean delete(int id) throws DAOException {
         if(id<0){
@@ -104,6 +117,12 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
         return true;
     }
 
+    /**
+     * find a ProjectVersion by ID
+     * @param  id           Integer
+     * @return              ProjectVersion
+     * @throws DAOException [description]
+     */
     @Override
     public ProjectVersion findById(int id) throws DAOException {
         try{
@@ -134,6 +153,12 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
         }
     }
 
+    /**
+     * find ProjectVersions by a given Project ID
+     * @param  project_id   Integer
+     * @return              List<ProjectVersion>
+     * @throws DAOException [description]
+     */
     @Override
     public List<ProjectVersion> findByProjectId(int project_id) throws DAOException {
         try{
@@ -163,6 +188,12 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
 
     }
 
+    /**
+     * find a ProjectVersion by a given Project Tag, set prev. as Name
+     * @param  tag          String
+     * @return              ProjectVersion
+     * @throws DAOException [description]
+     */
     @Override
     public ProjectVersion findByVersionTag(String tag) throws DAOException {
         try{
@@ -192,7 +223,11 @@ public class ProjectVersionDAOImpl  extends AbstractDAO implements ProjectVersio
             throw new DAOException("Error during Find by ID of Project: Couldn't connect to database");
         }
     }
-
+    /**
+     * return all ProjectVersions
+     * @return List<ProjectVersion>
+     * @throws DAOException  [description]
+     */
     @Override
     public List<ProjectVersion> findAll() throws DAOException {
         try{
