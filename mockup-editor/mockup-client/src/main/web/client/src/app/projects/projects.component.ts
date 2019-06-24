@@ -52,10 +52,8 @@ export class ProjectsComponent implements OnInit {
     this.loadInvites();
     this.loadUserInfo();
   }
-//TODO:remove all socket methods
-  connectToSocket() {
-    //this.socketService.connect("","",this.tokenStorage.getToken());
-  }
+
+  connectToSocket() {  }
 
   sendMessageToSocket(){
     this.socketService.send('hallo','EDIT');
@@ -151,7 +149,7 @@ export class ProjectsComponent implements OnInit {
    * Projects
    */
   onCreateProject(project: Project) {
-    
+
   }
 
   onOpenProject(project: Project) {

@@ -4,7 +4,6 @@ import {Injectable} from '@angular/core';
 import {TokenStorageService} from './token-storage.service';
 import {Observable} from "rxjs";
 
-//const TOKEN_HEADER_KEY = 'x-access-token';
 const TOKEN_HEADER_KEY = 'Authorization';
 
 @Injectable()

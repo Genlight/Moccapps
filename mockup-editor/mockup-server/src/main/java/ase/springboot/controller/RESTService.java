@@ -29,8 +29,6 @@ import java.io.File;
 import java.util.*;
 
 @RestController
-//@RequestMapping("/api/v1")
-//@CrossOrigin(origins = "*", maxAge = 3600)
 public class RESTService {
     private static final Logger logger = LoggerFactory.getLogger(RESTService.class);
 

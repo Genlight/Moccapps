@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Matthias Deimel
  */
-//@Ignore //does not work because the project service gets mocked for other testcases
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = {ProjectServiceTest.Config.class})
