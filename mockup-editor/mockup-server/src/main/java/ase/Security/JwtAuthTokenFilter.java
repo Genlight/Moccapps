@@ -21,7 +21,14 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     private JwtProvider tokenProvider;
     @Autowired
     private UserService userService;
-
+    /**
+     * validate a given Request by a JWTtoken, provided in HttpServletRequest-Header 
+     * @param  request          HttpServletRequest
+     * @param  response         HttpServletResponse
+     * @param  filterChain      FilterChain
+     * @throws ServletException [description]
+     * @throws IOException      [description]
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -29,30 +36,24 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
             String jwt = getJwt(request);
             if (jwt != null && tokenProvider.validateJwtToken(jwt)) {
-				/*String username = tokenProvider.getUserNameFromJwtToken(jwt);
-
-				UserDetails userDetails = userService.loadUserByUsername(username);
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-				SecurityContextHolder.getContext().setAuthentication(authentication);*/
-
-                Authentication auth = tokenProvider.getAuthentication(jwt);
+				        Authentication auth = tokenProvider.getAuthentication(jwt);
                 if (auth == null) {
                     SecurityContextHolder.clearContext();
                 } else {
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-
             }
         } catch (Exception e) {
             logger.error("Can NOT set user authentication -> Message: {}", e);
         }
-
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * returns a string, representing JWT token, used in a HTTP Header
+     * @param  request HttpServletRequest
+     * @return         String
+     */
     private String getJwt(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
