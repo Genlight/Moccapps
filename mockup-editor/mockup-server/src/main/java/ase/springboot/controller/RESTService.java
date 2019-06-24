@@ -46,6 +46,12 @@ public class RESTService {
     @Autowired
     JwtProvider jwtProvider;
 
+    /**
+     * Registers a new user given the signUpForm json object.
+     * @param signUpRequest the json object containing the user info.
+     * @return HTTP statuscode 200 when successful
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody SignUpForm signUpRequest) {
 
@@ -70,12 +76,23 @@ public class RESTService {
 
     }
 
+    /**
+     * Logs in an existing user given the submitted loginForm credentials.
+     * @param loginRequest  the login data as json object
+     * @return HTTP statuscode 200 when successful
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginForm loginRequest) {
 
         return ResponseEntity.ok(userService.login(loginRequest.getUsername(), loginRequest.getPassword()));
     }
 
+    /**
+     * Logs out an existing user given the submitted LogoutForm credentials.
+     * @param logoutRequest  the logout data as json object
+     * @return HTTP statuscode 200 when successful
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PostMapping("/logout")
     public ResponseEntity<Boolean> logout(@Valid @RequestBody LogoutForm logoutRequest) {
 
@@ -86,6 +103,12 @@ public class RESTService {
         }
     }
 
+    /**
+     * Edits the info of an existing user given the submitted EditUserForm credentials.
+     * @param editUserRequest  the updated user information
+     * @return HTTP statuscode 200 when successful
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PostMapping("/user")
     public ResponseEntity<?> user(@Valid @RequestBody EditUserForm editUserRequest) {
       if (!userService.existsByEmail(editUserRequest.getEmail())) {
@@ -117,6 +140,11 @@ public class RESTService {
       }
     }
 
+    /**
+     * Tests if a valid user token is returned.
+     * @return HTTP statuscode 200 when successful
+     *         Returns HTTP Status 400 otherwise.
+     */
     @PostMapping("/test")
     public ResponseEntity<?> test() {
 
@@ -143,6 +171,12 @@ public class RESTService {
 
     }
 
+    /**
+     * Searches for existing users given the search string.
+     * @param search the search string
+     * @return A list of all user objects matching the search string as json and HTTP statuscode 200 when successful
+     *         Returns HTTP Status 400 otherwise.
+     */
     @GetMapping("/user")
     public ResponseEntity<?> searchUser(@RequestParam String search){
         List<User> users = userService.searchByEmailOrUsername(search);

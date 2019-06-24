@@ -26,6 +26,12 @@ public class CommentRESTService {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentRESTService.class);
 
+    /**
+     * Returns all comments as json array for a page.
+     * @param id    the id of the page
+     * @return Json array of all comments when succesful with HTTP statuscode 200
+     *         or HTTP status code 400 with error message otherwise.
+     */
     @GetMapping("/page/{id}/comments")
     public ResponseEntity<?> getAllCommentsForPage(@PathVariable("id") int id){
 
