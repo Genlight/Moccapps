@@ -1,8 +1,6 @@
 import { fabric } from 'fabric';
 import { UUID } from 'angular2-uuid';
 
-
-
 /**
  * ff. snippet dazu gefunden unter https://stackoverflow.com/questions/34347336/the-toobject-function-in-fabric-js
  *
@@ -20,6 +18,9 @@ fabric.Object.prototype.toObject = (function(toObject) {
         )
         .concat(
             ['sendMe']
+        )
+        .concat(
+            ['lockMovementX','lockMovementY','lockScalingX','lockScalingY','lockRotation']
         );
         return toObject.apply(this, [propertiesToInclude]);
     };
@@ -106,7 +107,7 @@ fabric.Object.prototype.resizeToScale = function() {
       this.strokeWidth = this._origStrokeWidth / Math.max(this.scaleX, this.scaleY);
     } else {
       this._objects.forEach( function(obj) {
-        console.log(obj);
+        //console.log(obj);
         obj.strokeWidth = obj._origStrokeWidth / Math.max(obj.group.scaleX, obj.group.scaleY);
       });
     }

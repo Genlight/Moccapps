@@ -140,6 +140,12 @@ export class CustomizepanelComponent implements OnInit {
     }
 
     if (this.activePage.width >= 0 && this.activePage.height >= 0) {
+      if (this.activePage.height >= 3000) {
+        this.activePage.height = 3000;
+      }
+      if (this.activePage.width >= 3000) {
+        this.activePage.width = 3000;
+      }
       this.managePagesService.updateActivePageDimensions(this.activePage.height, this.activePage.width);
 
       let defaultCanvas = JSON.parse(this.DEFAULT_CANVAS);
@@ -162,20 +168,20 @@ export class CustomizepanelComponent implements OnInit {
 
       'object:added': (event) => {
         //this.sendMessageToSocket(JSON.stringify(event.transform.target),'added');
-        console.log('object added..........');
-        console.log(event.target);
+        //console.log('object added..........');
+        //console.log(event.target);
       },
       'object:moving': (event) => { },
       'selection:created': (event) => {
         const selectedObject = event.target;
         this.selected = null;
-        console.log("selection created: " + JSON.stringify(selectedObject));
+        //console.log("selection created: " + JSON.stringify(selectedObject));
         this.manageSelection(selectedObject);
       },
       'selection:updated': (event) => {
         const selectedObject = event.target;
         this.selected = null;
-        console.log("selection updated: " + selectedObject);
+        //console.log("selection updated: " + selectedObject);
         this.manageSelection(selectedObject);
       },
       'selection:cleared': (event) => {
@@ -244,7 +250,7 @@ export class CustomizepanelComponent implements OnInit {
     this.textProperties.textDecoration.underline = text.underline;
     this.textProperties.textDecoration.linethrough = text.linethrough;
     this.textProperties.text = text.text;
-    console.log(this.textProperties);
+    //console.log(this.textProperties);
   }
 
   /**
@@ -260,7 +266,7 @@ export class CustomizepanelComponent implements OnInit {
     this.elementProperties.lockMovement = elem.lockMovementX;
     this.elementProperties.lockScale = elem.lockScalingX;
     this.elementProperties.lockRotate = elem.lockRotation;
-    console.log(this.elementProperties);
+    //console.log(this.elementProperties);
   }
 
   /**
@@ -270,7 +276,7 @@ export class CustomizepanelComponent implements OnInit {
    */
   setElementProperty(property, value) {
     let currentElem = this.selected;
-    console.log('setproperty:current element ' + JSON.stringify(currentElem));
+    //console.log('setproperty:current element ' + JSON.stringify(currentElem));
     // we need a clone here so we don't actually change the value locally
     // all properties changed this way are sent to the server first and then applied
     // this way inconsistencies can be avoided
@@ -286,7 +292,7 @@ export class CustomizepanelComponent implements OnInit {
       });
       currentElem.clone((o) => {
         sendClone = o;
-      })
+      });
       this.undoRedoService.setCurrentlyModifiedObject([undoClone]);
       sendClone.set(property, value);
       this.undoRedoService.save(sendClone, Action.MODIFIED);
@@ -299,32 +305,93 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   /**
+   * sets element lock properties
+   * this uses the same calls as setElementProperty, but the locks would have been inconsistent
+   * with the sending and undoing of actions otherwise
+   */
+  setElementLocks() {
+    let currentElem = this.selected;
+    if (currentElem&&currentElem.sendMe) {
+      let undoClone;
+      let sendClone;
+      currentElem.clone((o) => {
+        undoClone = o;
+      });
+      const _this = this;
+      currentElem.clone((o) => {
+        sendClone = o;
+      });
+      this.undoRedoService.setCurrentlyModifiedObject([undoClone]);
+      sendClone.set('lockMovementX', this.elementProperties.lockMovement);
+      sendClone.set('lockMovementY', this.elementProperties.lockMovement);
+      sendClone.set('lockScalingX', this.elementProperties.lockScale);
+      sendClone.set('lockScalingY', this.elementProperties.lockScale);
+      sendClone.set('lockRotation', this.elementProperties.lockRotate);
+      this.undoRedoService.save(sendClone, Action.MODIFIED);
+      sendClone.sendMe = false;
+      this.managePagesService.sendMessageToSocket(sendClone, Action.MODIFIED);
+      sendClone.sendMe = true;
+    }
+  }
+
+  /**
    * sets a property for each element in a group
    * @param property property to set
    * @param value new value of the property
    */
   setGroupProperty(property, value) {
-    //let undoClone = [];
-    //let sendClone = [];
-    this.selected.forEachObject((elem) => {
-      /*elem.clone((o) => {
-        undoClone.push(o);
-      });
-      elem.clone((o) => {
-        o.set(property, value);
-        o.sendMe = false;
-        sendClone.push(o);
+    let undoClone = [];
+    let sendClone = [];
+    let selectedClone;
+
+      this.selected.forEachObject((elem) => {
+        elem.clone((o) => {
+          o.uuid = elem.uuid;
+          undoClone.push(o);
+        });
+        elem.clone((o) => {
+          o.uuid = elem.uuid;
+          o.set(property, value);
+          o.sendMe = false;
+          sendClone.push(o);
+        })
       })
-    });
-    this.undoRedoService.setCurrentlyModifiedObject(undoClone);
+    if(this.selected.type === 'group') {
+      let undoGroup;
+      this.selected.clone((o) => {
+        o.uuid = this.selected.uuid;
+        undoGroup = o;
+      });
+      undoGroup['_objects'] = undoClone;
+      let sendGroup;
+      this.selected.clone((o) => {
+        o.uuid = this.selected.uuid;
+        sendGroup = o;
+      });
+      sendGroup['_objects'] = sendClone;
+      this.undoRedoService.setCurrentlyModifiedObject([undoGroup]);
+      this.managePagesService.sendMessageToSocket(sendGroup,Action.MODIFIED);
+      this.undoRedoService.save([sendGroup],Action.MODIFIED);
+    } else {
+
+      this.undoRedoService.setCurrentlyModifiedObject(undoClone);
+      sendClone.forEach((current) => {
+        FabricmodifyService.calcExtractFromGroup(current,this.selected);
+        this.managePagesService.sendMessageToSocket(current, Action.MODIFIED);
+        FabricmodifyService.calcInsertIntoGroup(current, this.selected);
+      })
+      this.undoRedoService.save([sendClone],Action.MODIFIED);
+    }
+    /*this.undoRedoService.setCurrentlyModifiedObject(undoClone);
     sendClone.forEach((current) => {
       this.managePagesService.sendMessageToSocket(current, Action.MODIFIED);
       current.sendMe = true;
     })*/
-      elem.set(property,value);
-    })
 
-    this.canvas.renderAll();
+      //elem.set(property,value);
+    //})
+
+    //this.canvas.renderAll();
   }
 
   setGroupFillColor() {
@@ -374,7 +441,13 @@ export class CustomizepanelComponent implements OnInit {
       });*/
       toSend = obj.getObjects();
 
-    } else {
+    } else if(obj.type === 'group') {
+      let hackedString = JSON.stringify(obj);
+      let hackedParse = JSON.parse(hackedString);
+      hackedParse.uuid = obj.uuid;
+      toSend = [hackedParse];
+    } 
+    else {
       toSend = [obj];
       /*obj.clone((o) => {
         o['index'] = index;
@@ -382,6 +455,7 @@ export class CustomizepanelComponent implements OnInit {
       })*/
     }
     let changeObject = {'objects':toSend, 'index':index};
+
     this.sendCanvas(changeObject,Action.PAGEMODIFIED);
 
   }
@@ -421,17 +495,15 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setElementMoveLock() {
-    this.setElementProperty('lockMovementX', this.elementProperties.lockMovement);
-    this.setElementProperty('lockMovementY', this.elementProperties.lockMovement);
+    this.setElementLocks();
   }
 
   setElementScaleLock() {
-    this.setElementProperty('lockScalingX', this.elementProperties.lockScale);
-    this.setElementProperty('lockScalingY', this.elementProperties.lockScale);
+    this.setElementLocks();
   }
 
   setElementRotateLock() {
-    this.setElementProperty('lockRotation', this.elementProperties.lockRotate);
+    this.setElementLocks();
   }
 
   setDrawingModeColor() {
@@ -471,10 +543,14 @@ export class CustomizepanelComponent implements OnInit {
   }
 
   setTextDecoration() {
-    this.setElementProperty('underline', this.textProperties.textDecoration.underline);
+    //this.setElementProperty('underline', this.textProperties.textDecoration.underline);
     this.setElementProperty('linethrough', this.textProperties.textDecoration.linethrough);
-    console.log(this.textProperties.textDecoration.underline);
-    console.log(this.textProperties.textDecoration.linethrough);
+    //console.log("underline "+this.textProperties.textDecoration.underline);
+    //console.log("linethrough "+this.textProperties.textDecoration.linethrough);
+  }
+
+  setUnderline() {
+    this.setElementProperty('underline', this.textProperties.textDecoration.underline);
   }
 
   setText() {
@@ -504,14 +580,18 @@ export class CustomizepanelComponent implements OnInit {
     let _canvas = this.canvas;
     let _pageService = this.managePagesService;
     let sendCanvas = JSON.parse(this.DEFAULT_CANVAS);
+
+    //hack
+    
     //_canvas.cloneWithoutData((o) => {
       let keys = Object.keys(propertyObject);
       keys.forEach(function (key) {
         sendCanvas[key] = propertyObject[key]
-        console.log('assigning ' + JSON.stringify(propertyObject[key]) + ' to ' + key);
+        //console.log('assigning ' + JSON.stringify(propertyObject[key]) + ' to ' + key);
       });
-      console.log('canvasToSend: ' + JSON.stringify(sendCanvas))
+      //console.log('canvasToSend: ' + JSON.stringify(sendCanvas))
       _pageService.sendMessageToSocket(sendCanvas, action);
+
     //});
   }
 }

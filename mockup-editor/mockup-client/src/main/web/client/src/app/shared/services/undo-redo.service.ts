@@ -138,7 +138,7 @@ export class UndoRedoService {
       action: this.invertAction(replayState.action)
     });
     // removing old objects
-    console.log(`Removing replayState.current: ${JSON.stringify(replayState.current)}`);
+    //console.log(`Removing replayState.current: ${JSON.stringify(replayState.current)}`);
     /*fabric.util.enlivenObjects([JSON.parse(replayState.current)], (obj) => {
       const old = this.getObjectByUUID(obj.uuid, canvas);
       canvas.remove(old);
@@ -146,7 +146,7 @@ export class UndoRedoService {
 
     let _this = this;
     if(replayState.action === Action.ADDED ) {
-      console.log('remove previously added elements: ' +JSON.stringify(replayState.current) );
+      //console.log('remove previously added elements: ' +JSON.stringify(replayState.current) );
       replayState.current.forEach((obj) => {
         let old = _this.getObjectByUUID(obj.uuid,canvas);
         canvas.remove(old);
@@ -166,7 +166,7 @@ export class UndoRedoService {
       });
     }
     else if(replayState.action === Action.REMOVED) {
-      console.log('add previously removed elements');
+      //console.log('add previously removed elements');
       replayState.previous.forEach((obj) => {
         //let old = _this.getObjectByUUID(obj.uuid,canvas);
         canvas.add(obj);
@@ -189,12 +189,12 @@ export class UndoRedoService {
     stacker.next(true);
 
     // Check, if there are holes in a stack
-    console.log('Savestack-Length: ' + saveStack.length);
+    //console.log('Savestack-Length: ' + saveStack.length);
     if (playStack.length <= 0/* || this.state.action === Action.PAGECREATED*/) {
-      console.log('Playstack empty. Length: ' + playStack.length);
+      //console.log('Playstack empty. Length: ' + playStack.length);
       player.next(false);
     } else {
-      console.log('Playstack-Length: ' + playStack.length);
+      //console.log('Playstack-Length: ' + playStack.length);
       player.next(true);
     }
   }
@@ -202,14 +202,14 @@ export class UndoRedoService {
    * undoes a previous actions
    */
   undo() {
-    console.log('undo: ');
+    //console.log('undo: ');
     this.replay(this.undoStack, this.redoStack, this.undoObs, this.redoObs);
   }
   /**
    * redo a previous undone action
    */
   redo() {
-    console.log('redo: ');
+    //console.log('redo: ');
     this.replay(this.redoStack, this.undoStack, this.redoObs, this.undoObs);
   }
   getRedoObs(): Observable<boolean> {

@@ -61,8 +61,26 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
           this.hideRulerLines();
         } else {
           this.showRulerLines();
+          this.removeAllRulerLines();
+          //Load rulers from localstorage if existant
+          /* setTimeout(() => { this.loadRulersFromLocalStorage(); }
+          , 500); */
         }
       });
+
+      this.workSpaceService.deleteRulers.subscribe(() => {
+        this.removeAllRulerLines();
+      });
+/* 
+      this.workSpaceService.saveRulers.subscribe(() => {
+        this.saveRulersToLocalStorage();
+        alert('save Ruler');
+      });
+
+      this.workSpaceService.loadRulers.subscribe(() => {
+        alert('load ruler');
+        this.loadRulersFromLocalStorage();
+      }); */
     }
 
   ngOnInit() {
@@ -139,12 +157,81 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     workspace.insertBefore(div, workspace.childNodes[0]);
   }
 
-  storeRulers() {
+  saveRulersToLocalStorage() {
+    if (!!this.activePage && !!this.activePage.id) {
+      let horizontalRulers = [];
+      let verticalRulers = [];
+  
+      let rulers = document.getElementsByClassName('rulerHLine') as HTMLCollectionOf<HTMLElement>;
+      for (let i = 0; i < rulers.length; i++){
+        let hRulerValue = rulers[i].style.marginLeft;
+        horizontalRulers.push(hRulerValue);
+      }
+  
+      let rulersV = document.getElementsByClassName('rulerVLine') as HTMLCollectionOf<HTMLElement>;
+      for (let i = 0; i < rulersV.length; i++) {
+        let VRulerValue = rulersV[i].style.marginTop;
+        verticalRulers.push(VRulerValue);
+      }
 
+      localStorage.removeItem(`rulers_${this.activePage.id}`);
+  
+      localStorage.setItem(`rulers_${this.activePage.id}`, JSON.stringify(
+        {
+          horizontalRulers,
+          verticalRulers
+        }
+      ));
+    }
   }
 
-  loadRulers() {
+  loadRulersFromLocalStorage() {
+    if (!!this.activePage && !!this.activePage.id) {
+      let rulersString = localStorage.getItem(`rulers_${this.activePage.id}`);
+      if (!!rulersString) {
+        let rulers = JSON.parse(rulersString);
+        //Load horizontal rulers
+        let horizontalRulers = rulers.horizontalRulers as [string];
+        for (let i = 0; i < horizontalRulers.length; i++){
+          // Add ruler
+          let div = document.createElement('div');
+          div.className = 'rulerHLine rulerLine';
+          div.style.marginLeft = horizontalRulers[i];
+          div.addEventListener('mousedown', (e) => {
+            this.selectedElement = e.target});
+          div.addEventListener('mouseup', (e) => {
+            // Remove line if it goes below 5px
+            if (this.cursorPosition.x < 5) {
+              this.removeRulerLine(e);
+            }
+            this.selectedElement = null;
+          });
+          let workspace = document.querySelector('.workspace');
+          workspace.insertBefore(div, workspace.childNodes[0]);
+        }
 
+        //Load vertical rulers
+        let verticalRulers = rulers.verticalRulers as [string];
+        for (let i = 0; i < verticalRulers.length; i++){
+          // Add ruler
+          let div = document.createElement('div');
+          div.className = 'rulerVLine rulerLine';
+          div.style.marginTop = verticalRulers[i];
+          div.addEventListener('mousedown', (e) => {
+            this.selectedElement = e.target});
+          div.addEventListener('mouseup', (e) => {
+            // Remove line if it goes below 5px
+            if (this.cursorPosition.y < 5) {
+              this.removeRulerLine(e);
+            }
+            this.selectedElement = null;
+          });
+          let workspace = document.querySelector('.workspace');
+          workspace.insertBefore(div, workspace.childNodes[0]);
+        }
+      }
+    }
+    
   }
 
   removeRulerLine(e) {
@@ -171,17 +258,15 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   }
 
   removeAllRulerLines() {
+    document.querySelectorAll('.rulerLine').forEach((el) => {
+      el.parentNode.removeChild(el);
+    });
   }
 
   onMouseEnter(e) {
-    //alert('enter');
-/*     let x = e.clientX;
-    let y = e.clientY;
-    console.log(`x: ${x} y: ${y}`); */
   }
 
   onMouseLeave(e) {
-    //alert('leave');
   }
 
   onMouseMove(e, canvasWrapper: HTMLElement, horizontalHandler: HTMLElement, verticalHandler: HTMLElement) {
@@ -214,6 +299,11 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setCanvasDimensions(height: number, width: number) {
+    this.modifyService.setHeight(this.canvas, height);
+    this.modifyService.setHeight(this.canvas, width);
+  }
+
   /**
    * Renders rulers initially.
    */
@@ -242,19 +332,19 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
 
   private loadPage(page: Page) {
     if (!!page) {
-      this.modifyService.clearAll(this.canvas);
       this.modifyService.setHeight(this.canvas, page.height);
       this.modifyService.setWidth(this.canvas, page.width);
-      console.log(`loadPage with data: ${page.page_data}`);
+      this.pagesService.updateGrid();
+      //console.log(`loadPage with data: ${page.page_data}`);
       if (!!page.page_data) {
+        this.modifyService.clearAll(this.canvas);
         this.modifyService.loadFromJSON(this.canvas, page.page_data);
             //this.pagesService.loadGrid(2000,2000);
-        this.pagesService.updateGrid();
 
         // saving initial State
         this.undoRedoService.saveInitialState();
       }
-      console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
+      //console.log(`loadPage: height ${page.height} width ${page.width} page data: ${page.page_data}`);
     }
 
   }
@@ -316,9 +406,9 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
       } else if (event.keyCode === 88) { // 'x' key
         this.modifyService.cutElement(canvas);
       } else if (event.keyCode === 90) { // 'z' key
-        // TODO undo
+        this.undoRedoService.undo();
       } else if (event.keyCode === 89) { // 'y' key
-        // TODO redo
+        this.undoRedoService.redo();
       } else if (event.keyCode === 71 && event.shiftKey) { // 'g' key
         this.modifyService.ungroup(canvas);
       } else if (event.keyCode === 71) { // 'g' key
@@ -338,7 +428,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
    */
   onSaveToLocalStorage() {
     const json = JSON.stringify(this.canvas);
-    console.log(json);
+    //console.log(json);
     localStorage.setItem('Canvas', json);
   }
 
@@ -391,7 +481,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
   onTransformation(evt, action: Action) {
     let transObject = evt.target;
     //console.log(JSON.stringify(evt));
-    console.log(`${action} : ${transObject.uuid}`);
+    //console.log(`${action} : ${transObject.uuid}`);
     if (transObject.sendMe) {
       //this includes the "do not propagate this change" already on the send level, so minimal checks are necessary on the recieving side
       transObject.sendMe = false;
@@ -426,7 +516,7 @@ export class FabricCanvasComponent implements OnInit, OnDestroy {
         //fancy canvas magic to ensure the selection behaves properly
         var newSelection = new fabric.ActiveSelection(sendArray, {canvas:this.canvas});
 
-        console.log('new Selection: ' + JSON.stringify(newSelection));
+        //console.log('new Selection: ' + JSON.stringify(newSelection));
         this.canvas.renderOnAddRemove = oldRenderAddRemove;
         this.canvas.setActiveObject(newSelection);
 

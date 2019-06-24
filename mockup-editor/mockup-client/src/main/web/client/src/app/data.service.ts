@@ -14,7 +14,7 @@ export class DataService {
   }
 
   changeMessage(message: AuthLoginInfo) {
-    console.log("updated:" + message.toString());
+    //console.log("updated:" + message.toString());
     this.messageSource.next(message);
   }
 

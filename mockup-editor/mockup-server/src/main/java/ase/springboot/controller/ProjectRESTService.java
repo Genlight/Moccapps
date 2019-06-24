@@ -139,10 +139,24 @@ public class ProjectRESTService {
             return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ProjectFormResponse projectFormResponse = new ProjectFormResponse();
+        projectFormResponse.setId(result.getId());
+        projectFormResponse.setLastModified(project.getLastModified());
+        projectFormResponse.setProjectname(project.getProjectname());
+
+        for (int userId : result.getUsers()) {
+            User user = userService.findUserByID(userId);
+            if (user != null) {
+                projectFormResponse.addUser(user);
+            }
+        }
+
 
         try {
-            String json = mapper.writeValueAsString(result);
+            String json = objectMapper.writeValueAsString(projectFormResponse);
+            logger.info(json);
             return ResponseEntity.ok(json);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(new ResponseMessage("error"), HttpStatus.BAD_REQUEST);

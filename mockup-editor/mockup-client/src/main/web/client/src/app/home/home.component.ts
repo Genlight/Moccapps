@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit {
 
   onSubmit(logForm: NgForm, type: string) {
     if (type === 'register') {
-      console.log('register');
+      //console.log('register');
 
 
       this.signupInfo = new SignUpInfo(
@@ -53,14 +53,14 @@ export class HomeComponent implements OnInit {
 
       this.authService.signUp(this.signupInfo).subscribe(
         data => {
-          console.log(data);
+          //console.log(data);
           this.isSignedUp = true;
           this.isSignUpFailed = false;
           this.tabs.select('loginTab');
           this.notificationService.showSuccess(`Thank you for registering, ${logForm.form.value.username}`, 'Successfully registered.');
         },
         error => {
-          console.log(error);
+          //console.log(error);
           this.errorMessage = error.error;
           this.isSignUpFailed = true;
         }
@@ -83,16 +83,16 @@ export class HomeComponent implements OnInit {
           this.router.navigate(['projects']);
         },
         error => {
-          console.log(error);
+          //console.log(error);
           this.errorMessage = error.error.reason;
           this.isLoginFailed = true;
         }
       );
 
-      console.log('login');
+      //console.log('login');
 
     }
-    console.log(logForm.form.value.email);
+    //console.log(logForm.form.value.email);
   }
 
 }

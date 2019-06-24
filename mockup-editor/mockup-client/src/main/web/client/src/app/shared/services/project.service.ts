@@ -57,7 +57,7 @@ export class ProjectService {
 
   deleteProject(project: Project): Observable<any> {
     if (!project.id) {
-      console.error(`ERROR: deleteProject: Project id is not defined`);
+      //console.error(`ERROR: deleteProject: Project id is not defined`);
       return;
     }
     return this.apiService.delete(`/project/${project.id}`);

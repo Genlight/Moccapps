@@ -57,7 +57,9 @@ export class ManageUserModalComponent implements OnInit {
 
   loadProjectUsers() {
     if (this.projectRef == null) {
-      console.error('Project reference is null');
+      //console.error('Project reference is null');
+      this.notificationService.showError('Please try again or reload page.', 'Error: Could not load project information');
+      this.activeModal.close();
     }
 
     //Create a copy of the users field.
@@ -106,7 +108,7 @@ export class ManageUserModalComponent implements OnInit {
   }
 
   onSelectUser(user) {
-    console.log(user.item);
+    //console.log(user.item);
     this.addNewUser(user.item);
   }
 
@@ -138,7 +140,7 @@ export class ManageUserModalComponent implements OnInit {
         this.activeModal.close();
       },
       (error) => {
-        this.notificationService.showError(error, 'ERROR');
+        this.notificationService.showError('Please try again.', 'ERROR: Could not apply user settings for this project.');
       }
     );
   }

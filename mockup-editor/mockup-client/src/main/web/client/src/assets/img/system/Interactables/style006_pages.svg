@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="50mm"
+   height="50mm"
+   viewBox="0 0 50 50"
+   version="1.1"
+   id="svg5685"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="style006_pages.svg">
+  <defs
+     id="defs5679" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.959798"
+     inkscape:cx="103.2832"
+     inkscape:cy="94.58211"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1138"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="21.715649,35.145943"
+       orientation="1,0"
+       id="guide6290"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="21.715649,27.061039"
+       orientation="0,1"
+       id="guide6325"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="21.715649,38.820899"
+       orientation="0,1"
+       id="guide6327"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="21.715649,12.227581"
+       orientation="0,1"
+       id="guide6329"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="21.715649,32.940969"
+       orientation="0,1"
+       id="guide6331"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="21.715649,20.847023"
+       orientation="0,1"
+       id="guide6333"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5682">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-247)">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.76499999;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6906"
+       width="16.503893"
+       height="17.773424"
+       x="5.2117562"
+       y="252.16554"
+       ry="0.8018086" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.76499999;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6906-1"
+       width="16.503893"
+       height="17.773424"
+       x="26.359457"
+       y="252.16554"
+       ry="0.8018086"
+       inkscape:transform-center-x="21.247927"
+       inkscape:transform-center-y="-1.5368002" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.76499999;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6906-9"
+       width="16.503893"
+       height="17.773424"
+       x="5.2117581"
+       y="276.15298"
+       ry="0.8018086" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.76499999;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6906-1-1"
+       width="16.503893"
+       height="17.773424"
+       x="26.359459"
+       y="276.15298"
+       ry="0.8018086"
+       inkscape:transform-center-x="21.247927"
+       inkscape:transform-center-y="-1.5368002" />
+  </g>
+</svg>

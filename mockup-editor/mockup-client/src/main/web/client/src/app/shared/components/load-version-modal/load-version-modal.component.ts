@@ -35,7 +35,7 @@ export class LoadVersionModalComponent implements OnInit {
   onRestoreProject(version: Version) {
     this.projectService.restoreProject(version).subscribe((
       (response) => {
-        console.log(response);
+        //console.log(response);
         this.setProjectActive(response);
       }
     ));
@@ -59,7 +59,7 @@ export class LoadVersionModalComponent implements OnInit {
     this.projectService.getProjectVersions<Version[]>(this.activeProject)
       .subscribe(
         (response) => {
-          console.log(response);
+          //console.log(response);
           this.projectVersions = response;
         }
       );

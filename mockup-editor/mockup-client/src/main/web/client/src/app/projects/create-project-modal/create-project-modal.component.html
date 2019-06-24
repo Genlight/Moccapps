@@ -16,12 +16,16 @@
           class="form-control"
           name="project_name"
           #inputname
+          (change) = "onNameChanged()"
           [(ngModel)]="project.name"
           required>
       </div>
+      <div *ngIf="isProjectNameInvalid" class="alert alert-danger mt-3" role="alert">
+          Project name must not be empty.
+      </div>
       <hr>
       <div class="row">
-        <div class="from-group col">
+        <div class="form-group col">
           <label for="inputWidth" class="control-label">Height:</label>
           <div class="input-group">
             <input 
@@ -31,6 +35,7 @@
               name="height" 
               value="300"
               [(ngModel)]="project.height"
+              (change) = "onDimensionChanged()"
               required
             >
             <div class="input-group-append">
@@ -38,7 +43,8 @@
             </div>
           </div>
         </div>
-        <div class="from-group col">
+       
+        <div class="form-group col">
           <label for="inputWidth" class="control-label">Width:</label>
           <div class="input-group">
             <input 
@@ -48,6 +54,7 @@
               name="width" 
               value="300"
               [(ngModel)]="project.width"
+              (change) = "onDimensionChanged()"
               required
             >
             <div class="input-group-append">
@@ -57,10 +64,15 @@
         </div>
       </div>
     </form>
+   
+    <div *ngIf="isDimensionsInvalid" class="alert alert-danger mt-3" role="alert">
+        Height and width must be between 0-3000 px.
+    </div>
   </div>
+  
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="modal.close('Cancel')">Cancel</button>
-    <button type="button" class="btn btn-primary" [disabled]="form.invalid" (click)="onCreateProject(form.value)">Create Project</button>
+    <button type="button" class="btn btn-primary" [disabled]="isProjectNameInvalid || isDimensionsInvalid" (click)="onCreateProject(form.value)">Create Project</button>
   </div>
 </ng-template>
 <button class="btn btn-primary" (click)="openModal(content)">Create new project</button>

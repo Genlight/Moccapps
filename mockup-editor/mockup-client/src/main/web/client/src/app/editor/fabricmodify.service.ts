@@ -16,6 +16,12 @@ let savedElements = null;
 export class FabricmodifyService {
   canvas: any;
   private foreignSelections:Map<string,[any]>;
+  private canvasHelpBegin: string = "{\"version\":\"2.7.0\",\"objects\":[";
+  private canvasHelpEnd:string = "]}";  
+  private helpCanvas = new fabric.Canvas('helper', {
+    height:3000,
+    width:3000
+  });
 
   constructor(private groupService: ManageGroupsService) {
     this.newForeignSelections();
@@ -27,7 +33,7 @@ export class FabricmodifyService {
   }
 
   loadFromJSON(canvas: any, json: string) {
-    console.log(`loadFromJSON: object count: ${((canvas || {}).objects || {}).length}`);
+    //console.log(`loadFromJSON: object count: ${((canvas || {}).objects || {}).length}`);
     canvas.loadFromJSON(JSON.parse(json), () => {
       canvas.renderAll();
     });
@@ -66,6 +72,9 @@ export class FabricmodifyService {
       return;
     }
     let temp = canvas.getActiveObject().toGroup();
+    canvas.discardActiveObject();
+    temp.statefullCache = true;
+    canvas.setActiveObject(temp);
     //temp.set('dirty', true);
     temp = (temp as Group);
     this.groupService.add(temp);
@@ -201,7 +210,9 @@ export class FabricmodifyService {
             } else {
               obj.uuid = UUID.UUID();
             }
+            FabricmodifyService.calcExtractFromGroup(obj,clonedObj);
             canvas.add(obj);
+            FabricmodifyService.calcInsertIntoGroup(obj,clonedObj);
           });
           // this should solve the unselectability
           clonedObj.setCoords();
@@ -292,22 +303,29 @@ export class FabricmodifyService {
           let index = parsedObj.index
           //we need to flip the order if we bring objects to front, so we will bring the topmost object to front first.
           let orderedObjects = index < 0 ? parsedObj.objects : parsedObj.objects.reverse();
+          //console.log('canvas before orderchange:'+JSON.stringify(canvas));
           orderedObjects.forEach(function (current) {
+            let old = _this.getObjectByUUID(current.uuid, canvas.getObjects());
             switch (index) {
               case 1:
-                canvas.bringForward(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
+                //canvas.bringForward(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
+                old.bringForward();
                 break;
               case 2:
-                canvas.bringToFront(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
+                //canvas.bringToFront(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
+                old.bringToFront();
                 break;
               case -1:
-                canvas.sendBackwards(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
+                //canvas.sendBackwards(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
+                old.sendBackwards();
                 break;
               case -2:
-                canvas.sendToBack(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
+                //canvas.sendToBack(_this.getObjectByUUID(current.uuid, canvas.getObjects()));
+                old.sendToBack();
                 break;
             }
           });
+          //console.log('canvas after orderchange:'+JSON.stringify(canvas));
         }
 
         //JSON represenation doesn't match the actual property value in this case, ingenious...
@@ -316,7 +334,7 @@ export class FabricmodifyService {
           canvas[newKey] = parsedObj[key];
           console.log(`setting BackroundColour: assigning ${parsedObj[key]} to ${newKey}, old value: ${canvas.backgroundColor}`)
         }*/ else {
-          console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
+          //console.log(`assigning ${parsedObj[key]} to ${key}, old value: ${canvas[key]}`)
           canvas[key] = parsedObj[key];
         }
       })
@@ -358,7 +376,9 @@ export class FabricmodifyService {
         if (old === undefined) {
           this.addRemoteObject(parsedObj, canvas);
         } else {
+          let _this = this;
           fabric.util.enlivenObjects([parsedObj], function (objects) {
+            let furtureSelection = [];
             objects.forEach(function (aliveObject) {
 
               let selectionChange: boolean = false;
@@ -381,11 +401,64 @@ export class FabricmodifyService {
 
               let keys = Object.keys(aliveObject);
 
+              if(old.type === 'group') {
+                /*keys = Object.keys(old);
+                keys.forEach((key) => {
+                  if(aliveObject[key] !== undefined) {
+                    old.set(key,aliveObject[key]);
+                  }
+                })*/
+                let groupExport = _this.canvasHelpBegin+transObj+_this.canvasHelpEnd;
+                _this.helpCanvas.loadFromJSON(groupExport);
+                let newGroup = _this.getObjectByUUID(old.uuid,_this.helpCanvas.getObjects());
+                let index = _this.getObjectIndex(old,canvas);
+                //old.sendMe = false;
+                //newGroup.sendMe = false;
 
+                newGroup.canvas = canvas;
+                newGroup.sendMe = true;
+                canvas._objects[index] = newGroup;
+                let editForeignSelections = _this.foreignSelections.get(message.user);
+                if(editForeignSelections&&editForeignSelections.length>1) {
+                  for(let i = 1;i<editForeignSelections.length;i++) {
+                    if(newGroup.uuid === editForeignSelections[i].uuid) {
+                      editForeignSelections[i] = newGroup;
+                      _this.foreignSelections.set(message.user, editForeignSelections);
+                      break;
+                    }
+                  }
+                }
+                if(selectionChange) {
+                  let selectedObj = activeSelection.getObjects();
+                  for(let i = 0;i<selectedObj.length;i++) {
+                    if(newGroup.uuid === selectedObj[i].uuid) {
+                      activeSelection._objects[i] = newGroup;
+                      newGroup.group = activeSelection;
+                      break;
+                    }
+                  }
+                } 
+                /*keys = Object.keys(newGroup);
+                keys.forEach((key) => {
+                  old[key] = newGroup[key];
+                })*/
+                //if(positionInCurrentSelection!==-1) activeSelection.removeWithUpdate(old);
+
+                /*
+                canvas.remove(old);
+                canvas.insertAt(newGroup,index);
+                */
+
+                //if(positionInCurrentSelection!==-1) {
+                  //FabricmodifyService.calcInsertIntoGroup(newGroup,activeSelection);
+                  //activeSelection.addWithUpdate(newGroup);
+                //}
+              } else {
               keys.forEach(function (key) {
                 //console.log(`assigning ${o[key]} to ${key}, old value: ${old[key]}`)
                 old.set(key, aliveObject[key]);
               });
+            }
               old.sendMe = true;
               if (selectionChange) {
                 FabricmodifyService.calcInsertIntoGroup(old, activeSelection);
@@ -405,9 +478,10 @@ export class FabricmodifyService {
           canvas.remove(old);
         }
       }
-      console.log('after parse (applyTransformation).');
+      //console.log('after parse (applyTransformation).');
     }
-    canvas.renderAll();
+    //canvas.renderAll();
+    canvas.requestRenderAll();
   }
 
 /**
@@ -500,5 +574,13 @@ export class FabricmodifyService {
         canvas.add(o);
       });
     });
+  }
+
+  private getObjectIndex(obj, canvas) {
+    let objects = canvas.getObjects();
+    for(let i = 0;i<objects.length; i++) {
+      let current = objects[i];
+      if(obj.uuid === current.uuid) return i;
+    }
   }
 }

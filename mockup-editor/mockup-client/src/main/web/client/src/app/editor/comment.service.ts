@@ -41,13 +41,13 @@ export class CommentService {
         // console.log('commentSubjectCOMMENT:' + data.comment);
         // CommentAction (comment:added) ([object Object]) (undefined)
         if (data.action !== null) {
-          console.log('commentSubjectCOMMENT  action:' + data.action);
+          //console.log('commentSubjectCOMMENT  action:' + data.action);
         }
         if (data.comment !== null) {
-          console.log('commentSubjectCOMMENT  comment:' + data.comment.toString() + ' isArray:' + isArray(data.comment));
+          //console.log('commentSubjectCOMMENT  comment:' + data.comment.toString() + ' isArray:' + isArray(data.comment));
         }
         if (data.entry !== null) {
-          console.log('commentSubjectCOMMENT, entry: ' + JSON.stringify(data.entry));
+          //console.log('commentSubjectCOMMENT, entry: ' + JSON.stringify(data.entry));
         }
 
         // this.getCommentsImpl();
@@ -59,7 +59,7 @@ export class CommentService {
             this.commentSubjectTest.next(this.comments);
             break;
           case Action.COMMENTMODIFIED:
-            console.error(`action not implemented. (${data.action})`);
+            //console.error(`action not implemented. (${data.action})`);
             break;
           case Action.COMMENTCLEARED:
             comment = this.comments.find((o) => o.uuid === data.comment.uuid);
@@ -83,11 +83,11 @@ export class CommentService {
             this.commentSubjectTest.next(this.comments);
             break;
           default:
-            console.log('default:' + data);
+            //console.log('default:' + data);
             break;
             }
     });
-    console.log('CommentService init');
+    //console.log('CommentService init');
     this.pageService.activePage.subscribe((page) => {
       if (!page) { return; }
       // console.log('activePageCOMMENT:' + page);
@@ -100,7 +100,7 @@ export class CommentService {
    * @return  Observable<Comment[]>
    */
   getComments(): Observable<Comment[]> {
-    console.log('getComments called:' + `/page/${this.activePage.id}/comments`);
+    //console.log('getComments called:' + `/page/${this.activePage.id}/comments`);
     return this.apiService.get<Comment[]>(`/page/${this.activePage.id}/comments`);
   }
 
@@ -116,9 +116,9 @@ export class CommentService {
       },
       (error) => {
         if (error.message === 'No Comments') {
-          console.log('this active Page has no comments. PageId: ' + this.activePage.id);
+          //console.log('this active Page has no comments. PageId: ' + this.activePage.id);
         } else {
-          console.error('getCommentsImpl: ' + JSON.stringify(error));
+          //console.error('getCommentsImpl: ' + JSON.stringify(error));
         }
         this.commentSubjectTest.next([]);
       }
@@ -131,7 +131,7 @@ export class CommentService {
       entry: newEntry
     };
     const command = Action.COMMENTENTRYADDED;
-    console.log(`${command} | new entry: ${content.entry }`);
+    //console.log(`${command} | new entry: ${content.entry }`);
     this.socketService.send(JSON.stringify(content), command);
   }
 
@@ -139,7 +139,7 @@ export class CommentService {
     const canvas = this.pageService.getCanvas();
     const objects = canvas.getActiveObject();
 
-    console.log(`addingComment: active objects : ${JSON.stringify(objects)}`);
+    //console.log(`addingComment: active objects : ${JSON.stringify(objects)}`);
 
     const objectUuid = [];
     if (!!objects) {
@@ -167,7 +167,7 @@ export class CommentService {
     };
     const content = {comment};
     const command = Action.COMMENTADDED;
-    console.log(`${command}`);
+    //console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
     this.comments.push(comment);
     this.commentSubjectTest.next(this.comments);
@@ -177,7 +177,7 @@ export class CommentService {
     comment.isCleared = true;
     const content = {comment};
     const command = Action.COMMENTCLEARED;
-    console.log(`${command}`);
+    //console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
 
   }
@@ -185,7 +185,7 @@ export class CommentService {
   updateComment(comment: Comment) {
     const content = {comment};
     const command = Action.COMMENTMODIFIED;
-    console.log(`${command} : ${content.comment }`);
+    //console.log(`${command} : ${content.comment }`);
     this.socketService.send(JSON.stringify(content), command);
     this.commentSubjectTest.next(this.comments);
   }
@@ -193,7 +193,7 @@ export class CommentService {
   updateCommentEntry(comment: Comment, entry: CommentEntry) {
     const content = {comment, entry};
     const command = Action.COMMENTENTRYMODIFIED;
-    console.log(`${command} : ${content.comment }: ID: ${entry.id}, Entrymessage: '${entry.message}'`);
+    //console.log(`${command} : ${content.comment }: ID: ${entry.id}, Entrymessage: '${entry.message}'`);
     this.socketService.send(JSON.stringify(content), command);
     this.commentSubjectTest.next(this.comments);
   }
@@ -201,14 +201,14 @@ export class CommentService {
   deleteCommentEntry(comment: Comment, entry: CommentEntry) {
     const content = {comment};
     const command = Action.COMMENTENTRYDELETED;
-    console.log(`${command}`);
+    //console.log(`${command}`);
     this.socketService.send(JSON.stringify(content), command);
   }
 
   deleteComment(comment: Comment) {
     const content = {comment};
     const command = 'comment:deleted';
-    console.log(`${command}`);
+    //console.log(`${command}`);
     this.removeComment(comment);
     this.commentSubjectTest.next(this.comments);
     this.socketService.send(JSON.stringify(content), command);
@@ -225,10 +225,10 @@ export class CommentService {
   }
 
   applyCommentAction(comAction: CommentAction) {
-    console.log('applyCommentAction, Action: ' +
-      comAction.action.toString() +
-      ' comment:' + comAction.comment.toString() +
-      ' entry:' + comAction.entry.toString());
+    //console.log('applyCommentAction, Action: ' +
+    //  comAction.action.toString() +
+    //  ' comment:' + comAction.comment.toString() +
+    //  ' entry:' + comAction.entry.toString());
 
     /*if (!comAction) { return; }
     this.getCommentsImpl();
@@ -269,17 +269,17 @@ export class CommentService {
   testgetComments() {
     this.getComments().subscribe(
       (data) => {
-        console.log('Got comments');
+        //console.log('Got comments');
         if (Array.isArray(data)) {
           this.comments = data;
-          console.log('Got commtents is array:' + (data as Comment[]));
+          //console.log('Got commtents is array:' + (data as Comment[]));
           // data.forEach(function(value) {
           //   console.log(value);
           //   console.log((value as Comment));
           // });
         } else {
           this.comments = [data];
-          console.log('Got commtents:' + data);
+          //console.log('Got commtents:' + data);
         }
       }
     );

@@ -32,7 +32,7 @@ export class ManageGroupsService {
     temp.group = group;
     temp.id = group.uuid;
     if (this.dataStore.groups.indexOf(temp) - 1) {
-      console.log("Add group:" + temp.group);
+      //console.log("Add group:" + temp.group);
       this.dataStore.groups.push(temp);
     }
     this._groups.next(Object.assign({}, this.dataStore).groups);
@@ -44,12 +44,12 @@ export class ManageGroupsService {
     temp.group = group;
     temp.id = group.uuid;
 
-    console.log("to removing:" + temp.id);
+    //console.log("to removing:" + temp.id);
     this.dataStore.groups.forEach((p, index) => {
-      console.log("For each uuid:" + p.id);
+      //console.log("For each uuid:" + p.id);
       if (p.id === temp.id) {
         this.dataStore.groups.splice(index, 1);
-        console.log("removing:" + p.id + " left:" + this.dataStore.groups.length);
+        //console.log("removing:" + p.id + " left:" + this.dataStore.groups.length);
       }
     });
     this._groups.next(Object.assign({}, this.dataStore).groups);
@@ -62,7 +62,7 @@ export class ManageGroupsService {
       if (value.pageId == id) {
         temp.push(value);
       }
-      console.log(value);
+      //console.log(value);
     });
     return temp;
   }

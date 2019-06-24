@@ -24,13 +24,14 @@ export class SocketConnectionService {
   ) { }
 
   connect(projectId: string, pageId: string, userId: string, callback:(message:socketMessage)=>void,that:any) {
-    console.log('connection test\ncallback: '+JSON.stringify(callback)+"\ncallee:");
+    //console.log('connection test\ncallback: '+JSON.stringify(callback)+"\ncallee:");
     this.userId = userId;
     this.projectId = projectId;
     this.pageId = pageId;
     const socket = new SockJS(API_URL+'/connect');
     this.stompClient = Stomp.over(socket);
     const _this = this;
+    this.stompClient.debug = () => {};
     this.stompClient.connect({}, (frame) => {
       _this.stompClient.subscribe('/user/' + userId + '/queue/send', function (message) {
         callback.bind(that)(JSON.parse(message.body,/*_this.logMessage*/),/*_this.logMessage*/);
@@ -41,7 +42,7 @@ export class SocketConnectionService {
         //var temp  =Buffer.from(pako.inflate(atob(message.body)));
         //console.log("test:"+temp.toString());
       });
-      console.log('Connected: ' + frame);
+      //console.log('Connected: ' + frame);
 
       //Load page
     });
@@ -55,7 +56,7 @@ export class SocketConnectionService {
       var deflateString = pako.deflate(json,{ to: 'string' });
       var base64 = btoa(deflateString);
       this.stompClient.send('/app/send', {},  base64);
-      console.log('send: ' + json);
+      //console.log('send: ' + json);
     }
   }
 
@@ -64,6 +65,6 @@ export class SocketConnectionService {
   }
 
   logMessage(message: String) {
-    console.log('parsing: '+ message);
+    //console.log('parsing: '+ message);
   }
 }

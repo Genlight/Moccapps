@@ -20,6 +20,9 @@ export class CreateProjectModalComponent implements OnInit {
     width: number
   };
 
+  isProjectNameInvalid = false;
+  isDimensionsInvalid = false;
+
   constructor(
     private modalService: NgbModal,
     private projectService: ProjectService,
@@ -38,17 +41,36 @@ export class CreateProjectModalComponent implements OnInit {
       height: 600,
       width: 900
     };
+
+    this.isProjectNameInvalid = false;
+    this.isDimensionsInvalid = false;
   }
 
   openModal(content) {
     this.modal = this.modalService.open(content);
     this.modal.result.then(
       (result) => {
-        console.log(`Closed create project modal dialog. ${result}`);
+        //console.log(`Closed create project modal dialog. ${result}`);
       }, (reason) => {
-        console.log(`Dismissed create project modal dialog. ${reason}`);
+        //console.log(`Dismissed create project modal dialog. ${reason}`);
       }
     );
+  }
+
+  onNameChanged() {
+    if (this.project.name.length <= 0) {
+      this.isProjectNameInvalid = true;
+    } else {
+      this.isProjectNameInvalid = false;
+    }
+  }
+
+  onDimensionChanged() {
+    if (this.project.height <= 0 || this.project.width <= 0 || this.project.height > 3000 || this.project.width > 3000) {
+      this.isDimensionsInvalid = true;
+    } else {
+      this.isDimensionsInvalid = false;
+    }
   }
 
   /**
@@ -61,16 +83,18 @@ export class CreateProjectModalComponent implements OnInit {
 
     if (this.project.name.length <= 0) {
       this.notificationService.showError('Project name must not be empty.', 'Error');
+      this.isProjectNameInvalid = true;
       return;
     } 
 
-    if (this.project.height <= 0 || this.project.width <= 0) {
-      this.notificationService.showError('Project canvas size must be larger than 0px.', 'Error');
+    if (this.project.height <= 0 || this.project.width <= 0 || this.project.height > 3000 || this.project.width > 3000) {
+      this.notificationService.showError('Project canvas size must between 0-3000 px.', 'Error');
+      this.isDimensionsInvalid = true;
       return;
     }
     this.projectService.createProject(project).subscribe(
       res => {
-        console.log('HTTP response', res);
+        //console.log('HTTP response', res);
         let responseProject = (res as Project);
         if (!!responseProject) {
           // Create intitial page of project.
@@ -83,7 +107,7 @@ export class CreateProjectModalComponent implements OnInit {
         }
       },
       err => {
-        console.log('HTTP Error', err);
+        //console.log('HTTP Error', err);
         this.modal.close();
       }
     );

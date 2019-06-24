@@ -126,11 +126,12 @@ public class SocketServer {
 
             PageHandler pageHandler = new PageHandler(message.getProjectId(), pageId, pageService,commentService,userService);
             pageHandlerMap.put(pageIdString, pageHandler);
-            UserHandler handler = currentUser.get(message.getUser());
-
-            handler.setProjectId(message.getProjectId());
-            handler.setPageId(message.getPageId());
         }
+        UserHandler handler = currentUser.get(message.getUser());
+
+        handler.setProjectId(message.getProjectId());
+        handler.setPageId(message.getPageId());
+
         pageHandlerMap.get(message.getPageId()).addUser(message.getUser());
         UserHandler user= currentUser.get(message.getUser());
         switch (message.getCommand()){
