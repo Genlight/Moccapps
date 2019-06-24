@@ -11,17 +11,22 @@ import java.util.List;
 
 /**
  * @author: Brigitte Blank
+ *
+ * path to the directory if spring is directly started in the mockup-server directory for development purpose
+ * private String baseDir = "../mockup-client/src/main/web/client/src/assets/img";
+ * path to the directory if spring is started in the usual mockup-editor directory
  */
 @Service
 public class ElementServiceImpl implements ElementService {
 
-    //path to the directory if spring is directly started in the mockup-server directory for development purpose
-    //private String baseDir = "../mockup-client/src/main/web/client/src/assets/img";
-
-    //path to the directory if spring is started in the usual mockup-editor directory
     private String baseDir = "./mockup-client/src/main/web/client/src/assets/img";
     private String systemDir = baseDir + "/system";
     private String userDir = baseDir + "/user";
+    /**
+     * returns categories concerning element Assets (i.e. Personal)
+     * @return List<String>
+     * @throws java.lang.NullPointerException [description]
+     */
     @Override
     public List<String> getCategories() throws java.lang.NullPointerException {
         //System.out.println("\n\n\n"+(Paths.get("").toString()));
@@ -33,7 +38,11 @@ public class ElementServiceImpl implements ElementService {
         }
         return categories;
     }
-
+    /**
+     * returns all elements from a given category
+     * @param  category String
+     * @return          List<String>
+     */
     @Override
     public List<String> getElements(String category) {
         List<String> elements = new ArrayList<>();
@@ -45,6 +54,11 @@ public class ElementServiceImpl implements ElementService {
         return elements;
     }
 
+    /**
+     * returns all elements of a users Personal folder
+     * @param  userfolder String
+     * @return            List<String>
+     */
     @Override
     public List<String> getUserElements(String userfolder) {
         List<String> elements = new ArrayList<>();
@@ -58,6 +72,4 @@ public class ElementServiceImpl implements ElementService {
         }
         return elements;
     }
-
-
 }

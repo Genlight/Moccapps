@@ -27,7 +27,11 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectVersionServiceImpl.class);
 
-
+    /**
+     * delete an existing ProjectVersion by a given project version id
+     * @param  id Integer
+     * @return    boolean
+     */
     @Override
     public boolean deleteProjectVersion(int id) {
         try {
@@ -38,7 +42,11 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
         }
         return false;
     }
-
+    /**
+     * create a new Project Version
+     * @param  projectVersion ProjectVersion
+     * @return                ProjectVersion
+     */
     @Override
     public ProjectVersion createProjectVersion(ProjectVersion projectVersion) {
         try {
@@ -48,7 +56,12 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
         }
         return null;
     }
-
+    /**
+     * create a ProjectVersion from a given Project and name / tag the version
+     * @param  project Project
+     * @param  tag     String
+     * @return         ProjectVersion
+     */
     @Override
     public ProjectVersion createProjectVersion(Project project, String tag) {
         try {
@@ -58,7 +71,12 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
         }
         return null;
     }
-
+    /**
+     * create a ProjectVersion by a given project id
+     * @param  projectId Integer
+     * @param  tag       String
+     * @return           ProjectVersion
+     */
     @Override
     public ProjectVersion createProjectVersion(int projectId, String tag) {
         try {
@@ -68,7 +86,11 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
         }
         return null;
     }
-
+    /**
+     * return a ProjectVersion by a given id
+     * @param  id Integer
+     * @return    ProjectVersion
+     */
     @Override
     public ProjectVersion getProjectVersionById(int id) {
         try {
@@ -78,7 +100,11 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
         }
         return null;
     }
-
+    /**
+     * return a ProjectVersion by a given tag name
+     * @param  tag String
+     * @return     ProjectVersion
+     */
     @Override
     public ProjectVersion getProjectVersionByTag(String tag) {
         try {
@@ -88,7 +114,12 @@ public class ProjectVersionServiceImpl implements ProjectVersionService {
         }
         return null;
     }
-
+    /**
+     * return all ProjectVersion by the project which they originated from,
+     * identified by a project id
+     * @param  projectId Integer
+     * @return           List<ProjectVersion>
+     */
     @Override
     public List<ProjectVersion> getProjectVersionByProjectId(int projectId) {
         try {

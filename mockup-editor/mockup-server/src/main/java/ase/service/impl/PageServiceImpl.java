@@ -24,6 +24,11 @@ public class PageServiceImpl implements PageService {
     @Autowired
     CommentDAO commentDAO;
 
+    /**
+     * creates a page entry in db
+     * @param  page Page
+     * @return      Page
+     */
     @Override
     public Page create(Page page) {
         try {
@@ -35,6 +40,11 @@ public class PageServiceImpl implements PageService {
 
     }
 
+    /**
+     * delete a Page in db
+     * @param  page Page
+     * @return      boolean
+     */
     @Override
     public boolean delete(Page page) {
         try {
@@ -45,7 +55,11 @@ public class PageServiceImpl implements PageService {
         }
         return true;
     }
-
+    /**
+     * returns all Pages for a Project
+     * @param  projectId Integer
+     * @return           List<Page>
+     */
     @Override
     public List<Page> getAllPagesForProject(int projectId) {
         try {
@@ -56,7 +70,12 @@ public class PageServiceImpl implements PageService {
             return new ArrayList<>();
         }
     }
-
+    /**
+     * get a Page by a given Project and an order number
+     * @param  id    Integer
+     * @param  order Integer
+     * @return       Page
+     */
     @Override
     public Page getPageByProjectIdAndOrder(int id, int order) {
         try {
@@ -68,6 +87,11 @@ public class PageServiceImpl implements PageService {
         }
     }
 
+    /**
+     * returns a Page by given id
+     * @param  id Integer
+     * @return    Page
+     */
     @Override
     public Page getPageById(int id) {
         try {
@@ -79,6 +103,11 @@ public class PageServiceImpl implements PageService {
         }
     }
 
+    /**
+     * updates an existing page in db
+     * @param  page Page
+     * @return      boolean
+     */
     @Override
     public boolean update(Page page) {
         try {

@@ -23,6 +23,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
+    /**
+     * returns all Projects for a given User
+     * @param  userId Integer
+     * @return        List<Project>
+     */
     @Override
     public List<Project> findProjectByUserId(int userId) {
         List<Project> projects=new ArrayList<>();
@@ -39,6 +44,11 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
     }
 
+    /**
+     * deletes an existing project by a given project id
+     * @param  id Integer
+     * @return    boolean
+     */
     @Override
     public boolean deleteProject(int id) {
         try {
@@ -49,6 +59,11 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
+    /**
+     * updates an existing project
+     * @param  project Project
+     * @return         boolean
+     */
     @Override
     public boolean updateProject(Project project) {
         try {
@@ -60,6 +75,11 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
+    /**
+     * create a new project
+     * @param  project Project
+     * @return         Project
+     */
     @Override
     public Project createProject(Project project) {
         try {
@@ -70,6 +90,11 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
     }
 
+    /**
+     * return a project ba given project id
+     * @param  id Integer
+     * @return    Project
+     */
     @Override
     public Project getProjectById(int id) {
         try {

@@ -31,6 +31,12 @@ public class InvitationServiceImpl implements InvitationService {
     @Autowired
     ProjectService projectService;
 
+    /**
+     * creates a new Invitation in db, given the Invitation information and a username, who invites
+     * @param  invitationForm InvitationForm
+     * @param  username       String
+     * @return                boolean
+     */
     @Override
     public boolean create(InvitationForm invitationForm, String username) {
         User inviter = userService.getUserByEmail(username);
@@ -46,9 +52,13 @@ public class InvitationServiceImpl implements InvitationService {
             }
         }
         return true;
-
     }
 
+    /**
+     * deletes an invitation, if it exists
+     * @param  invitation Invitation
+     * @return            boolean
+     */
     @Override
     public boolean delete(Invitation invitation) {
         try {
@@ -56,10 +66,13 @@ public class InvitationServiceImpl implements InvitationService {
         } catch (DAOException e) {
             e.printStackTrace();
         }
-
         return false;
     }
-
+    /**
+     * is called, if a user accepts an invitation by another user<
+     * @param  invitation Invitation
+     * @return            boolean
+     */
     @Override
     public boolean acceptInvitation(Invitation invitation) {
         invitation.setStatus(1);
@@ -76,7 +89,11 @@ public class InvitationServiceImpl implements InvitationService {
         }
         return false;
     }
-
+    /**
+     * is called, when a user declines an existing invitation
+     * @param  invitation Invitation
+     * @return            boolean
+     */
     @Override
     public boolean declineInvitation(Invitation invitation) {
         invitation.setStatus(0);
@@ -88,6 +105,11 @@ public class InvitationServiceImpl implements InvitationService {
         return false;
     }
 
+    /**
+     * returns all open (not declined) invitations for a given user
+     * @param  user User
+     * @return      List<Invitation>
+     */
     @Override
     public List<Invitation> getAllInvitationsForInvitedUser(User user) {
         List<Invitation> invitations = new ArrayList<>();
@@ -105,7 +127,11 @@ public class InvitationServiceImpl implements InvitationService {
         return resultInvitations;
     }
 
-
+    /**
+     * returns all Invitation concnerning a given Project
+     * @param  project Project
+     * @return         List<Invitation>
+     */
     @Override
     public List<Invitation> getAllInvitationsForProject(Project project) {
         List<Invitation> invitations = new ArrayList<>();
@@ -122,7 +148,11 @@ public class InvitationServiceImpl implements InvitationService {
         }
         return resultInvitations;
     }
-
+    /**
+     * get a Invitation by a given ID
+     * @param  id Integer
+     * @return    Invitation
+     */
     @Override
     public Invitation getInvitationById(int id) {
         try {
@@ -132,7 +162,12 @@ public class InvitationServiceImpl implements InvitationService {
         }
         return null;
     }
-
+    /**
+     * update an existing Invitation with information given through the invitation forms
+     * @param  invitationForm InvitationForm
+     * @param  inviterEmail   String
+     * @return                boolean
+     */
     @Override
     public boolean update(InvitationForm invitationForm, String inviterEmail) {
         User inviter = userService.getUserByEmail(inviterEmail);

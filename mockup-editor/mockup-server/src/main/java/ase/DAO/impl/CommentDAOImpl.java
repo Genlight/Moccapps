@@ -138,7 +138,7 @@ public class CommentDAOImpl extends AbstractDAO implements CommentDAO {
     /**
      * updates a Comment
      * @param  comment      Comment
-     * @return CommentEntry
+     * @return Comment
      * @throws DAOException [description]
      */
     @Override

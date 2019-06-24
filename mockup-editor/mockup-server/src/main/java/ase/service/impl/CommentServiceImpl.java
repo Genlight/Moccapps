@@ -22,6 +22,11 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     CommentDAO commentDAO;
 
+    /**
+     * creates a comment
+     * @param  comment Comment
+     * @return         Comment
+     */
     @Override
     public Comment createComment(Comment comment){
         try {
@@ -32,6 +37,11 @@ public class CommentServiceImpl implements CommentService {
         return null;
     }
 
+    /**
+     * creates a new comment
+     * @param  comment      Comment
+     * @return Comment
+     */
     @Override
     public CommentEntry createCommentEntry(CommentEntry commentEntry){
         try {
@@ -41,7 +51,11 @@ public class CommentServiceImpl implements CommentService {
         }
         return null;
     }
-
+    /**
+     * creates a new Comment plus a commentEntry
+     * @param  comment Comment
+     * @return Comment
+     */
     @Override
     public Comment createCommentAndEntry(Comment comment){
         List<CommentEntry> commentEntry=comment.getCommentEntryList();
@@ -60,7 +74,11 @@ public class CommentServiceImpl implements CommentService {
         }
         return comment;
     }
-
+    /**
+     * updates a Comment
+     * @param  comment      Comment
+     * @return Comment
+     */
     @Override
     public Comment updateComment(Comment comment){
         try {
@@ -70,7 +88,11 @@ public class CommentServiceImpl implements CommentService {
         }
         return null;
     }
-
+    /**
+     * updates an existing CommentEntry
+     * @param  commentEntry CommentEntry
+     * @return CommentEntry
+     */
     @Override
     public CommentEntry updateCommentEntry(CommentEntry commentEntry){
         try {
@@ -80,7 +102,11 @@ public class CommentServiceImpl implements CommentService {
         }
         return null;
     }
-
+    /**
+     * delete an existing comment
+     * @param  comment      Comment
+     * @return boolean
+     */
     @Override
     public boolean removeComment(Comment comment){
         try {
@@ -90,7 +116,11 @@ public class CommentServiceImpl implements CommentService {
         }
         return false;
     }
-
+    /**
+     * deletes an existing CommentEntry
+     * @param  commentEntry CommentEntry
+     * @return boolean
+     */
     @Override
     public boolean removeCommentEntry(CommentEntry commentEntry){
         try {
@@ -100,7 +130,11 @@ public class CommentServiceImpl implements CommentService {
         }
         return false;
     }
-
+    /**
+     * find a comment by an given ID
+     * @param  id           Integer
+     * @return              Comment
+     */
     @Override
     public Comment findCommentById(int id){
         try {
@@ -110,7 +144,11 @@ public class CommentServiceImpl implements CommentService {
         }
         return null;
     }
-
+    /**
+     * find a comment by an given UUID
+     * @param  id           Integer
+     * @return              Comment
+     */
     @Override
     public Comment findCommentByUUID(String uuid){
         try {
@@ -121,6 +159,11 @@ public class CommentServiceImpl implements CommentService {
         return null;
     }
 
+    /**
+     * finds Comments by a given pageId
+     * @param  id       Integer
+     * @return              List<Comment>
+     */
     @Override
     public List<Comment> findCommentsForPage(int id){
         try {
@@ -132,6 +175,11 @@ public class CommentServiceImpl implements CommentService {
         return new ArrayList<>();
     }
 
+    /**
+     * find and return an List of CommentEntries, given an ID from a comment
+     * @param  id           Integer
+     * @return              List<CommentEntry>
+     */
     @Override
     public List<CommentEntry> findCommentEntriesForComment(int id){
         try {

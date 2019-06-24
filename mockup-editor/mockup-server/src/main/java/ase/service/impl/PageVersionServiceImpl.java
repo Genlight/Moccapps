@@ -25,6 +25,11 @@ public class PageVersionServiceImpl implements PageVersionService {
     @Autowired
     PageService pageService;
 
+    /**
+     * returns all PageVersions for a given Project, identified by the project ID
+     * @param  projectId Integer
+     * @return           List<PageVersion>
+     */
     @Override
     public List<PageVersion> getAllPagesForProject(int projectId) {
         try {
@@ -35,6 +40,12 @@ public class PageVersionServiceImpl implements PageVersionService {
         }
     }
 
+    /**
+     * restores a Project by given PageVersions
+     * @param  pageVersions List<PageVersion>
+     * @param  projectId    Project
+     * @return              List<Page>
+     */
     @Override
     public List<Page> restorePages(List<PageVersion> pageVersions, int projectId){
         List<Page> pages = new ArrayList<>();
