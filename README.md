@@ -8,7 +8,8 @@ We present to you the slim and fast editor, in which you you can operate with yo
 To build this project, install following dependencies:
 
 ## Downloads
-Wir benötigen all diese Install
+We need all of the following framework packages: 
+
 ### Maven 
 https://www-us.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.zip
 > Path has to be set sysstem wide, see further below
@@ -28,12 +29,13 @@ For older Windows Versions (and Home Ed), install [Docker Toolbox]
 see usage with Postgres and docker toolbox, [this README](https://gitlab.com/ase_grp02/moccapps/tree/devel/mockup-editor/mockup-server/README.md)
 
 # Windows-dev-tools
-für node-gyp wird Python v2.7, einC++-COmpiler und Visual Studio Code 2015/17 benötigt. 
-hierfür folgenden Code ausführen (ben. Admin-Rechte): 
+for node-gyp we use v2.7, a C++-Compiler and Visual Studio Code 2015/17 are necessary. 
+
+Execute the following code with a root account: 
 `npm install --global windows-build-tools`
 
 ## set System Environment Variables
-following System Environment variables >have to be set  in order for the build to work. (Paths to Executables like mvn.exe, or node.exe, normally located in a bin-folder)
+following System Environment variables have to be set in order for the build to work. (Paths to Executables like mvn.exe, or node.exe, normally located in a bin-folder)
 - Python
 - Java JDK
 - Node
@@ -43,7 +45,7 @@ Add these in Windows with these steps:
 - Windows-Key + Q
 - type "Systemumgebungsvariablen setzen" (+ [enter])
 - then go to "Umgebungsvariablen..." -> Systemvariablen -> "Path"
-- click on "Bearbeiuten..."
+- click on "Bearbeiten..."
 - Add your Executable-paths of the ment. programs with neu..
 - Important: some java applications install java under commonfiles/javapath; they will be set at the front in the settings, make sure that they get set at the end (with "nach unten" set the ranking)
 - click ok through all views 
@@ -84,7 +86,3 @@ with powershell: \
 `Get-Process -Id (Get-NetTCPConnection -LocalPort 8090 -ea SilentlyContinue).OwningProcess | Stop-Process` \
 
 headsUp: needs Powershell v3 or higher to be installed.
-
-
-
-
